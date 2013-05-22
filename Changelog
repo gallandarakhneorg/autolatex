@@ -1,3 +1,6 @@
+autolatex 17.0 (2013/05/22) - Stéphane GALLAND <galland@arakhne.org>
+	* Issue 1: the Locale package is included in the UI packages.
+
 autolatex 16.0 (2013/05/20) - Stéphane GALLAND <galland@arakhne.org>
 	* Complete rewriting of the source code in Perl. GNU Make is
           no more used to proceed the LaTeX compilation.

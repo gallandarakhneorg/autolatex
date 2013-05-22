@@ -49,6 +49,7 @@ use Gtk2;
 use Gtk2::SimpleList;
 
 use AutoLaTeX::Core::Util;
+use AutoLaTeX::Core::Locale;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::Translator;
 use AutoLaTeX::GUI::AbstractTranslatorPanel;
@@ -61,7 +62,7 @@ use AutoLaTeX::GUI::Gtk::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "5.1" ;
+my $VERSION = "6.0" ;
 
 #------------------------------------------------------
 #
@@ -138,7 +139,7 @@ sub initControls() : method {
 	my $self = shift;
 
 	# Label
-	my $label = Gtk2::Label->new($self->localeGet(_T("List of available translators:")));
+	my $label = Gtk2::Label->new($self->localeGet(_T("List of available translators:\n(click on the three left columns to change the loading state of the translators)")));
 	$self->attach ($label, 
 				0,1,0,1, # left, right, top and bottom columns
 				'expand','shrink', # x and y options

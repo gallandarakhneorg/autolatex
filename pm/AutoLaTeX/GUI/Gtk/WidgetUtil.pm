@@ -50,6 +50,7 @@ use Gtk2 qw/-init -threads-init/;
 use File::Basename;
 use File::Spec;
 use AutoLaTeX::Core::Util;
+use AutoLaTeX::Core::Locale;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::GUI::WidgetUtil;
 
@@ -60,7 +61,7 @@ use AutoLaTeX::GUI::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "5.1" ;
+my $VERSION = "6.0" ;
 
 # Does the GTK Main loop must be quitted
 my $QUITGTK = TRUE;

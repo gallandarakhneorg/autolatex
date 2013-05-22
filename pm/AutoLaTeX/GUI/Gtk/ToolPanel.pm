@@ -51,6 +51,7 @@ use File::Basename;
 
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::Main;
+use AutoLaTeX::Core::Locale;
 use AutoLaTeX::GUI::AbstractToolPanel;
 use AutoLaTeX::GUI::Gtk::WidgetUtil;
 
@@ -61,7 +62,7 @@ use AutoLaTeX::GUI::Gtk::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "5.1" ;
+my $VERSION = "6.0" ;
 
 # Available commands
 my @LAUNCH_COMMAND_ORDER = ( 'gnome', 'kde', 'stdout' );

@@ -46,6 +46,7 @@ use Exporter;
 
 use AutoLaTeX::GUI::WidgetUtil;
 use AutoLaTeX::Core::Util;
+use AutoLaTeX::Core::Locale;
 use AutoLaTeX::Core::Translator;
 use AutoLaTeX::Core::Config;
 
@@ -56,7 +57,7 @@ use AutoLaTeX::Core::Config;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "5.4" ;
+my $VERSION = "6.0" ;
 
 =pod
 

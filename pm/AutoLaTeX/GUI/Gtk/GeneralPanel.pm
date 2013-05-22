@@ -49,6 +49,7 @@ use Gtk2;
 use Gtk2::SimpleList;
 
 use AutoLaTeX::Core::Util;
+use AutoLaTeX::Core::Locale;
 use AutoLaTeX::GUI::AbstractGeneralPanel;
 use AutoLaTeX::GUI::Gtk::WidgetUtil;
 
@@ -59,7 +60,7 @@ use AutoLaTeX::GUI::Gtk::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "6.0" ;
+my $VERSION = "7.0" ;
 
 my %GENERATION_TYPES_ORIG = (
 	_T('01_Generate PDF document') => 'pdf',

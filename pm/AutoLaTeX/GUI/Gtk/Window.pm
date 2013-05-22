@@ -52,6 +52,7 @@ use Glib qw(TRUE FALSE);
 use Gtk2 qw/-init -threads-init/;
 
 use AutoLaTeX::Core::Util;
+use AutoLaTeX::Core::Locale;
 use AutoLaTeX::GUI::AbstractGUI;
 use AutoLaTeX::GUI::Gtk::WidgetUtil;
 use AutoLaTeX::GUI::Gtk::ToolPanel;
@@ -65,7 +66,7 @@ use AutoLaTeX::GUI::Gtk::TranslatorPanel;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "5.3" ;
+my $VERSION = "6.0" ;
 
 #------------------------------------------------------
 #
