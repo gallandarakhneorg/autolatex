@@ -1,0 +1,9 @@
+# List of source files containing translatable strings.
+
+# Gtk UI
+pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm
+pm/AutoLaTeX/GUI/Gtk/Window.pm
+pm/AutoLaTeX/GUI/Gtk/WidgetUtil.pm
+pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm
+pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm
+

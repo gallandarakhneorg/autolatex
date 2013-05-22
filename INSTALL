@@ -1,0 +1,11 @@
+To install AutoLaTeX, you need to have Perl installed on your operating system.
+
+Type on a command line:
+
+./Makefile.PL
+
+or
+
+./Makefile.PL --prefix=<usr_path>
+
+where <usr_path> is the path to the usr root directory, eg. /usr or /usr/local.

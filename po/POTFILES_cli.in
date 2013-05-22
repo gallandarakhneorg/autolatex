@@ -1,0 +1,17 @@
+# List of source files containing translatable strings.
+
+# Core libraries
+pm/AutoLaTeX/Core/Util.pm
+pm/AutoLaTeX/Core/Config.pm
+pm/AutoLaTeX/Core/Main.pm
+pm/AutoLaTeX/Core/Translator.pm
+
+# TeX libraries
+pm/AutoLaTeX/TeX/TeXParser.pm
+pm/AutoLaTeX/TeX/TeXDependencyAnalyzer.pm
+pm/AutoLaTeX/TeX/IndexAnalyzer.pm
+pm/AutoLaTeX/TeX/BibCitationAnalyzer.pm
+
+# Make-like libraries
+pm/AutoLaTeX/Make/Make.pm
+
