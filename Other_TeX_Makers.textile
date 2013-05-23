@@ -1,0 +1,40 @@
+h1. AutoLaTeX and other TeX makers
+
+This file compares several features of TeX makers from CTAN (including AutoLaTeX):
+
+table{border:1px solid black}.
+|_/2. Maker |_/2. Type |_/2. Date |_/2. Supported Tools |_\3. Detect Changes |_\3. Automatic File Convertions |_/2. Export to Elsevier |_/2. GUI |
+|_. TeX |_. BibTeX |_. Images |_. To PS/PDF/PNG |_. To TeX |_. To PSTeX/PDFTeX |
+|<. "AutoLaTeX":http://www.ctan.org/pkg/autolatex |=. Perl |=. 2013 |=. pdflatex, bibtex, makeindex |=. X |=. X |=. X |=. asta, dia, dot, fig, gxl, odg, plot, svg, xmi |=. c/c++, java, matlab, ml, perl, python, ruby, sql |=. fig, plot |=. X |=. X |
+|<. "go-make":http://www.ctan.org/pkg/go-make |=. Perl |=. 1993 |=. latex, dvips, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
+|<. "latex-make":http://www.ctan.org/pkg/latex-make |=. Makefile |=. 2003 |=. latex, pdflatex, dvips, ps2pdf, bibtex, makeindex |=. X |=.  |=. X |=. fig |=.  |=.  |=.  |=.  |
+|<. "latexmk":http://www.ctan.org/pkg/latexmk/ |=. Perl |=. 2012 |=. latex, dvips, dvipdf, pdflatex, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
+|<. "latexn":http://www.ctan.org/pkg/latexn |=. csh |=. 1997 |=. dvi |=. latex, bibtex, makeindex |=.  |=.  |=.  |=.  |=.  |=.  |=.  |
+|<. "make-latex":http://www.ctan.org/pkg/make-latex |=. Makefile |=. 1993 |=. latex, dvips, bibtex |=. X |=. X |=. X |=. fig, plot |=.  |=. fig |=.  |=.  |
+|<. "mk":http://www.ctan.org/pkg/mk |=. Ruby |=. 2012 |=. latex, xelatex, pdflatex, texi2dvi |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
+|<. "rake2latex":http://www.ctan.org/pkg/rake4latex |=. Ruby |=. 2001 |=. pdflatex, xelatex, lualatex, bibtex, makeindex |=. X |=. X |=.  |=.  |=.  |=.  |=.  |=.  |
+|<. "ShLaTeX":http://www.ctan.org/pkg/shlatex |=. Bash/C |=. 2003 |=. latex, pdflatex, dvips, ps2pdf, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
+|<. "texi2dvi":http://www.ctan.org/pkg/rake4latex |=. Sh |=. 2013 |=. latex, dvips, dvipdf, pdflatex, bibtex, makeindex |=. X |=. X |=.  |=.  |=.  |=.  |=.  |=.  |
+
+
+The columns are:
+* _Maker:_ is the name of the TeX maker;
+* _Type:_ is the language of implementation;
+* _Date:_ is the date of the last update on CTAN;
+* _Supported Tools:_ are the tools that are used/invoked to produce the output;
+* _Detect Changes:_ indicates if the TeX maker is able to detect changes in source files, and avoid to re-compile when the files have not changed. Three types of files are considered:
+** TeX files (@.tex@),
+** BibTeX files (@.bib@), and
+** source images that are included in the document (@.png@, @.jpg@, @.pdf@, @.ps@, @.eps@...);
+* _Automatic File Conversions:_ indicates if the TeX maker is able to produce a picture that could be included in a TeX document (usually: PS, PDF or picture formats) from a source format that could not be directly include in the TeX document. The formats of these source pictures are specified. Three output formats are detailled:
+** PS, PDF or png: the tool is able to convert a source file to one of these three formats,
+** TeX: the tool is able to create a TeX file from the source file,
+** PSTeX/PDFTeX: the tools is able to produce a PS or a PDF file with embedded TeX macros.
+* _Export to Elsevier:_ Elsevier is a scientific publisher who permits to upload TeX white-papers for publication. After uploading the source files, the Elsevier website is running TeX on it, and give a compilation feedback. To avoid to much problems during this online compilation, I recommend:
+** to use only one TeX file,
+** to have all the included figures in the same directory as as the TeX file, and
+** to replace the references to BibTeX files by inlined bib items inside the main TeX file.
+*_ This column indicates if the tools is able to create a version of the document that is fitting these recommendations.
+* _GUI:_ indicates if a graphical user interface is provided.
+
+
