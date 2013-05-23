@@ -30,11 +30,10 @@ The columns are:
 ** PS, PDF or png: the tool is able to convert a source file to one of these three formats,
 ** TeX: the tool is able to create a TeX file from the source file,
 ** PSTeX/PDFTeX: the tools is able to produce a PS or a PDF file with embedded TeX macros.
-* _Export to Elsevier:_ Elsevier is a scientific publisher who permits to upload TeX white-papers for publication. After uploading the source files, the Elsevier website is running TeX on it, and give a compilation feedback. To avoid to much problems during this online compilation, I recommend:
+* _Export to Elsevier:_ Elsevier is a scientific publisher who permits to upload TeX white-papers for publication. After uploading the source files, the Elsevier website is running TeX on it, and give a compilation feedback. This column indicates if the tools is able to create a version of the document that is fitting the recommendations:
 ** to use only one TeX file,
 ** to have all the included figures in the same directory as as the TeX file, and
 ** to replace the references to BibTeX files by inlined bib items inside the main TeX file.
-*_ This column indicates if the tools is able to create a version of the document that is fitting these recommendations.
 * _GUI:_ indicates if a graphical user interface is provided.
 
 
