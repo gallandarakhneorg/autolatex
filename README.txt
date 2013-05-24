@@ -239,7 +239,11 @@ OPTIONS
         the value must ve overridden. If translator is not given then
         "generation" is the default prefix.
 
-    -v  Each time this option was specified, AutoLaTeX is more verbose.
+    -v  Each time this option was specified, AutoLaTeX is more verbose. Note
+        that 1) if you put 5 times the -v option on the command line,
+        AutoLaTeX will consider the Perl warnings as errors; 2) if you put 6
+        times the -v option on the command line, AutoLaTeX is stopping
+        immediately, and is displaying the current configuration in memory.
 
     --version
         Display the version of AutoLaTeX.

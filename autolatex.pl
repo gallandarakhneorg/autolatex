@@ -24,6 +24,7 @@ use strict ;
 
 use File::Basename ;
 use File::Spec ;
+use Carp;
 
 #------------------------------------------------------
 #
@@ -560,10 +561,14 @@ sub al_run_makeflat {
 #------------------------------------------------------
 
 # script parameters
-%configuration = mainProgram();
+%configuration = mainProgram(); # Exit on error
 
 if (getDebugLevel()>=6) {
 	exitDbg(\%configuration);
+}
+elsif (getDebugLevel()>=5) {
+	# Force to fail on Perl warnings
+	$SIG{__WARN__} = sub { confess(@_); };
 }
 
 # Run the action of the configuration file generation
