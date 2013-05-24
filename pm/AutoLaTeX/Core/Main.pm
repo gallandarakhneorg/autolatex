@@ -46,6 +46,7 @@ use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::OS;
 use AutoLaTeX::Core::Locale;
+use AutoLaTeX::TeX::DocumentDetector;
 
 #------------------------------------------------------
 #
@@ -217,10 +218,25 @@ sub detectMainTeXFile(\%) {
 			File::Spec->catfile(
 				$configuration->{'__private__'}{'output.directory'},
 				$basename);
-		locDbg(_T("Detecting TeX file '{}'"), $basename);
+		locDbg(_T("Selecting TeX file '{}'"), $basename);
 	}
 	else {
 		locDbg(_T("Detecting several TeX files: {}"),join(' ',@texfiles));
+		# Issue #9: try to detect the file with the \documentclass
+		my @documents = ();
+		foreach my $file (@texfiles) {
+			if (isLaTeXDocument($file)) {
+				push @documents, $file;
+			}
+		}
+		if (@documents==1) {
+			my $basename = pop @documents;
+			$configuration->{'__private__'}{'input.latex file'} = 
+				File::Spec->catfile(
+					$configuration->{'__private__'}{'output.directory'},
+					$basename);
+			locDbg(_T("Selecting TeX file '{}'"), $basename);
+		}
 	}
 }
 

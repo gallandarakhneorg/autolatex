@@ -530,7 +530,15 @@ sub parse($;$) : method {
 	# Search the first separator
 	my ($eaten,$sep,$tex,$crcount) = $self->eat_to_separator($text) ;
 
+	$self->{'stopParsing'} = 0;
+	$self->{'MATH_MODE'} = 0;
+
 	while ($sep) {
+
+		# Stop parsing
+		if ($self->{'stopParsing'}) {
+			return undef;
+		}
 
 		$lineno += $crcount;
 
@@ -652,6 +660,18 @@ sub putBack($) : method {
 	if ($text) {
 		$self->{'put_back_text'} = $text;
 	}
+}
+
+=pod
+
+=item * stop()
+
+Stop the parsing. The function parse() will stop its current loop.
+
+=cut
+sub stop() : method {
+	my $self = shift;
+	$self->{'stopParsing'} = 1;
 }
 
 =pod
