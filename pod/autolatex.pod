@@ -182,8 +182,10 @@ The option --exclude permits to exclude a translator; and the option
 
 =item B<--imgdirectory=S<directory>>
 
-Force AutoLaTeX to restrict te auto-generation of the pictures which
-are located in the given directory (or in one of its children).
+Specify a directy inside which AutoLaTeX will find the pictures
+which must be processed by the translators. Each time this
+option is put on the command line, a directory is added inside
+the list of the directories to explore.
 
 =item B<--include=S<name>>
 
@@ -863,6 +865,8 @@ The recognized directives are:
 =item I<main file> : specifies the basename of the main TeX file to compile. This option is available only inside the project's configuration file.
 
 =item I<generate images> : indicates if AutoLaTeX automatically generates the figures. Accepted values: C<yes> or C<no>
+
+=item I<image directory> : Specify the directories inside which AutoLaTeX will find the pictures which must be processed by the translators. Each time this option is put on the command line, a directory is added inside the list of the directories to explore. The different paths are separated by the path-separator character (C<':'> on Unix, C<';'> on Windows).
 
 =item I<generation type> : indicates the type of generation. Accepted values:
 

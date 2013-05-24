@@ -106,28 +106,34 @@ sub al_getimages() {
 	if (!$autolatexData{'imageDatabaseReady'} && exists $configuration{'generation.image directory'}) {
 		local* DIR;
 		locDbg(_T("Detecting images inside '{}'"), $configuration{'generation.image directory'});
-		my @dirs = ( $configuration{'generation.image directory'} );
-		while (@dirs) {
-			my $dir = shift @dirs;
-			if (opendir(*DIR, "$dir")) {
-				while (my $fn = readdir(*DIR)) {
-					if ($fn ne File::Spec->curdir() && $fn ne File::Spec->updir()) {
-						my $ffn = File::Spec->catfile("$dir", "$fn");
-						if (-d "$ffn") {
-							push @dirs, "$ffn";
-						}
-						elsif ( $fn =~ /(\.[^.]+)$/) {
-							my $ext = lc("$1");
-							if (exists $autolatexData{'imageDatabase'}{"$ext"}) {
-								if (!$autolatexData{'imageDatabase'}{"$ext"}{'files'}) {
-									$autolatexData{'imageDatabase'}{"$ext"}{'files'} = [];
+		my $rawdirs = $configuration{'generation.image directory'};
+		$rawdirs =~ s/^\s+//s;
+		$rawdirs =~ s/\s+$//s;
+		if ($rawdirs) {
+			my $pattern = "[\Q".getPathListSeparator()."\E]";
+			my @dirs = split( /$pattern/is, $rawdirs);
+			while (@dirs) {
+				my $dir = shift @dirs;
+				if (opendir(*DIR, "$dir")) {
+					while (my $fn = readdir(*DIR)) {
+						if ($fn ne File::Spec->curdir() && $fn ne File::Spec->updir()) {
+							my $ffn = File::Spec->catfile("$dir", "$fn");
+							if (-d "$ffn") {
+								push @dirs, "$ffn";
+							}
+							elsif ( $fn =~ /(\.[^.]+)$/) {
+								my $ext = lc("$1");
+								if (exists $autolatexData{'imageDatabase'}{"$ext"}) {
+									if (!$autolatexData{'imageDatabase'}{"$ext"}{'files'}) {
+										$autolatexData{'imageDatabase'}{"$ext"}{'files'} = [];
+									}
+									push @{$autolatexData{'imageDatabase'}{"$ext"}{'files'}}, "$ffn";
 								}
-								push @{$autolatexData{'imageDatabase'}{"$ext"}{'files'}}, "$ffn";
 							}
 						}
 					}
+					closedir(*DIR);
 				}
-				closedir(*DIR);
 			}
 		}
 		$autolatexData{'imageDatabaseReady'} = 1;

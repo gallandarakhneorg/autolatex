@@ -85,8 +85,14 @@ my %CONFIGURATION_COMMENTS = (
 	# GENERATION
 	'generation.bibtex'			=> _T(	"Indicates if bibtex should be run ('yes' or 'no')."),
 	'generation.generate images'		=> _T(	"Does the figures must be automatically generated ('yes' or 'no')?"),
-	'generation.image directory'		=> _T(	"If specified, contains the directory where to search ".
-							"for the images to automatically generate."),
+	'generation.image directory'		=> _T(	"Specify the directories inside which AutoLaTeX ".
+							"will find the pictures which must be processed ".
+							"by the translators. Each time this option is ".
+							"put on the command line, a directory is added ".
+							"inside the list of the directories to explore. ".
+							"The different paths are separated by the ".
+							"path-separator character (':' on Unix, ';' on ".
+							"Windows)"),
 	'generation.main file'			=> _T(	"Main filename (this option is only available in project's ".
 							"configuration files)."),
 	'generation.generation type'		=> _T(	"Type of generation.\n   pdf   : use pdflatex to create a ".
