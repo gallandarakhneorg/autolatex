@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-21 22:40+0200\n"
+"POT-Creation-Date: 2013-05-24 16:57+0200\n"
 "PO-Revision-Date: 2013-05-21 22:26+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -17,31 +17,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: pm/AutoLaTeX/GUI/AbstractGeneralPanel.pm:85
+#: pm/AutoLaTeX/GUI/AbstractGeneralPanel.pm:86
 msgid "Saving configuration information into {}"
 msgstr "Enregistrement des informations de configuration dans {}"
 
-#: pm/AutoLaTeX/GUI/AbstractGeneralPanel.pm:113
-#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:132
+#: pm/AutoLaTeX/GUI/AbstractGeneralPanel.pm:114
+#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:133
 msgid "No change detected"
 msgstr "Pas de changement détecté"
 
-#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:149
+#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:150
 msgid "Saving system configuration about translators"
 msgstr "Enregistrement de la configuration système pour les convertisseurs"
 
-#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:159
+#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:160
 msgid "Saving user configuration about translators"
 msgstr "Enregistrement de la configuration utilisateur pour les convertisseurs"
 
-#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:169
+#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:170
 msgid "Saving project configuration about translators"
 msgstr "Enregistrement de la configuration document pour les convertisseurs"
 
-#: pm/AutoLaTeX/GUI/AbstractToolPanel.pm:85
+#: pm/AutoLaTeX/GUI/AbstractToolPanel.pm:86
 msgid "Saving tool configuration"
 msgstr "Enregistrement de la configuration des outils"
 
-#: pm/AutoLaTeX/GUI/AbstractGUI.pm:75
+#: pm/AutoLaTeX/GUI/AbstractGUI.pm:77
 msgid "Command name not specified"
 msgstr "Nom en ligne de commande non spécifié"

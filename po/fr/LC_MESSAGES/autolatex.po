@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-21 22:40+0200\n"
+"POT-Creation-Date: 2013-05-24 17:06+0200\n"
 "PO-Revision-Date: 2013-05-21 21:37+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -119,13 +119,19 @@ msgstr "Est-ce que les figures sont automatiquement générées ('yes' or 'no') 
 
 #: pm/AutoLaTeX/Core/Config.pm:88
 msgid ""
-"If specified, contains the directory where to search for the images to "
-"automatically generate."
+"Specify the directories inside which AutoLaTeX will find the pictures which "
+"must be processed by the translators. Each time this option is put on the "
+"command line, a directory is added inside the list of the directories to "
+"explore. The different paths are separated by the path-separator character "
+"(':' on Unix, ';' on Windows)"
 msgstr ""
-"Si spécifié, contient le nom du répertoire où rechercher les images à "
-"générer automatiquement."
+"Répertoires dans lesquels AutoLaTeX recherche les images à transformer en "
+"PDF ou en PNG. A chaque fois que cette option apparait sur la ligne de "
+"commande, le répertoire spécifié est ajouté dans la liste de recherche. Les "
+"différents répertoires spécifiés sont alors séparés par le caractère "
+"séparateur standard (':' sur Unix, ';' sur Windows)"
 
-#: pm/AutoLaTeX/Core/Config.pm:90
+#: pm/AutoLaTeX/Core/Config.pm:96
 msgid ""
 "Main filename (this option is only available in project's configuration "
 "files)."
@@ -133,7 +139,7 @@ msgstr ""
 "Fichier principal (cette option est supportée uniquement dans les fichiers "
 "de configuration de documents)."
 
-#: pm/AutoLaTeX/Core/Config.pm:92
+#: pm/AutoLaTeX/Core/Config.pm:98
 msgid ""
 "Type of generation.\n"
 "   pdf   : use pdflatex to create a PDF document."
@@ -141,7 +147,7 @@ msgstr ""
 "Type de génération.\n"
 "   pdf   : utilise pdflatex pour créer le document PDF."
 
-#: pm/AutoLaTeX/Core/Config.pm:94
+#: pm/AutoLaTeX/Core/Config.pm:100
 msgid ""
 "Specify the style that must be used by makeindex.\n"
 "Valid values are:\n"
@@ -167,7 +173,7 @@ msgstr ""
 "   @none           AutoLaTeX ne passe aucun fichier a.ist à makeindex;\n"
 "   <empty>         AutoLaTeX ne passe aucun fichier a.ist à makeindex."
 
-#: pm/AutoLaTeX/Core/Config.pm:105
+#: pm/AutoLaTeX/Core/Config.pm:111
 msgid ""
 "Defines the paths from which the translators could be loaded. This is a list "
 "of paths separated by the path separator character used by your operating "
@@ -177,7 +183,7 @@ msgstr ""
 "trouvés. C'est une liste de chemins séparés par le caractère séparateur de "
 "votre système d'exploitation : ':' sous Unix ou ';' sous Windows par exemple."
 
-#: pm/AutoLaTeX/Core/Config.pm:110
+#: pm/AutoLaTeX/Core/Config.pm:116
 msgid ""
 "Tool to launch when a SCM commit action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
@@ -185,7 +191,7 @@ msgstr ""
 "Outils à lancer lors d'une action d'enregistrement dans un SCM. Les outils "
 "SCM connus sont : CVS, SVN, GIT."
 
-#: pm/AutoLaTeX/Core/Config.pm:112
+#: pm/AutoLaTeX/Core/Config.pm:118
 msgid ""
 "Tool to launch when a SCM update action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
@@ -193,7 +199,7 @@ msgstr ""
 "Outils à lancer lors d'une action de raffaichissement depuis un SCM. Les "
 "outils SCM connus sont : CVS, SVN, GIT."
 
-#: pm/AutoLaTeX/Core/Config.pm:115
+#: pm/AutoLaTeX/Core/Config.pm:121
 msgid ""
 "Indicates if a viewer should be launch after the compilation. Valid values "
 "are 'yes' and 'no'."
@@ -201,39 +207,39 @@ msgstr ""
 "Indique si un visualisateur doit être lancé après la génération du "
 "document.  Valeurs autorisées : 'yes' et 'no'."
 
-#: pm/AutoLaTeX/Core/Config.pm:117
+#: pm/AutoLaTeX/Core/Config.pm:123
 msgid "Specify, if not commented,the command line of the viewer."
 msgstr "Spécifie, si non commenté, la ligne de commande du visualisateur."
 
-#: pm/AutoLaTeX/Core/Config.pm:452
+#: pm/AutoLaTeX/Core/Config.pm:458
 msgid "Opening configuration file {}"
 msgstr "Ouverture du fichier de configuration {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:464
+#: pm/AutoLaTeX/Core/Config.pm:470
 msgid "Succeed on reading"
 msgstr "Succès de la lecture"
 
-#: pm/AutoLaTeX/Core/Config.pm:467
+#: pm/AutoLaTeX/Core/Config.pm:473
 msgid "Failed to read {}: {}"
 msgstr "Echec de lecture de {}: {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:528
+#: pm/AutoLaTeX/Core/Config.pm:534
 msgid "Writing configuration file {}"
 msgstr "Enregistrement du fichier de configuration {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:539
+#: pm/AutoLaTeX/Core/Config.pm:545
 msgid "Adding configuration comments"
 msgstr "Ajout des commentaires dans la configuration"
 
-#: pm/AutoLaTeX/Core/Config.pm:553
+#: pm/AutoLaTeX/Core/Config.pm:559
 msgid "Configuration of the translator"
 msgstr "Configuration du convertisseur"
 
-#: pm/AutoLaTeX/Core/Config.pm:567
+#: pm/AutoLaTeX/Core/Config.pm:573
 msgid "Saving configuration comments"
 msgstr "Enregistrement des commentaires dans la configuration"
 
-#: pm/AutoLaTeX/Core/Config.pm:625
+#: pm/AutoLaTeX/Core/Config.pm:631
 msgid ""
 "AutoLaTeX has detecting an old fashion syntax for the configuration file {}\n"
 "Please regenerate this file with the command line option --fixconfig."
@@ -282,13 +288,24 @@ msgid "Detecting TeX file from project's configuration: '{}'"
 msgstr ""
 "Détection du fichier TeX à partir de la configuration du document: '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:294
-msgid "No LaTeX file found nor specified for the directory '{}'"
-msgstr "Pas de fichier LaTeX trouvé ou spécifié pour le répertoire '{}'"
-
-#: pm/AutoLaTeX/Core/Main.pm:298
+#: pm/AutoLaTeX/Core/Main.pm:295
 msgid "Using TeX file '{}'"
 msgstr "Uitilisation du fichier TeX '{}'"
+
+#: pm/AutoLaTeX/Core/Main.pm:298
+#, fuzzy
+msgid ""
+"No LaTeX file found nor specified for the directory '{}'.\n"
+" You must specify one on the command line option -f, or set the the variable "
+"'generation.main file' in your configuration file, rename one of your files "
+"'Main.tex'."
+msgstr ""
+"Pas de fichier LaTeX trouvé dans le répertoire '{}', ni spécifié dans les "
+"fichiers de configuration.\n"
+" Vous devez spécifier un fichier LaTeX a traiter soit avec l'option de la "
+"ligne de commande -f, soit en donnant une valeur à la variable 'generation."
+"main file' dans l'un de vos fichiers de configuration, soit renommer l'un "
+"de vos fichiers TeX avec le nom 'Main.tex'."
 
 #: pm/AutoLaTeX/Core/Main.pm:303
 msgid "Applying command line options"

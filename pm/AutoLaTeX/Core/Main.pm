@@ -241,9 +241,9 @@ sub mainProgram(;$) {
 	#             displayed when a non-generation action was requested
 	#             on the command line
 	if (($exitOnError)&&
-	    ((exists $configuration{'__private__'}{'action.fix config file'})||
-	     (exists $configuration{'__private__'}{'action.create config file'})||
-	     (exists $configuration{'__private__'}{'action.create ist file'}))) {
+	    (($configuration{'__private__'}{'action.fix config file'})||
+	     ($configuration{'__private__'}{'action.create config file'})||
+	     ($configuration{'__private__'}{'action.create ist file'}))) {
 		$exitOnError = 0;
 	}
 
@@ -273,6 +273,10 @@ sub mainProgram(;$) {
 		}
 	}
 
+	if (!$configuration{'__private__'}{'input.latex file'}) {
+		$configuration{'__private__'}{'input.latex file'} = 'Main.tex';
+	}
+
 	# final project main file management
 	if ($configuration{'__private__'}{'input.latex file'}) {
 		# check its value
@@ -290,12 +294,12 @@ sub mainProgram(;$) {
 			printErr($configuration{'__private__'}{'input.latex file'}.":", "$!");
 		}
 	}
-	elsif ($exitOnError) {
-		printErr(locGet(_T("No LaTeX file found nor specified for the directory '{}'"), $configuration{'__private__'}{'output.directory'}));
-	}
 
 	if ($configuration{'__private__'}{'input.latex file'}) {
 		locDbg(_T("Using TeX file '{}'"),$configuration{'__private__'}{'input.latex file'});
+	}
+	elsif ($exitOnError) {
+		printErr(locGet(_T("No LaTeX file found nor specified for the directory '{}'.\n You must specify one on the command line option -f, or set the the variable 'generation.main file' in your configuration file, rename one of your files 'Main.tex'."), $configuration{'__private__'}{'output.directory'}));
 	}
 
 	# now apply the command line options into the configuration

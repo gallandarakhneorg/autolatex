@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-22 14:24+0200\n"
+"POT-Creation-Date: 2013-05-24 17:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,23 +113,26 @@ msgstr ""
 
 #: pm/AutoLaTeX/Core/Config.pm:88
 msgid ""
-"If specified, contains the directory where to search for the images to "
-"automatically generate."
+"Specify the directories inside which AutoLaTeX will find the pictures which "
+"must be processed by the translators. Each time this option is put on the "
+"command line, a directory is added inside the list of the directories to "
+"explore. The different paths are separated by the path-separator character "
+"(':' on Unix, ';' on Windows)"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:90
+#: pm/AutoLaTeX/Core/Config.pm:96
 msgid ""
 "Main filename (this option is only available in project's configuration "
 "files)."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:92
+#: pm/AutoLaTeX/Core/Config.pm:98
 msgid ""
 "Type of generation.\n"
 "   pdf   : use pdflatex to create a PDF document."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:94
+#: pm/AutoLaTeX/Core/Config.pm:100
 msgid ""
 "Specify the style that must be used by makeindex.\n"
 "Valid values are:\n"
@@ -145,64 +148,64 @@ msgid ""
 "makeindex."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:105
+#: pm/AutoLaTeX/Core/Config.pm:111
 msgid ""
 "Defines the paths from which the translators could be loaded. This is a list "
 "of paths separated by the path separator character used by your operating "
 "system: ':' on Unix platforms or ';' on Windows platforms for example."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:110
+#: pm/AutoLaTeX/Core/Config.pm:116
 msgid ""
 "Tool to launch when a SCM commit action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:112
+#: pm/AutoLaTeX/Core/Config.pm:118
 msgid ""
 "Tool to launch when a SCM update action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:115
+#: pm/AutoLaTeX/Core/Config.pm:121
 msgid ""
 "Indicates if a viewer should be launch after the compilation. Valid values "
 "are 'yes' and 'no'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:117
+#: pm/AutoLaTeX/Core/Config.pm:123
 msgid "Specify, if not commented,the command line of the viewer."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:452
+#: pm/AutoLaTeX/Core/Config.pm:458
 msgid "Opening configuration file {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:464
+#: pm/AutoLaTeX/Core/Config.pm:470
 msgid "Succeed on reading"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:467
+#: pm/AutoLaTeX/Core/Config.pm:473
 msgid "Failed to read {}: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:528
+#: pm/AutoLaTeX/Core/Config.pm:534
 msgid "Writing configuration file {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:539
+#: pm/AutoLaTeX/Core/Config.pm:545
 msgid "Adding configuration comments"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:553
+#: pm/AutoLaTeX/Core/Config.pm:559
 msgid "Configuration of the translator"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:567
+#: pm/AutoLaTeX/Core/Config.pm:573
 msgid "Saving configuration comments"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:625
+#: pm/AutoLaTeX/Core/Config.pm:631
 msgid ""
 "AutoLaTeX has detecting an old fashion syntax for the configuration file {}\n"
 "Please regenerate this file with the command line option --fixconfig."
@@ -242,12 +245,16 @@ msgstr ""
 msgid "Detecting TeX file from project's configuration: '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:294
-msgid "No LaTeX file found nor specified for the directory '{}'"
+#: pm/AutoLaTeX/Core/Main.pm:295
+msgid "Using TeX file '{}'"
 msgstr ""
 
 #: pm/AutoLaTeX/Core/Main.pm:298
-msgid "Using TeX file '{}'"
+msgid ""
+"No LaTeX file found nor specified for the directory '{}'.\n"
+" You must specify one on the command line option -f, or set the the variable "
+"'generation.main file' in your configuration file, rename one of your files "
+"'Main.tex'."
 msgstr ""
 
 #: pm/AutoLaTeX/Core/Main.pm:303
