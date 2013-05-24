@@ -180,8 +180,10 @@ OPTIONS
         --include permits to exclude a translator.
 
     --imgdirectory=directory
-        Force AutoLaTeX to restrict te auto-generation of the pictures which
-        are located in the given directory (or in one of its children).
+        Specify a directy inside which AutoLaTeX will find the pictures
+        which must be processed by the translators. Each time this option is
+        put on the command line, a directory is added inside the list of the
+        directories to explore.
 
     --include=name
         Force AutoLaTeX to load the translator called name. See bellow for
@@ -590,6 +592,11 @@ CONFIGURATION FILE
     This option is available only inside the project's configuration file.
     *generate images* : indicates if AutoLaTeX automatically generates the
     figures. Accepted values: "yes" or "no"
+    *image directory* : Specify the directories inside which AutoLaTeX will
+    find the pictures which must be processed by the translators. Each time
+    this option is put on the command line, a directory is added inside the
+    list of the directories to explore. The different paths are separated by
+    the path-separator character (':' on Unix, ';' on Windows).
     *generation type* : indicates the type of generation. Accepted values:
 
         "pdf" - use pdflatex

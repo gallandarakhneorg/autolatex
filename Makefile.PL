@@ -8,6 +8,7 @@ use File::Copy;
 use Compress::Zlib;
 use Pod::Text;
 use Pod::Man;
+use Pod::Html;
 
 # GENERAL INSTALLATION INFORMATIONS
 my $ALLOW_SYMBOLIC_LINK;
@@ -294,6 +295,7 @@ sub DO_compile(\%) {
 			my $loc = $1 || '';
 			my $targetFile = "README";
 			$targetFile .= '_'.uc($loc) if ($loc);
+			$targetFile .= '.txt';
 			print "Generating $targetFile...\n";
 			$text_parser->parse_from_file(
 				File::Spec->catfile("$podDirectory","$file"),
@@ -417,8 +419,8 @@ sub DO_install(\%) {
 #------------------------------------------------------------------------------------------
 sub DO_clean(\%) {
 	print "DO AUTOLATEX CLEANING...\n";
-	#rm(File::Spec->catfile($_[0]->{'directory'},'README'));
-	rm(File::Spec->catfile($_[0]->{'directory'},'README_FR'));
+	#rm(File::Spec->catfile($_[0]->{'directory'},'README.txt'));
+	rm(File::Spec->catfile($_[0]->{'directory'},'README_FR.txt'));
 	rm(File::Spec->catfile($_[0]->{'directory'},'pod','autolatex.1.gz'));
 
 	local *DIR;
