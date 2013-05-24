@@ -410,7 +410,7 @@ Replies the data associated to the translator at the specified index
 =cut
 sub getTranslatorDataAt($) : method {
 	my $self = shift;
-	my $row = $self->attr('TRANSLATOR_LIST')->{data}[$_[0]];
+	my $row = $self->attr('TRANSLATOR_LIST')->{'data'}[$_[0]];
 	$self->attr('TRANSLATORS',$row->[3]);
 }
 
@@ -476,13 +476,21 @@ sub notifyListeners() : method {
 
 sub onTranslatorSelected(@) : method {
 	my $self = shift;
-	return;
-	my @sel = $self->attr('TRANSLATOR_LIST')->get_selected_indices ();
-	my $sel = pop @sel;
-	my $data = getTranslatorDataAt($sel);
-
-	$self->attr('BUTTONS','editTranslator')->set_sensitive (TRUE);
-	$self->attr('BUTTONS','deleteTranslator')->set_sensitive ($data->{'level'} ne 'system');
+	my $canWrite = 0;
+	#my @sel = $self->attr('TRANSLATOR_LIST')->get_selected_indices ();
+	#if (@sel) {
+	#	my $sel = pop @sel;
+	#	if ($sel>=0) {
+	#		my $data = $self->getTranslatorDataAt($sel);
+	#		if ($data) {
+	#			$canWrite = ((($data->{'level'} eq 'system')&&($self->isAdminUser()))||
+	#					    ($data->{'level'} eq 'user')||
+	#					    (($data->{'level'} eq 'project')&&($self->hasProject())));
+	#		}
+	#	}
+	#}
+	$self->attr('BUTTONS','editTranslator')->set_sensitive ($canWrite);
+	$self->attr('BUTTONS','deleteTranslator')->set_sensitive ($canWrite);
 }
 
 sub onTranslatorClick(@) : method {
@@ -517,6 +525,26 @@ sub onTranslatorClick(@) : method {
 			$self->notifyListeners();
 		}
 	}
+}
+
+sub onTranslatorAdded(@) : method {
+	my $self = shift;
+}
+
+sub onTranslatorDeleted(@) : method {
+	my $self = shift;
+	#
+	#my @sel = $self->attr('TRANSLATOR_LIST')->get_selected_indices ();
+	#if (@sel) {
+	#	foreach my $sel (@sel) {
+	#		my $data = $self->getTranslatorDataAt($sel);
+	#		if ($data) {
+	#			my $canWrite = ((($data->{'level'} eq 'system')&&($self->isAdminUser()))||
+	#					    ($data->{'level'} eq 'user')||
+	#					    (($data->{'level'} eq 'project')&&($self->hasProject())));
+	#		}
+	#	}
+	#}
 }
 
 1;

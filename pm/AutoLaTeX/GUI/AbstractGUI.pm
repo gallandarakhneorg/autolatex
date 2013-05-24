@@ -44,6 +44,8 @@ use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Exporter;
 
+use AutoLaTeX::Core::Locale;
+
 #------------------------------------------------------
 #
 # Global vars

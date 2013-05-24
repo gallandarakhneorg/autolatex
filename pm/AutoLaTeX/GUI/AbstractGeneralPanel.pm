@@ -45,6 +45,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Exporter;
 
 use AutoLaTeX::Core::Util;
+use AutoLaTeX::Core::Locale;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::GUI::WidgetUtil;
 
