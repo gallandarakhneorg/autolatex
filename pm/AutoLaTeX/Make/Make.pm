@@ -94,7 +94,7 @@ my %COMMAND_DEFINITIONS = (
 	},
 	'xelatex' => {
 		'cmd' => 'xelatex',
-		'flags' => ['-interaction', 'batchmode', '--no-pdf'],
+		'flags' => ['-interaction', 'batchmode'],
 		'to_dvi' => ['--no-pdf'],
 		'to_ps' => undef,
 		'to_pdf' => [],
@@ -160,15 +160,17 @@ sub new(\%) : method {
 			'bibtex_cmd' => [],
 			'makeindex_cmd' => [],
 			'dvi2ps_cmd' => [],
-			'ps2pdf_cmd' => [],
 		};
 	}
 	bless( $self, $class );
 
+	#
 	# Build the different commands according to the current configuration
+	#
 	$self->{'type'} = $_[0]->{'generation.generation type'} || 'pdf';
 	my $compiler = $_[0]->{'generation.tex compiler'} || 'pdflatex';
 
+	# LaTeX
 	if ($_[0]->{'generation.latex_cmd'}) {
 		push @{$self->{'latex_cmd'}}, $_[0]->{'generation.latex_cmd'};
 	}
@@ -192,6 +194,51 @@ sub new(\%) : method {
 	if ($_[0]->{'generation.latex_flags'}) {
 		my @params = split(/\s+/, ($_[0]->{'generation.latex_flags'}));
 		push @{$self->{'latex_flags'}}, @params;
+	}
+
+	# BibTeX
+	if ($_[0]->{'generation.bibtex_cmd'}) {
+		push @{$self->{'bibtex_cmd'}}, $_[0]->{'generation.bibtex_cmd'};
+	}
+	else {
+		my $def = $COMMAND_DEFINITIONS{'bibtex'};
+		confess("No command definition for 'bibtex'") unless ($def);
+		push @{$self->{'bibtex_cmd'}}, $def->{'cmd'}, @{$def->{'flags'}};
+	}
+
+	if ($_[0]->{'generation.bibtex_flags'}) {
+		my @params = split(/\s+/, ($_[0]->{'generation.bibtex_flags'}));
+		push @{$self->{'bibtex_flags'}}, @params;
+	}
+
+	# MakeIndex
+	if ($_[0]->{'generation.makeindex_cmd'}) {
+		push @{$self->{'makeindex_cmd'}}, $_[0]->{'generation.makeindex_cmd'};
+	}
+	else {
+		my $def = $COMMAND_DEFINITIONS{'makeindex'};
+		confess("No command definition for 'makeindex'") unless ($def);
+		push @{$self->{'makeindex_cmd'}}, $def->{'cmd'}, @{$def->{'flags'}};
+	}
+
+	if ($_[0]->{'generation.makeindex_flags'}) {
+		my @params = split(/\s+/, ($_[0]->{'generation.makeindex_flags'}));
+		push @{$self->{'makeindex_flags'}}, @params;
+	}
+
+	# dvi2ps
+	if ($_[0]->{'generation.dvi2ps_cmd'}) {
+		push @{$self->{'dvi2ps_cmd'}}, $_[0]->{'generation.dvi2ps_cmd'};
+	}
+	else {
+		my $def = $COMMAND_DEFINITIONS{'dvi2ps'};
+		confess("No command definition for 'dvi2ps'") unless ($def);
+		push @{$self->{'dvi2ps_cmd'}}, $def->{'cmd'}, @{$def->{'flags'}};
+	}
+
+	if ($_[0]->{'generation.dvi2ps_flags'}) {
+		my @params = split(/\s+/, ($_[0]->{'generation.dvi2ps_flags'}));
+		push @{$self->{'dvi2ps_flags'}}, @params;
 	}
 
 	return $self;
@@ -370,6 +417,7 @@ sub runLaTeX($;$) : method {
 	my $continueToCompile;
 	do {
 		printDbg(locGet(_T('{}: {}'), 'PDFLATEX', basename($file))); 
+		$continueToCompile = 0;
 		$self->{'warnings'} = {};
 		unlink($logFile);
 		my $exitcode = runCommandSilently(@{$self->{'latex_cmd'}}, $file);
@@ -383,9 +431,8 @@ sub runLaTeX($;$) : method {
 			close(*LOGFILE);
 			exit($exitcode);
 		}
-		else {
+		elsif ($enableLoop) {
 			my $line;
-			$continueToCompile = 0;
 			open(*LOGFILE, "< $logFile") or printErr("$logFile: $!");
 			my $lastline = '';
 			while (!$continueToCompile && ($line = <LOGFILE>)) {
@@ -458,6 +505,22 @@ sub build() : method {
 
 		# Write building stamps
 		$self->_writeBuildStamps($rootFile);
+
+		# Generate the Postscript file when requested
+		if (($self->{'configuration'}{'generation.generation type'}||'pdf') eq 'ps') {
+			my $dirname = dirname($rootFile);
+			my $basename = basename($rootFile, '.pdf', '.ps', '.dvi', '.xdv');
+			my $dviFile = File::Spec->catfile($dirname, $basename.'.dvi');
+			my $dviDate = lastFileChange("$dviFile");
+			if (defined($dviDate)) {
+				my $psFile = File::Spec->catfile($dirname, $basename.'.ps');
+				my $psDate = lastFileChange("$psFile");
+				if (!$psDate || ($dviDate>=$psDate)) {
+					printDbg(locGet(_T('{}: {}'), 'DVI2PS', basename($dviFile))); 
+					runCommandOrFail(@{$self->{'dvi2ps_cmd'}}, $dviFile);
+				}
+			}
+		}
 
 		# Output the last LaTeX warning indicators.
 		if ($self->{'warnings'}{'multiple_definition'}) {
@@ -886,11 +949,7 @@ sub generationType : method {
 	my $self = shift;
 	if (@_) {
 		my $type = $_[0];
-		if ($type eq 'dvi' || $type eq 'ps' || $type eq 'pspdf') {
-			printErr(locGet(_T("The generation type '{}' is not more supported by AutoLaTeX, please use '{}' in place."),
-					$type, 'pdf'));
-		}
-		if ($type ne 'pdf') {
+		if ($type ne 'dvi' && $type ne 'ps' && $type ne 'pdf') {
 			$type = 'pdf';
 		}
 		$self->{'generation_type'} = $type;

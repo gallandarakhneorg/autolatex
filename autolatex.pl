@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -W
 
 # autolatex - autolatex.pl
 # Copyright (C) 1998-13  Stephane Galland <galland@arakhne.org>
@@ -244,7 +244,7 @@ sub al_view() {
 #------------------------------------------------------
 
 sub al_make() {
-	my $make = AutoLaTeX::Make::Make->new(%configuration);
+	my $make = AutoLaTeX::Make::Make->new(\%configuration);
 	$make->enableBibTeX(cfgBoolean($configuration{'generation.bibtex'}));
 	$make->generationType($configuration{'generation.generation type'});
 	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
@@ -390,7 +390,7 @@ sub al_getcleanfiles() {
 				$configuration{'__private__'}{'output.latex basename'}));
 	my @filestoclean = (
 		'.autolatex_stamp', 'autolatex_stamp',
-		"$outputFile.pdf", "$outputFile.dvi", "$outputFile.ps",
+		"$outputFile.pdf", "$outputFile.dvi", "$outputFile.xdvi", "$outputFile.xdv", "$outputFile.ps",
 	);
 	my @filestocleanrec = (
 		'*.aux', '*.log', '*.bbl', '*.blg',
@@ -455,6 +455,7 @@ sub al_run_cleanall {
 	my @f = (@$b, @$d);
 	al_applyCleanRecursively(@e,@f);
 
+	# Remove generated images
 	foreach my $entry (values %{$autolatexData{'imageDatabase'}}) {
 		my $trans = $entry->{'translator'};
 		foreach my $file (@{$entry->{'files'}}) {
@@ -463,7 +464,6 @@ sub al_run_cleanall {
 				$cleanpattern = '';
 				my $definition = $autolatexData{'translators'}{"$trans"}{'transdef'};
 				if ($definition) {
-					my $outputExtension = $definition->{'OUTPUT_EXTENSIONS'}{'value'}[0];
 					my $cleanPatterns = $definition->{'FILES_TO_CLEAN'}{'value'};
 					foreach my $p (@{$cleanPatterns}) {
 						if ($cleanpattern) {
@@ -476,15 +476,22 @@ sub al_run_cleanall {
 			}
 
 			my @inputExtensions = @{$autolatexData{'translators'}{"$trans"}{'transdef'}{'INPUT_EXTENSIONS'}{'value'}};
-			my $outputExtension = $autolatexData{'translators'}{"$trans"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0];
+			my $outputExtension = $autolatexData{'translators'}{"$trans"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
 			my $in = basename($file,@inputExtensions);
 			my $dir = dirname($file);
 			my $out = "$in";
 			my $localpattern = "$cleanpattern";
-			if ($localpattern) {
-				$localpattern .= '|';
+			{
+				my $ain = File::Spec->rel2abs("$file");
+				my $aout = File::Spec->rel2abs(
+						File::Spec->catfile("$dir","$out$outputExtension"));
+				if ("$ain" ne "$aout") {
+					if ($localpattern) {
+						$localpattern .= '|';
+					}
+					$localpattern .= '$out'."\Q$outputExtension\E";
+				}
 			}
-			$localpattern .= '$out'.$outputExtension;
 			$localpattern =~ s/\\?\$in/\Q$in\E/g;
 			$localpattern =~ s/\\?\$out/\Q$out\E/g;
 
