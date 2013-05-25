@@ -74,16 +74,14 @@ sub analyzeCommandLineOptions(\%) {
 
 		# DEPRECATED
 		'createmakefile' => sub {
-					printWarning(locGet(_T('Command line option \'{}\' is deprecated.'), '--createmakefile'));
+					printWarn(locGet(_T('Command line option \'{}\' is deprecated.'), '--createmakefile'));
 				},
 
 		'defaultist' => sub { 
 					$cfg->{'generation.makeindex style'} = '@system';
 				},
 
-		# DEPRECATED
 		'dvi' => sub { 
-				printWarning(locGet(_T('Command line option \'{}\' is deprecated.'), '--dvi'));
 				$cfg->{'generation.generation type'} = 'dvi';
 			},
 
@@ -133,6 +131,15 @@ sub analyzeCommandLineOptions(\%) {
 					}
 				},
 
+		'latex' => 	sub { 
+					$cfg->{'generation.tex compiler'} = 'latex';
+				},
+
+
+		'lualatex' => 	sub { 
+					$cfg->{'generation.tex compiler'} = 'lualatex';
+				},
+
 		'noindex' => 	sub { 
 					delete $cfg->{'generation.makeindex style'};
 				},
@@ -141,24 +148,29 @@ sub analyzeCommandLineOptions(\%) {
 
 		# DEPRECATED
 		'output=s' => sub {
-					printWarning(locGet(_T('Command line option \'{}\' is deprecated.'), '--output'));
+					printWarn(locGet(_T('Command line option \'{}\' is deprecated.'), '--output'));
 				},
 
 		'pdf' => sub { $cfg->{'generation.generation type'} = 'pdf'; },
 
-		# DEPRECATED
+		'pdflatex' => 	sub { 
+					$cfg->{'generation.tex compiler'} = 'pdflatex';
+				},
+
 		'ps' => sub { 
-				printWarning(locGet(_T('Command line option \'{}\' is deprecated.'), '--ps'));
 				$cfg->{'generation.generation type'} = 'ps';
 			},
 
 		# DEPRECATED
 		'pspdf' => sub { 
-					printWarning(locGet(_T('Command line option \'{}\' is deprecated.'), '--pspdf'));
-					$cfg->{'generation.generation type'} = 'pspdf';
+					printWarn(locGet(_T('Command line option \'{}\' is deprecated.'), '--pspdf'));
 			},
 
 		'set=s%'  => sub { $cfg->{'generation.set'}{$_[1]} = $_[2]; },
+
+		'xelatex' => 	sub { 
+					$cfg->{'generation.tex compiler'} = 'xelatex';
+				},
 
 		'v+' => \$debugLevel,
 
@@ -253,6 +265,7 @@ sub mainProgram(;$) {
 
 	# Analyze and apply the command line
 	analyzeCommandLineOptions(%configuration);
+
 	# -- Bug fix: avoid the "No TeX file found" error message to be
 	#             displayed when a non-generation action was requested
 	#             on the command line
@@ -419,6 +432,7 @@ sub mainProgram(;$) {
 			}
 		}
 	}
+
 	return %configuration;
 }
 
