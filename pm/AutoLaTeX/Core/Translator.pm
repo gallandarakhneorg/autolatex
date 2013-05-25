@@ -201,6 +201,7 @@ sub getTranslatorFilesFrom(\%$\%$$$;$) {
 	my $warn = shift;
 	my $onlyincluded = shift;
 	my $level = shift || 'unknown';
+	my $ispdfmode = $configuration->{'generation.generation type'} eq 'pdf';
 	local *DIR;
 	if (-d "$filename") {
 		my @dirs = ( "$filename" );
@@ -221,6 +222,7 @@ sub getTranslatorFilesFrom(\%$\%$$$;$) {
 								$fileSet->{"$scriptname"}{'human-readable'} = makeTranslatorHumanReadable($fileSet->{"$scriptname"});
 								$fileSet->{"$scriptname"}{'file'} = "$fullname";
 								$fileSet->{"$scriptname"}{'level'} = "$level";
+								$fileSet->{"$scriptname"}{'ispdfmode'} = $ispdfmode;
 							}					
 							else {
 								$fileSet->{"$scriptname"} = "$fullname";
@@ -476,7 +478,8 @@ I<Parameters:>
 =back
 
 I<Returns:> a hashtable containing (translator name => { 'file' => translator file,
-'level' => installation level } ) pairs.
+'level' => installation level, 'ispdfmode' => boolean value indicating that
+the pdf mode is one } ) pairs.
 
 =cut
 sub getTranslatorList(\%;$) {
@@ -486,6 +489,8 @@ sub getTranslatorList(\%;$) {
 
 	my $recurse = $_[1];
 	$recurse = 1 unless (defined($recurse));
+
+	my $ispdfmode = $_[0]->{'generation.generation type'} eq 'pdf';
 
 	my %translators = ();
 
@@ -503,6 +508,7 @@ sub getTranslatorList(\%;$) {
 			$translators{"$scriptname"}{'human-readable'} = makeTranslatorHumanReadable($translators{"$scriptname"});
 			$translators{"$scriptname"}{'file'} = "$fullname";
 			$translators{"$scriptname"}{'level'} = 'system';
+			$translators{"$scriptname"}{'ispdfmode'} = $ispdfmode;
 		}
 	}
 	closedir(*DIR);
@@ -549,7 +555,7 @@ sub getTranslatorList(\%;$) {
 
 =pod
 
-=item B<readTranslatorFile($)>
+=item B<readTranslatorFile($$)>
 
 Replies the content of a translator definition file.
 
@@ -559,13 +565,16 @@ I<Parameters:>
 
 =item * C<file> is the name of the file to parse.
 
+=item * C<ispdfmode> indicates of AutoLaTeX is in pdf mode (true) or in eps mode (false).
+
 =back
 
 I<Returns:> a hashtable containing the entries of the definition.
 
 =cut
-sub readTranslatorFile($) {
-	my $file = shift;
+sub readTranslatorFile($$) {
+	my $file = shift || confess('you must pass a filename to readTranslatorFile($$)');
+	my $ispdfmode = shift;
 	my %content = ();
 	local *FILE;
 	open(*FILE, "< $file") or printErr("$file: $!");
@@ -582,28 +591,35 @@ sub readTranslatorFile($) {
 			elsif ($curvar) {
 				$content{"$curvar"}{'value'} .= $line;
 			}
-			else {
-				printErr(locGet(_T("The block with keyword '{}' was not properly started: variable name missed ({}:{})."),
-						$eol, $file, $lineno));
-			}
 		}
 		elsif ($line !~ /^\s*[#;]/) {
-			if ($line =~ /^\s*([azA-Z0-9_]+)\s*=\<\<([a-zA-Z0-9_]+)\s*(.*?)\s*$/) {
-				($curvar, $eol, my $value) = ($1, $2, $3);
-				$curvar = uc($curvar);
-				$content{"$curvar"} = {
-					'lineno' => $lineno,
-					'value' => $value,
-				};
+			if ($line =~ /^\s*([azA-Z0-9_]+)(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\<\<([a-zA-Z0-9_]+)\s*(.*?)\s*$/) {
+				($curvar, my $mode, $eol, my $value) = ($1, $2, $3, $4);
+				if (!$mode ||
+				    ($ispdfmode && lc($mode) eq 'pdf') ||
+				    (!$ispdfmode && lc($mode) eq 'eps')) {
+					$curvar = uc($curvar);
+					$content{"$curvar"} = {
+						'lineno' => $lineno,
+						'value' => $value,
+					};
+				}
+				else {
+					$curvar = '';
+				}
 			}
-			elsif ($line =~ /^\s*([azA-Z0-9_]+)\s*=\s*(.*?)\s*$/) {
-				my ($var, $value) = ($1, $2);
-				$curvar = undef;
-				$eol = undef;
-				$content{uc("$var")} = {
-					'lineno' => $lineno,
-					'value' => $value,
-				};
+			elsif ($line =~ /^\s*([azA-Z0-9_]+)(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\s*(.*?)\s*$/i) {
+				my ($var, $mode, $value) = ($1, $2, $3);
+				if (!$mode ||
+				    ($ispdfmode && lc($mode) eq 'pdf') ||
+				    (!$ispdfmode && lc($mode) eq 'eps')) {
+					$curvar = undef;
+					$eol = undef;
+					$content{uc("$var")} = {
+						'lineno' => $lineno,
+						'value' => $value,
+					};
+				}
 			}
 			elsif ($line !~ /^\s*$/) {
 				printErr(locGet("Line outside a definition ({}:{}).",$lineno, $file));
@@ -701,13 +717,13 @@ sub runRootTranslator(\%$$\%$) {
 	my $force = shift;
 
 	my $out;
-	if ($in =~ /^(.*)\.([^.]+)$/) {
+	if ($in =~ /^(.*)\.[^.]+$/) {
 		$out = "$1";
 	}
 	else {
 		$out = "$in";
 	}
-	$out .= $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0];
+	$out .= $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
 
 	$ROOT_TRANSLATORS{'configuration'} = $configuration;
 	$ROOT_TRANSLATORS{'translators'} = $translators;
@@ -776,6 +792,8 @@ sub _runTranslator($$$$$$$) {
 	my $out = shift || confess("output is mandatory");
 	my $force = shift;
 	my $logLevel = shift;
+	my $ispdfmode = (($configuration->{'generation.generation type'} || 'pdf') eq 'pdf');
+	my $isepsmode = !$ispdfmode;
 
 	$in = File::Spec->rel2abs("$in");
 	$out = File::Spec->rel2abs("$out");
@@ -784,7 +802,9 @@ sub _runTranslator($$$$$$$) {
 		printErr(locGet(_T("{}: file not found or not readable."), $in));
 	}
 
-	if (!exists $translators->{"$transname"}{'transdef'} || !$translators->{"$transname"}{'transdef'}) {
+	if (!exists $translators->{"$transname"} ||
+	    !exists $translators->{"$transname"}{'transdef'} ||
+	    !$translators->{"$transname"}{'transdef'}) {
 		# The requested translator was not enabled by the user.
 		# We try to enable it on the fly.
 		loadTranslator($transname, $translators);
@@ -800,7 +820,7 @@ sub _runTranslator($$$$$$$) {
 			my $dirname = dirname("$out");
 			if (opendir(*DIR, "$dirname")) {
 				my $fn;
-				my $ext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0];
+				my $ext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
 				my $bn = basename($out, $ext);
 				while (!defined($outChange) && ($fn = readdir(*DIR))) {
 					if ($fn ne File::Spec->updir() && $fn ne File::Spec->curdir()
@@ -876,8 +896,8 @@ sub _runTranslator($$$$$$$) {
 		my $c = eval $code;
 		if (!defined($c) && $@) {
 			my $msg = "$@";
-			$msg =~ s/(line\s+)([0-9]+)/$1.($2 + $lineno)/egsi;
-			printErr($msg);
+			$msg =~ s/(\(eval\s+[0-9]+\)\s*line\s+)([0-9]+)/$1.($2 + $lineno)."($2)"/egsi;
+			printErr(locGet(_T("Error is the TRANSLATOR_FUNCTION of '{}':\n{}"), $transname, $msg));
 		}
 	}
 	else {
@@ -914,22 +934,38 @@ I<Returns:> true if a file was created; otherwise false.
 
 =cut
 sub loadTranslator($\%) {
-	my $name = shift;
-	my $translators = shift;
+	my $name = shift || confess('you must pass the name of the translator to load');
+	my $translators = shift || confess('you must pass the descriptions of the translators');
+
+	# Check if the translator name corresponds to an existing translator.
+	# If not, try to find a variante.
+	if (!exists $translators->{$name} || 
+	    !$translators->{$name} ||
+	    !$translators->{$name}{'file'}) {
+		my $linkname = undef;
+		while ((!$linkname) && (my ($k,$v) = each (%{$translators}))) {
+			if (isHash($v) && $v->{'basename'} && $v->{'basename'} eq $name
+				&& $v->{'file'}) {
+				$linkname = $k;
+			}
+		}
+		if (!$linkname) {
+			printErr(locGet(_T("The translator '{}' cannot be found."), $name));
+		}
+		$translators->{"$name"} = $translators->{"$linkname"};
+		$name = $linkname;
+	}
 
 	# Read the translator definition
-	$translators->{$name}{'transdef'} = readTranslatorFile($translators->{$name}{'file'});
+	$translators->{$name}{'transdef'} = readTranslatorFile(
+						$translators->{$name}{'file'},
+						$translators->{$name}{'ispdfmode'});
 
 	# Add environment variables
 	while ( my ($k,$v) = each(%{$translators->{$name}{'transdef'}})) {
 		if ($v && $v->{'value'} && !isHash($v->{'value'}) && !isArray($v->{'value'})) {
 			$translators->{$name}{'environment_variables'}{"$k"} = $v->{'value'};
 		}
-	}
-
-	# Make a link to the translator according to the basename
-	if (!exists $translators->{$translators->{$name}{'basename'}}) {
-		$translators->{$translators->{$name}{'basename'}} = $translators->{$name};
 	}
 }
 

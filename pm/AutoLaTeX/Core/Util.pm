@@ -571,6 +571,7 @@ I<Returns:> Always C<0>.
 =cut
 sub runCommandOrFailRedirectTo($@) {
 	my $stdoutfile = shift;
+	printDbgFor(4, locGet(_T("Command line is:\n{}"), join(' ',@_)));
 	my $pid = fork();
 	if ($pid == 0) {
 		# Child process
@@ -624,6 +625,7 @@ replied.
 
 =cut
 sub runCommandOrFail(@) {
+	printDbgFor(4, locGet(_T("Command line is:\n{}"), join(' ',@_)));
 	my $wantstdout = wantarray;
 	my $pid = fork();
 	if ($pid == 0) {
@@ -691,6 +693,7 @@ replied.
 
 =cut
 sub runCommandSilently(@) {
+	printDbgFor(4, locGet(_T("Command line is:\n{}"), join(' ',@_)));
 	my $pid = fork();
 	if ($pid == 0) {
 		# Child process
@@ -726,6 +729,7 @@ This subroutine does not block the caller.
 
 =cut
 sub runSystemCommand($@) {
+	printDbgFor(4, locGet(_T("Command line is:\n{}"), join(' ',@_)));
 	my $listener = shift;
 	my $pid = fork();
 	if ($pid == 0) {

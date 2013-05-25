@@ -66,6 +66,7 @@ use Exporter;
 use Class::Struct;
 use File::Basename;
 use File::Spec;
+use Carp;
 
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::Locale;
@@ -75,6 +76,49 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
 our $VERSION = '1.0';
+
+my %COMMAND_DEFINITIONS = (
+	'pdflatex' => {
+		'cmd' => 'pdflatex',
+		'flags' => ['-interaction', 'batchmode'],
+		'to_dvi' => ['--output-format=dvi'],
+		'to_ps' => undef,
+		'to_pdf' => ['--output-format=pdf'],
+	},
+	'latex' => {
+		'cmd' => 'latex',
+		'flags' => ['-interaction', 'batchmode'],
+		'to_dvi' => ['--output-format=dvi'],
+		'to_ps' => undef,
+		'to_pdf' => ['--output-format=pdf'],
+	},
+	'xelatex' => {
+		'cmd' => 'xelatex',
+		'flags' => ['-interaction', 'batchmode', '--no-pdf'],
+		'to_dvi' => ['--no-pdf'],
+		'to_ps' => undef,
+		'to_pdf' => [],
+	},
+	'lualatex' => {
+		'cmd' => 'luatex',
+		'flags' => ['-interaction', 'batchmode'],
+		'to_dvi' => ['--output-format=dvi'],
+		'to_ps' => undef,
+		'to_pdf' => ['--output-format=pdf'],
+	},
+	'bibtex' => {
+		'cmd' => 'bibtex',
+		'flags' => [],
+	},
+	'makeindex' => {
+		'cmd' => 'makeindex',
+		'flags' => [],
+	},
+	'dvi2ps' => {
+		'cmd' => 'dvips',
+		'flags' => [],
+	},
+);
 
 struct( Entry => [
 		'file' => '$',
@@ -112,9 +156,44 @@ sub new(\%) : method {
 			'is_bibtex_enable' => 1,
 			'is_makeindex_enable' => 1,
 			'generation_type' => 'pdf',
+			'latex_cmd' => [],
+			'bibtex_cmd' => [],
+			'makeindex_cmd' => [],
+			'dvi2ps_cmd' => [],
+			'ps2pdf_cmd' => [],
 		};
 	}
 	bless( $self, $class );
+
+	# Build the different commands according to the current configuration
+	$self->{'type'} = $_[0]->{'generation.generation type'} || 'pdf';
+	my $compiler = $_[0]->{'generation.tex compiler'} || 'pdflatex';
+
+	if ($_[0]->{'generation.latex_cmd'}) {
+		push @{$self->{'latex_cmd'}}, $_[0]->{'generation.latex_cmd'};
+	}
+	else {
+		my $def = $COMMAND_DEFINITIONS{"$compiler"};
+		confess("No command definition for '$compiler'") unless ($def);
+		push @{$self->{'latex_cmd'}}, $def->{'cmd'}, @{$def->{'flags'}};
+		confess("No command definition for '$compiler/".$self->{'type'}."'") unless (exists $def->{'to_'.$self->{'type'}});
+		my $target = $def->{'to_'.$self->{'type'}};
+		if (defined($target)) {
+			push @{$self->{'latex_cmd'}}, @{$target};
+		}
+		elsif ($self->{'type'} eq 'ps') {
+			push @{$self->{'latex_cmd'}}, @{$def->{'to_dvi'}};
+		}
+		else {
+			confess('invalided Maker state: cannot find the command line to compile TeX files.');
+		}
+	}
+
+	if ($_[0]->{'generation.latex_flags'}) {
+		my @params = split(/\s+/, ($_[0]->{'generation.latex_flags'}));
+		push @{$self->{'latex_flags'}}, @params;
+	}
+
 	return $self;
 }
 
@@ -293,7 +372,7 @@ sub runLaTeX($;$) : method {
 		printDbg(locGet(_T('{}: {}'), 'PDFLATEX', basename($file))); 
 		$self->{'warnings'} = {};
 		unlink($logFile);
-		my $exitcode = runCommandSilently(('pdflatex', '-interaction', 'batchmode', $file));
+		my $exitcode = runCommandSilently(@{$self->{'latex_cmd'}}, $file);
 		local *LOGFILE;
 		if ($exitcode!=0) {
 			printDbg(locGet(_T("{}: Error when generating {}"), 'PDFLATEX', basename($file)));
@@ -691,7 +770,7 @@ sub __build_bbl($$$) : method {
 		my $basename = basename($file,'.bbl');
 		my $auxFile = File::Spec->catfile(dirname($file),"$basename.aux");
 		printDbg(locGet(_T('{}: {}'), 'BIBTEX', basename($auxFile))); 
-		runCommandOrFail('bibtex', "$auxFile");
+		runCommandOrFail(@{$self->{'bibtex_cmd'}}, "$auxFile");
 	}
 }
 
@@ -710,7 +789,7 @@ sub __build_ind($$$) : method {
 		my $basename = basename($file,'.ind');
 		my $idxFile = File::Spec->catfile(dirname($file),"$basename.idx");
 		printDbg(locGet(_T('{}: {}'), 'MAKEINDEX', basename($idxFile))); 
-		runCommandOrFail('makeindex', "$idxFile");
+		runCommandOrFail(@{$self->{'makeindex_cmd'}}, "$idxFile");
 	}
 }
 
