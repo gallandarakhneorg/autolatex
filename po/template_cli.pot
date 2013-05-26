@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-24 17:06+0200\n"
+"POT-Creation-Date: 2013-05-26 01:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,28 +30,36 @@ msgstr ""
 msgid "Warning: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:577 pm/AutoLaTeX/Core/Util.pm:631
-#: pm/AutoLaTeX/Core/Util.pm:697
+#: pm/AutoLaTeX/Core/Util.pm:574 pm/AutoLaTeX/Core/Util.pm:628
+#: pm/AutoLaTeX/Core/Util.pm:696 pm/AutoLaTeX/Core/Util.pm:732
+msgid ""
+"Command line is:\n"
+"{}"
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Util.pm:578 pm/AutoLaTeX/Core/Util.pm:633
+#: pm/AutoLaTeX/Core/Util.pm:700
 msgid "Can't redirect STDOUT: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:578 pm/AutoLaTeX/Core/Util.pm:632
-#: pm/AutoLaTeX/Core/Util.pm:698
+#: pm/AutoLaTeX/Core/Util.pm:579 pm/AutoLaTeX/Core/Util.pm:634
+#: pm/AutoLaTeX/Core/Util.pm:701
 msgid "Can't redirect STDERR: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:591 pm/AutoLaTeX/Core/Util.pm:645
-#: pm/AutoLaTeX/Core/Util.pm:650 pm/AutoLaTeX/Make/Make.pm:293
-#: pm/AutoLaTeX/Make/Make.pm:693 pm/AutoLaTeX/Make/Make.pm:712
+#: pm/AutoLaTeX/Core/Util.pm:592 pm/AutoLaTeX/Core/Util.pm:647
+#: pm/AutoLaTeX/Core/Util.pm:652 pm/AutoLaTeX/Make/Make.pm:419
+#: pm/AutoLaTeX/Make/Make.pm:519 pm/AutoLaTeX/Make/Make.pm:835
+#: pm/AutoLaTeX/Make/Make.pm:854
 msgid "{}: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:602 pm/AutoLaTeX/Core/Util.pm:669
-#: pm/AutoLaTeX/Core/Util.pm:709 pm/AutoLaTeX/Core/Util.pm:743
+#: pm/AutoLaTeX/Core/Util.pm:603 pm/AutoLaTeX/Core/Util.pm:671
+#: pm/AutoLaTeX/Core/Util.pm:712 pm/AutoLaTeX/Core/Util.pm:747
 msgid "Unable to fork for the system command: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:782
+#: pm/AutoLaTeX/Core/Util.pm:786
 msgid "Waiting for system command sub-processes"
 msgstr ""
 
@@ -211,45 +219,44 @@ msgid ""
 "Please regenerate this file with the command line option --fixconfig."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:56
+#: pm/AutoLaTeX/Core/Main.pm:57
 msgid "Reading command line options"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:76 pm/AutoLaTeX/Core/Main.pm:85
-#: pm/AutoLaTeX/Core/Main.pm:143 pm/AutoLaTeX/Core/Main.pm:150
-#: pm/AutoLaTeX/Core/Main.pm:156
+#: pm/AutoLaTeX/Core/Main.pm:77 pm/AutoLaTeX/Core/Main.pm:151
+#: pm/AutoLaTeX/Core/Main.pm:166
 msgid "Command line option '{}' is deprecated."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:165
+#: pm/AutoLaTeX/Core/Main.pm:178
 msgid ""
 "{} {} ({}) - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:173
+#: pm/AutoLaTeX/Core/Main.pm:186
 msgid ""
 "{} {} - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:220
-msgid "Detecting TeX file '{}'"
+#: pm/AutoLaTeX/Core/Main.pm:233 pm/AutoLaTeX/Core/Main.pm:250
+msgid "Selecting TeX file '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:223
+#: pm/AutoLaTeX/Core/Main.pm:236
 msgid "Detecting several TeX files: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:268
+#: pm/AutoLaTeX/Core/Main.pm:297
 msgid "Detecting TeX file from project's configuration: '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:295
+#: pm/AutoLaTeX/Core/Main.pm:328
 msgid "Using TeX file '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:298
+#: pm/AutoLaTeX/Core/Main.pm:331
 msgid ""
 "No LaTeX file found nor specified for the directory '{}'.\n"
 " You must specify one on the command line option -f, or set the the variable "
@@ -257,25 +264,25 @@ msgid ""
 "'Main.tex'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:303
+#: pm/AutoLaTeX/Core/Main.pm:336
 msgid "Applying command line options"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:376
+#: pm/AutoLaTeX/Core/Main.pm:409
 msgid "Selecting project's style for MakeIndex: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:380
+#: pm/AutoLaTeX/Core/Main.pm:413
 msgid ""
 "Unable to selected a project's style for MakeIndex: no file or too many .ist "
 "files in directory {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:385
+#: pm/AutoLaTeX/Core/Main.pm:418
 msgid "Selecting the system default style for MakeIndex"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:389
+#: pm/AutoLaTeX/Core/Main.pm:422
 msgid "Unselecting any style for MakeIndex"
 msgstr ""
 
@@ -287,11 +294,11 @@ msgstr ""
 msgid "Translate {} to {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:209
+#: pm/AutoLaTeX/Core/Translator.pm:210
 msgid "Get translator list from {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:294
+#: pm/AutoLaTeX/Core/Translator.pm:296
 msgid ""
 "Several possibilities exist for generating a figure from a {} file:\n"
 "{}\n"
@@ -305,136 +312,134 @@ msgid ""
 "{}\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:402
+#: pm/AutoLaTeX/Core/Translator.pm:404
 msgid "Get loadable translators from {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:416
+#: pm/AutoLaTeX/Core/Translator.pm:418
 msgid "Translator {} is ignored"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:494
+#: pm/AutoLaTeX/Core/Translator.pm:499
 msgid "Get translators from {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:586
-msgid ""
-"The block with keyword '{}' was not properly started: variable name missed "
-"({}:{})."
-msgstr ""
-
-#: pm/AutoLaTeX/Core/Translator.pm:615
+#: pm/AutoLaTeX/Core/Translator.pm:631
 msgid ""
 "The block for the variable '{}' is not closed. Keyword '{}' was not found "
 "({}:{})."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:753
+#: pm/AutoLaTeX/Core/Translator.pm:769
 msgid ""
 "You cannot call runTranslator() outside the call stack of runRootTranslator"
 "()."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:784
+#: pm/AutoLaTeX/Core/Translator.pm:802
 msgid "{}: file not found or not readable."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:821 pm/AutoLaTeX/Make/Make.pm:377
-#: pm/AutoLaTeX/Make/Make.pm:439 pm/AutoLaTeX/Make/Make.pm:480
+#: pm/AutoLaTeX/Core/Translator.pm:841 pm/AutoLaTeX/Make/Make.pm:503
+#: pm/AutoLaTeX/Make/Make.pm:581 pm/AutoLaTeX/Make/Make.pm:622
 msgid "{} is up-to-date."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:827
+#: pm/AutoLaTeX/Core/Translator.pm:847
 msgid "{} -> {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:884
+#: pm/AutoLaTeX/Core/Translator.pm:900
+msgid ""
+"Error inthe TRANSLATOR_FUNCTION of '{}':\n"
+"{}"
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Translator.pm:904
 msgid "Unable to find the method of translation for '{}'."
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:571
+#: pm/AutoLaTeX/Core/Translator.pm:953
+msgid "The translator '{}' cannot be found."
+msgstr ""
+
+#: pm/AutoLaTeX/TeX/TeXParser.pm:579
 msgid "you try to close with a '$' a mathematical mode opened with '\\['"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:593
+#: pm/AutoLaTeX/TeX/TeXParser.pm:601
 msgid ""
 "you cannot use in text mode the active character '{}', which is defined in "
 "math mode"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:609
+#: pm/AutoLaTeX/TeX/TeXParser.pm:617
 msgid ""
 "you cannot use in math mode the active character '{}', which is defined in "
 "text mode"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:782
+#: pm/AutoLaTeX/TeX/TeXParser.pm:802
 msgid "invalid syntax for the TeX command: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:824
+#: pm/AutoLaTeX/TeX/TeXParser.pm:844
 msgid "invalid syntax for the TeX active character: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:907
+#: pm/AutoLaTeX/TeX/TeXParser.pm:927
 msgid "Found parameter definition for '{}': math={}; text={}"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:913
+#: pm/AutoLaTeX/TeX/TeXParser.pm:933
 msgid ""
 "the command {}{} was not defined for math-mode, assumes to use the text-mode "
 "version instead"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:922
+#: pm/AutoLaTeX/TeX/TeXParser.pm:942
 msgid ""
 "the command {}{}  was not defined for text-mode, assumes to use the math-"
 "mode version instead"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:974 pm/AutoLaTeX/TeX/TeXParser.pm:983
+#: pm/AutoLaTeX/TeX/TeXParser.pm:994 pm/AutoLaTeX/TeX/TeXParser.pm:1003
 msgid "Expanding '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:1025
+#: pm/AutoLaTeX/TeX/TeXParser.pm:1045
 msgid "Macro prototype of '{}': {}"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:1096
+#: pm/AutoLaTeX/TeX/TeXParser.pm:1116
 msgid "expected a TeX macro for expanding the macro {}, here: '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:1112
+#: pm/AutoLaTeX/TeX/TeXParser.pm:1132
 msgid "unable to recognize the following argument specification: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:171
+#: pm/AutoLaTeX/Make/Make.pm:297
 msgid "Parsing '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:299
+#: pm/AutoLaTeX/Make/Make.pm:426
 msgid "{}: Error when generating {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:385
+#: pm/AutoLaTeX/Make/Make.pm:527
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:388
+#: pm/AutoLaTeX/Make/Make.pm:530
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:391
+#: pm/AutoLaTeX/Make/Make.pm:533
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:399
+#: pm/AutoLaTeX/Make/Make.pm:541
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
-msgstr ""
-
-#: pm/AutoLaTeX/Make/Make.pm:811
-msgid ""
-"The generation type '{}' is not more supported by AutoLaTeX, please use '{}' "
-"in place."
 msgstr ""

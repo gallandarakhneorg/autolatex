@@ -141,7 +141,7 @@ of AutoLaTeX against MakeIndex
 
 =item B<--dvi>
 
-Do the compilation to produce a DVI document.
+Do the compilation to produce a DVI or a XDV document.
 
 =item B<--exclude=S<name>>
 
@@ -212,6 +212,13 @@ style to MakeIndex.
 The options --defaultist and --noindex also permit to change the behavior
 of AutoLaTeX against MakeIndex
 
+=item B<--latex>
+
+Use the historical LaTeX command: C<latex>.
+
+=item B<--lualatex>
+
+Use the LaTeX command: C<lualatex>.
 
 =item B<--noindex>
 
@@ -228,20 +235,15 @@ DEPRECATED.
 
 =item B<--pdf>
 
-Do the compilation to produce a PDF document. The compilation
-is based on pdflatex instead of using the old compilation
-process: latex, dvips, ps2pdf.
+Do the compilation to produce a PDF document.
+
+=item B<--pdflatex>
+
+Use the LaTeX command: C<pdflatex>.
 
 =item B<--ps>
 
-Do the compilation to produce a Postscript document. The compilation
-is based on the old compilation process: latex, dvips.
-
-=item B<--pspdf>
-
-Do the compilation to produce a PDF document. The compilation
-is based on old compilation process: latex, dvips, ps2pdf; instead
-of using pdflatex.
+Do the compilation to produce a Postscript document, when possible.
 
 =item B<--set [S<translator>.]S<name>=S<value>>
 
@@ -272,6 +274,10 @@ Enable or disable the document viewer at the end of the compilation.
 The path of the document viewer could be specify with
 F<file>. If not specified, AutoLaTeX will check for the tools
 F<acroread>, F<kpdf>, F<evince>, F<gv>, and F<xpdf>.
+
+=item B<--xelatex>
+
+Use the LaTeX command: C<xelatex>.
 
 =back
 
@@ -875,13 +881,25 @@ The recognized directives are:
 
 =over 8
 
-=item C<pdf> - use pdflatex
+=item C<pdf> - generate a PDF document
 
-=item C<dvi> - use latex
+=item C<dvi> - generate a DVI or a XDV document
 
-=item C<ps> - use latex and dvips
+=item C<ps> - generate a PS document
 
-=item C<pspdf> - use latex, dvips and ps2pdf
+=back
+
+=item I<tex compiler> : indicates the TeX compiler to use. Accepted values:
+
+=over 8
+
+=item C<latex> - use C<latex>
+
+=item C<pdflatex> - use C<pdflatex>
+
+=item C<xelatex> - use C<xelatex>
+
+=item C<lualatex> - use C<lualatex>
 
 =back
 
@@ -905,33 +923,21 @@ If the list contains more than one value, AutoLaTeX will do the corresponding be
 
 =item I<translator include path> : specifies additional directories from which translator scripts could be loaded. This is a list of paths separated by comas or the path separator of your operating system (S<:> on Unix, S<;> on Windows). If a path contains a coma character, you must enclose it in quotes.
 
-=item I<set make> : DEPRECATED.
+=item I<latex_cmd> : specifies the LaTeX tool command line. Accepted value: any command line.
 
-=item I<set latex> : specifies the LaTeX tool command line. Accepted value: any command line.
+=item I<bibtex_cmd> : specifies the BibTeX tool command line. Accepted value: any command line.
 
-=item I<set bibtex> : specifies the BibTeX tool command line. Accepted value: any command line.
+=item I<makeindex_cmd> : specifies the MakeIndex tool command line. Accepted value: any command line.
 
-=item I<set dvips> : specifies the dvips tool command line. Accepted value: any command line.
+=item I<dvi2ps_cmd> : specifies the dvips tool command line. Accepted value: any command line.
 
-=item I<set ps2pdf> : specifies the ps2pdf tool command line. Accepted value: any command line.
+=item I<latex_flags> : specifies the options to pass to the LaTeX tool. Accepted value: any command line.
 
-=item I<set latex_flags> : specifies the options to pass to the LaTeX tool. Accepted value: any command line.
+=item I<bibtex_flags> : specifies the options to pass to the BibTeX tool. Accepted value: any command line.
 
-=item I<set latex_draft_flags> : DEPRECATED.
+=item I<makeindex_flags> : specifies the options to pass to the MakeIndex tool. Accepted value: any command line.
 
-=item I<set bibtex_flags> : specifies the options to pass to the BibTeX tool. Accepted value: any command line.
-
-=item I<set dvips_flags> : specifies the options to pass to the dvips tool. Accepted value: any command line.
-
-=item I<set ps2pdf_flags> : specifies the options to pass to the ps2pdf tool. Accepted value: any command line.
-
-=item I<set touch> : DEPRECATED.
-
-=item I<set echo> : DEPRECATED.
-
-=item I<set echo_err> : DEPRECATED.
-
-=item I<set find> : DEPRECATED.
+=item I<dvi2ps_flags> : specifies the options to pass to the dvips tool. Accepted value: any command line.
 
 =back
 

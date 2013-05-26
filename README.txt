@@ -145,7 +145,7 @@ OPTIONS
         of AutoLaTeX against MakeIndex
 
     --dvi
-        Do the compilation to produce a DVI document.
+        Do the compilation to produce a DVI or a XDV document.
 
     --exclude=name
         Avoid AutoLaTeX to load the translator called name. See bellow for
@@ -206,6 +206,12 @@ OPTIONS
         The options --defaultist and --noindex also permit to change the
         behavior of AutoLaTeX against MakeIndex
 
+    --latex
+        Use the historical LaTeX command: "latex".
+
+    --lualatex
+        Use the LaTeX command: "lualatex".
+
     --noindex
         Avoid AutoLaTeX to use MakeIndex.
 
@@ -217,18 +223,13 @@ OPTIONS
         DEPRECATED.
 
     --pdf
-        Do the compilation to produce a PDF document. The compilation is
-        based on pdflatex instead of using the old compilation process:
-        latex, dvips, ps2pdf.
+        Do the compilation to produce a PDF document.
+
+    --pdflatex
+        Use the LaTeX command: "pdflatex".
 
     --ps
-        Do the compilation to produce a Postscript document. The compilation
-        is based on the old compilation process: latex, dvips.
-
-    --pspdf
-        Do the compilation to produce a PDF document. The compilation is
-        based on old compilation process: latex, dvips, ps2pdf; instead of
-        using pdflatex.
+        Do the compilation to produce a Postscript document, when possible.
 
     --set [translator.]name=value
         Set the internal value of AutoLaTeX named name with the specified
@@ -254,6 +255,9 @@ OPTIONS
         The path of the document viewer could be specify with file. If not
         specified, AutoLaTeX will check for the tools acroread, kpdf,
         evince, gv, and xpdf.
+
+    --xelatex
+        Use the LaTeX command: "xelatex".
 
 AUTO GENERATION OF FIGURES
     A translator is used to convert a source figure into a target figure
@@ -603,10 +607,16 @@ CONFIGURATION FILE
     the path-separator character (':' on Unix, ';' on Windows).
     *generation type* : indicates the type of generation. Accepted values:
 
-        "pdf" - use pdflatex
-        "dvi" - use latex
-        "ps" - use latex and dvips
-        "pspdf" - use latex, dvips and ps2pdf
+        "pdf" - generate a PDF document
+        "dvi" - generate a DVI or a XDV document
+        "ps" - generate a PS document
+
+    *tex compiler* : indicates the TeX compiler to use. Accepted values:
+
+        "latex" - use "latex"
+        "pdflatex" - use "pdflatex"
+        "xelatex" - use "xelatex"
+        "lualatex" - use "lualatex"
 
     *makeindex style* : specifies the style that must be used by makeindex.
     This is a list of values separated by comas. The values should be:
@@ -631,28 +641,22 @@ CONFIGURATION FILE
     comas or the path separator of your operating system (: on Unix, ; on
     Windows). If a path contains a coma character, you must enclose it in
     quotes.
-    *set make* : DEPRECATED.
-    *set latex* : specifies the LaTeX tool command line. Accepted value: any
+    *latex_cmd* : specifies the LaTeX tool command line. Accepted value: any
     command line.
-    *set bibtex* : specifies the BibTeX tool command line. Accepted value:
+    *bibtex_cmd* : specifies the BibTeX tool command line. Accepted value:
     any command line.
-    *set dvips* : specifies the dvips tool command line. Accepted value: any
-    command line.
-    *set ps2pdf* : specifies the ps2pdf tool command line. Accepted value:
+    *makeindex_cmd* : specifies the MakeIndex tool command line. Accepted
+    value: any command line.
+    *dvi2ps_cmd* : specifies the dvips tool command line. Accepted value:
     any command line.
-    *set latex_flags* : specifies the options to pass to the LaTeX tool.
+    *latex_flags* : specifies the options to pass to the LaTeX tool.
     Accepted value: any command line.
-    *set latex_draft_flags* : DEPRECATED.
-    *set bibtex_flags* : specifies the options to pass to the BibTeX tool.
+    *bibtex_flags* : specifies the options to pass to the BibTeX tool.
     Accepted value: any command line.
-    *set dvips_flags* : specifies the options to pass to the dvips tool.
+    *makeindex_flags* : specifies the options to pass to the MakeIndex tool.
     Accepted value: any command line.
-    *set ps2pdf_flags* : specifies the options to pass to the ps2pdf tool.
+    *dvi2ps_flags* : specifies the options to pass to the dvips tool.
     Accepted value: any command line.
-    *set touch* : DEPRECATED.
-    *set echo* : DEPRECATED.
-    *set echo_err* : DEPRECATED.
-    *set find* : DEPRECATED.
 
    [Clean] section
     This section permits to configure the cleaning features of AutoLaTeX

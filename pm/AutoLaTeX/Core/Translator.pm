@@ -897,7 +897,7 @@ sub _runTranslator($$$$$$$) {
 		if (!defined($c) && $@) {
 			my $msg = "$@";
 			$msg =~ s/(\(eval\s+[0-9]+\)\s*line\s+)([0-9]+)/$1.($2 + $lineno)."($2)"/egsi;
-			printErr(locGet(_T("Error is the TRANSLATOR_FUNCTION of '{}':\n{}"), $transname, $msg));
+			printErr(locGet(_T("Error inthe TRANSLATOR_FUNCTION of '{}':\n{}"), $transname, $msg));
 		}
 	}
 	else {
