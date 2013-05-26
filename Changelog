@@ -1,5 +1,11 @@
 autolatex 17.0 (2013/05/22) - Stéphane GALLAND <galland@arakhne.org>
 	* Issue 1: the Locale package is included in the UI packages.
+	* Issue 4: the translators oct2pdf and oct2png are added (based on GNU Octave).
+	* Issue 5: DVI and PS output.
+	* Issue 6: support other TeX tools: xelatex, lualatex...
+	* Issue 7: translate images inside more than one directory.
+	* Issue 9: detect the main TeX file according to its content.
+	* Issue 10: translator may produce EPS files.
 
 autolatex 16.0 (2013/05/20) - Stéphane GALLAND <galland@arakhne.org>
 	* Complete rewriting of the source code in Perl. GNU Make is
