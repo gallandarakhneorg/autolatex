@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '6.0';
+$VERSION = '7.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -490,7 +490,7 @@ sub getTranslatorList(\%;$) {
 	my $recurse = $_[1];
 	$recurse = 1 unless (defined($recurse));
 
-	my $ispdfmode = $_[0]->{'generation.generation type'} eq 'pdf';
+	my $ispdfmode = ($_[0]->{'generation.generation type'} || 'pdf') eq 'pdf';
 
 	my %translators = ();
 
@@ -937,36 +937,55 @@ sub loadTranslator($\%) {
 	my $name = shift || confess('you must pass the name of the translator to load');
 	my $translators = shift || confess('you must pass the descriptions of the translators');
 
+	printDbgFor(4, locGet(_T("Searching translator '{}'."), $name));
+
 	# Check if the translator name corresponds to an existing translator.
 	# If not, try to find a variante.
 	if (!exists $translators->{$name} || 
 	    !$translators->{$name} ||
 	    !$translators->{$name}{'file'}) {
+		my $loadedlinkname = undef;
 		my $linkname = undef;
-		while ((!$linkname) && (my ($k,$v) = each (%{$translators}))) {
+		while ((!$loadedlinkname) && (my ($k,$v) = each (%{$translators}))) {
 			if (isHash($v) && $v->{'basename'} && $v->{'basename'} eq $name
 				&& $v->{'file'}) {
-				$linkname = $k;
+				if (exists $v->{'transdef'}) {
+					$loadedlinkname = $k;
+				}
+				else {
+					$linkname = $k;	
+				}
 			}
 		}
-		if (!$linkname) {
+		if (!$linkname && !$loadedlinkname) {
 			printErr(locGet(_T("The translator '{}' cannot be found."), $name));
 		}
+		elsif ($loadedlinkname) {
+			$linkname = $loadedlinkname;
+		}
+		printDbgFor(4, locGet(_T("Linking '{}' to '{}'."), $name, $linkname));
 		$translators->{"$name"} = $translators->{"$linkname"};
 		$name = $linkname;
 	}
 
-	# Read the translator definition
-	$translators->{$name}{'transdef'} = readTranslatorFile(
-						$translators->{$name}{'file'},
-						$translators->{$name}{'ispdfmode'});
-
-	# Add environment variables
-	while ( my ($k,$v) = each(%{$translators->{$name}{'transdef'}})) {
-		if ($v && $v->{'value'} && !isHash($v->{'value'}) && !isArray($v->{'value'})) {
-			$translators->{$name}{'environment_variables'}{"$k"} = $v->{'value'};
+	# Load the translator if not already loaded
+	if (exists $translators->{$name}{'transdef'}) {
+		printDbgFor(4, locGet(_T("'{}' is already loaded."), $name));
+	}
+	else {
+		printDbgFor(4, locGet(_T("Loading translator '{}'."), $name));
+		# Read the translator definition
+		$translators->{$name}{'transdef'} = readTranslatorFile(
+							$translators->{$name}{'file'},
+							$translators->{$name}{'ispdfmode'});
+		# Add environment variables
+		while ( my ($k,$v) = each(%{$translators->{$name}{'transdef'}})) {
+			if ($v && $v->{'value'} && !isHash($v->{'value'}) && !isArray($v->{'value'})) {
+				$translators->{$name}{'environment_variables'}{"$k"} = $v->{'value'};
+			}
 		}
 	}
+
 }
 
 1;
