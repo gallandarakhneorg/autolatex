@@ -1,5 +1,5 @@
-heading_prefix "{\\bfseries\\hfil "
-heading_suffix "\\hfil}\\nopagebreak\n"
+heading_prefix "{\\vspace{.75cm}\\mbox{}\\hfill\\bfseries\\Large "
+heading_suffix "\\hfill\\mbox{}}\\nopagebreak\n"
 headings_flag 1
 
 delim_0 "\\dotfill"
