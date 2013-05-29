@@ -56,7 +56,7 @@ OUTPUT_EXTENSIONS for eps = .eps .pstex_t
 # excluding the AutoLaTeX Core libraries and the following libraries:
 # AutoLaTeX::Core::Util AutoLaTeX::Core::Locale AutoLaTeX::Core::OS
 # File::Spec File::Path File::Basename File::Copy
-TRANSLATOR_PERL_DEPENDENCIES = Cwd
+TRANSLATOR_PERL_DEPENDENCIES = Cwd AutoLaTeX::TeX::TeXParser
 
 # Perl code to invoke to translate the files from input to output.
 # $in is the environment variable for the input filename.
@@ -100,8 +100,48 @@ TRANSLATOR_FUNCTION =<<EOL {
 	chdir($curdir) or printErr("$curdir: $!");
 	unlink($plotFile);
 
-	# Rename the TeX file
-	move("$texFile", "$ptextFile") or printErr("$texFile -> $ptextFile: $!");
+	if ($ispdfmode) {
+		# Clean the PDFTEX_T file by removing the special macros, and
+		# adding the graphic inclusion at the right place
+		my $content = readFileLines("$texFile");
+		my $listener = {
+			'content' => '',
+			'expandMacro' => sub {
+				my $listener = shift;
+				my $parser = shift;
+				my $macro = shift;
+				if ($macro eq '\\special' ) {
+					if ($_[0] && $_[0]->{'text'} && $_[0]->{'text'} =~ /\Qpsfile=\E/s) {
+						return "\\put(0,0){\\includegraphics{$out}}";
+					}
+		# The first character after \special is consumed, reinject it if it is a brace.
+					if ($_[0] && $_[0]->{'text'} && $_[0]->{'text'} eq '}') {
+						return "$macro}";
+					}
+					return '';
+				}
+				return undef;
+			},
+			'outputString' => sub {
+				my $listener = shift;
+				my $parser = shift;
+				my $str = shift;
+				$listener->{'content'} .= $str;			
+			},
+		};
+
+		my $parser = AutoLaTeX::TeX::TeXParser->new("$texFile", $listener);
+		$parser->addTextModeMacro('special','!{}');
+		$parser->addMathModeMacro('special','!{}');
+		$parser->parse( $content );
+		open(*OUT, ">$ptextFile") or printErr("$ptextFile: $!");
+		print OUT $listener->{'content'};
+		close(*OUT);
+		unlink("$texFile");
+	}
+	else {
+		move("$texFile", "$ptextFile") or printErr("$texFile -> $ptextFile: $!");
+	}
 
 	# Generate the proper figure
 	if ($isepsmode) {
@@ -117,5 +157,5 @@ EOL
 # List of patterns that are representing the output files to remove when cleaning.
 # The syntax of the variable is a space-separated list of shell patterns.
 # $in is the basename (without the extension) of the input file.
-FILES_TO_CLEAN = $out.pdftex_t $out.pstex_t
+FILES_TO_CLEAN = $out.pdftex_t $out.pstex_t *__xxxx_autolatex.plot
 
