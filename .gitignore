@@ -1,0 +1,8 @@
+# Subversion, CVS, and GIT
+.svn/
+.cvs/
+.git/
+
+# Temp files
+*.bak
+*~

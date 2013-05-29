@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '12.0';
+$VERSION = '14.0';
 $COPYRIGHT_YEAR = '2013';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -59,7 +59,7 @@ sub analyzeCommandLineOptions(\%) {
 	$_[0]->{'__private__'}{'config.command line'} = {};
 	my $realcfg = $_[0];
 	my $cfg = \%{$_[0]->{'__private__'}{'config.command line'}};
-	my $debugLevel = 0;
+	my $debugLevel = 1;
 
 	Getopt::Long::Configure ("bundling");
 	if (!GetOptions(
@@ -165,6 +165,8 @@ sub analyzeCommandLineOptions(\%) {
 		'pspdf' => sub { 
 					printWarn(locGet(_T('Command line option \'{}\' is deprecated.'), '--pspdf'));
 			},
+
+		'quiet' => sub { $debugLevel = 0; },
 
 		'set=s%'  => sub { $cfg->{'generation.set'}{$_[1]} = $_[2]; },
 
@@ -405,29 +407,29 @@ sub mainProgram(;$) {
 					}
 					closedir(*DIR);
 					if (@istfiles==1) {
-						$configuration{'__private__'}{'ouput.ist file'} = File::Spec->rel2abs(pop @istfiles);
-						locDbg(_T("Selecting project's style for MakeIndex: {}"), $configuration{'__private__'}{'ouput.ist file'});
+						$configuration{'__private__'}{'output.ist file'} = File::Spec->rel2abs(pop @istfiles);
+						locDbg(_T("Selecting project's style for MakeIndex: {}"), $configuration{'__private__'}{'output.ist file'});
 					}
 					else {
-						delete $configuration{'__private__'}{'ouput.ist file'};
+						delete $configuration{'__private__'}{'output.ist file'};
 						locDbg(_T("Unable to selected a project's style for MakeIndex: no file or too many .ist files in directory {}"), $configuration{'__private__'}{'output.directory'});
 					}
 				}
 				elsif ($isttype eq '@system') {
-					$configuration{'__private__'}{'ouput.ist file'} = getSystemISTFilename();
+					$configuration{'__private__'}{'output.ist file'} = getSystemISTFilename();
 					locDbg(_T("Selecting the system default style for MakeIndex"));
 				}
 				elsif ($isttype eq '@none') {
-					delete $configuration{'__private__'}{'ouput.ist file'};
+					delete $configuration{'__private__'}{'output.ist file'};
 					locDbg(_T("Unselecting any style for MakeIndex"));
 				}
 
-				if (($configuration{'__private__'}{'ouput.ist file'})&&
-				    (-r $configuration{'__private__'}{'ouput.ist file'})) {
+				if (($configuration{'__private__'}{'output.ist file'})&&
+				    (-r $configuration{'__private__'}{'output.ist file'})) {
 					last;
 				}
 				else {
-					delete $configuration{'__private__'}{'ouput.ist file'};
+					delete $configuration{'__private__'}{'output.ist file'};
 				}
 			}
 		}

@@ -231,6 +231,10 @@ OPTIONS
     --ps
         Do the compilation to produce a Postscript document, when possible.
 
+    -q =item --quiet
+        AutoLaTeX should be not verbose (see -v for changing the verbose
+        level).
+
     --set [translator.]name=value
         Set the internal value of AutoLaTeX named name with the specified
         value. Internal values are limited and corresponds to the "set"

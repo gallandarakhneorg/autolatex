@@ -245,6 +245,11 @@ Use the LaTeX command: C<pdflatex>.
 
 Do the compilation to produce a Postscript document, when possible.
 
+=item B<-q>
+=item B<--quiet>
+
+AutoLaTeX should be not verbose (see B<-v> for changing the verbose level).
+
 =item B<--set [S<translator>.]S<name>=S<value>>
 
 Set the internal value of AutoLaTeX named S<name> with the specified S<value>.
