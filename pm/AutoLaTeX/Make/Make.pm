@@ -75,7 +75,7 @@ use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '1.0';
+our $VERSION = '2.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -852,7 +852,13 @@ sub __build_ind($$$) : method {
 		my $basename = basename($file,'.ind');
 		my $idxFile = File::Spec->catfile(dirname($file),"$basename.idx");
 		printDbg(locGet(_T('{}: {}'), 'MAKEINDEX', basename($idxFile))); 
-		runCommandOrFail(@{$self->{'makeindex_cmd'}}, "$idxFile");
+		my @styleArgs = ();
+		my $istFile = $self->{'configuration'}{'__private__'}{'output.ist file'};
+		if ($istFile && -f "$istFile") {
+			printDbgFor(2, locGet(_T('Style file: {}'), $istFile)); 
+			push @styleArgs, '-s', "$istFile";
+		}
+		runCommandOrFail(@{$self->{'makeindex_cmd'}}, @styleArgs, "$idxFile");
 	}
 }
 

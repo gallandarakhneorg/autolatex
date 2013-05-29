@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-26 01:57+0200\n"
+"POT-Creation-Date: 2013-05-29 20:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -228,35 +228,35 @@ msgstr ""
 msgid "Command line option '{}' is deprecated."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:178
+#: pm/AutoLaTeX/Core/Main.pm:180
 msgid ""
 "{} {} ({}) - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:186
+#: pm/AutoLaTeX/Core/Main.pm:188
 msgid ""
 "{} {} - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:233 pm/AutoLaTeX/Core/Main.pm:250
+#: pm/AutoLaTeX/Core/Main.pm:235 pm/AutoLaTeX/Core/Main.pm:252
 msgid "Selecting TeX file '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:236
+#: pm/AutoLaTeX/Core/Main.pm:238
 msgid "Detecting several TeX files: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:297
+#: pm/AutoLaTeX/Core/Main.pm:299
 msgid "Detecting TeX file from project's configuration: '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:328
+#: pm/AutoLaTeX/Core/Main.pm:330
 msgid "Using TeX file '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:331
+#: pm/AutoLaTeX/Core/Main.pm:333
 msgid ""
 "No LaTeX file found nor specified for the directory '{}'.\n"
 " You must specify one on the command line option -f, or set the the variable "
@@ -264,25 +264,25 @@ msgid ""
 "'Main.tex'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:336
+#: pm/AutoLaTeX/Core/Main.pm:338
 msgid "Applying command line options"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:409
+#: pm/AutoLaTeX/Core/Main.pm:411
 msgid "Selecting project's style for MakeIndex: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:413
+#: pm/AutoLaTeX/Core/Main.pm:415
 msgid ""
 "Unable to selected a project's style for MakeIndex: no file or too many .ist "
 "files in directory {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:418
+#: pm/AutoLaTeX/Core/Main.pm:420
 msgid "Selecting the system default style for MakeIndex"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:422
+#: pm/AutoLaTeX/Core/Main.pm:424
 msgid "Unselecting any style for MakeIndex"
 msgstr ""
 
@@ -359,8 +359,24 @@ msgstr ""
 msgid "Unable to find the method of translation for '{}'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:953
+#: pm/AutoLaTeX/Core/Translator.pm:940
+msgid "Searching translator '{}'."
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Translator.pm:961
 msgid "The translator '{}' cannot be found."
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Translator.pm:966
+msgid "Linking '{}' to '{}'."
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Translator.pm:973
+msgid "'{}' is already loaded."
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Translator.pm:976
+msgid "Loading translator '{}'."
 msgstr ""
 
 #: pm/AutoLaTeX/TeX/TeXParser.pm:579
@@ -442,4 +458,8 @@ msgstr ""
 #: pm/AutoLaTeX/Make/Make.pm:541
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
+msgstr ""
+
+#: pm/AutoLaTeX/Make/Make.pm:858
+msgid "Style file: {}"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-26 01:57+0200\n"
+"POT-Creation-Date: 2013-05-29 20:25+0200\n"
 "PO-Revision-Date: 2013-05-21 21:37+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -268,7 +268,7 @@ msgstr "Lecture des options de la ligne de commande"
 msgid "Command line option '{}' is deprecated."
 msgstr "L'option de ligne de commande '{}' est obsolète."
 
-#: pm/AutoLaTeX/Core/Main.pm:178
+#: pm/AutoLaTeX/Core/Main.pm:180
 msgid ""
 "{} {} ({}) - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
@@ -276,7 +276,7 @@ msgstr ""
 "{} {} ({}) - plate-forme {}\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (sous GPL)\n"
 
-#: pm/AutoLaTeX/Core/Main.pm:186
+#: pm/AutoLaTeX/Core/Main.pm:188
 msgid ""
 "{} {} - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
@@ -284,25 +284,25 @@ msgstr ""
 "{} {} - plate-forme {}\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (sous GPL)\n"
 
-#: pm/AutoLaTeX/Core/Main.pm:233 pm/AutoLaTeX/Core/Main.pm:250
+#: pm/AutoLaTeX/Core/Main.pm:235 pm/AutoLaTeX/Core/Main.pm:252
 #, fuzzy
 msgid "Selecting TeX file '{}'"
 msgstr "Détection du fichier TeX '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:236
+#: pm/AutoLaTeX/Core/Main.pm:238
 msgid "Detecting several TeX files: {}"
 msgstr "Détection de plusieurs fichiers TeX: {}"
 
-#: pm/AutoLaTeX/Core/Main.pm:297
+#: pm/AutoLaTeX/Core/Main.pm:299
 msgid "Detecting TeX file from project's configuration: '{}'"
 msgstr ""
 "Détection du fichier TeX à partir de la configuration du document: '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:328
+#: pm/AutoLaTeX/Core/Main.pm:330
 msgid "Using TeX file '{}'"
 msgstr "Utilisation du fichier TeX '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:331
+#: pm/AutoLaTeX/Core/Main.pm:333
 #, fuzzy
 msgid ""
 "No LaTeX file found nor specified for the directory '{}'.\n"
@@ -317,15 +317,15 @@ msgstr ""
 "main file' dans l'un de vos fichiers de configuration, soit renommer l'un de "
 "vos fichiers TeX avec le nom 'Main.tex'."
 
-#: pm/AutoLaTeX/Core/Main.pm:336
+#: pm/AutoLaTeX/Core/Main.pm:338
 msgid "Applying command line options"
 msgstr "Application des options de la ligne de commande"
 
-#: pm/AutoLaTeX/Core/Main.pm:409
+#: pm/AutoLaTeX/Core/Main.pm:411
 msgid "Selecting project's style for MakeIndex: {}"
 msgstr "Sélection du style pour MakeIndex: {}"
 
-#: pm/AutoLaTeX/Core/Main.pm:413
+#: pm/AutoLaTeX/Core/Main.pm:415
 msgid ""
 "Unable to selected a project's style for MakeIndex: no file or too many .ist "
 "files in directory {}"
@@ -333,11 +333,11 @@ msgstr ""
 "Impossible de déterminer le style pour MakeIndex: pas de fichier .ist ou "
 "trop de fichiers .ist dans le répertoire {}"
 
-#: pm/AutoLaTeX/Core/Main.pm:418
+#: pm/AutoLaTeX/Core/Main.pm:420
 msgid "Selecting the system default style for MakeIndex"
 msgstr "Utilisation du style par défaut pour MakeIndex"
 
-#: pm/AutoLaTeX/Core/Main.pm:422
+#: pm/AutoLaTeX/Core/Main.pm:424
 msgid "Unselecting any style for MakeIndex"
 msgstr "Ignore les styles pour MakeIndex"
 
@@ -433,10 +433,28 @@ msgstr ""
 msgid "Unable to find the method of translation for '{}'."
 msgstr "Impossible de trouver un convertisseur pour '{}'."
 
-#: pm/AutoLaTeX/Core/Translator.pm:953
+#: pm/AutoLaTeX/Core/Translator.pm:940
+#, fuzzy
+msgid "Searching translator '{}'."
+msgstr "Chargement des convertisseurs depuis {}"
+
+#: pm/AutoLaTeX/Core/Translator.pm:961
 #, fuzzy
 msgid "The translator '{}' cannot be found."
 msgstr "Le convertisseur '{}' est ignoré."
+
+#: pm/AutoLaTeX/Core/Translator.pm:966
+msgid "Linking '{}' to '{}'."
+msgstr "Création d'un alias de '{}' vers '{}'."
+
+#: pm/AutoLaTeX/Core/Translator.pm:973
+msgid "'{}' is already loaded."
+msgstr "'{}' est déjà chargé."
+
+#: pm/AutoLaTeX/Core/Translator.pm:976
+#, fuzzy
+msgid "Loading translator '{}'."
+msgstr "Calcul des convertisseurs chargeables depuis {}"
 
 #: pm/AutoLaTeX/TeX/TeXParser.pm:579
 msgid "you try to close with a '$' a mathematical mode opened with '\\['"
@@ -534,3 +552,7 @@ msgid ""
 msgstr ""
 "Avertissement LaTeX : Veuillez ouvrir {} pour plus de messages "
 "d'avertissement.\n"
+
+#: pm/AutoLaTeX/Make/Make.pm:858
+msgid "Style file: {}"
+msgstr "Fichier de style : {}"
