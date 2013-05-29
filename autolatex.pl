@@ -227,7 +227,7 @@ sub al_view() {
 				my $bin = which($viewer);
 				if ($bin) {
 					$v = 1;
-					runCommandOrFail($bin,  $pdfFile);
+					runCommandSilently($bin,  $pdfFile);
 				}
 			}
 		}
