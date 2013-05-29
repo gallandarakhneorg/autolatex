@@ -78,7 +78,7 @@ keys are:
 
 =item * 'discoverMacroDefinition': is invoked each time a macro definition is not found in the parser data. I<Parameters>: reference to the listener, reference to the parser, the name of the macro to search for, a boolean value that is indicating if the macro is a special macro or not, a boolean flag indicating if the math mode is active. I<Returns>: the definition of the macro prototype.
 
-=item * 'expandMacro': a macro is expandable. I<Parameters>: reference to the listener, reference to the parser, the name of the macro to expand, and the rest of the parameters are the descriptions of the values passed to the TeX macro. Each of the descriptions is an associative array with the keys 'eval' and 'text'. The 'eval' key indicates if the value of the parameter must be expanded in turn (if true), or used verbatim (if false). The 'text' is the value of the parameter. I<Returns>: the result of the expand of the macro.
+=item * 'expandMacro': a macro is expandable. I<Parameters>: reference to the listener, reference to the parser, the name of the macro to expand, and the rest of the parameters are the descriptions of the values passed to the TeX macro. Each of the descriptions is an associative array with the keys 'eval' and 'text'. The 'eval' key indicates if the value of the parameter must be expanded in turn (if true), or used verbatim (if false). The 'text' is the value of the parameter. I<Returns>: the result of the expand of the macro, or undef to not replace the macro by something (the macro is used as-is).
 
 =back
 
