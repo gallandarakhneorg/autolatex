@@ -20,20 +20,75 @@
 % Modifications:
 %
 
-\global\edef\autolatex@package@ver{2013/05/20}
+\global\edef\autolatex@package@ver{2013/05/30}
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{autolatex}[\autolatex@package@ver]
+
+\RequirePackage{graphicx}
+\RequirePackage{keyval}
 
 %----------------------------------------
 % IMAGES INCLUDING TeX EXPRESSIONS
 %----------------------------------------
 
+\providecommand\@autolatex@wtfig@extensions{}
+\gdef\@autolatex@wtfig@width{!}
+\gdef\@autolatex@wtfig@height{!}
+\define@key{autolatexwithtex}{width}{%
+	\gdef\@autolatex@wtfig@width{#1}%
+}
+\define@key{autolatexwithtex}{height}{%
+	\gdef\@autolatex@wtfig@height{#1}%
+}
+
 %-----
-%\includefigurewtex{width}{filename}
-\newcommand{\includefigurewtex}[2][]{%
+%\DeclareGraphicsExtensionsWtex{coma separated extensions}
+\newcommand\DeclareGraphicsExtensionsWtex[1]{%
+	\edef\@autolatex@wtfig@extensions{\zap@space#1 \@empty}%
+}
+\DeclareGraphicsExtensionsWtex{.pdftex_t,.pstex_t}
+
+\newcommand{\@autolatex@wtfig@searchinpath}[1]{%
+	\IfFileExists{#1}{%
+		\protected@edef\@autolatex@wtfig@tmp{\protect\resizebox{\@autolatex@wtfig@width}{\@autolatex@wtfig@height}{\protect\input{#1}}}%
+	}{%
+		\@for\@autolatex@wtfig@pathtmp:=\Ginput@path\do{%
+			\ifx\@autolatex@wtfig@tmp\relax%
+				\IfFileExists{\@autolatex@wtfig@pathtmp#1}{%
+					\protected@edef\@autolatex@wtfig@tmp{\protect\resizebox{\@autolatex@wtfig@width}{\@autolatex@wtfig@height}{\protect\input{\@autolatex@wtfig@pathtmp#1}}}%
+				}{}%
+			\fi%
+		}%
+	}%
+}
+
+%-----
+%\includefigurewtex{width=xx,height=yy}{filename}
+\newcommand{\includefigurewtex}[2][width=\linewidth]{%
 	\begingroup%
-	\resizebox{#1}{!}{\input{#2.pdftex_t}}%
+	\setkeys{autolatexwithtex}{#1}%
+	%
+	\global\let\@autolatex@wtfig@tmp\relax%
+	\global\let\@autolatex@wtfig@ext\relax%
+	\global\let\@autolatex@wtfig@path\relax%
+	\filename@parse{#2}%
+	\ifx\filename@ext\relax%
+		\@for\@autolatex@wtfig@exttmp:=\@autolatex@wtfig@extensions\do{%
+			\@autolatex@wtfig@searchinpath{#2\@autolatex@wtfig@exttmp}%
+		}%
+	\else%
+		\@autolatex@wtfig@searchinpath{#2\@autolatex@wtfig@exttmp}%
+	\fi%
+	%
+	\ifx\@autolatex@wtfig@tmp\relax%
+		\errmessage{Package autolatex: File not found '#2', needed for figure inclusion.}%
+	\else%
+		\@autolatex@wtfig@tmp%
+	\fi%
+	%
+	\gdef\@autolatex@fig@width{!}
+	\gdef\@autolatex@fig@height{!}
 	\endgroup%
 }
 
