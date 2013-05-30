@@ -59,7 +59,7 @@ sub analyzeCommandLineOptions(\%) {
 	$_[0]->{'__private__'}{'config.command line'} = {};
 	my $realcfg = $_[0];
 	my $cfg = \%{$_[0]->{'__private__'}{'config.command line'}};
-	my $debugLevel = 1;
+	my $debugLevel = 0;
 
 	Getopt::Long::Configure ("bundling");
 	if (!GetOptions(
