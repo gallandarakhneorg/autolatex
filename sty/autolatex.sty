@@ -32,9 +32,7 @@
 % IMAGES INCLUDING TeX EXPRESSIONS
 %----------------------------------------
 
-\providecommand\@autolatex@wtfig@extensions{}
-\gdef\@autolatex@wtfig@width{!}
-\gdef\@autolatex@wtfig@height{!}
+\providecommand{\@autolatex@wtfig@extensions}{}
 \define@key{autolatexwithtex}{width}{%
 	\gdef\@autolatex@wtfig@width{#1}%
 }
@@ -44,8 +42,8 @@
 
 %-----
 %\DeclareGraphicsExtensionsWtex{coma separated extensions}
-\newcommand\DeclareGraphicsExtensionsWtex[1]{%
-	\edef\@autolatex@wtfig@extensions{\zap@space#1 \@empty}%
+\providecommand{\DeclareGraphicsExtensionsWtex}[1]{%
+	\xdef\@autolatex@wtfig@extensions{\zap@space#1 \@empty}%
 }
 \DeclareGraphicsExtensionsWtex{.pdftex_t,.pstex_t}
 
@@ -65,8 +63,10 @@
 
 %-----
 %\includefigurewtex{width=xx,height=yy}{filename}
-\newcommand{\includefigurewtex}[2][width=\linewidth]{%
+\providecommand{\includefigurewtex}[2][width=\linewidth]{%
 	\begingroup%
+	\gdef\@autolatex@wtfig@width{!}
+	\gdef\@autolatex@wtfig@height{!}
 	\setkeys{autolatexwithtex}{#1}%
 	%
 	\global\let\@autolatex@wtfig@tmp\relax%
@@ -87,8 +87,6 @@
 		\@autolatex@wtfig@tmp%
 	\fi%
 	%
-	\gdef\@autolatex@fig@width{!}
-	\gdef\@autolatex@fig@height{!}
 	\endgroup%
 }
 
