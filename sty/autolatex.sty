@@ -45,7 +45,7 @@
 \providecommand{\DeclareGraphicsExtensionsWtex}[1]{%
 	\xdef\@autolatex@wtfig@extensions{\zap@space#1 \@empty}%
 }
-\DeclareGraphicsExtensionsWtex{.pdftex_t,.pstex_t}
+\DeclareGraphicsExtensionsWtex{.pdftex_t,.pstex_t,.pdf_tex,.ps_tex}
 
 \newcommand{\@autolatex@wtfig@searchinpath}[1]{%
 	\IfFileExists{#1}{%
@@ -89,5 +89,7 @@
 	%
 	\endgroup%
 }
+
+\global\let\includegraphicswtex\includefigurewtex
 
 \endinput
