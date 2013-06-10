@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::TeXDependencyAnalyzer;
 
-$VERSION = '1.0';
+$VERSION = '2.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getDependenciesOfTeX ) ;
 @EXPORT_OK = qw();
@@ -145,6 +145,9 @@ sub _expandMacro($$@) : method {
 	elsif ( $macro eq '\\usepackage' || $macro eq '\\RequirePackage' ) {
 		my $sty = $_[1]{'text'};
 		my $styFile = "$sty.sty";
+		if ($sty eq 'multibib') {
+			$self->{'is_multibib'} = 1;
+		}
 		if (!File::Spec->file_name_is_absolute($styFile)) {
 			$styFile = File::Spec->catfile($self->{'dirname'}, "$styFile");
 		}
@@ -180,7 +183,7 @@ sub _expandMacro($$@) : method {
 	}
 	elsif ($macro =~ /^\\bibliography(.*)$/s ) {
 		my $bibdb = $1;
-		$bibdb = $self->{'basename'} unless ($bibdb);
+		$bibdb = $self->{'basename'} unless ($bibdb && $self->{'is_multibib'});
 		foreach my $param (@_) {
 			my $value = $param->{'text'};
 			if ($value) {
