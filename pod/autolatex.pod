@@ -388,6 +388,40 @@ the same name as the source, except that the '.gz' was removed from the name.
 
 =back
 
+=item B<Diagram Editor (dia) to TeX embedded in Portable Document Format (pdf+tex)>
+
+PDF part:
+
+=over 12
+
+=item Name:                              dia2pdf+tex
+
+=item Use external converter:            dia
+
+=item Use translator:
+
+=item Input format:                      .dia_tex .diat .diatex .dia+tex
+
+=item Output format:                     .pdf
+
+=back
+
+TeX part:
+
+=over 12
+
+=item Name:                              dia2pdf+tex
+
+=item Use external converter:            dia
+
+=item Use translator:            
+
+=item Input format:                      .dia_tex .diat .diatex .dia+tex
+
+=item Output format:                     .pdftex_t
+
+=back
+
 =item B<Dot Graphviz (dot) to Portable Document Format (pdf)>
 
 =over 12
@@ -476,7 +510,7 @@ the same name as the source, except that the '.gz' was removed from the name.
 
 =item Use external converter:            fig2dev
 
-=item Use translatr:            
+=item Use translator:            
 
 =item Input format:                      .fig
 
@@ -744,6 +778,39 @@ TeX part:
 
 =back
 
+=item B<Scalable Vector Graphic (svg) to TeX embedded in Portable Document Format (pdf+tex)>
+
+PDF part:
+
+=over 12
+
+=item Name:                              svg2pdf+tex
+
+=item Use external converter:            inkscape
+
+=item Use translator:                    eps2pdf
+
+=item Input format:                      .svg_tex .svgt .svgtex .svg+tex
+
+=item Output format:                     .pdf
+
+=back
+
+TeX part:
+
+=over 12
+
+=item Name:                              svg2pdf+tex
+
+=item Use external converter:            inkscape
+
+=item Use translator:            
+
+=item Input format:                      .svg_tex .svgt .svgtex .svg+tex
+
+=item Output format:                     .pdftex_t
+
+=back
 
 =item B<Scalable Vector Graphic (svg) to Portable Network Graphic (png)>
 
@@ -817,9 +884,21 @@ AutoLaTeX provides a LaTeX style called C<autolatex.sty>. It provides the follow
 
 =over 4
 
-=item B<\includefigurewtex{width}{filename}>
+=item B<\includegraphicswtex[options]{filename}>
 
-include a figure from a .pdftex_t file.
+include a figure with combined TeX macros. The filename must have one of the following extensions: C<.pdftex_t>, C<.pdftex_t>, C<.pstex_t>, C<.pdf_tex>, C<.ps_tex>. The B<options> must one of: C<width=XX>, or C<height=XX>; where C<XX> is a length.
+
+=item B<\includefigurewtex[options]{filename}>
+
+same as B<\includegraphicswtex>.
+
+=item B<\DeclareGraphicsExtensionsWtex{extensions}>
+
+permits to define the filename extensions that are used by B<\includegraphicswtex> to find the figure files.
+
+=item B<\graphicspath{{path1},{path2}...}>
+
+is the macros from the TeX package 'graphicx.sty'. It permits to define the search paths for the figures.
 
 =back
 
