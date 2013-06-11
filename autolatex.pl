@@ -24,6 +24,7 @@ use strict ;
 
 use File::Basename ;
 use File::Spec ;
+use File::Copy ;
 use Carp;
 
 #------------------------------------------------------
