@@ -570,6 +570,7 @@ sub al_run_makeflat {
 #------------------------------------------------------
 
 # script parameters
+setDebugLevel(1);
 %configuration = mainProgram(); # Exit on error
 
 if (getDebugLevel()>=6) {

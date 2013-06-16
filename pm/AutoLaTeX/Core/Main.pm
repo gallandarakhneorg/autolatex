@@ -59,13 +59,12 @@ sub analyzeCommandLineOptions(\%) {
 	$_[0]->{'__private__'}{'config.command line'} = {};
 	my $realcfg = $_[0];
 	my $cfg = \%{$_[0]->{'__private__'}{'config.command line'}};
-	my $debugLevel = 0;
+	my $debugLevel = getDebugLevel();
 
 	Getopt::Long::Configure ("bundling");
 	if (!GetOptions(
 
 		'auto!' => sub { $cfg->{'generation.generate images'} = ($_[1] ? 'yes' : 'no'); },
-
 		'imgdirectory=s' => sub { $cfg->{'generation.image directory'} = $_[1]; },
 
 		'createconfig:s' => \$realcfg->{'__private__'}{'action.create config file'},

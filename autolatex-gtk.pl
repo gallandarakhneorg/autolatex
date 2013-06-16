@@ -75,6 +75,7 @@ setlocale(LC_MESSAGES, "");
 #
 #------------------------------------------------------
 
+setDebugLevel(0);
 my %currentConfiguration = mainProgram(0);
 
 my %systemConfiguration = readOnlySystemConfiguration();
