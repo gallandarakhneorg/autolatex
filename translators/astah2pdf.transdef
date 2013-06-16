@@ -148,6 +148,11 @@ TRANSLATOR_FUNCTION =<<EOL {
 				&& $fn =~ /\.svg$/s) {
 			my $svgFile = File::Spec->catfile("$astahOutputDir", "$fn");
 			push @generatedFiles, "$svgFile";
+
+			# Remove the background
+			my $svgcontent = readFileLines("$svgFile");
+			$svgcontent =~ s/\Q<rect\E\s+.*?\/?>//s;
+			writeFileLines("$svgFile", "$svgcontent");
 		}
 	}
 	closedir(*OUTDIR);
