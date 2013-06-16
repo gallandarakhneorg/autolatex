@@ -48,6 +48,7 @@
 \DeclareGraphicsExtensionsWtex{.pdftex_t,.pstex_t,.pdf_tex,.ps_tex}
 
 \newcommand{\@autolatex@wtfig@searchinpath}[1]{%
+	\global\let\@autolatex@wtfig@tmp\relax%
 	\IfFileExists{#1}{%
 		\protected@edef\@autolatex@wtfig@tmp{\protect\resizebox{\@autolatex@wtfig@width}{\@autolatex@wtfig@height}{\protect\input{#1}}}%
 	}{%
