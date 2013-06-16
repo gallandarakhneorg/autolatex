@@ -425,8 +425,10 @@ sub runLaTeX($;$) : method {
 		if ($exitcode!=0) {
 			printDbg(locGet(_T("{}: Error when generating {}"), 'PDFLATEX', basename($file)));
 			open(*LOGFILE, "< $logFile") or printErr("$logFile: $!");
-			my $step = -1;
-			while ($step!=0 && (my $line = <LOGFILE>)) {
+			printDbg(locGet(_T("{}: The first error found in the log file is:"), 'PDFLATEX'));
+			my $step = 0;
+			my $line;
+			while (($line = <LOGFILE>) && ($step!=1)) {
 				if ($step>1) {
 					print STDERR "$line";
 					$step--;
@@ -436,6 +438,7 @@ sub runLaTeX($;$) : method {
 					$step = 15;
 				}
 			}
+			printDbg(locGet(_T("{}: End of error log."), 'PDFLATEX'));
 			close(*LOGFILE);
 			exit($exitcode);
 		}

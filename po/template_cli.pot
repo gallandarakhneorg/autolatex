@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-29 20:25+0200\n"
+"POT-Creation-Date: 2013-06-16 15:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,8 +49,8 @@ msgstr ""
 
 #: pm/AutoLaTeX/Core/Util.pm:592 pm/AutoLaTeX/Core/Util.pm:647
 #: pm/AutoLaTeX/Core/Util.pm:652 pm/AutoLaTeX/Make/Make.pm:419
-#: pm/AutoLaTeX/Make/Make.pm:519 pm/AutoLaTeX/Make/Make.pm:835
-#: pm/AutoLaTeX/Make/Make.pm:854
+#: pm/AutoLaTeX/Make/Make.pm:530 pm/AutoLaTeX/Make/Make.pm:846
+#: pm/AutoLaTeX/Make/Make.pm:865
 msgid "{}: {}"
 msgstr ""
 
@@ -223,40 +223,40 @@ msgstr ""
 msgid "Reading command line options"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:77 pm/AutoLaTeX/Core/Main.pm:151
-#: pm/AutoLaTeX/Core/Main.pm:166
+#: pm/AutoLaTeX/Core/Main.pm:76 pm/AutoLaTeX/Core/Main.pm:150
+#: pm/AutoLaTeX/Core/Main.pm:165
 msgid "Command line option '{}' is deprecated."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:180
+#: pm/AutoLaTeX/Core/Main.pm:179
 msgid ""
 "{} {} ({}) - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:188
+#: pm/AutoLaTeX/Core/Main.pm:187
 msgid ""
 "{} {} - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:235 pm/AutoLaTeX/Core/Main.pm:252
+#: pm/AutoLaTeX/Core/Main.pm:234 pm/AutoLaTeX/Core/Main.pm:251
 msgid "Selecting TeX file '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:238
+#: pm/AutoLaTeX/Core/Main.pm:237
 msgid "Detecting several TeX files: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:299
+#: pm/AutoLaTeX/Core/Main.pm:298
 msgid "Detecting TeX file from project's configuration: '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:330
+#: pm/AutoLaTeX/Core/Main.pm:329
 msgid "Using TeX file '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:333
+#: pm/AutoLaTeX/Core/Main.pm:332
 msgid ""
 "No LaTeX file found nor specified for the directory '{}'.\n"
 " You must specify one on the command line option -f, or set the the variable "
@@ -264,25 +264,25 @@ msgid ""
 "'Main.tex'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:338
+#: pm/AutoLaTeX/Core/Main.pm:337
 msgid "Applying command line options"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:411
+#: pm/AutoLaTeX/Core/Main.pm:410
 msgid "Selecting project's style for MakeIndex: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:415
+#: pm/AutoLaTeX/Core/Main.pm:414
 msgid ""
 "Unable to selected a project's style for MakeIndex: no file or too many .ist "
 "files in directory {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:420
+#: pm/AutoLaTeX/Core/Main.pm:419
 msgid "Selecting the system default style for MakeIndex"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:424
+#: pm/AutoLaTeX/Core/Main.pm:423
 msgid "Unselecting any style for MakeIndex"
 msgstr ""
 
@@ -340,8 +340,8 @@ msgstr ""
 msgid "{}: file not found or not readable."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:841 pm/AutoLaTeX/Make/Make.pm:503
-#: pm/AutoLaTeX/Make/Make.pm:581 pm/AutoLaTeX/Make/Make.pm:622
+#: pm/AutoLaTeX/Core/Translator.pm:841 pm/AutoLaTeX/Make/Make.pm:514
+#: pm/AutoLaTeX/Make/Make.pm:592 pm/AutoLaTeX/Make/Make.pm:633
 msgid "{} is up-to-date."
 msgstr ""
 
@@ -443,23 +443,31 @@ msgstr ""
 msgid "{}: Error when generating {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:527
+#: pm/AutoLaTeX/Make/Make.pm:428
+msgid "{}: The first error found in the log file is:"
+msgstr ""
+
+#: pm/AutoLaTeX/Make/Make.pm:441
+msgid "{}: End of error log."
+msgstr ""
+
+#: pm/AutoLaTeX/Make/Make.pm:538
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:530
+#: pm/AutoLaTeX/Make/Make.pm:541
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:533
+#: pm/AutoLaTeX/Make/Make.pm:544
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:541
+#: pm/AutoLaTeX/Make/Make.pm:552
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:858
+#: pm/AutoLaTeX/Make/Make.pm:869
 msgid "Style file: {}"
 msgstr ""
