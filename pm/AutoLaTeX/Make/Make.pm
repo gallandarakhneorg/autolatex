@@ -75,7 +75,7 @@ use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '2.0';
+our $VERSION = '3.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -425,8 +425,16 @@ sub runLaTeX($;$) : method {
 		if ($exitcode!=0) {
 			printDbg(locGet(_T("{}: Error when generating {}"), 'PDFLATEX', basename($file)));
 			open(*LOGFILE, "< $logFile") or printErr("$logFile: $!");
-			while (my $line = <LOGFILE>) {
-				print STDERR "$line";
+			my $step = -1;
+			while ($step!=0 && (my $line = <LOGFILE>)) {
+				if ($step>1) {
+					print STDERR "$line";
+					$step--;
+				}
+				elsif ($line =~ /^\!/) {
+					print STDERR "$line";
+					$step = 15;
+				}
 			}
 			close(*LOGFILE);
 			exit($exitcode);
