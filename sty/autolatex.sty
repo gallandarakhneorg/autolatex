@@ -1,5 +1,5 @@
 % autolatex - autolatex.sty
-% Copyright (C) 1998-20  Stephane Galland <galland@arakhne.org>
+% Copyright (C) 1998-2013  Stephane Galland <galland@arakhne.org>
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 \DeclareGraphicsExtensionsWtex{.pdftex_t,.pstex_t,.pdf_tex,.ps_tex}
 
 \newcommand{\@autolatex@wtfig@searchinpath}[1]{%
-	\global\let\@autolatex@wtfig@tmp\relax%
 	\IfFileExists{#1}{%
 		\protected@edef\@autolatex@wtfig@tmp{\protect\resizebox{\@autolatex@wtfig@width}{\@autolatex@wtfig@height}{\protect\input{#1}}}%
 	}{%
