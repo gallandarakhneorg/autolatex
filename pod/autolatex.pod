@@ -828,6 +828,56 @@ TeX part:
 
 =back
 
+=item B<Scalable Vector Graphic with layers (svg) to Beamer Overlays>
+
+=over 12
+
+=item Name:                              svg2pdf+layers
+
+=item Use external converter:            inkscape
+
+=item Use translator:                    
+
+=item Input format:                      .svgl .svg_layers .svg+layers
+
+=item Output format:                     .pdftex_t .pdf
+
+=back
+
+=item B<Scalable Vector Graphic with layers (svg) to TeX embedded in Beamer Overlays>
+
+PDF part:
+
+=over 12
+
+=item Name:                              svg2pdf+layers+tex
+
+=item Use external converter:            inkscape
+
+=item Use translator:                    
+
+=item Input format:                      .svg_layerstex .svglt .svglayerstex .svg+layers+tex
+
+=item Output format:                     .pdf
+
+=back
+
+TeX part:
+
+=over 12
+
+=item Name:                              svg2pdf+layers+tex
+
+=item Use external converter:            inkscape
+
+=item Use translator:            
+
+=item Input format:                      .svg_layerstex .svglt .svglayerstex .svg+layers+tex
+
+=item Output format:                     .pdftex_t
+
+=back
+
 =item B<UML Metadata Interchange (xmi) to Portable Document Format (pdf): Umbrello variante>
 
 =over 12
@@ -891,6 +941,29 @@ include a figure with combined TeX macros. The filename must have one of the fol
 =item B<\includefigurewtex[options]{filename}>
 
 same as B<\includegraphicswtex>.
+
+=item B<\includeanimatedfigure[options]{filename}>
+
+include the layers of a figure in a Beamer presentation. The different layers are assumed to
+be in separate PDF files. The figure is then a TeX file that is including the PDF files inside
+a Beamer-compatible environment. The filename must have one of the following extensions: C<.pdftex_t>, C<.pdftex_t>, C<.pstex_t>, C<.pdf_tex>, C<.ps_tex>. The B<options> must one of: C<width=XX>, or C<height=XX>; where C<XX> is a length.
+
+By default, a layer is replacing the previous layer when it is displayed. You could change
+the overlay specification by adding the string C<"spec"> in the title of the layer in your SVG
+editor. The C<spec> part is the specification of the slide numbers on which the layer should
+appear in Beamer. For example, C<2> means 'only on the slide 2'; C<6-> means 'from slide 6 to the end'.
+
+=item B<\includeanimatedfigurewtex[options]{filename}>
+
+include the layers of a figure combined with TeX macros in a Beamer presentation.
+The different layers are assumed to be in separate PDF files. The figure is then
+a TeX file that is including the PDF files inside a Beamer-compatible environment.
+The filename must have one of the following extensions: C<.pdftex_t>, C<.pdftex_t>, C<.pstex_t>, C<.pdf_tex>, C<.ps_tex>. The B<options> must one of: C<width=XX>, or C<height=XX>; where C<XX> is a length.
+
+By default, a layer is replacing the previous layer when it is displayed. You could change
+the overlay specification by adding the string C<"spec"> in the title of the layer in your SVG
+editor. The C<spec> part is the specification of the slide numbers on which the layer should
+appear in Beamer. For example, C<2> means 'only on the slide 2'; C<6-> means 'from slide 6 to the end'.
 
 =item B<\DeclareGraphicsExtensionsWtex{extensions}>
 

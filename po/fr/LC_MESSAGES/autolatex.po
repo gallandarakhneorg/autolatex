@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-16 15:04+0200\n"
+"POT-Creation-Date: 2013-06-18 17:37+0200\n"
 "PO-Revision-Date: 2013-05-21 21:37+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -341,19 +341,19 @@ msgstr "Utilisation du style par défaut pour MakeIndex"
 msgid "Unselecting any style for MakeIndex"
 msgstr "Ignore les styles pour MakeIndex"
 
-#: pm/AutoLaTeX/Core/Translator.pm:155
+#: pm/AutoLaTeX/Core/Translator.pm:161
 msgid "Translate {} to {} with {} alternative"
 msgstr "Convertit {} vers {} avec la variante {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:161
+#: pm/AutoLaTeX/Core/Translator.pm:167
 msgid "Translate {} to {}"
 msgstr "Convertoit {} vers {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:210
+#: pm/AutoLaTeX/Core/Translator.pm:216
 msgid "Get translator list from {}"
 msgstr "Calcul de la liste des convertisseurs depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:296
+#: pm/AutoLaTeX/Core/Translator.pm:303
 msgid ""
 "Several possibilities exist for generating a figure from a {} file:\n"
 "{}\n"
@@ -379,19 +379,19 @@ msgstr ""
 "\n"
 "{}\n"
 
-#: pm/AutoLaTeX/Core/Translator.pm:404
+#: pm/AutoLaTeX/Core/Translator.pm:411
 msgid "Get loadable translators from {}"
 msgstr "Calcul des convertisseurs chargeables depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:418
+#: pm/AutoLaTeX/Core/Translator.pm:425
 msgid "Translator {} is ignored"
 msgstr "Le convertisseur {} est ignoré"
 
-#: pm/AutoLaTeX/Core/Translator.pm:499
+#: pm/AutoLaTeX/Core/Translator.pm:506
 msgid "Get translators from {}"
 msgstr "Chargement des convertisseurs depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:631
+#: pm/AutoLaTeX/Core/Translator.pm:638
 msgid ""
 "The block for the variable '{}' is not closed. Keyword '{}' was not found "
 "({}:{})."
@@ -399,7 +399,7 @@ msgstr ""
 "Le bloc pour la variable '{}' n'est pas fermé. Le mot-clé '{}' n'a pas été "
 "trouvé ({}:{})."
 
-#: pm/AutoLaTeX/Core/Translator.pm:769
+#: pm/AutoLaTeX/Core/Translator.pm:782
 msgid ""
 "You cannot call runTranslator() outside the call stack of runRootTranslator"
 "()."
@@ -407,20 +407,20 @@ msgstr ""
 "Vous ne pouvez pas appeller runTranslator() en dehors d'un appel à "
 "runRootTranslator()."
 
-#: pm/AutoLaTeX/Core/Translator.pm:802
+#: pm/AutoLaTeX/Core/Translator.pm:815
 msgid "{}: file not found or not readable."
 msgstr "{}: fichier non trouvé ou non lisible."
 
-#: pm/AutoLaTeX/Core/Translator.pm:841 pm/AutoLaTeX/Make/Make.pm:514
+#: pm/AutoLaTeX/Core/Translator.pm:854 pm/AutoLaTeX/Make/Make.pm:514
 #: pm/AutoLaTeX/Make/Make.pm:592 pm/AutoLaTeX/Make/Make.pm:633
 msgid "{} is up-to-date."
 msgstr "{} est à jour."
 
-#: pm/AutoLaTeX/Core/Translator.pm:847
+#: pm/AutoLaTeX/Core/Translator.pm:860
 msgid "{} -> {}"
 msgstr "{} -> {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:900
+#: pm/AutoLaTeX/Core/Translator.pm:913
 #, fuzzy
 msgid ""
 "Error inthe TRANSLATOR_FUNCTION of '{}':\n"
@@ -429,29 +429,29 @@ msgstr ""
 "Erreur dans la définition TRANSLATOR_FUNCTION de '{}':\n"
 "{}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:904
+#: pm/AutoLaTeX/Core/Translator.pm:917
 msgid "Unable to find the method of translation for '{}'."
 msgstr "Impossible de trouver un convertisseur pour '{}'."
 
-#: pm/AutoLaTeX/Core/Translator.pm:940
+#: pm/AutoLaTeX/Core/Translator.pm:953
 #, fuzzy
 msgid "Searching translator '{}'."
 msgstr "Chargement des convertisseurs depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:961
+#: pm/AutoLaTeX/Core/Translator.pm:974
 #, fuzzy
 msgid "The translator '{}' cannot be found."
 msgstr "Le convertisseur '{}' est ignoré."
 
-#: pm/AutoLaTeX/Core/Translator.pm:966
+#: pm/AutoLaTeX/Core/Translator.pm:979
 msgid "Linking '{}' to '{}'."
 msgstr "Création d'un alias de '{}' vers '{}'."
 
-#: pm/AutoLaTeX/Core/Translator.pm:973
+#: pm/AutoLaTeX/Core/Translator.pm:986
 msgid "'{}' is already loaded."
 msgstr "'{}' est déjà chargé."
 
-#: pm/AutoLaTeX/Core/Translator.pm:976
+#: pm/AutoLaTeX/Core/Translator.pm:989
 #, fuzzy
 msgid "Loading translator '{}'."
 msgstr "Calcul des convertisseurs chargeables depuis {}"
