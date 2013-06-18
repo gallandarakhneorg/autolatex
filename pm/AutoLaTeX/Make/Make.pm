@@ -75,7 +75,7 @@ use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '3.0';
+our $VERSION = '4.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -428,7 +428,7 @@ sub runLaTeX($;$) : method {
 			printDbg(locGet(_T("{}: The first error found in the log file is:"), 'PDFLATEX'));
 			my $step = 0;
 			my $line;
-			while (($line = <LOGFILE>) && ($step!=1)) {
+			while (*LOGFILE && ($line = <LOGFILE>) && ($step!=1)) {
 				if ($step>1) {
 					print STDERR "$line";
 					$step--;
