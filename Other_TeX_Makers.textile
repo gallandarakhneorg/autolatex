@@ -5,7 +5,7 @@ This file compares several features of TeX makers from CTAN (including AutoLaTeX
 table{border:1px solid black}.
 |_/2. Maker |_/2. Type |_/2. Date |_/2. Supported Tools |_\3. Detect Changes |_\3. Automatic File Convertions |_/2. Export to Elsevier |_/2. GUI |
 |_. TeX |_. BibTeX |_. Images |_. To PS/PDF/PNG |_. To TeX |_. To PSTeX/PDFTeX |
-|<. "AutoLaTeX":http://www.ctan.org/pkg/autolatex |=. Perl |=. 2013 |=. latex, pdflatex, xelatex, lualatex, bibtex, makeindex, dvips |=. X |=. X |=. X |=. asta, dia, dot, fig, gxl, odg, plot, svg, xmi |=. c/c++, java, matlab, ml, perl, python, ruby, sql |=. fig, plot, dia, svg |=. X |=. X |
+|<. "AutoLaTeX":http://www.ctan.org/pkg/autolatex |=. Perl |=. 2013 |=. latex, pdflatex, xelatex, lualatex, bibtex, makeindex, dvips |=. X |=. X |=. X |=. asta, dia, dot, fig, gxl, odg, plot, svg, xmi |=. c/c++, java, matlab, ml, perl, python, ruby, sql, svg layers |=. fig, plot, dia, svg, svg layers |=. X |=. X |
 |<. "go-make":http://www.ctan.org/pkg/go-make |=. Perl |=. 1993 |=. latex, dvips, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
 |<. "latex-make":http://www.ctan.org/pkg/latex-make |=. Makefile |=. 2003 |=. latex, pdflatex, dvips, ps2pdf, bibtex, makeindex |=. X |=.  |=. X |=. fig |=.  |=.  |=.  |=.  |
 |<. "latexmk":http://www.ctan.org/pkg/latexmk/ |=. Perl |=. 2012 |=. latex, dvips, dvipdf, pdflatex, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
