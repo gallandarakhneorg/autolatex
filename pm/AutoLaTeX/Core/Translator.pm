@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '7.0';
+$VERSION = '8.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -120,11 +120,17 @@ sub extractTranslatorNameComponents($) {
 		my $osource = "$source";
 		my $basename = "${source}2${target}${target2}";
 		if ($target2) {
-			if ($target2 ne 'tex') {
-				$target .= "+$target2";
+			if ($target2 eq 'tex') {
+				$source = "ltx.$source";
+			}
+			elsif ($target2 eq 'layers') {
+				$source = "layers.$source";
+			}
+			elsif ($target2 eq 'layers+tex' || $target2 eq 'tex+layers') {
+				$source = "layers.ltx.$source";
 			}
 			else {
-				$source = "ltx.$source";
+				$target .= "+$target2";
 			}
 		}
 		return { 'name' => $name, 'full-source' => $source, 'source' => $osource, 'target' => $target, 'variante' => $variante, 'basename' => $basename };
@@ -264,6 +270,7 @@ sub resolveConflicts(\%) {
 	my $includedTranslators = shift;
 	my %bysources = ();
 	# The targets with "*+tex" are translated into sources "ltx.*"
+	# The targets with "*+layers" are translated into sources "layers.*"
 	while (my ($trans,$transfile) = each (%{$includedTranslators})) {
 		my $components = extractTranslatorNameComponents($trans);
 		if ($components) {
@@ -663,10 +670,16 @@ sub readTranslatorFile($$) {
 	if (exists $content{'TRANSLATOR_PERL_DEPENDENCIES'}{'value'}) {
 		my @exts = split(/\s+/, ($content{'TRANSLATOR_PERL_DEPENDENCIES'}{'value'} || ''));
 		$content{'TRANSLATOR_PERL_DEPENDENCIES'}{'value'} = [];
-		foreach my $e (@exts) {
-			if ($e !~ /^\^s*$/) {
-				push @{$content{'TRANSLATOR_PERL_DEPENDENCIES'}{'value'}}, $e;
+		while (@exts) {
+			my $e = shift @exts;
+			if ($exts[0] &&
+			    ( ($exts[0] =~ /^\Q'\E.*?\Q'\E$/) ||
+			      ($exts[0] =~ /^\Qqw(\E.+?\Q)\E$/) ||
+			      ($exts[0] =~ /^\Qqw{\E.+?\Q}\E$/))) {
+				my $p = shift @exts;
+				$e .= " $p";
 			}
+			push @{$content{'TRANSLATOR_PERL_DEPENDENCIES'}{'value'}}, $e;
 		}
 	}
 

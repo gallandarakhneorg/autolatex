@@ -16,57 +16,15 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+#--------------------------------------------
+# See template.txt for details on the fields
+#--------------------------------------------
 
-############################################
-# NOTE:
-#
-# All the options in this file could be postfixed by the keyword
-# "for pdf" or "for eps". The keywords "for pdf" indicates that the
-# option must be used in PDF mode generation only;
-# the keywords "for eps" indicates that the option must be used in
-# EPS mode generation only;
-# otherwise the option is used in both modes.
-#
-# The prefix must be written between the name of the option and the
-# sign "=".
-############################################
-
-
-# A list of extensions (separated by spaces) of the input files.
 INPUT_EXTENSIONS = .dot
 
-# A list of extensions (separated by spaces) of the output files.
 OUTPUT_EXTENSIONS for pdf = .pdf
 OUTPUT_EXTENSIONs for eps = .eps
 
-# Command line to invoke to translate the files from input to output.
-# $in is the environment variable for the input filename.
-# $out is the environment variable for the output filename.
-# You could use environment variables by prefixing them with the character
-# "$", even on Window operating systems. We decide to use the Unix standard
-# to obtain a single configuration file for all the operating systems.
-# If the command line is empty, you must define a Perl function in
-# the variable TRANSLATOR_FUNCTION.
-# The space characters are used to split the command line into parameters.
-# To put a space character in a parameter, you must enclose the string with
-# quotes.
-;COMMAND_LINE =
-
-# List of perl packages (separated by spaces) that must be included to run the TRANSLATOR_FUNCTION,
-# excluding the AutoLaTeX Core libraries and the following libraries:
-# AutoLaTeX::Core::Util AutoLaTeX::Core::Locale AutoLaTeX::Core::OS
-# File::Spec File::Path File::Basename File::Copy
-;TRANSLATOR_PERL_DEPENDENCIES = 
-
-# Perl code to invoke to translate the files from input to output.
-# $in is the environment variable for the input filename.
-# $out is the environment variable for the output filename.
-# @inexts is the array of the extensions defined in variable INPUT_EXTENSIONS.
-# $outext is the extension defined in variable OUTPUT_EXTENSION.
-# $ispdfmode indicates if the translator is used in PDF mode.
-# $isepsmode indicates if the translator is used in EPS mode.
-# If the command line is empty, you must define a Perl function in 
-# the variable TRANSLATOR_FUNCTION.
 TRANSLATOR_FUNCTION =<<EOL {
 	if ($ispdfmode) {
 		runCommandOrFail('dot', '-Tpdf', "$in", '-o', "$out");
@@ -81,10 +39,4 @@ TRANSLATOR_FUNCTION =<<EOL {
 	}
 }
 EOL
-
-# List of patterns that are representing the output files to remove when cleaning.
-# The syntax of the variable is a space-separated list of shell patterns.
-# $in is the basename (without the extension) of the input file.
-;FILES_TO_CLEAN = 
-
 

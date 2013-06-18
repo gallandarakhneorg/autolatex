@@ -20,16 +20,17 @@
 % Modifications:
 %
 
-\global\edef\autolatex@package@ver{2013/05/30}
+\global\edef\autolatex@package@ver{2013/06/18}
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{autolatex}[\autolatex@package@ver]
 
 \RequirePackage{graphicx}
 \RequirePackage{keyval}
+\RequirePackage{tikz}
 
 %----------------------------------------
-% IMAGES INCLUDING TeX EXPRESSIONS
+% IMAGES INCLUDING TEX EXPRESSIONS
 %----------------------------------------
 
 \providecommand{\@autolatex@wtfig@extensions}{}
@@ -91,5 +92,19 @@
 }
 
 \global\let\includegraphicswtex\includefigurewtex
+
+%----------------------------------------
+% IMAGES WITH LAYERS
+%----------------------------------------
+
+%\includeanimatedfigure[width=xx,height=yy]{filename}
+\global\let\includeanimatedfigure\includegraphicswtex
+
+%----------------------------------------
+% IMAGES WITH LAYERS AND COMBINED TEX
+%----------------------------------------
+
+%\includeanimatedfigurewtex[width=xx,height=yy]{filename}
+\global\let\includeanimatedfigurewtex\includegraphicswtex
 
 \endinput
