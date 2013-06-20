@@ -65,6 +65,7 @@ my %MACROS = (
 	'RequirePackage'		=> '![]!{}',
 	'documentclass'			=> '![]!{}',
 	'includegraphics'		=> '![]!{}',
+	'graphicspath'			=> '![]!{}',
 	'mfigure'			=> '![]!{}!{}!{}!{}',
 	'mfigure*'			=> '![]!{}!{}!{}!{}',
 	'msubfigure'			=> '![]!{}!{}!{}',
@@ -181,22 +182,50 @@ sub _findPicture($) {
 
 	my $filename = $self->_makeFilename($texname);
 	if (!-f $filename) {
-		my @exts = ('.pdf', '.png', '.jpeg', '.jpg', '.tiff', '.gif', '.bmp');
-		my $template = File::Spec->catfile(dirname($filename), basename($filename, @exts));
+		my $ofilename = $filename;
+		my @exts = ('.pdf', '.eps', '.ps', '.png', '.jpeg', '.jpg', '.gif', '.bmp');
+
+		# Search if the registered images
+		my $template = basename($filename, @exts);
 		$filename = '';
-		my $ext;
-		for(my $i=0; !$filename && $i<@exts; $i++)  {
-			$ext = $exts[$i];
-			$filename = "$template$ext";
-			if (!-f $filename) {
-				$filename = undef;
+		if ($self->{'images'}) {
+			my $ext;
+			for(my $k=0; !$filename && $k<@{$self->{'includepaths'}}; $k++) {
+				my $path = $self->{'includepaths'}[$k];
+				for(my $j=0; !$filename && $j<@{$self->{'images'}}; $j++)  {
+					my $img = $self->{'images'}[$j];
+					for(my $i=0; !$filename && $i<@exts; $i++)  {
+						$ext = $exts[$i];
+						my $fullname = File::Spec->catfile($path,"$template$ext");
+						$fullname = $self->_makeFilename($fullname);
+						if (-f $fullname) {
+							$filename = $fullname;
+						}
+					}
+				}
+			}
+		}
+		
+		if (!$filename) {
+			# Search in the folder, from the document directory.
+			$template = File::Spec->catfile(dirname($ofilename), basename($ofilename, @exts));
+			my $ext;
+			for(my $i=0; !$filename && $i<@exts; $i++)  {
+				$ext = $exts[$i];
+				$filename = "$template$ext";
+				if (!-f $filename) {
+					$filename = undef;
+				}
 			}
 		}
 
 		if (!$filename) {
-			printErr(locGet(_T('Picture not found: {}'), $filename));
+			printErr(locGet(_T('Picture not found: {}'), $texname));
 		}
 		else {
+			my $ext;
+			$filename =~ /(\.[^.]+)$/s;
+			$ext = $1 || '';
 			$texname = $self->_uniq($filename, $ext).$ext;
 		}
 	}
@@ -245,6 +274,17 @@ sub _expandMacro($$@) : method {
 		$ret .= '['.$_[0]->{'text'}.']' if ($_[0]->{'text'});
 		$ret .= '{'.$texname.'}';
 		return $ret;
+	}
+	elsif (		$macro eq '\\graphicspath') {
+		my @paths = ();
+		my $t = $_[1]->{'text'}; 
+		while ($t && $t =~ /^\s*(?:(?:\{([^\}]+)\})|([^,]+))\s*[,;]?\s*(.*)$/g) {
+			my $prev = "$t";
+			(my $path, $t) = (($1||$2), $3);
+			push @paths, "$path";
+		}
+		unshift @{$self->{'includepaths'}}, @paths;
+		return '\\graphicspath{{.}}';
 	}
 	elsif (		$macro eq '\\mfigure' || $macro eq '\\mfigure*' ||
 			$macro eq '\\mfiguretex' || $macro eq '\\mfiguretex*') {
@@ -373,6 +413,7 @@ sub _new($$$$) : method {
 			'file' => $_[0],
 			'output' => $_[1],
 			'images' => $_[2],
+			'includepaths' => [ File::Spec->curdir() ],
 			'usebibtex' => $_[3],
 			'outputString' => \&_outputString,
 			'expandMacro' => \&_expandMacro,
