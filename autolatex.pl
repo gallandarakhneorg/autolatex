@@ -274,7 +274,7 @@ sub al_run_makeandview {
 
 sub al_run_bibtex {
 	my $i_ref = shift;
-	my $make = AutoLaTeX::Make::Make->new(%configuration);
+	my $make = AutoLaTeX::Make::Make->new(\%configuration);
 	$make->enableBibTeX(1);
 	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
 	$make->buildBibTeX();
@@ -282,7 +282,7 @@ sub al_run_bibtex {
 
 sub al_run_makeindex {
 	my $i_ref = shift;
-	my $make = AutoLaTeX::Make::Make->new(%configuration);
+	my $make = AutoLaTeX::Make::Make->new(\%configuration);
 	$make->enableMakeIndex(1);
 	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
 	$make->buildMakeIndex();
