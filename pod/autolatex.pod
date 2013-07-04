@@ -8,28 +8,60 @@ autolatex [options] F<target> [F<target> ...]
 
 =head1 DESCRIPTION
 
-AutoLaTeX is a tool for managing small to large sized LaTeX documents. The user can easily perform all required steps to do such tasks as: preview the document, or produce a PDF file. AutoLaTeX will keep track of files that have changed and how to run the various programs that are needed to produce the output. One of the best feature of AutoLaTeX is to provide translator rules (aka. translators) to automatically generate the figures which will be included into the PDF.
+AutoLaTeX is a tool for managing small to large sized LaTeX
+documents. The user can easily perform all required steps
+to do such tasks as: preview the document, or produce a PDF
+file. AutoLaTeX will keep track of files that have changed
+and how to run the various programs that are needed to
+produce the output. One of the best feature of AutoLaTeX is
+to provide translator rules (aka. translators) to
+automatically generate the figures which will be included
+into the PDF.
 
-As a quick example, consider a project, which has a single LaTeX file C<mydoc.tex>, as its input. Without AutoLaTeX, to produce a C<.pdf> file you might use the following sequence of commands:
+As a quick example, consider a project, which has a single
+LaTeX file F<mydoc.tex>, as its input. Without AutoLaTeX,
+to produce a F<.pdf> file you might use the following
+sequence of commands:
 
-     C<pdflatex mydoc.tex>
-     C<bibtex mydoc.tex>
-     C<pdflatex mydoc.tex>
-     C<pdflatex mydoc.tex>
-     C<pdflatex mydoc.tex>
+     F<pdflatex mydoc.tex>
+     F<bibtex mydoc.tex>
+     F<pdflatex mydoc.tex>
+     F<pdflatex mydoc.tex>
+     F<pdflatex mydoc.tex>
      
-The triple invocation of LaTeX is to ensure that all references have been properly resolved and any page layout changes due to inserting the references have been accounted for. The sequence of commands isn't horrible, but it still is several commands. To use AutoLaTeX for this project, you would use one of the following the command lines:
+The triple invocation of LaTeX is to ensure that all
+references have been properly resolved and any page layout
+changes due to inserting the references have been accounted
+for. The sequence of commands isn't horrible, but it still
+is several commands. To use AutoLaTeX for this project, you
+would use one of the following the command lines:
 
-     C<autolatex -f mydoc.tex>
-     C<autolatex>
+     F<autolatex -f mydoc.tex>
+     F<autolatex>
      
-For documents, which may need to run programs to create the PDF versions of the drawings, which are included into the PDF document, or run BibTeX to generate bibliographies, the generation of the C<.pdf> (or other) files becomes increasingly complicated to run manually. With AutoLaTeX, such operations are still very simple: you have nothing to do. AutoLaTeX is calling the translators for you. Each translator is able to convert an picture source file (eps, svg, GNU plot...) into a PDF or PNG file.
+For documents, which may need to run programs to create the
+PDF versions of the drawings, which are included into the
+PDF document, or run BibTeX to generate bibliographies, the
+generation of the F<.pdf> (or other) files becomes
+increasingly complicated to run manually. With AutoLaTeX,
+such operations are still very simple: you have nothing to
+do. AutoLaTeX is calling the translators for you. Each
+translator is able to convert an picture source file (eps,
+svg, GNU plot...) into a PDF or PNG file.
 
-Hopefully this introduction has provided an adequate example for how AutoLaTeX can simplify the management of LaTeX-based documents. The AutoLaTeX system is simple enough for small projects and powerful enough for large projects. The remainder of this manual will provide complete documentation on the use of AutoLaTeX as well as configuration and installation instructions.
+Hopefully this introduction has provided an adequate
+example for how AutoLaTeX can simplify the management of
+LaTeX-based documents. The AutoLaTeX system is simple enough
+for small projects and powerful enough for large projects.
+The remainder of this manual will provide complete
+documentation on the use of AutoLaTeX as well as
+configuration and installation instructions.
 
 =head1 TARGETS
 
-AutoLaTeX provides a fixed set of targets, the arguments to pass to AutoLaTeX to run a module, for all projects. The default target is B<all>.
+AutoLaTeX provides a fixed set of targets, the arguments to
+pass to AutoLaTeX to run a module, for all projects. The
+default target is B<all>.
 
 The targets provided by AutoLaTeX are:
 
@@ -37,22 +69,25 @@ The targets provided by AutoLaTeX are:
 
 =item B<all>
 
-Same as B<view>, except that the viewer is launched only if the configuration or the
-CLI is enabling the viewer.
+Same as B<view>, except that the viewer is launched only if
+the configuration or the CLI is enabling the viewer.
 
 =item B<bibtex>
 
-Performs all processing that permits to generate the bibliography (bibtex).
+Performs all processing that permits to generate the
+bibliography (bibtex).
 
 =item B<clean>
 
-Cleans the current working directory by removing all LaTeX temp files and other
-temp files created during processing of the project.
+Cleans the current working directory by removing all LaTeX
+temp files and other temp files created during processing
+of the project.
 
 =item B<cleanall>
 
-Same as clean. In addition, emacs ~ files and other backup files are removed.
-The generated figures and the produced PDF are also removed.
+Same as clean. In addition, emacs ~ files and other backup
+files are removed. The generated figures and the produced
+PDF are also removed.
 
 =item B<commit>
 
@@ -60,7 +95,8 @@ Commit the changes into a SCM system (CVS, SVN, GIT).
 
 =item B<gen_doc>
 
-Performs all processing required to produce the .pdf/.dvi/.ps file for the project.
+Performs all processing required to produce the file
+.pdf/.dvi/.ps for the project.
 
 =item B<images>
 
@@ -68,11 +104,20 @@ Performs the automatic generation of the figures.
 
 =item B<makeflat>
 
-Create a version of the document inside the subdirectory 'flat_version' in which there is a single TeX file, and all the other files are inside the same directory of the TeX file. This action is helpful to create a version of the document that may be directly upload on online publication sites (such as Elsevier). This action use the CLI option C<--bibtex> to determine if the bibliography must be put in a BibTeX file or inline inside the TeX file (default is inline).
+Create a version of the document inside the subdirectory
+'flat_version' in which there is a single TeX file, and all
+the other files are inside the same directory of the TeX
+file. This action is helpful to create a version of the
+document that may be directly upload on online publication
+sites (such as Elsevier). This action use the CLI option
+F<--bibtex> to determine if the bibliography must be put
+in a BibTeX file or inline inside the TeX file (default is
+inline).
 
 =item B<makeindex>
 
-Performs all processing that permits to generate the index (makeindex).
+Performs all processing that permits to generate the index
+(makeindex).
 
 =item B<showimages>
 
@@ -88,7 +133,8 @@ DEPRECATED.
 
 =item B<update>
 
-Update the local copy with the changes from a SCM system (CVS, SVN, GIT).
+Update the local copy with the changes from a SCM system
+(CVS, SVN, GIT).
 
 =item B<view>
 
@@ -110,22 +156,28 @@ Enable or disable the call to bibtex.
 
 =item B<--createconfig[=S<type>]>
 
-Do not compile the LaTeX document, but create a configuration file.
-The created configuration file depends on the S<type> value.
-If the S<type> is equal to S<project>, AutoLaTeX will create the configuration
-file dedicated to a project. Otherwhise it will create the configuration file
-for the user level.
-The project configuration file is C<path/to/project/.autolatex_project.cfg> on
-Unix platforms, and C<path\to\project\autolatex_project.cfg> on other platforms.
-The default user configuration file is C<$HOME/.autolatex>
-on Unix platforms, C<C:\Documents and Settings\User\Local Settings\Application Data\autolatex.conf>
-on Windows platforms, and C<$HOME/autolatex.conf> on other plateforms.
+Do not compile the LaTeX document, but create a
+configuration file. The created configuration file
+depends on the S<type> value. If the S<type> is equal
+to S<project>, AutoLaTeX will create the configuration
+file dedicated to a project. Otherwhise it will create
+the configuration file for the user level.
+The project configuration file is
+F<path/to/project/.autolatex_project.cfg> on Unix
+platforms, and
+F<path\to\project\autolatex_project.cfg>
+on other platforms. The default user configuration file
+is F<$HOME/.autolatex> on Unix platforms, 
+F<C:\Documents and Settings\User\Local Settings\Application Data\autolatex.conf>
+on Windows platforms, and F<$HOME/autolatex.conf> on
+other plateforms.
 
 =item B<--createist>
 
-Create a default MakeIndex style file into the project directory.
-The created file will be named 'default.ist'. If a file with
-this name already is existing, it will be overwritten.
+Create a default MakeIndex style file into the project
+directory. The created file will be named
+'default.ist'. If a file with this name already is
+existing, it will be overwritten.
 
 =item B<--createmakefile>
 
@@ -133,11 +185,12 @@ DEPRECATED.
 
 =item B<--defaultist>
 
-Allow AutoLaTeX to use MakeIndex with the default style (ist file).
-The default style is provided by AutoLaTeX.
+Allow AutoLaTeX to use MakeIndex with the default
+style (ist file). The default style is provided by
+AutoLaTeX.
 
-The options --index and --noindex also permit to change the behavior
-of AutoLaTeX against MakeIndex
+The options --index and --noindex also permit to
+change the behavior of AutoLaTeX against MakeIndex.
 
 =item B<--dvi>
 
@@ -145,24 +198,28 @@ Do the compilation to produce a DVI or a XDV document.
 
 =item B<--exclude=S<name>>
 
-Avoid AutoLaTeX to load the translator called S<name>. See bellow
-for the available translators.
+Avoid AutoLaTeX to load the translator called S<name>.
+See bellow for the available translators.
 
-The option --include permits to include a translator; and the option
--I permits to specify where to find translator scripts.
+The option --include permits to include a translator;
+and the option -I permits to specify where to find
+translator scripts.
 
 =item B<-f=F<file>>
 
 =item B<--file=F<file>>
 
-Specify the main LaTeX file to compile. If this option is not specified,
-AutoLaTeX will search for a TeX file in the current directory.
+Specify the main LaTeX file to compile. If this option
+is not specified, AutoLaTeX will search for a TeX file
+in the current directory.
 
 =item B<--fixconfig[=F<file>]>
 
-Fix the syntax of a configuration file. If the F<file> is not specified
-on the command line, AutoLaTeX will try to fix the project configuration,
-or the user configuration if no project configuration file was found.
+Fix the syntax of a configuration file. If the F<file>
+is not specified on the command line, AutoLaTeX will
+try to fix the project configuration, or the user
+configuration if no project configuration file was
+found.
 
 =item B<-?>
 
@@ -172,60 +229,64 @@ Display this manual.
 
 =item B<-I=S<paths>>
 
-Notify AutoLaTeX that it could find translator scripts inside the
-specified directories. The specified S<path> could be a list of paths
-separated by the operating system's path separator (':' on Unix,
-';' for Windows for example).
+Notify AutoLaTeX that it could find translator scripts
+inside the specified directories. The specified S<path>
+could be a list of paths separated by the operating
+system's path separator (':' on Unix, ';' for Windows
+for example).
 
-The option --exclude permits to exclude a translator; and the option
---include permits to exclude a translator.
+The option --exclude permits to exclude a translator;
+and the option --include permits to exclude a
+translator.
 
 =item B<--imgdirectory=S<directory>>
 
-Specify a directy inside which AutoLaTeX will find the pictures
-which must be processed by the translators. Each time this
-option is put on the command line, a directory is added inside
-the list of the directories to explore.
+Specify a directy inside which AutoLaTeX will find the
+pictures which must be processed by the translators.
+Each time this option is put on the command line, a
+directory is added inside the list of the directories
+to explore.
 
 =item B<--include=S<name>>
 
-Force AutoLaTeX to load the translator called S<name>. See bellow
-for the available translators.
+Force AutoLaTeX to load the translator called S<name>.
+See bellow for the available translators.
 
-The option --exclude permits to exclude a translator; and the option
--I permits to specify where to find translator scripts.
+The option --exclude permits to exclude a translator;
+and the option -I permits to specify where to find
+translator scripts.
 
 =item B<--index[=F<style_file>]>
 
 Allow AutoLaTeX to use MakeIndex.
 
-If this option was specified with
-a value, the F<style_file> value will be assumed to be an .ist file to
-pass to MakeIndex.
+If this option was specified with a value, the
+F<style_file> value will be assumed to be an .ist file
+to pass to MakeIndex.
 
 If this option was specified without a value,
-AutoLaTeX will use MakeIndex and tries to detect a MakeIndex
-style file (.ist file) inside the project directory. If no
-project's .ist file was found, AutoLaTeX will not pass a
-style to MakeIndex.
+AutoLaTeX will use MakeIndex and tries to detect a
+MakeIndex style file (.ist file) inside the project
+directory. If no project's .ist file was found, AutoLaTeX
+will not pass a style to MakeIndex.
 
-The options --defaultist and --noindex also permit to change the behavior
-of AutoLaTeX against MakeIndex
+The options --defaultist and --noindex also permit to
+change the behavior of AutoLaTeX against MakeIndex
 
 =item B<--latex>
 
-Use the historical LaTeX command: C<latex>.
+Use the historical LaTeX command: F<latex>.
 
 =item B<--lualatex>
 
-Use the LaTeX command: C<lualatex>.
+Use the LaTeX command: F<lualatex>.
 
 =item B<--noindex>
 
 Avoid AutoLaTeX to use MakeIndex.
 
-The options --index and --defaultist also permit to change the behavior
-of AutoLaTeX against MakeIndex
+The options --index and --defaultist also permit to
+change the behavior of AutoLaTeX against MakeIndex.
 
 =item B<-o=F<directory>>
 
@@ -239,33 +300,40 @@ Do the compilation to produce a PDF document.
 
 =item B<--pdflatex>
 
-Use the LaTeX command: C<pdflatex>.
+Use the LaTeX command: F<pdflatex>.
 
 =item B<--ps>
 
-Do the compilation to produce a Postscript document, when possible.
+Do the compilation to produce a Postscript document,
+when possible.
 
 =item B<-q>
 =item B<--quiet>
 
-AutoLaTeX should be not verbose (see B<-v> for changing the verbose level).
+AutoLaTeX should be not verbose (see B<-v> for
+changing the verbose level).
 
 =item B<--set [S<translator>.]S<name>=S<value>>
 
-Set the internal value of AutoLaTeX named S<name> with the specified S<value>.
-Internal values are limited and corresponds to the "set" directives from
-the configuration file syntax.
+Set the internal value of AutoLaTeX named S<name> with
+the specified S<value>. Internal values are limited
+and corresponds to the "set" directives from the
+configuration file syntax.
 
-If S<translator> is given, it is the name of the translator for which the value
-must ve overridden. If S<translator> is not given then "generation" is the default
-prefix.
+If S<translator> is given, it is the name of the
+translator for which the value must ve overridden. If
+S<translator> is not given then "generation" is the
+default prefix.
 
 =item B<-v>
 
-Each time this option was specified, AutoLaTeX is more verbose. Note that 1) if you put
-5 times the B<-v> option on the command line, AutoLaTeX will consider the Perl warnings
-as errors; 2) if you put 6 times the B<-v> option on the command line, AutoLaTeX is
-stopping immediately, and is displaying the current configuration in memory.
+Each time this option was specified, AutoLaTeX is more
+verbose. Note that 1) if you put 5 times the B<-v>
+option on the command line, AutoLaTeX will consider
+the Perl warnings as errors; 2) if you put 6 times the
+B<-v> option on the command line, AutoLaTeX is
+stopping immediately, and is displaying the current
+configuration in memory.
 
 =item B<--version>
 
@@ -275,29 +343,34 @@ Display the version of AutoLaTeX.
 
 =item B<--noview>
 
-Enable or disable the document viewer at the end of the compilation.
-The path of the document viewer could be specify with
-F<file>. If not specified, AutoLaTeX will check for the tools
-F<acroread>, F<kpdf>, F<evince>, F<gv>, and F<xpdf>.
+Enable or disable the document viewer at the end of
+the compilation. The path of the document viewer could
+be specify with F<file>. If not specified, AutoLaTeX
+will check for the tools F<acroread>, F<kpdf>,
+F<evince>, F<gv>, and F<xpdf>.
 
 =item B<--xelatex>
 
-Use the LaTeX command: C<xelatex>.
+Use the LaTeX command: F<xelatex>.
 
 =back
 
 =head1 AUTO GENERATION OF FIGURES
 
-A translator is used to convert a source figure into a target figure which
-is supported by LaTeX. This converter is an external program (eg. epstopdf)
+A translator is used to convert a source figure into
+a target figure which is supported by LaTeX. This
+converter is an external program (eg. epstopdf)
 or an internal Perl script. 
 
-Each supported translator is described inside a .transdef file. This file contains
-the definition of the variables for the shell command line to launch or the
-Perl code to use. To create a new translator, we recommend to copy/paste an
-existing C<.transdef> file and change its content.
-Even if you excluded a translator from the the command line, it is automatically
-included by AutoLaTeX when it is invoked by an included translator.
+Each supported translator is described inside a
+.transdef file. This file contains the definition of
+the variables for the shell command line to launch or
+the Perl code to use. To create a new translator, we
+recommend to copy/paste an existing F<.transdef> file
+and change its content. Even if you excluded a
+translator from the the command line, it is
+automatically included by AutoLaTeX when it is
+invoked by an included translator.
 
 The provided translators are:
 
@@ -930,13 +1003,13 @@ TeX part:
 
 =head1 LATEX STYLE PACKAGE
 
-AutoLaTeX provides a LaTeX style called C<autolatex.sty>. It provides the following functions:
+AutoLaTeX provides a LaTeX style called F<autolatex.sty>. It provides the following functions:
 
 =over 4
 
 =item B<\includegraphicswtex[options]{filename}>
 
-include a figure with combined TeX macros. The filename must have one of the following extensions: C<.pdftex_t>, C<.pdftex_t>, C<.pstex_t>, C<.pdf_tex>, C<.ps_tex>. The B<options> must one of: C<width=XX>, or C<height=XX>; where C<XX> is a length.
+include a figure with combined TeX macros. The filename must have one of the following extensions: F<.pdftex_t>, F<.pdftex_t>, F<.pstex_t>, F<.pdf_tex>, F<.ps_tex>. The B<options> must one of: F<width=XX>, or F<height=XX>; where F<XX> is a length.
 
 =item B<\includefigurewtex[options]{filename}>
 
@@ -946,24 +1019,24 @@ same as B<\includegraphicswtex>.
 
 include the layers of a figure in a Beamer presentation. The different layers are assumed to
 be in separate PDF files. The figure is then a TeX file that is including the PDF files inside
-a Beamer-compatible environment. The filename must have one of the following extensions: C<.pdftex_t>, C<.pdftex_t>, C<.pstex_t>, C<.pdf_tex>, C<.ps_tex>. The B<options> must one of: C<width=XX>, or C<height=XX>; where C<XX> is a length.
+a Beamer-compatible environment. The filename must have one of the following extensions: F<.pdftex_t>, F<.pdftex_t>, F<.pstex_t>, F<.pdf_tex>, F<.ps_tex>. The B<options> must one of: F<width=XX>, or F<height=XX>; where F<XX> is a length.
 
 By default, a layer is replacing the previous layer when it is displayed. You could change
-the overlay specification by adding the string C<"spec"> in the title of the layer in your SVG
-editor. The C<spec> part is the specification of the slide numbers on which the layer should
-appear in Beamer. For example, C<2> means 'only on the slide 2'; C<6-> means 'from slide 6 to the end'.
+the overlay specification by adding the string F<"spec"> in the title of the layer in your SVG
+editor. The F<spec> part is the specification of the slide numbers on which the layer should
+appear in Beamer. For example, F<2> means 'only on the slide 2'; F<6-> means 'from slide 6 to the end'.
 
 =item B<\includeanimatedfigurewtex[options]{filename}>
 
 include the layers of a figure combined with TeX macros in a Beamer presentation.
 The different layers are assumed to be in separate PDF files. The figure is then
 a TeX file that is including the PDF files inside a Beamer-compatible environment.
-The filename must have one of the following extensions: C<.pdftex_t>, C<.pdftex_t>, C<.pstex_t>, C<.pdf_tex>, C<.ps_tex>. The B<options> must one of: C<width=XX>, or C<height=XX>; where C<XX> is a length.
+The filename must have one of the following extensions: F<.pdftex_t>, F<.pdftex_t>, F<.pstex_t>, F<.pdf_tex>, F<.ps_tex>. The B<options> must one of: F<width=XX>, or F<height=XX>; where F<XX> is a length.
 
 By default, a layer is replacing the previous layer when it is displayed. You could change
-the overlay specification by adding the string C<"spec"> in the title of the layer in your SVG
-editor. The C<spec> part is the specification of the slide numbers on which the layer should
-appear in Beamer. For example, C<2> means 'only on the slide 2'; C<6-> means 'from slide 6 to the end'.
+the overlay specification by adding the string F<"spec"> in the title of the layer in your SVG
+editor. The F<spec> part is the specification of the slide numbers on which the layer should
+appear in Beamer. For example, F<2> means 'only on the slide 2'; F<6-> means 'from slide 6 to the end'.
 
 =item B<\DeclareGraphicsExtensionsWtex{extensions}>
 
@@ -1002,9 +1075,9 @@ The configuration files respect a syntax similar to the Windows .ini files.
 A comment starts with the characters '#' or ';' and it finishes at the end of the line.
 
 Each configuration directive must be inside a configuration section. A configuration section
-is declared by its name between brackets. Example: C<[mysection]>
+is declared by its name between brackets. Example: F<[mysection]>
 
-Each directive must be declared as: C<directive name = value>
+Each directive must be declared as: F<directive name = value>
 
 Several section names are reserved by AutoLaTeX, the others are assumed to be the configuration for the translators.
 
@@ -1015,7 +1088,7 @@ The recognized directives are:
 
 =over 4
 
-=item I<view> : Indicates if AutoLaTeX must launch a viewer after LaTeX compilation. Accepted values: C<yes> or C<no>.
+=item I<view> : Indicates if AutoLaTeX must launch a viewer after LaTeX compilation. Accepted values: F<yes> or F<no>.
 	
 =item I<viewer> : Is the path or the command line of the viewer to launch. Accepted value: any command line.
 
@@ -1030,19 +1103,19 @@ The recognized directives are:
 
 =item I<main file> : specifies the basename of the main TeX file to compile. This option is available only inside the project's configuration file.
 
-=item I<generate images> : indicates if AutoLaTeX automatically generates the figures. Accepted values: C<yes> or C<no>
+=item I<generate images> : indicates if AutoLaTeX automatically generates the figures. Accepted values: F<yes> or F<no>
 
-=item I<image directory> : Specify the directories inside which AutoLaTeX will find the pictures which must be processed by the translators. Each time this option is put on the command line, a directory is added inside the list of the directories to explore. The different paths are separated by the path-separator character (C<':'> on Unix, C<';'> on Windows).
+=item I<image directory> : Specify the directories inside which AutoLaTeX will find the pictures which must be processed by the translators. Each time this option is put on the command line, a directory is added inside the list of the directories to explore. The different paths are separated by the path-separator character (F<':'> on Unix, F<';'> on Windows).
 
 =item I<generation type> : indicates the type of generation. Accepted values:
 
 =over 8
 
-=item C<pdf> - generate a PDF document
+=item F<pdf> - generate a PDF document
 
-=item C<dvi> - generate a DVI or a XDV document
+=item F<dvi> - generate a DVI or a XDV document
 
-=item C<ps> - generate a PS document
+=item F<ps> - generate a PS document
 
 =back
 
@@ -1050,13 +1123,13 @@ The recognized directives are:
 
 =over 8
 
-=item C<latex> - use C<latex>
+=item F<latex> - use F<latex>
 
-=item C<pdflatex> - use C<pdflatex>
+=item F<pdflatex> - use F<pdflatex>
 
-=item C<xelatex> - use C<xelatex>
+=item F<xelatex> - use F<xelatex>
 
-=item C<lualatex> - use C<lualatex>
+=item F<lualatex> - use F<lualatex>
 
 =back
 
@@ -1064,15 +1137,15 @@ The recognized directives are:
 
 =over 8
 
-=item C<E<lt>filenameE<gt>> - if a filename was specified, AutoLaTeX assumes that it is the .ist file;
+=item F<E<lt>filenameE<gt>> - if a filename was specified, AutoLaTeX assumes that it is the .ist file;
 
-=item C<@system> - AutoLaTeX uses the system default .ist file (in AutoLaTeX distribution);
+=item F<@system> - AutoLaTeX uses the system default .ist file (in AutoLaTeX distribution);
 
-=item C<@detect> - AutoLaTeX will tries to find a .ist file in the project's directory. If none was found, AutoLaTeX will not pass a style to makeindex;
+=item F<@detect> - AutoLaTeX will tries to find a .ist file in the project's directory. If none was found, AutoLaTeX will not pass a style to makeindex;
 
-=item C<@none> - AutoLaTeX assumes that no .ist file must be passed to MakeIndex;
+=item F<@none> - AutoLaTeX assumes that no .ist file must be passed to MakeIndex;
 
-=item C<E<lt>emptyE<gt>> - AutoLaTeX assumes that no .ist file must be passed to MakeIndex.
+=item F<E<lt>emptyE<gt>> - AutoLaTeX assumes that no .ist file must be passed to MakeIndex.
 
 =back
 
@@ -1132,7 +1205,7 @@ The recognized directives are:
 
 =over 4
 
-=item I<include module> : indicates if the translator should be loaded by default. Accepted values: C<yes> or C<no>.
+=item I<include module> : indicates if the translator should be loaded by default. Accepted values: F<yes> or F<no>.
 
 =back
 
@@ -1176,15 +1249,15 @@ To use AutoLaTeX, you will require:
 
 Installation of AutoLaTeX consists of launching the Makefile.PL script to generate a Makefile that permits to compile and install AutoLaTeX. The basic commands are:
 
-C<cd path_to_autoloader_sources/>
+F<cd path_to_autoloader_sources/>
 
-C<perl ./Makefile.PL --prefix=/usr>
+F<perl ./Makefile.PL --prefix=/usr>
 
-C<make>
+F<make>
 
-C<make install>
+F<make install>
 
-C<make clean>
+F<make clean>
 
 =head1 AUTOLATEX LICENSE
 
