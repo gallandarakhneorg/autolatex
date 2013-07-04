@@ -332,7 +332,7 @@ sub addTeXFile($) : method {
 				}
 
 				#
-				# BIBLIOGRAPHY
+				# BIBLIOGRAPHY CALLED FROM THE TEX
 				#
 				if ($deps{'biblio'}) {
 					while (my ($bibdb,$bibdt) = each(%{$deps{'biblio'}})) {
@@ -387,6 +387,57 @@ sub addTeXFile($) : method {
 			printDbgUnindent();
 		}
 	}
+
+	#
+	# BIBLIOGRAPHY FROM INSIDE AUXILIARY FILES (MULTIBIB...)
+	#
+	local *DIR;
+	opendir(*DIR, "$rootdir") or printErr("$rootdir: $!");
+	while (my $dir = readdir(*DIR)) {
+		if ($dir ne File::Spec->curdir() && $dir ne File::Spec->updir() && $dir =~ /^(.+?)\.aux$/) {
+			my $bibdb = "$1";
+			if ($bibdb ne "$rootbasename") {
+				my $auxfile = File::Spec->catfile("$rootdir", "$dir");
+				my %data = getAuxBibliographyData("$auxfile");
+				if ($data{'databases'} || $data{'styles'}) {
+					my $bblfile = File::Spec->catfile("$rootdir", "$bibdb.bbl");
+					$self->{'files'}{"$bblfile"} = {
+						'type' => 'bbl',
+						'dependencies' => {},
+						'change' => lastFileChange("$bblfile"),
+					};
+					$self->{'files'}{$pdfFile}{'dependencies'}{$bblfile} = undef;
+					if ($data{'styles'}) {
+						foreach my $style (@{$data{'styles'}}) {
+							my $bstfile = File::Spec->catfile("$rootdir", "$style.bst");
+							if (-r "$bstfile") {
+								$self->{'files'}{"$bstfile"} = {
+									'type' => 'bst',
+									'dependencies' => {},
+									'change' => lastFileChange("$bstfile"),
+								};
+								$self->{'files'}{$bblfile}{'dependencies'}{$bstfile} = undef;
+							}
+						}
+					}
+					if ($data{'databases'}) {
+						foreach my $db (@{$data{'databases'}}) {
+							my $bibfile = File::Spec->catfile("$rootdir", "$db.bib");
+							if (-r "$bibfile") {
+								$self->{'files'}{"$bibfile"} = {
+									'type' => 'bib',
+									'dependencies' => {},
+									'change' => lastFileChange("$bibfile"),
+								};
+								$self->{'files'}{$bblfile}{'dependencies'}{$bibfile} = undef;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	closedir(*DIR);
 
 	return undef;
 }
@@ -582,7 +633,6 @@ sub buildBibTeX() : method {
 						my $func = $self->can('__build_'.lc($type));
 						if ($func) {
 							$func->($self, $rootFile, $file, $self->{'files'}{$file});
-							return undef;
 						}
 					}
 				}

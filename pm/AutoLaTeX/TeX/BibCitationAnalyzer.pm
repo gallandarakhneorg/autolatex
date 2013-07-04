@@ -37,9 +37,9 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::BibCitationAnalyzer;
 
-$VERSION = '1.0';
+$VERSION = '2.0';
 @ISA = ('Exporter');
-@EXPORT = qw( &getAuxBibliographyCitations &makeAuxBibliographyCitationMd5 ) ;
+@EXPORT = qw( &getAuxBibliographyData &getAuxBibliographyCitations &makeAuxBibliographyCitationMd5 ) ;
 @EXPORT_OK = qw();
 
 use strict;
@@ -55,7 +55,58 @@ use AutoLaTeX::TeX::TeXParser;
 my %MACROS = (
 	'citation'			=> '[]!{}',
 	'bibcite'			=> '[]!{}',
+	'bibdata'			=> '[]!{}',
+	'bibstyle'			=> '[]!{}',
 	);
+
+=pod
+
+=item B<getAuxBibliographyData($)>
+
+Parse an aux file and extract the bibliography data.
+
+=over 4
+
+=item * C<auxfile> is the name of the AUX file to parse.
+
+=back
+
+I<Returns:> an associative array with the keys 'citations', 'databases', and 'styles'.
+
+=cut
+sub getAuxBibliographyData($) {
+	my $input = shift;
+	local *FILE;
+	open(*FILE, "< $input") or printErr("$input: $!");
+	my $content = '';
+	while (my $line = <FILE>) {
+		$content .= $line;
+	}
+	close(*FILE);
+
+	my $listener = AutoLaTeX::TeX::BibCitationAnalyzer->_new($input);
+
+	my $parser = AutoLaTeX::TeX::TeXParser->new("$input", $listener);
+
+	while (my ($k,$v) = each(%MACROS)) {
+		$parser->addTextModeMacro($k,$v);
+		$parser->addMathModeMacro($k,$v);
+	}
+
+	$parser->parse( $content );
+
+	my @citations = keys %{$listener->{'citations'}};
+	@citations = sort @citations;
+	my @databases = keys %{$listener->{'databases'}};
+	my @styles = keys %{$listener->{'styles'}};
+	my %data = (
+		'citations' => \@citations,
+		'databases' => \@databases,
+		'styles' => \@styles,
+	);
+
+	return %data;
+}
 
 =pod
 
@@ -124,7 +175,17 @@ sub _expandMacro($$@) : method {
 	my $self = shift;
 	my $parser = shift;
 	my $macro = shift;
-	if ($_[1]->{'text'}) {
+	if ($macro eq '\\bibdata') {
+		if ($_[1]->{'text'}) {
+			$self->{'databases'}{$_[1]->{'text'}} = 1;
+		}
+	}
+	elsif ($macro eq '\\bibstyle') {
+		if ($_[1]->{'text'}) {
+			$self->{'styles'}{$_[1]->{'text'}} = 1;
+		}
+	}
+	elsif ($_[1]->{'text'}) {
 		$self->{'citations'}{$_[1]->{'text'}} = 1;
 	}
 	return '';
@@ -145,6 +206,8 @@ sub _new($) : method {
 			'file' => $_[0],
 			'expandMacro' => \&_expandMacro,
 			'citations' => {},
+			'databases' => {},
+			'styles' => {},
 		};
 	}
 	bless( $self, $class );
