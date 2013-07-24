@@ -40,7 +40,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 
 	# Detect the Astah installation
 	if ( ! $ENV{"ASTAH_HOME"} ) {
-		my @tmp = ('astah-pro','astah-uml');
+		my @tmp = ('astah-pro','astah-uml','astah-com');
 		my $tmp = undef;
 		for(my $i=0; $i<@tmp && !$tmp; $i++) {
 			my $bin = $tmp[$i];
@@ -53,7 +53,9 @@ TRANSLATOR_FUNCTION =<<EOL {
 		if ( ! $tmp ) {
 			@tmp = ('/usr/lib/astah_pro',
 				'/usr/lib/astah_professional',
-				'/usr/lib/astah_uml');
+				'/usr/lib/astah_uml',
+				'/usr/lib/astah_com',
+				'/usr/lib/astah_community');
 			for(my $i=0; $i<@tmp && !$tmp; $i++) {
 				my $dir = $tmp[$i];
 				if ( -d "$dir" ) {
