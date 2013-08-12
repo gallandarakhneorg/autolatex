@@ -570,7 +570,7 @@ sub al_run_makeflat {
 #------------------------------------------------------
 
 # script parameters
-setDebugLevel(1);
+setDebugLevel(0);
 %configuration = mainProgram(); # Exit on error
 
 if (getDebugLevel()>=6) {
@@ -628,7 +628,7 @@ if (defined($configuration{'__private__'}{'action.fix config file'})) {
 
 # Apply the default CLI action
 if (!@ARGV && !$optionalAction) {
-	@ARGV = ( 'all' );
+	push @ARGV, 'all' ;
 }
 
 # Loop on CLI actions

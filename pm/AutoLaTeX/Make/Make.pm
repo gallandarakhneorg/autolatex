@@ -75,7 +75,7 @@ use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '4.0';
+our $VERSION = '5.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -279,7 +279,6 @@ sub addTeXFile($) : method {
 	my $rootfile = shift;
 	$rootfile = File::Spec->rel2abs($rootfile);
 	my $rootbasename = basename($rootfile, '.tex');
-	my $rootdir = dirname($rootfile);
 	my $roottemplate = File::Spec->catfile(dirname($rootfile), "$rootbasename");
 
 	my $pdfFile = "$roottemplate.pdf";
@@ -291,12 +290,24 @@ sub addTeXFile($) : method {
 	};
 	push @{$self->{'rootFiles'}}, "$pdfFile";
 
+	return undef;
+}
+
+sub _computeDependenciesForRootFile($) : method {
+	my $self = shift;
+	my $pdfFile = shift;
+	my $rootfile = $self->{'files'}{$pdfFile}{'mainFile'};
+	my $rootdir = dirname($rootfile);
+	my $rootbasename = basename($rootfile, '.tex');
+	my $roottemplate = File::Spec->catfile(dirname($rootfile), "$rootbasename");
+
 	my @files = ( $rootfile );
 	while (@files) {
 		my $file = shift @files;
 		printDbgFor(2, locGet(_T("Parsing '{}'"), $file));
 		if (-f "$file" ) {
 			printDbgIndent();
+			printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$file)));
 			$self->{'files'}{$file} = {
 				'type' => 'tex',
 				'dependencies' => {},
@@ -318,6 +329,7 @@ sub addTeXFile($) : method {
 							if ($dpath !~ /\.$cat/) {
 								$dpath .= ".$cat";
 							}
+							printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
 							$self->{'files'}{$dpath} = {
 								'type' => $cat,
 								'dependencies' => {},
@@ -337,6 +349,7 @@ sub addTeXFile($) : method {
 				if ($deps{'biblio'}) {
 					while (my ($bibdb,$bibdt) = each(%{$deps{'biblio'}})) {
 						my $bblfile = File::Spec->catfile("$rootdir", "$bibdb.bbl");
+						printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
 						$self->{'files'}{"$bblfile"} = {
 							'type' => 'bbl',
 							'dependencies' => {},
@@ -353,6 +366,7 @@ sub addTeXFile($) : method {
 									if ($dpath !~ /\.$cat/) {
 										$dpath .= ".$cat";
 									}
+									printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
 									$self->{'files'}{$dpath} = {
 										'type' => $cat,
 										'dependencies' => {},
@@ -370,12 +384,14 @@ sub addTeXFile($) : method {
 				#
 				if ($deps{'idx'}) {
 					my $idxfile = "$roottemplate.idx";
+					printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$idxfile)));
 					$self->{'files'}{"$idxfile"} = {
 						'type' => 'idx',
 						'dependencies' => {},
 						'change' => lastFileChange("$idxfile"),
 					};
 					my $indfile = "$roottemplate.ind";
+					printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$indfile)));
 					$self->{'files'}{"$indfile"} = {
 						'type' => 'ind',
 						'dependencies' => { $idxfile => undef },
@@ -387,6 +403,9 @@ sub addTeXFile($) : method {
 			printDbgUnindent();
 		}
 	}
+
+	printDbgFor(2, locGet(_T("Parsing auxiliary files")));
+	printDbgIndent();
 
 	#
 	# BIBLIOGRAPHY FROM INSIDE AUXILIARY FILES (MULTIBIB...)
@@ -401,6 +420,7 @@ sub addTeXFile($) : method {
 				my %data = getAuxBibliographyData("$auxfile");
 				if ($data{'databases'} || $data{'styles'}) {
 					my $bblfile = File::Spec->catfile("$rootdir", "$bibdb.bbl");
+					printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
 					$self->{'files'}{"$bblfile"} = {
 						'type' => 'bbl',
 						'dependencies' => {},
@@ -411,6 +431,7 @@ sub addTeXFile($) : method {
 						foreach my $style (@{$data{'styles'}}) {
 							my $bstfile = File::Spec->catfile("$rootdir", "$style.bst");
 							if (-r "$bstfile") {
+								printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$bstfile)));
 								$self->{'files'}{"$bstfile"} = {
 									'type' => 'bst',
 									'dependencies' => {},
@@ -424,6 +445,7 @@ sub addTeXFile($) : method {
 						foreach my $db (@{$data{'databases'}}) {
 							my $bibfile = File::Spec->catfile("$rootdir", "$db.bib");
 							if (-r "$bibfile") {
+								printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$bibfile)));
 								$self->{'files'}{"$bibfile"} = {
 									'type' => 'bib',
 									'dependencies' => {},
@@ -438,6 +460,8 @@ sub addTeXFile($) : method {
 		}
 	}
 	closedir(*DIR);
+
+	printDbgUnindent();
 
 	return undef;
 }
@@ -554,8 +578,13 @@ sub build() : method {
 		# Launch at least one LaTeX compilation
 		$self->runLaTeX($rootFile);
 
+		# Compute the dependencies of the file
+		$self->_computeDependenciesForRootFile($rootFile);
+
 		# Construct the build list and launch the required builds
 		my @builds = $self->_buildExecutionList("$rootFile");
+
+		# Build the files
 		if (@builds) {
 			foreach my $file (@builds) {
 				$self->_build($rootFile, $file);
@@ -623,6 +652,9 @@ sub buildBibTeX() : method {
 		# Read building stamps
 		$self->_readBuildStamps($rootFile);
 
+		# Compute the dependencies of the file
+		$self->_computeDependenciesForRootFile($rootFile);
+
 		# Construct the build list and launch the required builds
 		my @builds = $self->_buildExecutionList("$rootFile",1);
 		if (@builds) {
@@ -662,6 +694,9 @@ sub buildMakeIndex() : method {
 	foreach my $rootFile (@{$self->{'rootFiles'}}) {
 		# Read building stamps
 		$self->_readBuildStamps($rootFile);
+
+		# Compute the dependencies of the file
+		$self->_computeDependenciesForRootFile($rootFile);
 
 		# Construct the build list and launch the required builds
 		my @builds = $self->_buildExecutionList("$rootFile",1);

@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Util;
 
-$VERSION = '9.0';
+$VERSION = '10.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
               &getAutoLaTeXName &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
@@ -46,7 +46,7 @@ $VERSION = '9.0';
 	      &printDbgUnindent &runCommandOrFail &runSystemCommand
               &notifySystemCommandListeners &locDbg &exitDbg &addSlashes
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
-	      &runCommandSilently ) ;
+	      &runCommandSilently &removePathPrefix ) ;
 @EXPORT_OK = qw();
 
 use strict;
@@ -877,6 +877,33 @@ sub writeFileLines($@) {
 		print FILE $l;
 	}
 	close(*FILE);
+}
+
+=pod
+
+=item B<removePathPrefix($$)>
+
+Remove the given prefix from a path.
+
+=over 4
+
+=item I<prefix> is the path to remove.
+
+=item  I<path> is the path from which the prefix should be removed.
+
+=back
+
+=cut
+sub removePathPrefix($$) {
+	my $prefix = shift;
+	my $path = shift;
+	my @dir1 = File::Spec->splitdir($prefix);
+	my @dir2 = File::Spec->splitdir($path);
+	while (@dir1 && @dir2 && $dir1[0] eq $dir2[0]) {
+		shift @dir1;
+		shift @dir2;
+	}
+	return File::Spec->catdir(@dir2);
 }
 
 
