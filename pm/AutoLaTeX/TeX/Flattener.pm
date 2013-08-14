@@ -40,7 +40,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::Flattener;
 
-$VERSION = '3.0';
+$VERSION = '4.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &flattenTeX ) ;
 @EXPORT_OK = qw();
@@ -72,6 +72,7 @@ my %MACROS = (
 	'msubfigure*'			=> '![]!{}!{}!{}',
 	'mfiguretex'			=> '![]!{}!{}!{}!{}',
 	'mfiguretex*'			=> '![]!{}!{}!{}!{}',
+	'addbibresource'                => '![]!{}',
 	);
 
 =pod
@@ -137,12 +138,28 @@ sub flattenTeX($$\@$) {
 	}
 }
 
-sub _makeFilename($) {
+sub _makeFilename($$;@) {
 	my $self = shift;
-	if (!File::Spec->file_name_is_absolute($_[0])) {
-		return File::Spec->catfile($self->{'dirname'}, $_[0]);
+	my $fn = shift || '';
+	my $ext = shift || '';
+	my $changed;
+	do {
+		$changed = 0;
+		foreach my $e (@_) {
+			if ($fn =~ /^(.+)\Q$e\E$/i) {
+				$fn = $1;
+				$changed = 1;
+			}
+		}
 	}
-	return $_[0];
+	while ($changed);
+	if ($ext && $fn !~ /\Q$ext\E$/i) {
+		$fn .= $ext;
+	}
+	if (!File::Spec->file_name_is_absolute($fn)) {
+		return File::Spec->catfile($self->{'dirname'}, $fn);
+	}
+	return $fn;
 }
 
 sub _isDocumentFile($) {
@@ -180,7 +197,7 @@ sub _findPicture($) {
 	my $self = shift;
 	my $texname = shift;
 
-	my $filename = $self->_makeFilename($texname);
+	my $filename = $self->_makeFilename($texname,'');
 	if (!-f $filename) {
 		my $ofilename = $filename;
 		my @exts = ('.pdf', '.eps', '.ps', '.png', '.jpeg', '.jpg', '.gif', '.bmp');
@@ -197,7 +214,7 @@ sub _findPicture($) {
 					for(my $i=0; !$filename && $i<@exts; $i++)  {
 						$ext = $exts[$i];
 						my $fullname = File::Spec->catfile($path,"$template$ext");
-						$fullname = $self->_makeFilename($fullname);
+						$fullname = $self->_makeFilename($fullname,'');
 						if (-f $fullname) {
 							$filename = $fullname;
 						}
@@ -246,19 +263,41 @@ sub _expandMacro($$@) : method {
 
 	if (		$macro eq '\\usepackage' || $macro eq '\\RequirePackage') {
 		my $texname = $_[1]->{'text'};
-		my $filename = $self->_makeFilename("$texname.sty");
+		my $filename = $self->_makeFilename("$texname", '.sty');
 		if ($self->_isDocumentFile($filename)) {
 			$texname = $self->_uniq($filename,'.sty');
 			$self->{'data'}{'sty'}{$filename} = "$texname.sty";
 		}
-		my $ret = $macro;
+
+		my $ret = '';
+
+		if ($texname eq 'biblatex') {
+			if (!$self->{'usebiblio'}) {
+				my $filename = $self->_makeFilename($self->{'basename'}, '.bbl', '.tex');
+				if (-f "$filename") {
+					$ret .="\\usepackage{filecontents}\n".
+					       "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
+					       "%%% BEGIN FILE: ".basename($filename)."\n".
+					       "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
+						"\\begin{filecontents*}{".basename($filename)."}\n".
+						readFileLines("$filename").
+						"\\end{filecontents*}\n".
+						"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n\n";
+				}
+				else {
+					printErr(locGet(_T('File not found: {}'), $filename));
+				}
+			}
+		}
+
+		$ret .= $macro;
 		$ret .= '['.$_[0]->{'text'}.']' if ($_[0]->{'text'});
 		$ret .= '{'.$texname.'}';
 		return $ret;
 	}
 	elsif (		$macro eq '\\documentclass') {
 		my $texname = $_[1]->{'text'};
-		my $filename = $self->_makeFilename("$texname.cls");
+		my $filename = $self->_makeFilename("$texname", '.cls');
 		if ($self->_isDocumentFile($filename)) {
 			$texname = $self->_uniq($filename,'.cls');
 			$self->{'data'}{'cls'}{$filename} = "$texname.cls";
@@ -307,7 +346,7 @@ sub _expandMacro($$@) : method {
 		return $ret;
 	}
 	elsif (		$macro eq '\\include' || $macro eq '\\input') {
-		my $filename = $self->_makeFilename($_[0]->{'text'}.'.tex');
+		my $filename = $self->_makeFilename($_[0]->{'text'},'.tex');
 		my $subcontent = readFileLines($filename);
 		$subcontent .= "\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
 		               "%%% END FILE: $filename\n".
@@ -324,7 +363,7 @@ sub _expandMacro($$@) : method {
 			my $bibdb = $1;
 			$bibdb = $self->{'basename'} unless ($bibdb);
 			my $texname = $_[0]->{'text'};
-			my $filename = $self->_makeFilename("$texname.bst");
+			my $filename = $self->_makeFilename("$texname", '.bst');
 			if ($self->_isDocumentFile($filename)) {
 				$texname = $self->_uniq($filename,'.bst');
 				$self->{'data'}{'bst'}{$filename} = "$texname.bst";
@@ -340,7 +379,7 @@ sub _expandMacro($$@) : method {
 		$bibdb = $self->{'basename'} unless ($bibdb);
 		if ($self->{'usebiblio'}) {
 			my $texname = $_[0]->{'text'};
-			my $filename = $self->_makeFilename("$texname.bib");
+			my $filename = $self->_makeFilename("$texname",'.bib');
 			if ($self->_isDocumentFile($filename)) {
 				$texname = $self->_uniq($filename,'.bib');
 				$self->{'data'}{'bib'}{$filename} = "$texname.bib";
@@ -366,6 +405,22 @@ sub _expandMacro($$@) : method {
 			else {
 				printErr(locGet(_T('File not found: {}'), $bblFile));
 			}
+		}
+	}
+	elsif (		$macro eq '\\addbibresource') {
+		if ($self->{'usebiblio'}) {
+			my $texname = $_[1]->{'text'};
+			my $filename = $self->_makeFilename("$texname", '.bib');
+			if ($self->_isDocumentFile($filename)) {
+				$texname = $self->_uniq($filename,'.bib');
+				$self->{'data'}{'bib'}{$filename} = "$texname.bib";
+			}
+			my $ret = $macro;
+			$ret .= '{'.$texname.'}';
+			return $ret;
+		}
+		else {
+			return '';
 		}
 	}
 
