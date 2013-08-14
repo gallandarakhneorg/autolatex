@@ -378,7 +378,7 @@ sub _computeDependenciesForRootFile($) : method {
 						};
 						$self->{'files'}{$pdfFile}{'dependencies'}{$bblfile} = undef;
 						
-						foreach my $cat ('bib', 'bst') {
+						foreach my $cat ('bib', 'bst', 'bbc', 'cbx') {
 							if ($bibdt->{$cat}) {
 								foreach my $dpath (@{$bibdt->{$cat}}) {
 									if (!File::Spec->file_name_is_absolute($dpath)) {

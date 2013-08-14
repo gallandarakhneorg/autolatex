@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Util;
 
-$VERSION = '10.0';
+$VERSION = '1.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
               &getAutoLaTeXName &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
@@ -46,7 +46,7 @@ $VERSION = '10.0';
 	      &printDbgUnindent &runCommandOrFail &runSystemCommand
               &notifySystemCommandListeners &locDbg &exitDbg &addSlashes
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
-	      &runCommandSilently &removePathPrefix ) ;
+	      &runCommandSilently &removePathPrefix &trim ) ;
 @EXPORT_OK = qw();
 
 use strict;
@@ -905,6 +905,28 @@ sub removePathPrefix($$) {
 	}
 	return File::Spec->catdir(@dir2);
 }
+
+=pod
+
+=item B<trim($)>
+
+Remove the trailing white spaces.
+
+=over 4
+
+=item I<str> the string to parse.
+
+=back
+
+=cut
+sub trim($) {
+	my $str = $_[0] || '';
+	my $s = "$str";
+	$s =~ s/^\s+//s;
+	$s =~ s/\s+$//s;
+	return $s;
+}
+
 
 
 

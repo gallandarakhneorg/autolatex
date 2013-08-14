@@ -50,9 +50,6 @@ use File::Basename;
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::TeX::TeXParser;
 
-use constant BIBTEX_KEY => 'bibtex';
-use constant BIBER_KEY => 'biber';
-
 my %MACROS = (
 	'input'				=> '!{}',
 	'include'			=> '!{}',
@@ -114,7 +111,7 @@ sub getDependenciesOfTeX($$) {
 	}
 
 	while (my ($bibdb,$bibdt) = each(%{$analysis{'biblio'}})) {
-		foreach my $cat ('bib', 'bst') {
+		foreach my $cat ('bib', 'bst', 'bbx', 'cbx') {
 			if ($bibdt->{$cat}) {
 				my @t = keys %{$bibdt->{$cat}};
 				$bibdt->{$cat} = \@t;
@@ -162,8 +159,68 @@ sub _expandMacro($$@) : method {
 		if ($styFile eq 'biblatex.sty') {
 			$self->{'is_biblatex'} = 1;
 			# Parse the biblatex parameters
-			if ($_[0] && $_[0]->{'text'} && $_[0]->{'text'} =~ /backend\s*=\s*biber/) {
-				$self->{'is_biber'} = 1;
+			if ($_[0] && $_[0]->{'text'}) {
+				my @params = split(/\s*\,\s*/, trim($_[0]->{'text'} || ''));
+				foreach my $p (@params) {
+					my ($k, $v);
+					if ($p =~ /^([^=]+)\s*=\s*(.*)$/) {
+						$k = $1;
+						$v = $2 || '';
+					}
+					else {
+						$k = $p;
+						$v = '';
+					}
+					if  ($k eq 'backend') {
+						$self->{'is_biber'} = ($v eq 'biber');
+					}
+					elsif  ($k eq 'style') {
+						my $bbxFile = "$v";
+						if ($bbxFile !~ /\.bbx$/i) {
+							$bbxFile .= ".bbx";
+						}
+						if (!File::Spec->file_name_is_absolute($bbxFile)) {
+							$bbxFile = File::Spec->catfile($self->{'dirname'}, "$bbxFile");
+						}
+						if (-f "$bbxFile") {
+							$self->{'dependencies'}{'biblio'}{$bibdb}{'bbx'}{$bbxFile} = 1;
+						}
+						my $cbxFile = "$v";
+						if ($cbxFile !~ /\.cbx$/i) {
+							$cbxFile .= ".cbx";
+						}
+						if (!File::Spec->file_name_is_absolute($cbxFile)) {
+							$cbxFile = File::Spec->catfile($self->{'dirname'}, "$cbxFile");
+						}
+						if (-f "$cbxFile") {
+							$self->{'dependencies'}{'biblio'}{$bibdb}{'cbx'}{$cbxFile} = 1;
+						}
+					}
+					elsif ($k eq 'bibstyle') {
+						my $bbxFile = "$v";
+						if ($bbxFile !~ /\.bbx$/i) {
+							$bbxFile .= ".bbx";
+						}
+						if (!File::Spec->file_name_is_absolute($bbxFile)) {
+							$bbxFile = File::Spec->catfile($self->{'dirname'}, "$bbxFile");
+						}
+						if (-f "$bbxFile") {
+							$self->{'dependencies'}{'biblio'}{$bibdb}{'bbx'}{$bbxFile} = 1;
+						}
+					}
+					elsif ($k eq 'citestyle') {
+						my $cbxFile = "$v";
+						if ($cbxFile !~ /\.cbx$/i) {
+							$cbxFile .= ".cbx";
+						}
+						if (!File::Spec->file_name_is_absolute($cbxFile)) {
+							$cbxFile = File::Spec->catfile($self->{'dirname'}, "$cbxFile");
+						}
+						if (-f "$cbxFile") {
+							$self->{'dependencies'}{'biblio'}{$bibdb}{'cbx'}{$cbxFile} = 1;
+						}
+					}
+				}
 			}
 		}
 		if (!File::Spec->file_name_is_absolute($styFile)) {
@@ -200,7 +257,7 @@ sub _expandMacro($$@) : method {
 					$bstFile = File::Spec->catfile($self->{'dirname'}, "$bstFile");
 				}
 				if (-f "$bstFile") {
-					$self->{'dependencies'}{'biblio'}{$bibdb}{'bst'}{$bstFile} = BIBTEX_KEY;
+					$self->{'dependencies'}{'biblio'}{$bibdb}{'bst'}{$bstFile} = 1;
 				}
 			}
 		}
