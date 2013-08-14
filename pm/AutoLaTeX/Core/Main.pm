@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '14.0';
+$VERSION = '15.0';
 $COPYRIGHT_YEAR = '2013';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -85,8 +85,14 @@ sub analyzeCommandLineOptions(\%) {
 			},
 
 		'bibtex!' => sub {
-					$cfg->{'generation.bibtex'} = ($_[1] ? 'yes' : 'no');
-					$realcfg->{'__private__'}{'CLI.bibtex'} = ($_[1] ? 'yes' : 'no'); # For makeflat action
+					printWarn("The command line option '--bibtex' is deprecated.");
+					$cfg->{'generation.biblio'} = ($_[1] ? 'yes' : 'no');
+					$realcfg->{'__private__'}{'CLI.biblio'} = ($_[1] ? 'yes' : 'no'); # For makeflat action
+		},
+
+		'biblio!' => sub {
+					$cfg->{'generation.biblio'} = ($_[1] ? 'yes' : 'no');
+					$realcfg->{'__private__'}{'CLI.biblio'} = ($_[1] ? 'yes' : 'no'); # For makeflat action
 		},
 
 		'exclude=s' =>	sub { 

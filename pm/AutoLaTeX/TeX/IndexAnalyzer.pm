@@ -82,7 +82,7 @@ sub getIdxIndexDefinitions($) {
 	}
 	close(*FILE);
 
-	my $listener = AutoLaTeX::TeX::BibCitationAnalyzer->_new($input);
+	my $listener = AutoLaTeX::TeX::IndexAnalyzer->_new($input);
 
 	my $parser = AutoLaTeX::TeX::TeXParser->new("$input", $listener);
 

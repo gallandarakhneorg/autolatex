@@ -60,7 +60,7 @@ use AutoLaTeX::GUI::Gtk::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "7.0" ;
+my $VERSION = "8.0" ;
 
 my %GENERATION_TYPES_ORIG = (
 	_T('01_Generate PDF document') => 'pdf',
@@ -161,13 +161,13 @@ sub initControls() : method {
 					2,2); # horizontal and vertical paddings
 		$self->attr('EDITORS','MAIN_TEX_FILE') = $edit1;
 
-		my $label2b = Gtk2::CheckButton->new ($self->localeGet(_T("Run BibTeX tool")));
-		$self->connectSignal($label2b,'toggled','onRunBibtexToggled');
+		my $label2b = Gtk2::CheckButton->new ($self->localeGet(_T("Run bibliography tool")));
+		$self->connectSignal($label2b,'toggled','onRunBiblioToggled');
 		$subtable->attach ($label2b, 
 					0,2,1,2, # left, right, top and bottom columns
 					['expand','fill'],['expand','fill'], # x and y options
 					2,2); # horizontal and vertical paddings
-		$self->attr('EDITORS','ENABLE_BIBTEX') = $label2b;
+		$self->attr('EDITORS','ENABLE_BIBLIO') = $label2b;
 
 		my $label2 = Gtk2::CheckButton->new ($self->localeGet(_T("Automatic generation of pictures")));
 		$self->connectSignal($label2,'toggled','onGenerateImageToggled');
@@ -393,11 +393,11 @@ sub initializeGeneralPanel() : method {
 	else {
 		$self->attr('EDITORS','AUTO_PICTURE_GENERATION')->set_active (TRUE);
 	}
-	if ($self->hasattr('configuration','generation.bibtex')) {
-		$self->attr('EDITORS','ENABLE_BIBTEX')->set_active ($self->cfgGtkBoolean($self->attr('configuration','generation.bibtex')));
+	if ($self->hasattr('configuration','generation.biblio')) {
+		$self->attr('EDITORS','ENABLE_BIBLIO')->set_active ($self->cfgGtkBoolean($self->attr('configuration','generation.biblio')));
 	}
 	else {
-		$self->attr('EDITORS','ENABLE_BIBTEX')->set_active (TRUE);
+		$self->attr('EDITORS','ENABLE_BIBLIO')->set_active (TRUE);
 	}
 	if ($self->hasattr('configuration','generation.image directory')) {
 		$self->attr('EDITORS','AUTO_GENERATE_IMAGE_DIRECTORY')->set_text ($self->attr('configuration','generation.image directory'));
@@ -485,9 +485,9 @@ sub onGenerateImageToggled(@) {
 	$self->attr('configuration','generation.generate images') = $self->cfgToGtkBoolean($_[0]->get_active ());
 }
 
-sub onRunBibtexToggled(@) {
+sub onRunBiblioToggled(@) {
 	my $self = shift;
-	$self->attr('configuration','generation.bibtex') = $self->cfgToGtkBoolean($_[0]->get_active ());
+	$self->attr('configuration','generation.biblio') = $self->cfgToGtkBoolean($_[0]->get_active ());
 }
 
 sub onMainTeXFileChanged(@) {

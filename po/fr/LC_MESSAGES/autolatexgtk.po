@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-22 14:24+0200\n"
+"POT-Creation-Date: 2013-08-14 18:26+0200\n"
 "PO-Revision-Date: 2013-05-21 22:26+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -58,7 +58,8 @@ msgid "Main TeX file (optional):"
 msgstr "Fichier TeX principal (optionnel) :"
 
 #: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:164
-msgid "Run BibTeX tool"
+#, fuzzy
+msgid "Run bibliography tool"
 msgstr "Exécuter BibTeX"
 
 #: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:172
@@ -218,8 +219,10 @@ msgid ""
 "List of available translators:\n"
 "(click on the three left columns to change the loading state of the "
 "translators)"
-msgstr "Liste des convertisseurs disponibles :\n"
-"(cliquer sur les trois premières colonnes pour changer l'état des convertisseurs)"
+msgstr ""
+"Liste des convertisseurs disponibles :\n"
+"(cliquer sur les trois premières colonnes pour changer l'état des "
+"convertisseurs)"
 
 #: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:198
 msgid "All users"
@@ -252,4 +255,3 @@ msgstr "Non spécifié, pas de conflit"
 #: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:206
 msgid "Unspecified, conflict"
 msgstr "Non spécifié, en conflit"
-

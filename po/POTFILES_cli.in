@@ -1,16 +1,19 @@
 # List of source files containing translatable strings.
 
 # Core libraries
-pm/AutoLaTeX/Core/Util.pm
 pm/AutoLaTeX/Core/Config.pm
+pm/AutoLaTeX/Core/Locale.pm
 pm/AutoLaTeX/Core/Main.pm
+pm/AutoLaTeX/Core/OS.pm
 pm/AutoLaTeX/Core/Translator.pm
+pm/AutoLaTeX/Core/Util.pm
 
 # TeX libraries
-pm/AutoLaTeX/TeX/TeXParser.pm
-pm/AutoLaTeX/TeX/TeXDependencyAnalyzer.pm
+pm/AutoLaTeX/TeX/DocumentDetector.pm
+pm/AutoLaTeX/TeX/Flattener.pm
 pm/AutoLaTeX/TeX/IndexAnalyzer.pm
-pm/AutoLaTeX/TeX/BibCitationAnalyzer.pm
+pm/AutoLaTeX/TeX/TeXDependencyAnalyzer.pm
+pm/AutoLaTeX/TeX/TeXParser.pm
 
 # Make-like libraries
 pm/AutoLaTeX/Make/Make.pm

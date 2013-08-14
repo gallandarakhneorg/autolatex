@@ -37,9 +37,10 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::BibCitationAnalyzer;
 
-$VERSION = '2.0';
+$VERSION = '3.0';
 @ISA = ('Exporter');
-@EXPORT = qw( &getAuxBibliographyData &getAuxBibliographyCitations &makeAuxBibliographyCitationMd5 ) ;
+@EXPORT = qw( &getAuxBibliographyData &getAuxBibliographyCitations &makeAuxBibliographyCitationMd5
+              &getBcfBibliographyCitations &makeBcfBibliographyCitationMd5 ) ;
 @EXPORT_OK = qw();
 
 use strict;
@@ -153,6 +154,43 @@ sub getAuxBibliographyCitations($) {
 
 =pod
 
+=item B<getBcfBibliographyCitations($)>
+
+Parse a BCF (biblatex) file and extract the bibliography citations.
+
+=over 4
+
+=item * C<bcffile> is the name of the BCF file to parse.
+
+=back
+
+I<Returns:> the included files from the TeX file into an associative array.
+
+=cut
+sub getBcfBibliographyCitations($) {
+	my $input = shift;
+	
+	local *FILE;
+	open(*FILE, "< $input") or printErr("$input: $!");
+	my $content = '';
+	while (my $line = <FILE>) {
+		$content .= $line;
+	}
+	close(*FILE);
+
+	my @citations = ();
+
+	while ($content =~ /\Q<bcf:citekey>\E(.+?)\Q<\/bcf:citekey>\E/gs) {
+		push @citations, "$1";
+	}
+
+	@citations = sort @citations;
+
+	return @citations;
+}
+
+=pod
+
 =item B<makeAuxBibliographyCitationMd5($)>
 
 Parse an aux file, extract the bibliography citations, and build a MD5.
@@ -168,6 +206,26 @@ I<Returns:> the MD5 of the citations.
 =cut
 sub makeAuxBibliographyCitationMd5($) {
 	my @citations = getAuxBibliographyCitations($_[0]);
+	return md5_base64(@citations);
+}
+
+=pod
+
+=item B<makeBsfBibliographyCitationMd5($)>
+
+Parse an BCF (biblatex) file, extract the bibliography citations, and build a MD5.
+
+=over 4
+
+=item * C<bcffile> is the name of the BCF file to parse.
+
+=back
+
+I<Returns:> the MD5 of the citations.
+
+=cut
+sub makeBcfBibliographyCitationMd5($) {
+	my @citations = getBcfBibliographyCitations($_[0]);
 	return md5_base64(@citations);
 }
 

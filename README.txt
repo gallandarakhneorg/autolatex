@@ -14,14 +14,14 @@ DESCRIPTION
     the figures which will be included into the PDF.
 
     As a quick example, consider a project, which has a single LaTeX file
-    "mydoc.tex", as its input. Without AutoLaTeX, to produce a ".pdf" file
-    you might use the following sequence of commands:
+    mydoc.tex, as its input. Without AutoLaTeX, to produce a .pdf file you
+    might use the following sequence of commands:
 
-         C<pdflatex mydoc.tex>
-         C<bibtex mydoc.tex>
-         C<pdflatex mydoc.tex>
-         C<pdflatex mydoc.tex>
-         C<pdflatex mydoc.tex>
+         F<pdflatex mydoc.tex>
+         F<bibtex mydoc.tex>
+         F<pdflatex mydoc.tex>
+         F<pdflatex mydoc.tex>
+         F<pdflatex mydoc.tex>
 
     The triple invocation of LaTeX is to ensure that all references have
     been properly resolved and any page layout changes due to inserting the
@@ -29,16 +29,17 @@ DESCRIPTION
     horrible, but it still is several commands. To use AutoLaTeX for this
     project, you would use one of the following the command lines:
 
-         C<autolatex -f mydoc.tex>
-         C<autolatex>
+         F<autolatex -f mydoc.tex>
+         F<autolatex>
 
     For documents, which may need to run programs to create the PDF versions
-    of the drawings, which are included into the PDF document, or run BibTeX
-    to generate bibliographies, the generation of the ".pdf" (or other)
-    files becomes increasingly complicated to run manually. With AutoLaTeX,
-    such operations are still very simple: you have nothing to do. AutoLaTeX
-    is calling the translators for you. Each translator is able to convert
-    an picture source file (eps, svg, GNU plot...) into a PDF or PNG file.
+    of the drawings, which are included into the PDF document, or run
+    BibTeX/Biber to generate bibliographies, the generation of the .pdf (or
+    other) files becomes increasingly complicated to run manually. With
+    AutoLaTeX, such operations are still very simple: you have nothing to
+    do. AutoLaTeX is calling the translators for you. Each translator is
+    able to convert an picture source file (eps, svg, GNU plot...) into a
+    PDF or PNG file.
 
     Hopefully this introduction has provided an adequate example for how
     AutoLaTeX can simplify the management of LaTeX-based documents. The
@@ -56,9 +57,12 @@ TARGETS
     all Same as view, except that the viewer is launched only if the
         configuration or the CLI is enabling the viewer.
 
-    bibtex
+    biblio
         Performs all processing that permits to generate the bibliography
-        (bibtex).
+        (bibtex, biber...)
+
+    bibtex
+        Deprecated. See biblio.
 
     clean
         Cleans the current working directory by removing all LaTeX temp
@@ -73,7 +77,7 @@ TARGETS
         Commit the changes into a SCM system (CVS, SVN, GIT).
 
     gen_doc
-        Performs all processing required to produce the .pdf/.dvi/.ps file
+        Performs all processing required to produce the file .pdf/.dvi/.ps
         for the project.
 
     images
@@ -85,9 +89,9 @@ TARGETS
         other files are inside the same directory of the TeX file. This
         action is helpful to create a version of the document that may be
         directly upload on online publication sites (such as Elsevier). This
-        action use the CLI option "--bibtex" to determine if the
-        bibliography must be put in a BibTeX file or inline inside the TeX
-        file (default is inline).
+        action use the CLI option --biblio to determine if the bibliography
+        must be put in a BibTeX file or inline inside the TeX file (default
+        is inline).
 
     makeindex
         Performs all processing that permits to generate the index
@@ -113,8 +117,12 @@ OPTIONS
     --[no]auto
         Enable or disable the auto generation of the figures.
 
+    --[no]biblio
+        Enable or disable the call to the bibliography tool (BibTeX,
+        Biber...)
+
     --[no]bibtex
-        Enable or disable the call to bibtex.
+        Deprecated. See --nbiblio.
 
     --createconfig[=type]
         Do not compile the LaTeX document, but create a configuration file.
@@ -122,12 +130,12 @@ OPTIONS
         type is equal to project, AutoLaTeX will create the configuration
         file dedicated to a project. Otherwhise it will create the
         configuration file for the user level. The project configuration
-        file is "path/to/project/.autolatex_project.cfg" on Unix platforms,
-        and "path\to\project\autolatex_project.cfg" on other platforms. The
-        default user configuration file is "$HOME/.autolatex" on Unix
-        platforms, "C:\Documents and Settings\User\Local
-        Settings\Application Data\autolatex.conf" on Windows platforms, and
-        "$HOME/autolatex.conf" on other plateforms.
+        file is path/to/project/.autolatex_project.cfg on Unix platforms,
+        and path\to\project\autolatex_project.cfg on other platforms. The
+        default user configuration file is $HOME/.autolatex on Unix
+        platforms, C:\Documents and Settings\User\Local Settings\Application
+        Data\autolatex.conf on Windows platforms, and $HOME/autolatex.conf
+        on other plateforms.
 
     --createist
         Create a default MakeIndex style file into the project directory.
@@ -142,7 +150,7 @@ OPTIONS
         The default style is provided by AutoLaTeX.
 
         The options --index and --noindex also permit to change the behavior
-        of AutoLaTeX against MakeIndex
+        of AutoLaTeX against MakeIndex.
 
     --dvi
         Do the compilation to produce a DVI or a XDV document.
@@ -207,16 +215,16 @@ OPTIONS
         behavior of AutoLaTeX against MakeIndex
 
     --latex
-        Use the historical LaTeX command: "latex".
+        Use the historical LaTeX command: latex.
 
     --lualatex
-        Use the LaTeX command: "lualatex".
+        Use the LaTeX command: lualatex.
 
     --noindex
         Avoid AutoLaTeX to use MakeIndex.
 
         The options --index and --defaultist also permit to change the
-        behavior of AutoLaTeX against MakeIndex
+        behavior of AutoLaTeX against MakeIndex.
 
     -o=directory
     --output=directory
@@ -226,12 +234,13 @@ OPTIONS
         Do the compilation to produce a PDF document.
 
     --pdflatex
-        Use the LaTeX command: "pdflatex".
+        Use the LaTeX command: pdflatex.
 
     --ps
         Do the compilation to produce a Postscript document, when possible.
 
-    -q =item --quiet
+    -q
+    --quiet
         AutoLaTeX should be not verbose (see -v for changing the verbose
         level).
 
@@ -261,7 +270,7 @@ OPTIONS
         evince, gv, and xpdf.
 
     --xelatex
-        Use the LaTeX command: "xelatex".
+        Use the LaTeX command: xelatex.
 
 AUTO GENERATION OF FIGURES
     A translator is used to convert a source figure into a target figure
@@ -271,7 +280,7 @@ AUTO GENERATION OF FIGURES
     Each supported translator is described inside a .transdef file. This
     file contains the definition of the variables for the shell command line
     to launch or the Perl code to use. To create a new translator, we
-    recommend to copy/paste an existing ".transdef" file and change its
+    recommend to copy/paste an existing .transdef file and change its
     content. Even if you excluded a translator from the the command line, it
     is automatically included by AutoLaTeX when it is invoked by an included
     translator.
@@ -325,6 +334,24 @@ AUTO GENERATION OF FIGURES
         Input format: .dia
         Output format: .pdf
 
+    Diagram Editor (dia) to TeX embedded in Portable Document Format
+    (pdf+tex)
+        PDF part:
+
+        Name: dia2pdf+tex
+        Use external converter: dia
+        Use translator:
+        Input format: .dia_tex .diat .diatex .dia+tex
+        Output format: .pdf
+
+        TeX part:
+
+        Name: dia2pdf+tex
+        Use external converter: dia
+        Use translator:
+        Input format: .dia_tex .diat .diatex .dia+tex
+        Output format: .pdftex_t
+
     Dot Graphviz (dot) to Portable Document Format (pdf)
 
         Name: dot2pdf
@@ -369,7 +396,7 @@ AUTO GENERATION OF FIGURES
 
         Name: fig2pdf
         Use external converter: fig2dev
-        Use translatr:
+        Use translator:
         Input format: .fig
         Output format: .pdf
 
@@ -504,6 +531,24 @@ AUTO GENERATION OF FIGURES
         Input format: .svg
         Output format: .pdf
 
+    Scalable Vector Graphic (svg) to TeX embedded in Portable Document
+    Format (pdf+tex)
+        PDF part:
+
+        Name: svg2pdf+tex
+        Use external converter: inkscape
+        Use translator: eps2pdf
+        Input format: .svg_tex .svgt .svgtex .svg+tex
+        Output format: .pdf
+
+        TeX part:
+
+        Name: svg2pdf+tex
+        Use external converter: inkscape
+        Use translator:
+        Input format: .svg_tex .svgt .svgtex .svg+tex
+        Output format: .pdftex_t
+
     Scalable Vector Graphic (svg) to Portable Network Graphic (png)
 
         Name: svg2png
@@ -511,6 +556,32 @@ AUTO GENERATION OF FIGURES
         Use translator:
         Input format: .svg
         Output format: .png
+
+    Scalable Vector Graphic with layers (svg) to Beamer Overlays
+
+        Name: svg2pdf+layers
+        Use external converter: inkscape
+        Use translator:
+        Input format: .svgl .svg_layers .svg+layers
+        Output format: .pdftex_t .pdf
+
+    Scalable Vector Graphic with layers (svg) to TeX embedded in Beamer
+    Overlays
+        PDF part:
+
+        Name: svg2pdf+layers+tex
+        Use external converter: inkscape
+        Use translator:
+        Input format: .svg_layerstex .svglt .svglayerstex .svg+layers+tex
+        Output format: .pdf
+
+        TeX part:
+
+        Name: svg2pdf+layers+tex
+        Use external converter: inkscape
+        Use translator:
+        Input format: .svg_layerstex .svglt .svglayerstex .svg+layers+tex
+        Output format: .pdftex_t
 
     UML Metadata Interchange (xmi) to Portable Document Format (pdf):
     Umbrello variante
@@ -540,11 +611,57 @@ AUTO GENERATION OF FIGURES
         Output format: .pdf
 
 LATEX STYLE PACKAGE
-    AutoLaTeX provides a LaTeX style called "autolatex.sty". It provides the
+    AutoLaTeX provides a LaTeX style called autolatex.sty. It provides the
     following functions:
 
-    \includefigurewtex{width}{filename}
-        include a figure from a .pdftex_t file.
+    \includegraphicswtex[options]{filename}
+        include a figure with combined TeX macros. The filename must have
+        one of the following extensions: .pdftex_t, .pdftex_t, .pstex_t,
+        .pdf_tex, .ps_tex. The options must one of: width=XX, or height=XX;
+        where XX is a length.
+
+    \includefigurewtex[options]{filename}
+        same as \includegraphicswtex.
+
+    \includeanimatedfigure[options]{filename}
+        include the layers of a figure in a Beamer presentation. The
+        different layers are assumed to be in separate PDF files. The figure
+        is then a TeX file that is including the PDF files inside a
+        Beamer-compatible environment. The filename must have one of the
+        following extensions: .pdftex_t, .pdftex_t, .pstex_t, .pdf_tex,
+        .ps_tex. The options must one of: width=XX, or height=XX; where XX
+        is a length.
+
+        By default, a layer is replacing the previous layer when it is
+        displayed. You could change the overlay specification by adding the
+        string "spec" in the title of the layer in your SVG editor. The spec
+        part is the specification of the slide numbers on which the layer
+        should appear in Beamer. For example, 2 means 'only on the slide 2';
+        6- means 'from slide 6 to the end'.
+
+    \includeanimatedfigurewtex[options]{filename}
+        include the layers of a figure combined with TeX macros in a Beamer
+        presentation. The different layers are assumed to be in separate PDF
+        files. The figure is then a TeX file that is including the PDF files
+        inside a Beamer-compatible environment. The filename must have one
+        of the following extensions: .pdftex_t, .pdftex_t, .pstex_t,
+        .pdf_tex, .ps_tex. The options must one of: width=XX, or height=XX;
+        where XX is a length.
+
+        By default, a layer is replacing the previous layer when it is
+        displayed. You could change the overlay specification by adding the
+        string "spec" in the title of the layer in your SVG editor. The spec
+        part is the specification of the slide numbers on which the layer
+        should appear in Beamer. For example, 2 means 'only on the slide 2';
+        6- means 'from slide 6 to the end'.
+
+    \DeclareGraphicsExtensionsWtex{extensions}
+        permits to define the filename extensions that are used by
+        \includegraphicswtex to find the figure files.
+
+    \graphicspath{{path1},{path2}...}
+        is the macros from the TeX package 'graphicx.sty'. It permits to
+        define the search paths for the figures.
 
 CONFIGURATION FILE
   Location of the Configuration Files
@@ -580,9 +697,9 @@ CONFIGURATION FILE
 
     Each configuration directive must be inside a configuration section. A
     configuration section is declared by its name between brackets. Example:
-    "[mysection]"
+    [mysection]
 
-    Each directive must be declared as: "directive name = value"
+    Each directive must be declared as: directive name = value
 
     Several section names are reserved by AutoLaTeX, the others are assumed
     to be the configuration for the translators.
@@ -592,7 +709,7 @@ CONFIGURATION FILE
     recognized directives are:
 
     *view* : Indicates if AutoLaTeX must launch a viewer after LaTeX
-    compilation. Accepted values: "yes" or "no".
+    compilation. Accepted values: yes or no.
     *viewer* : Is the path or the command line of the viewer to launch.
     Accepted value: any command line.
 
@@ -603,7 +720,7 @@ CONFIGURATION FILE
     *main file* : specifies the basename of the main TeX file to compile.
     This option is available only inside the project's configuration file.
     *generate images* : indicates if AutoLaTeX automatically generates the
-    figures. Accepted values: "yes" or "no"
+    figures. Accepted values: yes or no
     *image directory* : Specify the directories inside which AutoLaTeX will
     find the pictures which must be processed by the translators. Each time
     this option is put on the command line, a directory is added inside the
@@ -611,22 +728,22 @@ CONFIGURATION FILE
     the path-separator character (':' on Unix, ';' on Windows).
     *generation type* : indicates the type of generation. Accepted values:
 
-        "pdf" - generate a PDF document
-        "dvi" - generate a DVI or a XDV document
-        "ps" - generate a PS document
+        pdf - generate a PDF document
+        dvi - generate a DVI or a XDV document
+        ps - generate a PS document
 
     *tex compiler* : indicates the TeX compiler to use. Accepted values:
 
-        "latex" - use "latex"
-        "pdflatex" - use "pdflatex"
-        "xelatex" - use "xelatex"
-        "lualatex" - use "lualatex"
+        latex - use latex
+        pdflatex - use pdflatex
+        xelatex - use xelatex
+        lualatex - use lualatex
 
     *makeindex style* : specifies the style that must be used by makeindex.
     This is a list of values separated by comas. The values should be:
 
-        "<filename>" - if a filename was specified, AutoLaTeX assumes that
-        it is the .ist file;
+        <filename> - if a filename was specified, AutoLaTeX assumes that it
+        is the .ist file;
         @system - AutoLaTeX uses the system default .ist file (in AutoLaTeX
         distribution);
         @detect - AutoLaTeX will tries to find a .ist file in the project's
@@ -634,7 +751,7 @@ CONFIGURATION FILE
         makeindex;
         @none - AutoLaTeX assumes that no .ist file must be passed to
         MakeIndex;
-        "<empty>" - AutoLaTeX assumes that no .ist file must be passed to
+        <empty> - AutoLaTeX assumes that no .ist file must be passed to
         MakeIndex.
 
         If the list contains more than one value, AutoLaTeX will do the
@@ -649,6 +766,8 @@ CONFIGURATION FILE
     command line.
     *bibtex_cmd* : specifies the BibTeX tool command line. Accepted value:
     any command line.
+    *biber_cmd* : specifies the Biber tool command line. Accepted value: any
+    command line.
     *makeindex_cmd* : specifies the MakeIndex tool command line. Accepted
     value: any command line.
     *dvi2ps_cmd* : specifies the dvips tool command line. Accepted value:
@@ -656,6 +775,8 @@ CONFIGURATION FILE
     *latex_flags* : specifies the options to pass to the LaTeX tool.
     Accepted value: any command line.
     *bibtex_flags* : specifies the options to pass to the BibTeX tool.
+    Accepted value: any command line.
+    *biber_flags* : specifies the options to pass to the Biber tool.
     Accepted value: any command line.
     *makeindex_flags* : specifies the options to pass to the MakeIndex tool.
     Accepted value: any command line.
@@ -685,7 +806,7 @@ CONFIGURATION FILE
     The recognized directives are:
 
     *include module* : indicates if the translator should be loaded by
-    default. Accepted values: "yes" or "no".
+    default. Accepted values: yes or no.
 
 GRAPHIC USER INTERFACE
     A graphical user interface is available since version 5.0 to configure
@@ -725,15 +846,15 @@ INSTALLATION
     to generate a Makefile that permits to compile and install AutoLaTeX.
     The basic commands are:
 
-    "cd path_to_autoloader_sources/"
+    cd path_to_autoloader_sources/
 
-    "perl ./Makefile.PL --prefix=/usr"
+    perl ./Makefile.PL --prefix=/usr
 
-    "make"
+    make
 
-    "make install"
+    make install
 
-    "make clean"
+    make clean
 
 AUTOLATEX LICENSE
     GNU Public License (GPL)
@@ -770,6 +891,6 @@ MANUAL COPYRIGHT
     included in the file name GNU Free Documentation License.txt.
 
 SEE ALSO
-    pdflatex, latex, bibtex, epstopdf, fig2dev, gnuplot, inkscape, umbrello,
-    zcat, texify
+    pdflatex, latex, bibtex, biber, epstopdf, fig2dev, gnuplot, inkscape,
+    umbrello, zcat, texify
 

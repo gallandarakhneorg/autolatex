@@ -41,7 +41,7 @@ would use one of the following the command lines:
      
 For documents, which may need to run programs to create the
 PDF versions of the drawings, which are included into the
-PDF document, or run BibTeX to generate bibliographies, the
+PDF document, or run BibTeX/Biber to generate bibliographies, the
 generation of the F<.pdf> (or other) files becomes
 increasingly complicated to run manually. With AutoLaTeX,
 such operations are still very simple: you have nothing to
@@ -72,10 +72,14 @@ The targets provided by AutoLaTeX are:
 Same as B<view>, except that the viewer is launched only if
 the configuration or the CLI is enabling the viewer.
 
-=item B<bibtex>
+=item B<biblio>
 
 Performs all processing that permits to generate the
-bibliography (bibtex).
+bibliography (bibtex, biber...)
+
+=item B<bibtex>
+
+Deprecated. See B<biblio>.
 
 =item B<clean>
 
@@ -110,7 +114,7 @@ the other files are inside the same directory of the TeX
 file. This action is helpful to create a version of the
 document that may be directly upload on online publication
 sites (such as Elsevier). This action use the CLI option
-F<--bibtex> to determine if the bibliography must be put
+F<--biblio> to determine if the bibliography must be put
 in a BibTeX file or inline inside the TeX file (default is
 inline).
 
@@ -150,9 +154,13 @@ Same as gen_doc. In addition launch the document viewer.
 
 Enable or disable the auto generation of the figures.
 
+=item B<--[no]biblio>
+
+Enable or disable the call to the bibliography tool (BibTeX, Biber...)
+
 =item B<--[no]bibtex>
 
-Enable or disable the call to bibtex.
+Deprecated. See B<--nbiblio>.
 
 =item B<--createconfig[=S<type>]>
 
@@ -308,6 +316,7 @@ Do the compilation to produce a Postscript document,
 when possible.
 
 =item B<-q>
+
 =item B<--quiet>
 
 AutoLaTeX should be not verbose (see B<-v> for
@@ -1157,6 +1166,8 @@ If the list contains more than one value, AutoLaTeX will do the corresponding be
 
 =item I<bibtex_cmd> : specifies the BibTeX tool command line. Accepted value: any command line.
 
+=item I<biber_cmd> : specifies the Biber tool command line. Accepted value: any command line.
+
 =item I<makeindex_cmd> : specifies the MakeIndex tool command line. Accepted value: any command line.
 
 =item I<dvi2ps_cmd> : specifies the dvips tool command line. Accepted value: any command line.
@@ -1164,6 +1175,8 @@ If the list contains more than one value, AutoLaTeX will do the corresponding be
 =item I<latex_flags> : specifies the options to pass to the LaTeX tool. Accepted value: any command line.
 
 =item I<bibtex_flags> : specifies the options to pass to the BibTeX tool. Accepted value: any command line.
+
+=item I<biber_flags> : specifies the options to pass to the Biber tool. Accepted value: any command line.
 
 =item I<makeindex_flags> : specifies the options to pass to the MakeIndex tool. Accepted value: any command line.
 
@@ -1281,5 +1294,5 @@ Permission is granted to copy, distribute and/or modify this document under the 
 
 =head1 SEE ALSO
 
-L<pdflatex>, L<latex>, L<bibtex>, L<epstopdf>,
+L<pdflatex>, L<latex>, L<bibtex>, L<biber>, L<epstopdf>,
 L<fig2dev>, L<gnuplot>, L<inkscape>, L<umbrello>, L<zcat>, L<texify>

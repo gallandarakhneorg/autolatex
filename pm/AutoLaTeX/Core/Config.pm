@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Config;
 
-$VERSION = '7.0';
+$VERSION = '8.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getProjectConfigFilename &getUserConfigFilename &getSystemConfigFilename
               &getSystemISTFilename &readConfiguration &readConfigFile &getUserConfigDirectory
@@ -83,7 +83,7 @@ my %CONFIGURATION_COMMENTS = (
 							"(shell wild cards are allowed). This list is used when ".
 							"the target 'cleanall' is invoked."),
 	# GENERATION
-	'generation.bibtex'			=> _T(	"Indicates if bibtex should be run ('yes' or 'no')."),
+	'generation.biblio'			=> _T(	"Indicates if bibliography tool (bibtex,biber) should be run ('yes' or 'no')."),
 	'generation.generate images'		=> _T(	"Does the figures must be automatically generated ('yes' or 'no')?"),
 	'generation.image directory'		=> _T(	"Specify the directories inside which AutoLaTeX ".
 							"will find the pictures which must be processed ".
@@ -463,7 +463,7 @@ sub readConfigFile($\%;$) {
 		while (my ($k,$v) = each (%config)) {
 			$k = lc("$k");
 			if ($k !~ /^__private__/) {
-				$v = ensureAccendentCompatibility("$k",$v,"$filename",$warningDisplayed);
+				($k,$v) = ensureAccendentCompatibility("$k",$v,"$filename",$warningDisplayed);
 				$_[0]->{"$k"} = rebuiltConfigValue("$k",$v);
 			}
 		}
@@ -611,11 +611,17 @@ sub doConfigurationFileFixing($) {
 # Try to detect an old fashioned configuration file
 # and fix the value
 sub ensureAccendentCompatibility($$$$) {
+	my $k = $_[0];
 	my $v = $_[1];
+	my $changed = 0;
 	$v = '' unless (defined($v));
-	if (!isArray($v)) {
-		my $changed = 0;
 
+	if ($k eq 'generation.bibtex') {
+		$k = 'generation.biblio';
+		$changed = 1;
+	}
+
+	if (!isArray($v)) {
 		# Remove comments on the same line as values
 		if ($v =~ /^\s*(.*?)\s*\#.*$/) {
 			$v = "$1" ;
@@ -626,13 +632,14 @@ sub ensureAccendentCompatibility($$$$) {
 			$v = ['detect','system'];
 			$changed = 1;
 		}
-
-		if (($changed)&&(!$_[3])) {
-			printWarn(locGet(_T("AutoLaTeX has detecting an old fashion syntax for the configuration file {}\nPlease regenerate this file with the command line option --fixconfig."),$_[2]));
-			$_[3] = 1;
-		}
 	}
-	return $v;
+
+	if (($changed)&&(!$_[3])) {
+		printWarn(locGet(_T("AutoLaTeX has detecting an old fashion syntax for the configuration file {}\nPlease regenerate this file with the command line option --fixconfig."),$_[2]));
+		$_[3] = 1;
+	}
+
+	return ($k,$v);
 }
 
 # Reformat the value from a configuration file to apply several rules

@@ -5,7 +5,7 @@ This file compares several features of TeX makers from CTAN (including AutoLaTeX
 table{border:1px solid black}.
 |_/2. Maker |_/2. Type |_/2. Date |_/2. Supported Tools |_\3. Detect Changes |_\3. Automatic File Convertions |_/2. Export to Elsevier |_/2. GUI |
 |_. TeX |_. BibTeX |_. Images |_. To PS/PDF/PNG |_. To TeX |_. To PSTeX/PDFTeX |
-|<. "AutoLaTeX":http://www.ctan.org/pkg/autolatex |=. Perl |=. 2013 |=. latex, pdflatex, xelatex, lualatex, bibtex, makeindex, dvips |=. X |=. X |=. X |=. asta, dia, dot, fig, gxl, odg, plot, svg, xmi |=. c/c++, java, matlab, ml, perl, python, ruby, sql, svg layers |=. fig, plot, dia, svg, svg layers |=. X |=. X |
+|<. "AutoLaTeX":http://www.ctan.org/pkg/autolatex |=. Perl |=. 2013 |=. latex, pdflatex, xelatex, lualatex, bibtex, biber, makeindex, dvips |=. X |=. X |=. X |=. asta, dia, dot, fig, gxl, odg, plot, svg, xmi |=. c/c++, java, matlab, ml, perl, python, ruby, sql, svg layers |=. fig, plot, dia, svg, svg layers |=. X |=. X |
 |<. "go-make":http://www.ctan.org/pkg/go-make |=. Perl |=. 1993 |=. latex, dvips, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
 |<. "latex-make":http://www.ctan.org/pkg/latex-make |=. Makefile |=. 2003 |=. latex, pdflatex, dvips, ps2pdf, bibtex, makeindex |=. X |=.  |=. X |=. fig |=.  |=.  |=.  |=.  |
 |<. "latexmk":http://www.ctan.org/pkg/latexmk/ |=. Perl |=. 2012 |=. latex, dvips, dvipdf, pdflatex, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
@@ -13,6 +13,7 @@ table{border:1px solid black}.
 |<. "make-latex":http://www.ctan.org/pkg/make-latex |=. Makefile |=. 1993 |=. latex, dvips, bibtex |=. X |=. X |=. X |=. fig, plot |=.  |=. fig |=.  |=.  |
 |<. "mk":http://www.ctan.org/pkg/mk |=. Ruby |=. 2012 |=. latex, xelatex, pdflatex, texi2dvi |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
 |<. "rake2latex":http://www.ctan.org/pkg/rake4latex |=. Ruby |=. 2001 |=. pdflatex, xelatex, lualatex, bibtex, makeindex |=. X |=. X |=.  |=.  |=.  |=.  |=.  |=.  |
+|<. "rubber":https://launchpad.net/rubber/ |=. Python |=. 2010 |=. pdflatex, etex, aleph, omega, vtex, bibtex, makeindex |=. X |=. X |=. ? |=.  |=. X |=.  |=.  |=.  |
 |<. "ShLaTeX":http://www.ctan.org/pkg/shlatex |=. Bash/C |=. 2003 |=. latex, pdflatex, dvips, ps2pdf, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
 |<. "texi2dvi":http://www.ctan.org/pkg/rake4latex |=. Sh |=. 2013 |=. latex, dvips, dvipdf, pdflatex, bibtex, makeindex |=. X |=. X |=.  |=.  |=.  |=.  |=.  |=.  |
 
@@ -33,7 +34,7 @@ The columns are:
 * _Export to Elsevier:_ Elsevier is a scientific publisher who permits to upload TeX white-papers for publication. After uploading the source files, the Elsevier website is running TeX on it, and give a compilation feedback. This column indicates if the tools is able to create a version of the document that is fitting the recommendations:
 ** to use only one TeX file,
 ** to have all the included figures in the same directory as as the TeX file, and
-** to replace the references to BibTeX files by inlined bib items inside the main TeX file.
+** to replace the references to bibliography files by inlined bib items inside the main TeX file.
 * _GUI:_ indicates if a graphical user interface is provided.
 
 

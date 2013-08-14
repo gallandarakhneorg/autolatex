@@ -40,7 +40,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::Flattener;
 
-$VERSION = '1.0';
+$VERSION = '3.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &flattenTeX ) ;
 @EXPORT_OK = qw();
@@ -91,7 +91,7 @@ the TeX file.
 
 =item * C<images> is the array that lists the images of the document.
 
-=item * C<usebibtex> indicates if the flattener should use BibTeX instead of inline bibliography.
+=item * C<usebiblio> indicates if the flattener should use Bibliography instead of inline bibliography.
 
 =back
 
@@ -100,7 +100,7 @@ sub flattenTeX($$\@$) {
 	my $input = shift;
 	my $output = shift;
 	my $imageDb = shift;
-	my $usebibtex = shift;
+	my $usebiblio = shift;
 	return '' unless ($output);
 
 	if (-d "$output") {
@@ -112,7 +112,7 @@ sub flattenTeX($$\@$) {
 	locDbg(locGet(_T('Analysing {}'), basename($input)));
 	my $content = readFileLines("$input");
 
-	my $listener = AutoLaTeX::TeX::Flattener->_new($input, $output, $imageDb, $usebibtex);
+	my $listener = AutoLaTeX::TeX::Flattener->_new($input, $output, $imageDb, $usebiblio);
 
 	my $parser = AutoLaTeX::TeX::TeXParser->new("$input", $listener);
 
@@ -132,7 +132,7 @@ sub flattenTeX($$\@$) {
 		while (my ($source, $target) = each(%{$listener->{'data'}{$cat}})) {
 			$target = File::Spec->catfile("$output", "$target");
 			locDbg(locGet(_T('Copying resource {} to {}'), basename($source), basename($target)));
-			copy("$source", "$target") or printErr(locGet(_T("{} -> {}: $!"), $source, $target));
+			copy("$source", "$target") or printErr(locGet(_T("{} -> {}: {}"), $source, $target, $!));
 		}
 	}
 }
@@ -320,7 +320,7 @@ sub _expandMacro($$@) : method {
 		       "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
 	}
 	elsif ($macro =~ /^\\bibliographystyle(.*)$/s ) {
-		if ($self->{'usebibtex'}) {
+		if ($self->{'usebiblio'}) {
 			my $bibdb = $1;
 			$bibdb = $self->{'basename'} unless ($bibdb);
 			my $texname = $_[0]->{'text'};
@@ -338,7 +338,7 @@ sub _expandMacro($$@) : method {
 	elsif ($macro =~ /^\\bibliography(.*)$/s ) {
 		my $bibdb = $1;
 		$bibdb = $self->{'basename'} unless ($bibdb);
-		if ($self->{'usebibtex'}) {
+		if ($self->{'usebiblio'}) {
 			my $texname = $_[0]->{'text'};
 			my $filename = $self->_makeFilename("$texname.bib");
 			if ($self->_isDocumentFile($filename)) {
@@ -414,7 +414,7 @@ sub _new($$$$) : method {
 			'output' => $_[1],
 			'images' => $_[2],
 			'includepaths' => [ File::Spec->curdir() ],
-			'usebibtex' => $_[3],
+			'usebiblio' => $_[3],
 			'outputString' => \&_outputString,
 			'expandMacro' => \&_expandMacro,
 			'discoverMacroDefinition' => \&_discoverMacroDefinition,

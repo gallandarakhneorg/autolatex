@@ -246,7 +246,7 @@ sub al_view() {
 
 sub al_make() {
 	my $make = AutoLaTeX::Make::Make->new(\%configuration);
-	$make->enableBibTeX(cfgBoolean($configuration{'generation.bibtex'}));
+	$make->enableBiblio(cfgBoolean($configuration{'generation.biblio'}));
 	$make->generationType($configuration{'generation.generation type'});
 	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
 	$make->build();
@@ -272,12 +272,12 @@ sub al_run_makeandview {
 	}
 }
 
-sub al_run_bibtex {
+sub al_run_biblio {
 	my $i_ref = shift;
 	my $make = AutoLaTeX::Make::Make->new(\%configuration);
-	$make->enableBibTeX(1);
+	$make->enableBiblio(1);
 	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
-	$make->buildBibTeX();
+	$make->buildBiblio();
 }
 
 sub al_run_makeindex {
@@ -408,6 +408,8 @@ sub al_getcleanfiles() {
 		'*.mtl[0-9][0-9][0-9]', '*.bmt',
 		'*.thlodef', '*.lbl', '*.brf',
 		'*.vrb', '*.spl',
+		# Biber
+		'*.bcf', '*.run.xml',
 	);
 	if ($configuration{'clean.files to clean'}) {
 		if (!isArray($configuration{'clean.files to clean'})) {
@@ -521,17 +523,17 @@ sub al_run_cleanall {
 sub al_run_makeflat {
 	my $i_ref = shift;
 
-	# Treat the command line option --bibtex
-	my $bibtex_option_on_cli = $configuration{'__private__'}{'CLI.bibtex'};
-	$bibtex_option_on_cli = 'no' unless (defined($bibtex_option_on_cli));
-	$configuration{'generation.bibtex'} = $bibtex_option_on_cli;
+	# Treat the command line option --biblio
+	my $biblio_option_on_cli = $configuration{'__private__'}{'CLI.biblio'};
+	$biblio_option_on_cli = 'no' unless (defined($biblio_option_on_cli));
+	$configuration{'generation.biblio'} = $biblio_option_on_cli;
 
 	al_loadtranslators();
 	al_getimages();
 	al_generateimages();
 
 	# Generate all the document, in particular the BBL file.
-	if (!cfgBoolean($bibtex_option_on_cli)) {
+	if (!cfgBoolean($biblio_option_on_cli)) {
 		al_make();
 	}
 
@@ -560,7 +562,7 @@ sub al_run_makeflat {
 		@images = keys %images;
 	}
 
-	flattenTeX($configuration{'__private__'}{'input.latex file'}, $output, @images, cfgBoolean($bibtex_option_on_cli));
+	flattenTeX($configuration{'__private__'}{'input.latex file'}, $output, @images, cfgBoolean($biblio_option_on_cli));
 }
 
 #------------------------------------------------------
@@ -648,7 +650,11 @@ for(my $i=0; $i<@ARGV; $i++) {
 		al_run_make(\$i);
 	}
 	elsif ($ARGV[$i] eq 'bibtex') {
-		al_run_bibtex(\$i);
+		printWarn('The directive \'bibtex\' is deprecated from the command line interface.');
+		al_run_biblio(\$i);
+	}
+	elsif ($ARGV[$i] eq 'biblio') {
+		al_run_biblio(\$i);
 	}
 	elsif ($ARGV[$i] eq 'makeindex') {
 		al_run_makeindex(\$i);

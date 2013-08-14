@@ -71,8 +71,8 @@ use Carp;
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::Locale;
 use AutoLaTeX::Core::OS;
-use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::BibCitationAnalyzer;
+use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
 our $VERSION = '5.0';
@@ -108,6 +108,10 @@ my %COMMAND_DEFINITIONS = (
 	},
 	'bibtex' => {
 		'cmd' => 'bibtex',
+		'flags' => [],
+	},
+	'biber' => {
+		'cmd' => 'biber',
 		'flags' => [],
 	},
 	'makeindex' => {
@@ -153,11 +157,12 @@ sub new(\%) : method {
 			'configuration' => $_[0],
 			'files' => {},
 			'rootFiles' => [],
-			'is_bibtex_enable' => 1,
+			'is_biblio_enable' => 1,
 			'is_makeindex_enable' => 1,
 			'generation_type' => 'pdf',
 			'latex_cmd' => [],
 			'bibtex_cmd' => [],
+			'biber_cmd' => [],
 			'makeindex_cmd' => [],
 			'dvi2ps_cmd' => [],
 		};
@@ -209,6 +214,21 @@ sub new(\%) : method {
 	if ($_[0]->{'generation.bibtex_flags'}) {
 		my @params = split(/\s+/, ($_[0]->{'generation.bibtex_flags'}));
 		push @{$self->{'bibtex_flags'}}, @params;
+	}
+
+	# Biber
+	if ($_[0]->{'generation.biber_cmd'}) {
+		push @{$self->{'biber_cmd'}}, $_[0]->{'generation.biber_cmd'};
+	}
+	else {
+		my $def = $COMMAND_DEFINITIONS{'biber'};
+		confess("No command definition for 'biber'") unless ($def);
+		push @{$self->{'biber_cmd'}}, $def->{'cmd'}, @{$def->{'flags'}};
+	}
+
+	if ($_[0]->{'generation.biber_flags'}) {
+		my @params = split(/\s+/, ($_[0]->{'generation.biber_flags'}));
+		push @{$self->{'biber_flags'}}, @params;
 	}
 
 	# MakeIndex
@@ -354,6 +374,7 @@ sub _computeDependenciesForRootFile($) : method {
 							'type' => 'bbl',
 							'dependencies' => {},
 							'change' => lastFileChange("$bblfile"),
+							'use_biber' => $deps{'biber'},
 						};
 						$self->{'files'}{$pdfFile}{'dependencies'}{$bblfile} = undef;
 						
@@ -640,12 +661,12 @@ sub build() : method {
 
 =pod
 
-=item * buildBibTeX()
+=item * buildBiblio()
 
-Launch the BibTeX only.
+Launch the Biblio only.
 
 =cut
-sub buildBibTeX() : method {
+sub buildBiblio() : method {
 	my $self = shift;
 
 	foreach my $rootFile (@{$self->{'rootFiles'}}) {
@@ -812,13 +833,25 @@ sub _need_rebuild($$$$) : method {
 	if ($filename =~ /(\.[^.]+)$/) {
 		my $ext = $1;
 		if ($ext eq '.bbl') {
-			# Parse the AUX file to detect the citations
-			my $auxFile = File::Spec->catfile(dirname($filename), basename($filename, '.bbl').'.aux');
-			my $currentMd5 = makeAuxBibliographyCitationMd5($auxFile) || '';
-			my $oldMd5 = $self->{'stamps'}{'bib'}{$auxFile} || '';
-			if ($currentMd5 ne $oldMd5) {
-				$self->{'stamps'}{'bib'}{$auxFile} = $currentMd5;
-				return 1;
+			if ($file->{'use_biber'}) {
+				# Parse the BCF file to detect the citations
+				my $bcfFile = File::Spec->catfile(dirname($filename), basename($filename, '.bbl').'.bcf');
+				my $currentMd5 = makeBcfBibliographyCitationMd5($bcfFile) || '';
+				my $oldMd5 = $self->{'stamps'}{'bib'}{$bcfFile} || '';
+				if ($currentMd5 ne $oldMd5) {
+					$self->{'stamps'}{'bib'}{$bcfFile} = $currentMd5;
+					return 1;
+				}
+			}
+			else {
+				# Parse the AUX file to detect the citations
+				my $auxFile = File::Spec->catfile(dirname($filename), basename($filename, '.bbl').'.aux');
+				my $currentMd5 = makeAuxBibliographyCitationMd5($auxFile) || '';
+				my $oldMd5 = $self->{'stamps'}{'bib'}{$auxFile} || '';
+				if ($currentMd5 ne $oldMd5) {
+					$self->{'stamps'}{'bib'}{$auxFile} = $currentMd5;
+					return 1;
+				}
 			}
 			return 0;
 		}
@@ -925,11 +958,17 @@ sub __build_bbl($$$) : method {
 	my $rootFile = shift;
 	my $file = shift;
 	my $filedesc = shift;
-	if ($self->{'is_bibtex_enable'}) {
+	if ($self->{'is_biblio_enable'}) {
 		my $basename = basename($file,'.bbl');
-		my $auxFile = File::Spec->catfile(dirname($file),"$basename.aux");
-		printDbg(locGet(_T('{}: {}'), 'BIBTEX', basename($auxFile))); 
-		runCommandOrFail(@{$self->{'bibtex_cmd'}}, "$auxFile");
+		if ($filedesc->{'use_biber'}) {
+			printDbg(locGet(_T('{}: {}'), 'BIBER', basename($basename))); 
+			runCommandOrFail(@{$self->{'biber_cmd'}}, "$basename");
+		}
+		else {
+			my $auxFile = File::Spec->catfile(dirname($file),"$basename.aux");
+			printDbg(locGet(_T('{}: {}'), 'BIBTEX', basename($auxFile))); 
+			runCommandOrFail(@{$self->{'bibtex_cmd'}}, "$auxFile");
+		}
 	}
 }
 
@@ -983,9 +1022,9 @@ sub __build_pdf($$$) : method {
 
 =pod
 
-=item * enableBibTeX
+=item * enableBiblio
 
-Enable or disable the call to bibtex.
+Enable or disable the call to bibtex/biber.
 If this function has a parameter, the flag is changed.
 
 =over
@@ -997,19 +1036,19 @@ If this function has a parameter, the flag is changed.
 I<Returns:> the vlaue of the enabling flag.
 
 =cut
-sub enableBibTeX : method {
+sub enableBiblio : method {
 	my $self = shift;
 	if (@_) {
-		$self->{'is_bibtex_enable'} = $_[0];
+		$self->{'is_biblio_enable'} = $_[0];
 	}
-	return $self->{'is_bibtex_enable'};
+	return $self->{'is_biblio_enable'};
 }
 
 =pod
 
-=item * enableBibTeX
+=item * enableMakeIndex
 
-Enable or disable the call to bibtex.
+Enable or disable the call to makeindex.
 If this function has a parameter, the flag is changed.
 
 =over

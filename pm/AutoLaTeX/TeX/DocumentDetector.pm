@@ -20,7 +20,7 @@
 
 =head1 NAME
 
-DocumentDetector.pm - Detect iof a TeX file contains a LaTeX document.
+DocumentDetector.pm - Detect if a TeX file contains a LaTeX document.
 
 =head1 DESCRIPTION
 

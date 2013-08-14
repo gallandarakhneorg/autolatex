@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::TeXDependencyAnalyzer;
 
-$VERSION = '2.0';
+$VERSION = '4.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getDependenciesOfTeX ) ;
 @EXPORT_OK = qw();
@@ -50,6 +50,9 @@ use File::Basename;
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::TeX::TeXParser;
 
+use constant BIBTEX_KEY => 'bibtex';
+use constant BIBER_KEY => 'biber';
+
 my %MACROS = (
 	'input'				=> '!{}',
 	'include'			=> '!{}',
@@ -58,6 +61,7 @@ my %MACROS = (
 	'usepackage'			=> '![]!{}',
 	'RequirePackage'		=> '![]!{}',
 	'documentclass'			=> '![]!{}',
+	'addbibresource'		=> '![]!{}',
 	);
 
 =pod
@@ -118,6 +122,8 @@ sub getDependenciesOfTeX($$) {
 		}
 	}
 
+	$analysis{'biber'} = $listener->{'is_biber'};
+
 	return %analysis;
 }
 
@@ -125,6 +131,8 @@ sub _expandMacro($$@) : method {
 	my $self = shift;
 	my $parser = shift;
 	my $macro = shift;
+	my $bibdb = '';
+
 	if ( $macro eq '\\include' || $macro eq '\\input' ) {
 		foreach my $param (@_) {
 			my $value = $param->{'text'};
@@ -144,9 +152,19 @@ sub _expandMacro($$@) : method {
 	}
 	elsif ( $macro eq '\\usepackage' || $macro eq '\\RequirePackage' ) {
 		my $sty = $_[1]{'text'};
-		my $styFile = "$sty.sty";
-		if ($sty eq 'multibib') {
+		my $styFile = "$sty";
+		if ($styFile !~ /\.sty$/i) {
+			$styFile .= ".sty";
+		}
+		if ($styFile eq 'multibib.sty') {
 			$self->{'is_multibib'} = 1;
+		}
+		if ($styFile eq 'biblatex.sty') {
+			$self->{'is_biblatex'} = 1;
+			# Parse the biblatex parameters
+			if ($_[0] && $_[0]->{'text'} && $_[0]->{'text'} =~ /backend\s*=\s*biber/) {
+				$self->{'is_biber'} = 1;
+			}
 		}
 		if (!File::Spec->file_name_is_absolute($styFile)) {
 			$styFile = File::Spec->catfile($self->{'dirname'}, "$styFile");
@@ -157,7 +175,10 @@ sub _expandMacro($$@) : method {
 	}
 	elsif ($macro eq '\\documentclass' ) {
 		my $cls = $_[1]{'text'};
-		my $clsFile = "$cls.cls";
+		my $clsFile = "$cls";
+		if ($clsFile !~ /\.cls$/i) {
+			$clsFile .= ".cls";
+		}
 		if (!File::Spec->file_name_is_absolute($clsFile)) {
 			$clsFile = File::Spec->catfile($self->{'dirname'}, "$clsFile");
 		}
@@ -166,28 +187,40 @@ sub _expandMacro($$@) : method {
 		}
 	}
 	elsif ($macro =~ /^\\bibliographystyle(.*)$/s ) {
-		my $bibdb = $1;
+		$bibdb = $1;
 		$bibdb = $self->{'basename'} unless ($bibdb);
 		foreach my $param (@_) {
 			my $value = $param->{'text'};
 			if ($value) {
-				my $bstFile = "$value.bst";
+				my $bstFile = "$value";
+				if ($bstFile !~ /\.bst$/i) {
+					$bstFile .= ".bst";
+				}
 				if (!File::Spec->file_name_is_absolute($bstFile)) {
 					$bstFile = File::Spec->catfile($self->{'dirname'}, "$bstFile");
 				}
 				if (-f "$bstFile") {
-					$self->{'dependencies'}{'biblio'}{$bibdb}{'bst'}{$bstFile} = 1;
+					$self->{'dependencies'}{'biblio'}{$bibdb}{'bst'}{$bstFile} = BIBTEX_KEY;
 				}
 			}
 		}
 	}
-	elsif ($macro =~ /^\\bibliography(.*)$/s ) {
-		my $bibdb = $1;
+	elsif ($macro =~ /^\\bibliography(.*)$/s) {		
+		$bibdb = $1;
 		$bibdb = $self->{'basename'} unless ($bibdb && $self->{'is_multibib'});
+	}
+	elsif ($macro eq '\\addbibresource') {		
+		$bibdb = $self->{'basename'};
+	}
+
+	if ($bibdb) {
 		foreach my $param (@_) {
 			my $value = $param->{'text'};
 			if ($value) {
-				my $bibFile = "$value.bib";
+				my $bibFile = "$value";
+				if ($bibFile !~ /\.bib$/i) {
+					$bibFile .= ".bib";
+				}
 				if (!File::Spec->file_name_is_absolute($bibFile)) {
 					$bibFile = File::Spec->catfile($self->{'dirname'}, "$bibFile");
 				}
