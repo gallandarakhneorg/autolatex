@@ -1,0 +1,10 @@
+[Plugin]
+Loader=python
+Module=autolatex
+IAge=3
+Name=AutoLaTeX
+Description=Compile TeX documents with AutoLaTeX
+Author= Stéphane Galland <galland@arakhne.org>
+Copyright=Copyright © 2013 Stéphane Galland
+Website=http://www.arakhne.org/autolatex
+Version=1.0.0
