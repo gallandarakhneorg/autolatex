@@ -20,24 +20,23 @@
 % Modifications:
 %
 
-\global\edef\autolatex@package@ver{2013/06/18}
+\global\edef\autolatex@package@ver{2013/08/17}
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{autolatex}[\autolatex@package@ver]
 
 \RequirePackage{graphicx}
-\RequirePackage{keyval}
+\RequirePackage{xkeyval}
 \RequirePackage{tikz}
 
 %----------------------------------------
 % IMAGES INCLUDING TEX EXPRESSIONS
 %----------------------------------------
 
-\providecommand{\@autolatex@wtfig@extensions}{}
-\define@key{autolatexwithtex}{width}{%
+\define@key[autolatex]{withtex}{width}{%
 	\gdef\@autolatex@wtfig@width{#1}%
 }
-\define@key{autolatexwithtex}{height}{%
+\define@key[autolatex]{withtex}{height}{%
 	\gdef\@autolatex@wtfig@height{#1}%
 }
 
@@ -48,7 +47,7 @@
 }
 \DeclareGraphicsExtensionsWtex{.pdftex_t,.pstex_t,.pdf_tex,.ps_tex}
 
-\newcommand{\@autolatex@wtfig@searchinpath}[1]{%
+\providecommand{\@autolatex@wtfig@searchinpath}[1]{%
 	\IfFileExists{#1}{%
 		\protected@edef\@autolatex@wtfig@tmp{\protect\resizebox{\@autolatex@wtfig@width}{\@autolatex@wtfig@height}{\protect\input{#1}}}%
 	}{%
@@ -66,9 +65,9 @@
 %\includefigurewtex[width=xx,height=yy]{filename}
 \providecommand{\includefigurewtex}[2][width=\linewidth]{%
 	\begingroup%
-	\gdef\@autolatex@wtfig@width{!}
-	\gdef\@autolatex@wtfig@height{!}
-	\setkeys{autolatexwithtex}{#1}%
+	\gdef\@autolatex@wtfig@width{!}%
+	\gdef\@autolatex@wtfig@height{!}%
+	\setkeys[autolatex]{withtex}{#1}%
 	%
 	\global\let\@autolatex@wtfig@tmp\relax%
 	\global\let\@autolatex@wtfig@ext\relax%
