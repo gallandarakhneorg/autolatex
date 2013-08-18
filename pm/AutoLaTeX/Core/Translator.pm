@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '8.0';
+$VERSION = '8.1';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -646,7 +646,7 @@ sub readTranslatorFile($$) {
 		$content{'INPUT_EXTENSIONS'}{'value'} = [];
 		foreach my $e (@exts) {
 			if ($e !~ /^\^s*$/) {
-				if ($e !~ /^\./) {
+				if ($e !~ /^[\.+]/) {
 					$e = ".$e";
 				}
 				push @{$content{'INPUT_EXTENSIONS'}{'value'}}, $e;
