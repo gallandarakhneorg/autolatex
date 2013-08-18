@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '15.0';
+$VERSION = '15.1';
 $COPYRIGHT_YEAR = '2013';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -206,7 +206,7 @@ sub analyzeCommandLineOptions(\%) {
 				},
 
 		)) {
-	  exit(1);
+	  exit(255);
 	}
 
 	setDebugLevel($debugLevel);

@@ -75,7 +75,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '5.0';
+our $VERSION = '5.1';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -536,7 +536,7 @@ sub runLaTeX($;$) : method {
 			}
 			printDbg(locGet(_T("{}: End of error log."), 'PDFLATEX'));
 			close(*LOGFILE);
-			exit($exitcode);
+			exit(255);
 		}
 		elsif ($enableLoop) {
 			my $line;

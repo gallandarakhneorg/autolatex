@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Util;
 
-$VERSION = '1.0';
+$VERSION = '1.1';
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
               &getAutoLaTeXName &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
@@ -247,7 +247,7 @@ sub showManual(@) {
 		}
 	}
 	print STDERR locGet(_T("no manual page found\n"));
-	exit(2);
+	exit(255);
 }
 
 =pod
@@ -530,7 +530,7 @@ sub printErr(@) {
 	foreach my $p (@text) {
 		print STDERR (_T("[AutoLaTeX]"), ' ', locGet("Error: {}","$p"), "\n");
 	}
-	exit(6);
+	exit(255);
 	undef;
 }
 
