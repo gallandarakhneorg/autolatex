@@ -17,6 +17,7 @@ my $BINDIRECTORY;
 my $ETCDIRECTORY;
 my $MANDIRECTORY;
 my $STYDIRECTORY;
+my $GEDITDIRECTORY;
 
 sub dbg(@) {
 	use Data::Dumper;
@@ -414,6 +415,14 @@ sub DO_install(\%) {
 		$STYDIRECTORY,
 		getFiles('sty','*'));
 	
+	installInto(
+		$GEDITDIRECTORY,
+		getFiles('gedit','*'));
+
+	installInto(
+		File::Spec->catfile($GEDITDIRECTORY,'icons','24'),
+		getFiles('gedit','icons','24','*'));
+
 }
 
 #------------------------------------------------------------------------------------------
@@ -560,6 +569,7 @@ if (("$^O" eq 'MSWin32')||
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'autolatex','man','english');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
+	$GEDITDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
 }
 else {
 	# Unix compatible platform
@@ -582,6 +592,7 @@ else {
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'man1');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
+	$GEDITDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex');
 }
 
 # Run the action

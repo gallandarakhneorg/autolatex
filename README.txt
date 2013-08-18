@@ -348,7 +348,7 @@ AUTO GENERATION OF FIGURES
         Name: dia2pdf+tex
         Use external converter: dia
         Use translator:
-        Input format: .dia_tex .diat .diatex .dia+tex
+        Input format: .dia_tex .diat .dia+tex .diatex .tex.dia +tex.dia
         Output format: .pdf
 
         TeX part:
@@ -356,7 +356,7 @@ AUTO GENERATION OF FIGURES
         Name: dia2pdf+tex
         Use external converter: dia
         Use translator:
-        Input format: .dia_tex .diat .diatex .dia+tex
+        Input format: .dia_tex .diat .dia+tex .diatex .tex.dia +tex.dia
         Output format: .pdftex_t
 
     Dot Graphviz (dot) to Portable Document Format (pdf)
@@ -414,7 +414,7 @@ AUTO GENERATION OF FIGURES
         Name: fig2pdf+tex
         Use external converter: fig2dev
         Use translator:
-        Input format: .fig_tex .figt .figtex .fig+tex
+        Input format: .figt .fig_tex .figtex .fig+tex .tex.fig +tex.fig
         Output format: .pdf
 
         TeX part:
@@ -422,7 +422,7 @@ AUTO GENERATION OF FIGURES
         Name: fig2pdf+tex
         Use external converter: fig2dev
         Use translator:
-        Input format: .fig_tex .figt .figtex .fig+tex
+        Input format: .figt .fig_tex .figtex .fig+tex .tex.fig +tex.fig
         Output format: .pdftex_t
 
     Graph eXchange Language (gxl) to Portable Document Format (pdf)
@@ -486,7 +486,7 @@ AUTO GENERATION OF FIGURES
         Name: plot2pdf
         Use external converter: gnuplot
         Use translator: eps2pdf
-        Input format: .plot
+        Input format: .plot .gnu
         Output format: .pdf
 
     GNU plot (plot) to TeX embedded in Portable Document Format (pdf+tex)
@@ -495,7 +495,8 @@ AUTO GENERATION OF FIGURES
         Name: plot2pdf+tex
         Use external converter: gnuplot
         Use translator: eps2pdf
-        Input format: .plot_tex .plottex .plott .plot+tex
+        Input format: .plott .plot_tex .plottex .plot+tex .tex.plot
+        +tex.plot .gnut .gnu_tex .gnutex .gnu+tex .tex.gnu +tex.gnu
         Output format: .pdf
 
         TeX part:
@@ -503,7 +504,8 @@ AUTO GENERATION OF FIGURES
         Name: plot2pdf+tex
         Use external converter: gnuplot
         Use translator:
-        Input format: .plot_tex .plottex .plott .plot+tex
+        Input format: .plott .plot_tex .plottex .plot+tex .tex.plot
+        +tex.plot .gnut .gnu_tex .gnutex .gnu+tex .tex.gnu +tex.gnu
         Output format: .pdftex_t
 
     Python Source Code (py) to TeX Source Code (tex): TeXify variante
@@ -545,7 +547,7 @@ AUTO GENERATION OF FIGURES
         Name: svg2pdf+tex
         Use external converter: inkscape
         Use translator: eps2pdf
-        Input format: .svg_tex .svgt .svgtex .svg+tex
+        Input format: .svgt .svg_t .svgtex .svg+tex .tex.svg +tex.svg
         Output format: .pdf
 
         TeX part:
@@ -553,7 +555,7 @@ AUTO GENERATION OF FIGURES
         Name: svg2pdf+tex
         Use external converter: inkscape
         Use translator:
-        Input format: .svg_tex .svgt .svgtex .svg+tex
+        Input format: .svgt .svg_t .svgtex .svg+tex .tex.svg +tex.svg
         Output format: .pdftex_t
 
     Scalable Vector Graphic (svg) to Portable Network Graphic (png)
@@ -569,7 +571,8 @@ AUTO GENERATION OF FIGURES
         Name: svg2pdf+layers
         Use external converter: inkscape
         Use translator:
-        Input format: .svgl .svg_layers .svg+layers
+        Input format: .svgl .svg_l .svglayers .svg+layers .layers.svg
+        +layers.svg
         Output format: .pdftex_t .pdf
 
     Scalable Vector Graphic with layers (svg) to TeX embedded in Beamer
@@ -578,8 +581,10 @@ AUTO GENERATION OF FIGURES
 
         Name: svg2pdf+layers+tex
         Use external converter: inkscape
-        Use translator:
-        Input format: .svg_layerstex .svglt .svglayerstex .svg+layers+tex
+        Use translator: eps2pdf
+        Input format: .svglt .svg_lt .svglayerstex .svgtexlayers
+        .svg+layers+tex .svg+tex+layers .layers.tex.svg .tex.layers.svg
+        +layers+tex.svg +tex+layers.svg
         Output format: .pdf
 
         TeX part:
@@ -587,7 +592,9 @@ AUTO GENERATION OF FIGURES
         Name: svg2pdf+layers+tex
         Use external converter: inkscape
         Use translator:
-        Input format: .svg_layerstex .svglt .svglayerstex .svg+layers+tex
+        Input format: .svglt .svg_lt .svglayerstex .svgtexlayers
+        .svg+layers+tex .svg+tex+layers .layers.tex.svg .tex.layers.svg
+        +layers+tex.svg +tex+layers.svg
         Output format: .pdftex_t
 
     UML Metadata Interchange (xmi) to Portable Document Format (pdf):

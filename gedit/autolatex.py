@@ -39,9 +39,9 @@ from gi.repository import GObject, Gtk, Gio, GdkPixbuf, Gedit
 # Level of verbosity of AutoLaTeX
 DEFAULT_LOG_LEVEL = '--quiet'
 # Binary file of AutoLaTeX
-AUTOLATEX_BINARY = '/home/sgalland/git/autolatex/autolatex.pl'
+AUTOLATEX_BINARY = 'autolatex'
 # Path where the icons are installed
-ICON_PATH = os.path.join(os.path.dirname(__file__), 'icons')
+ICON_PATH = os.path.join(os.path.dirname(__file__), 'icons', '24')
 
 #---------------------------------
 # DEFINITION OF THE GTK CONTRIBUTIONS
@@ -171,7 +171,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable):
 
     # Load an icon from the AutoLaTeX package
     def _get_icon(self, icon):
-	iconfile = os.path.join(ICON_PATH, '24', 'autolatex-'+icon+'.png')
+	iconfile = os.path.join(ICON_PATH, 'autolatex-'+icon+'.png')
 	return GdkPixbuf.Pixbuf.new_from_file(iconfile)
 
 
