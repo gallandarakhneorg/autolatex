@@ -20,7 +20,7 @@
 # See template.txt for details on the fields
 #--------------------------------------------
 
-INPUT_EXTENSIONS = .dia_tex .diat .dia+tex .diatex
+INPUT_EXTENSIONS = .dia_tex .diat .dia+tex .diatex .tex.dia +tex.dia
 
 OUTPUT_EXTENSIONS for pdf = .pdf .pdftex_t
 OUTPUT_EXTENSIONS for eps = .eps .pstex_t

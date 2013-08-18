@@ -490,7 +490,7 @@ PDF part:
 
 =item Use translator:
 
-=item Input format:                      .dia_tex .diat .diatex .dia+tex
+=item Input format:                      .dia_tex .diat .dia+tex .diatex .tex.dia +tex.dia
 
 =item Output format:                     .pdf
 
@@ -506,7 +506,7 @@ TeX part:
 
 =item Use translator:            
 
-=item Input format:                      .dia_tex .diat .diatex .dia+tex
+=item Input format:                      .dia_tex .diat .dia+tex .diatex .tex.dia +tex.dia
 
 =item Output format:                     .pdftex_t
 
@@ -620,7 +620,7 @@ PDF part:
 
 =item Use translator:
 
-=item Input format:                      .fig_tex .figt .figtex .fig+tex
+=item Input format:                      .figt .fig_tex .figtex .fig+tex .tex.fig +tex.fig
 
 =item Output format:                     .pdf
 
@@ -636,7 +636,7 @@ TeX part:
 
 =item Use translator:            
 
-=item Input format:                      .fig_tex .figt .figtex .fig+tex
+=item Input format:                      .figt .fig_tex .figtex .fig+tex .tex.fig +tex.fig
 
 =item Output format:                     .pdftex_t
 
@@ -764,7 +764,7 @@ TeX part:
 
 =item Use translator:                    eps2pdf
 
-=item Input format:                      .plot
+=item Input format:                      .plot .gnu
 
 =item Output format:                     .pdf
 
@@ -782,7 +782,7 @@ PDF part:
 
 =item Use translator:                    eps2pdf
 
-=item Input format:                      .plot_tex .plottex .plott .plot+tex
+=item Input format:                      .plott .plot_tex .plottex .plot+tex .tex.plot +tex.plot .gnut .gnu_tex .gnutex .gnu+tex .tex.gnu +tex.gnu
 
 =item Output format:                     .pdf
 
@@ -798,7 +798,7 @@ TeX part:
 
 =item Use translator:                    
 
-=item Input format:                      .plot_tex .plottex .plott .plot+tex
+=item Input format:                      .plott .plot_tex .plottex .plot+tex .tex.plot +tex.plot .gnut .gnu_tex .gnutex .gnu+tex .tex.gnu +tex.gnu
 
 =item Output format:                     .pdftex_t
 
@@ -880,7 +880,7 @@ PDF part:
 
 =item Use translator:                    eps2pdf
 
-=item Input format:                      .svg_tex .svgt .svgtex .svg+tex
+=item Input format:                      .svgt .svg_t .svgtex .svg+tex .tex.svg +tex.svg
 
 =item Output format:                     .pdf
 
@@ -896,7 +896,7 @@ TeX part:
 
 =item Use translator:            
 
-=item Input format:                      .svg_tex .svgt .svgtex .svg+tex
+=item Input format:                      .svgt .svg_t .svgtex .svg+tex .tex.svg +tex.svg
 
 =item Output format:                     .pdftex_t
 
@@ -928,7 +928,7 @@ TeX part:
 
 =item Use translator:                    
 
-=item Input format:                      .svgl .svg_layers .svg+layers
+=item Input format:                      .svgl .svg_l .svglayers .svg+layers .layers.svg +layers.svg
 
 =item Output format:                     .pdftex_t .pdf
 
@@ -944,9 +944,9 @@ PDF part:
 
 =item Use external converter:            inkscape
 
-=item Use translator:                    
+=item Use translator:                    eps2pdf
 
-=item Input format:                      .svg_layerstex .svglt .svglayerstex .svg+layers+tex
+=item Input format:                      .svglt .svg_lt .svglayerstex .svgtexlayers .svg+layers+tex .svg+tex+layers .layers.tex.svg .tex.layers.svg +layers+tex.svg +tex+layers.svg
 
 =item Output format:                     .pdf
 
@@ -962,7 +962,7 @@ TeX part:
 
 =item Use translator:            
 
-=item Input format:                      .svg_layerstex .svglt .svglayerstex .svg+layers+tex
+=item Input format:                      .svglt .svg_lt .svglayerstex .svgtexlayers .svg+layers+tex .svg+tex+layers .layers.tex.svg .tex.layers.svg +layers+tex.svg +tex+layers.svg
 
 =item Output format:                     .pdftex_t
 

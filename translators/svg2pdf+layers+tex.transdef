@@ -20,7 +20,7 @@
 # See template.txt for details on the fields
 #--------------------------------------------
 
-INPUT_EXTENSIONS = .svglt .svg_lt .svglayerstex .svgtexlayers .svg+layers+tex .svg+tex+layers
+INPUT_EXTENSIONS = .svglt .svg_lt .svglayerstex .svgtexlayers .svg+layers+tex .svg+tex+layers .layers.tex.svg .tex.layers.svg +layers+tex.svg +tex+layers.svg
 
 OUTPUT_EXTENSIONS for pdf = .pdftex_t .pdf
 OUTPUT_EXTENSIONS for eps = .pstex_t .eps

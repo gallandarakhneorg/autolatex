@@ -20,7 +20,7 @@
 # See template.txt for details on the fields
 #--------------------------------------------
 
-INPUT_EXTENSIONS = .figt .fig_tex .figtex .fig+tex
+INPUT_EXTENSIONS = .figt .fig_tex .figtex .fig+tex .tex.fig +tex.fig
 
 OUTPUT_EXTENSIONS for pdf = .pdf .pdftex_t
 OUTPUT_EXTENSIONS for eps = .eps .pstex_t

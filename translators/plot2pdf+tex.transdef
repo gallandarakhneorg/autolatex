@@ -20,7 +20,7 @@
 # See template.txt for details on the fields
 #--------------------------------------------
 
-INPUT_EXTENSIONS = .plott .plot_tex .plottex .plot+tex
+INPUT_EXTENSIONS = .plott .plot_tex .plottex .plot+tex .tex.plot +tex.plot .gnut .gnu_tex .gnutex .gnu+tex .tex.gnu +tex.gnu
 
 OUTPUT_EXTENSIONS for pdf = .pdf .pdftex_t
 OUTPUT_EXTENSIONS for eps = .eps .pstex_t
