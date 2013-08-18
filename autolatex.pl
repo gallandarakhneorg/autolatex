@@ -114,6 +114,17 @@ sub al_getimages() {
 		if ($rawdirs) {
 			my $pattern = "[\Q".getPathListSeparator()."\E]";
 			my @dirs = split( /$pattern/is, $rawdirs);
+			my @imageExtensions = keys $autolatexData{'imageDatabase'};
+			@imageExtensions = sort {
+							my $la = length($a);
+							my $lb = length($b);
+							if ($la==$lb) {
+								($a cmp $b);
+							}
+							else {
+								($lb - $la);
+							}
+						} @imageExtensions;
 			while (@dirs) {
 				my $dir = shift @dirs;
 				if (opendir(*DIR, "$dir")) {
@@ -123,13 +134,18 @@ sub al_getimages() {
 							if (-d "$ffn") {
 								push @dirs, "$ffn";
 							}
-							elsif ( $fn =~ /(\.[^.]+)$/) {
-								my $ext = lc("$1");
-								if (exists $autolatexData{'imageDatabase'}{"$ext"}) {
-									if (!$autolatexData{'imageDatabase'}{"$ext"}{'files'}) {
-										$autolatexData{'imageDatabase'}{"$ext"}{'files'} = [];
+							else {
+								my $selectedExtension = undef;
+								for(my $i=0; !$selectedExtension && $i<@imageExtensions; ++$i) {
+									if ($fn =~ /\Q$imageExtensions[$i]\E$/i) {
+										$selectedExtension = $imageExtensions[$i];
 									}
-									push @{$autolatexData{'imageDatabase'}{"$ext"}{'files'}}, "$ffn";
+								}
+								if ($selectedExtension) {
+									if (!$autolatexData{'imageDatabase'}{"$selectedExtension"}{'files'}) {
+										$autolatexData{'imageDatabase'}{"$selectedExtension"}{'files'} = [];
+									}
+									push @{$autolatexData{'imageDatabase'}{"$selectedExtension"}{'files'}}, "$ffn";
 								}
 							}
 						}
@@ -163,7 +179,7 @@ sub al_run_images {
 }
 
 sub al_run_showimages {
-	my $i_ref = shift;
+	my $i_ref = shift
 	al_loadtranslators();
 	al_getimages();
 	my @images = ();
@@ -174,6 +190,36 @@ sub al_run_showimages {
 	}
 	@images = sort @images;
 	print STDOUT join("\n", @images)."\n";
+}
+
+sub al_run_showimagemap {
+	my $i_ref = shift;
+	al_loadtranslators();
+	al_getimages();
+	my %images = ();
+	foreach my $value (values %{$autolatexData{'imageDatabase'}}) {
+		if (exists $value->{'files'}) {
+			foreach my $img (@{$value->{'files'}}) {
+				$images{$img} = $value->{'translator'};
+				die("no translator for: $img\n") unless $images{$img};
+			}
+		}
+	}
+	foreach my $k (sort keys %images) {
+		my $h = "$k";
+		if (length($h)>=50) {
+			$h .= "\n";
+			for(my $i=0; $i<50; ++$i) {
+				$h .= ' ';
+			}
+		}
+		else {
+			while (length($h)<50) {
+				$h .= ' ';
+			}
+		}
+		print STDERR "$h => $images{$k}\n";
+	}
 }
 
 #------------------------------------------------------
@@ -684,6 +730,9 @@ for(my $i=0; $i<@ARGV; $i++) {
 	}
 	elsif ($ARGV[$i] eq 'showimages') {
 		al_run_showimages(\$i);
+	}
+	elsif ($ARGV[$i] eq 'showimagemap') {
+		al_run_showimagemap(\$i);
 	}
 	elsif ($ARGV[$i] eq 'commit') {
 		al_run_commit(\$i);
