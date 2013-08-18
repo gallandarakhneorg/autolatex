@@ -117,6 +117,13 @@ OPTIONS
     --[no]auto
         Enable or disable the auto generation of the figures.
 
+    --[no]asyncview
+        Enable or disable the asynchronous launching of the viewer. If the
+        viewer is launched asynchonously, AutoLaTeX does not wait for its
+        termination before stopping its execution. If the viewer is launched
+        synchonously, AutoLaTeX waits for its termination before stopping
+        its execution.
+
     --[no]biblio
         Enable or disable the call to the bibliography tool (BibTeX,
         Biber...)

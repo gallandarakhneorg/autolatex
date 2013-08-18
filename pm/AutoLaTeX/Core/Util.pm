@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Util;
 
-$VERSION = '1.1';
+$VERSION = '2.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
               &getAutoLaTeXName &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
@@ -680,9 +680,22 @@ sub runCommandOrFail(@) {
 Run a system command, block and return the exit code.
 The standard outputs are catched and trashed.
 
+
+
+Parameters are 
+
 =over 4
 
-=item is the command to run.
+=item [options] (optional hash ref), if the first parameter is an hash table, it is assumed to be
+additional options to pass to this function.
+
+=over 4
+
+=item C<wait> is a boolean flag that is indicating if the caller must wait for the termination of the sub-process.
+
+=back
+
+=item rest of the parameters are constituting the command to run.
 
 =back
 
@@ -693,6 +706,10 @@ replied.
 
 =cut
 sub runCommandSilently(@) {
+	my $opts = {};
+	if ($_[0] && isHash($_[0])) {
+		$opts = shift;
+	}
 	printDbgFor(4, locGet(_T("Command line is:\n{}"), join(' ',@_)));
 	my $pid = fork();
 	if ($pid == 0) {
@@ -705,8 +722,14 @@ sub runCommandSilently(@) {
 	}
 	elsif (defined($pid)) {
 		# Parent process
-		waitpid($pid, 0);
-		return $?;
+		if (!defined($opts->{'wait'}) || $opts->{'wait'}) {
+			waitpid($pid, 0);
+			return $?;
+		}
+		else {
+			# Do not wait for the child.
+			return 0;
+		}
 	}
 	else {
 		printErr(locGet(_T("Unable to fork for the system command: {}"),join(' ',@_)));

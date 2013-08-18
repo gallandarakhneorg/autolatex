@@ -1,5 +1,8 @@
 # List of source files containing translatable strings.
 
+# Main program
+autolatex.pl
+
 # Core libraries
 pm/AutoLaTeX/Core/Config.pm
 pm/AutoLaTeX/Core/Locale.pm

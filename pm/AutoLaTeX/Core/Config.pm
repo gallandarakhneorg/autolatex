@@ -121,6 +121,7 @@ my %CONFIGURATION_COMMENTS = (
 	'viewer.view' 				=> _T(	"Indicates if a viewer should be launch after the compilation. ".
 							"Valid values are 'yes' and 'no'."),
 	'viewer.viewer' 			=> _T(	"Specify, if not commented,the command line of the viewer."),
+	'viewer.asynchronous run'		=> _T(	"Indicates if the viewer is launched in background, or not."),
 );
 
 #######################################################

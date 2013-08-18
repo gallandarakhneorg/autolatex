@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '15.1';
+$VERSION = '16.0';
 $COPYRIGHT_YEAR = '2013';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -65,6 +65,7 @@ sub analyzeCommandLineOptions(\%) {
 	if (!GetOptions(
 
 		'auto!' => sub { $cfg->{'generation.generate images'} = ($_[1] ? 'yes' : 'no'); },
+		'asyncview!' => sub { $cfg->{'viewer.asynchronous run'} = ($_[1] ? 'yes' : 'no'); },
 		'imgdirectory=s' => sub { $cfg->{'generation.image directory'} = $_[1]; },
 
 		'createconfig:s' => \$realcfg->{'__private__'}{'action.create config file'},

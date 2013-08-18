@@ -218,8 +218,17 @@ sub al_view() {
 	my $pdfFile = File::Spec->catfile(
 				$configuration{'__private__'}{'output.directory'},
 				$configuration{'__private__'}{'output.latex basename'}.'.pdf');
+	my $isWaiting = !cfgBoolean($configuration{'viewer.asynchronous run'});
 	if ($configuration{'viewer.viewer'}) {
-		system($configuration{'viewer.viewer'}, $pdfFile);
+		if ($isWaiting) {
+			printDbgFor(2, locGet(_T("Launching '{}'"), $configuration{'viewer.viewer'}));
+		}
+		else {
+			printDbgFor(2, locGet(_T("Launching '{}' in background"), $configuration{'viewer.viewer'}));
+		}
+		runCommandSilently(
+			{ 'wait' => $isWaiting },
+			$configuration{'viewer.viewer'},  $pdfFile);
 	}
 	else {
 		my $v = 0;
@@ -228,7 +237,15 @@ sub al_view() {
 				my $bin = which($viewer);
 				if ($bin) {
 					$v = 1;
-					runCommandSilently($bin,  $pdfFile);
+					if ($isWaiting) {
+						printDbgFor(2, locGet(_T("Launching '{}'"), $bin));
+					}
+					else {
+						printDbgFor(2, locGet(_T("Launching '{}' in background"), $bin));
+					}
+					runCommandSilently(
+						{ 'wait' => $isWaiting },
+						$bin,  $pdfFile);
 				}
 			}
 		}
@@ -572,16 +589,19 @@ sub al_run_makeflat {
 #------------------------------------------------------
 
 # script parameters
+my @ORIGINAL_ARGV = @ARGV;
 setDebugLevel(0);
 %configuration = mainProgram(); # Exit on error
 
 if (getDebugLevel()>=6) {
-	exitDbg(\%configuration);
+	exitDbg(\%configuration, \@ORIGINAL_ARGV);
 }
 elsif (getDebugLevel()>=5) {
 	# Force to fail on Perl warnings
 	$SIG{__WARN__} = sub { confess(@_); };
 }
+
+@ORIGINAL_ARGV = (); # Not more necessary
 
 # Run the action of the configuration file generation
 my $optionalAction = 0;
