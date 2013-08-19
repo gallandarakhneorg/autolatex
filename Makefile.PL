@@ -352,10 +352,12 @@ sub DO_install(\%) {
 	if (($_[0]->{'create-links'})&&($_[0]->{'create-bin-links'})) {
 		installLinkedBin('autolatex.pl', $INSTALLDIRECTORY,'autolatex');
 		installLinkedBin('autolatex-gtk.pl',$INSTALLDIRECTORY,'autolatex-gtk');
+		installLinkedBin('autolatex-backend.pl',$INSTALLDIRECTORY,'autolatex-backend');
 	}
 	else {
 		installExec('autolatex.pl', $INSTALLDIRECTORY);
 		installExec('autolatex-gtk.pl',$INSTALLDIRECTORY);
+		installExec('autolatex-backend.pl',$INSTALLDIRECTORY);
 	}
 	install('AUTHORS', $INSTALLDIRECTORY);
 	install('VERSION', $INSTALLDIRECTORY);
@@ -422,6 +424,10 @@ sub DO_install(\%) {
 	installInto(
 		File::Spec->catfile($GEDITDIRECTORY,'icons','24'),
 		getFiles('gedit','icons','24','*'));
+
+	installInto(
+		File::Spec->catfile($GEDITDIRECTORY,'icons','16'),
+		getFiles('gedit','icons','16','*'));
 
 }
 

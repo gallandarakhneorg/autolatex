@@ -31,17 +31,9 @@ except ImportError:
     import dummy_threading as _threading
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import GObject, Gtk, Gio, GdkPixbuf, Gedit
-
-#---------------------------------
-# CONSTANTS
-#---------------------------------
-
-# Level of verbosity of AutoLaTeX
-DEFAULT_LOG_LEVEL = '--quiet'
-# Binary file of AutoLaTeX
-AUTOLATEX_BINARY = 'autolatex'
-# Path where the icons are installed
-ICON_PATH = os.path.join(os.path.dirname(__file__), 'icons', '24')
+# AutoLaTeX internal libs
+import autolatex_utils as utils
+import autolatex_config_window as config_window
 
 #---------------------------------
 # DEFINITION OF THE GTK CONTRIBUTIONS
@@ -60,16 +52,21 @@ UI_XML = """<ui>
 	  <menuitem name="AutoLaTeXViewAction" action="AutoLaTeXViewAction"/>
 	  <separator />
 	  <menuitem name="AutoLaTeXDocumentConfAction" action="AutoLaTeXDocumentConfAction"/>
+	  <menuitem name="AutoLaTeXRemoveDocumentConfAction" action="AutoLaTeXRemoveDocumentConfAction"/>
+	  <separator />
 	  <menuitem name="AutoLaTeXUserConfAction" action="AutoLaTeXUserConfAction"/>
+	  <menuitem name="AutoLaTeXRemoveUserConfAction" action="AutoLaTeXRemoveUserConfAction"/>
         </menu>
       </placeholder>
     </menu>
 </menubar>
 <toolbar name="ToolBar">
-    <separator/>
-    <toolitem name="AutoLaTeXCompileAction" action="AutoLaTeXCompileAction"/>
-    <toolitem name="AutoLaTeXCleanAction" action="AutoLaTeXCleanAction"/>
-    <toolitem name="AutoLaTeXViewAction" action="AutoLaTeXViewAction"/>
+    <placeholder name="AutoLaTeX_toolbar">
+        <separator/>
+        <toolitem name="AutoLaTeXCompileAction" action="AutoLaTeXCompileAction"/>
+        <toolitem name="AutoLaTeXCleanAction" action="AutoLaTeXCleanAction"/>
+        <toolitem name="AutoLaTeXViewAction" action="AutoLaTeXViewAction"/>
+    </placeholder>
 </toolbar>
 </ui>"""
 
@@ -88,7 +85,9 @@ class AutoLaTeXExecutionThread(_threading.Thread):
 	self.daemon = True
 	self._caller = caller
 	self._directory = directory
-	self._cmd = [AUTOLATEX_BINARY] + params + [directive]
+	self._cmd = [utils.AUTOLATEX_BINARY] + params
+	if directive:
+		self._cmd.append(directive);
 
     # Run the thread
     def run(self):
@@ -130,15 +129,36 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable):
 
     # Invoke when the UI is updated
     def do_update_state(self):
-	# Change the sentitivity of the Gtk actions
-	doc = self._find_AutoLaTeX_dir()
-	hasDocument = (doc!=None)
-	if self._document_actions:
-            self._document_actions.set_sensitive(hasDocument
-			and not self._compilation_under_progress)
-	if self._texsensitive_actions:
-            self._texsensitive_actions.set_sensitive(self._is_TeX_document()
-			and not self._compilation_under_progress)
+	directory = self._find_AutoLaTeX_dir()
+	hasTeXDocument = self._is_TeX_document()
+	hasAutoLaTeXDocument = (directory!=None)
+	isInTeXContext = (hasTeXDocument or hasAutoLaTeXDocument)
+	# Display or hide the menus
+	self._menu.set_visible(isInTeXContext)
+	self._document_actions.set_visible(isInTeXContext)
+	self._texsensitive_actions.set_visible(isInTeXContext)
+	self._general_actions.set_visible(isInTeXContext)
+	# Test if the current document is inside a TeX context.
+	if isInTeXContext:
+		if directory:
+			cfgFile = os.path.join(directory, '.autolatex_project.cfg')
+			hasDocConfFile = os.path.exists(cfgFile)
+		else:
+			hasDocConfFile = False
+		hasUserConfFile = os.path.exists(os.path.join(os.path.expanduser("~"), '.autolatex'))
+		# Change the sensitivity
+		if self._document_actions:
+		    self._document_actions.set_sensitive(hasAutoLaTeXDocument
+				and not self._compilation_under_progress)
+		if self._texsensitive_actions:
+		    self._texsensitive_actions.set_sensitive(hasTeXDocument
+				and not self._compilation_under_progress)
+		if self._docconfsensitive_actions:
+		    self._docconfsensitive_actions.set_sensitive(hasDocConfFile
+				and not self._compilation_under_progress)
+		if self._userconfsensitive_actions:
+		    self._userconfsensitive_actions.set_sensitive(hasUserConfFile
+				and not self._compilation_under_progress)
 
     # Update the UI according to the flag "compilation under progress"
     # and to compilation outputs
@@ -171,8 +191,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable):
 
     # Load an icon from the AutoLaTeX package
     def _get_icon(self, icon):
-	iconfile = os.path.join(ICON_PATH, 'autolatex-'+icon+'.png')
-	return GdkPixbuf.Pixbuf.new_from_file(iconfile)
+	return GdkPixbuf.Pixbuf.new_from_file(utils.make_toolbar_icon_path('autolatex-'+icon+'.png'))
 
 
     # Add any contribution to the Gtk UI
@@ -215,6 +234,22 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable):
                 self.on_document_configuration_action_activate),
         ])
         manager.insert_action_group(self._texsensitive_actions)
+	# Create the group of actions that are needing the configuration file of a document
+        self._docconfsensitive_actions = Gtk.ActionGroup("AutoLaTeXDocConfSensitiveActions")
+        self._docconfsensitive_actions.add_actions([
+            ('AutoLaTeXRemoveDocumentConfAction', None, "Delete document configuration", 
+                None, "Delete the configuration for the document", 
+                self.on_delete_document_configuration_action_activate),
+        ])
+        manager.insert_action_group(self._docconfsensitive_actions)
+	# Create the group of actions that are needing the configuration file of the user
+        self._userconfsensitive_actions = Gtk.ActionGroup("AutoLaTeXUserConfSensitiveActions")
+        self._userconfsensitive_actions.add_actions([
+            ('AutoLaTeXRemoveUserConfAction', None, "Delete user configuration", 
+                None, "Delete the configuration for the user", 
+                self.on_delete_user_configuration_action_activate),
+        ])
+        manager.insert_action_group(self._userconfsensitive_actions)
 	# Create the group of actions that are not needing any special document
         self._general_actions = Gtk.ActionGroup("AutoLaTeXGeneralActions")
         self._general_actions.add_actions([
@@ -310,23 +345,69 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable):
 	    thread.start()
 
     def on_clean_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('clean', [ '--noview', DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('clean', [ '--noview', utils.DEFAULT_LOG_LEVEL ])
 
     def on_cleanall_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('cleanall', [ '--noview', DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('cleanall', [ '--noview', utils.DEFAULT_LOG_LEVEL ])
 
     def on_compile_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('all', [ '--noview', DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('all', [ '--noview', utils.DEFAULT_LOG_LEVEL ])
 
     def on_generateimage_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('images', [ '--noview', DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('images', [ '--noview', utils.DEFAULT_LOG_LEVEL ])
 
     def on_view_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('view', [ '--asyncview', DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('view', [ '--asyncview', utils.DEFAULT_LOG_LEVEL ])
 
     def on_document_configuration_action_activate(self, action, data=None):
-	pass
+	directory = self._find_AutoLaTeX_dir()
+	if directory:
+		cfgFile = os.path.join(directory,".autolatex_project.cfg")
+		runConfig = True
+		if not os.path.exists(cfgFile):
+			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, "Do you want to create a configuration\nfile for your document?")
+			answer = dialog.run()
+			dialog.destroy()
+			runConfig = (answer == Gtk.ResponseType.YES)
+			if runConfig:
+				self._launch_AutoLaTeX('', [ '--createconfig=project', utils.DEFAULT_LOG_LEVEL ])
+		if runConfig:
+			config_window.open_configuration_dialog(self.window, True, directory)
+
+    def on_delete_document_configuration_action_activate(self, action, data=None):
+	directory = self._find_AutoLaTeX_dir()
+	if directory:
+		cfgFile = os.path.join(directory, '.autolatex_project.cfg')
+		if os.path.exists(cfgFile):
+			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, "Do you want to delete the document configuration?")
+			answer = dialog.run()
+			dialog.destroy()
+			if answer == Gtk.ResponseType.YES:
+				os.unlink(cfgFile)
+				self.do_update_state()
 
     def on_user_configuration_action_activate(self, action, data=None):
-	pass
+	directory = self._find_AutoLaTeX_dir()
+	if directory:
+		cfgFile = os.path.join(os.path.expanduser("~"),".autolatex")
+		runConfig = True
+		if not os.path.exists(cfgFile):
+			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, "Do you want to create a configuration\nfile at the user level?")
+			answer = dialog.run()
+			dialog.destroy()
+			runConfig = (answer == Gtk.ResponseType.YES)
+			if runConfig:
+				self._launch_AutoLaTeX('', [ '--createconfig=user', utils.DEFAULT_LOG_LEVEL ])
+		if runConfig:
+				config_window.open_configuration_dialog(self.window, False, directory)
+
+    def on_delete_user_configuration_action_activate(self, action, data=None):
+	cfgFile = os.path.join(os.path.expanduser("~"), '.autolatex')
+	if os.path.exists(cfgFile):
+		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, "Do you want to delete the user configuration?")
+		answer = dialog.run()
+		dialog.destroy()
+		if answer == Gtk.ResponseType.YES:
+			os.unlink(cfgFile)
+			self.do_update_state()
 

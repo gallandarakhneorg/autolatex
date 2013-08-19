@@ -752,7 +752,7 @@ sub setInclusionFlags(\%\%;\%\%) {
 
 =pod
 
-=item B<setInclusionFlags(\%\%;\%\%)>
+=item B<reinitInclusionFlags(\%\%;\%\%)>
 
 Init the translator inclusion flags obtained from the configurations.
 
