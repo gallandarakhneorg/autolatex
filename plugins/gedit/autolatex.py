@@ -30,10 +30,13 @@ try:
 except ImportError:
     import dummy_threading as _threading
 # Include the Glib, Gtk and Gedit libraries
-from gi.repository import GObject, Gtk, Gio, GdkPixbuf, Gedit
+from gi.repository import GObject, Gtk, Gio, GdkPixbuf, Gedit, PeasGtk
+
 # AutoLaTeX internal libs
 import autolatex_utils as utils
 import autolatex_config_window as config_window
+import autolatex_gsettings as gsettings
+import autolatex_plugin_config as plugin_config
 
 #---------------------------------
 # DEFINITION OF THE GTK CONTRIBUTIONS
@@ -107,7 +110,7 @@ class AutoLaTeXExecutionThread(_threading.Thread):
 #---------------------------------
 
 # Plugin for Gedit
-class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable):
+class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configurable):
     __gtype_name__ = "AutoLaTeXPlugin"
     window = GObject.property(type=Gedit.Window)
     
@@ -117,14 +120,37 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable):
 	self._compilation_under_progress = False # Indicate if the compilation is under progress
 	self._console_icon = None # Icon of the error console
 	self._error_console = None # Current instance of the error console
+	self._gsettings = gsettings.Manager()
 
-    # Invoke when the plugin is activated 
+    # Invoked when the configuration window is open
+    def do_create_configure_widget(self):
+        return plugin_config.Panel(self._gsettings)
+
+    # Invoked when the plugin is activated 
     def do_activate(self):
 	self._console_icon = self._get_icon('console')
         self._add_ui()
+	self._check_autolatex_binaries()
+
+    # Check if the AutoLaTeX binaries were found
+    def _check_autolatex_binaries(self):
+	if not utils.AUTOLATEX_BINARY and not utils.AUTOLATEX_BACKEND_BINARY:
+		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "The programs 'autolatex' and 'autolatex-backend'\nwere not found.\nPlease fix the configuration of the AutoLaTeX plugin.")
+		answer = dialog.run()
+		dialog.destroy()
+	elif not utils.AUTOLATEX_BINARY:
+		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "The program 'autolatex' was not found.\nPlease fix the configuration of the AutoLaTeX plugin.")
+		answer = dialog.run()
+		dialog.destroy()
+	elif not utils.AUTOLATEX_BACKEND_BINARY:
+		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "The program 'autolatex-backend' was not found.\nPlease fix the configuration of the AutoLaTeX plugin.")
+		answer = dialog.run()
+		dialog.destroy()
 
     # Invoke when the plugin is desactivated
     def do_deactivate(self):
+	self._gsettings.unbind()
+	self._gsettings = None
         self._remove_ui()
 
     # Invoke when the UI is updated

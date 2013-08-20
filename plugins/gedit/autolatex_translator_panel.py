@@ -46,7 +46,7 @@ class Level:
     PROJECT = 2
 
 #---------------------------------
-# CLASS AutoLaTeXTranslatorPanel
+# CLASS Panel
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the translators

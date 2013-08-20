@@ -25,6 +25,8 @@ import os
 import subprocess
 import ConfigParser
 import StringIO
+# Include the Glib, Gtk and Gedit libraries
+from gi.repository import Gio
 
 #---------------------------------
 # CONSTANTS
@@ -33,9 +35,37 @@ import StringIO
 # Level of verbosity of AutoLaTeX
 DEFAULT_LOG_LEVEL = '--quiet'
 
+def which(cmd):
+  # can't search the path if a directory is specified
+  assert not os.path.dirname(cmd)
+  extensions = os.environ.get("PATHEXT", "").split(os.pathsep)
+  for directory in os.environ.get("PATH", "").split(os.pathsep):
+    base = os.path.join(directory, cmd)
+    options = [base] + [(base + ext) for ext in extensions]
+    for filename in options:
+      if os.path.exists(filename):
+        return filename
+  return None
+
+# Plugin path
+AUTOLATEX_PLUGIN_PATH = os.path.join(os.path.dirname(__file__),'autolatex_utils.py')
+p = Gio.File.new_for_path(os.getcwd())
+AUTOLATEX_PLUGIN_PATH = p.resolve_relative_path(AUTOLATEX_PLUGIN_PATH).get_path()
+while os.path.islink(AUTOLATEX_PLUGIN_PATH):
+	p = Gio.File.new_for_path(os.path.dirname(AUTOLATEX_PLUGIN_PATH))
+	AUTOLATEX_PLUGIN_PATH = p.resolve_relative_path(os.readlink(AUTOLATEX_PLUGIN_PATH)).get_path()
+AUTOLATEX_PLUGIN_PATH = os.path.dirname(AUTOLATEX_PLUGIN_PATH)
+
 # Binary file of AutoLaTeX
-AUTOLATEX_BINARY = '/home/sgalland/git/autolatex/autolatex.pl'
-AUTOLATEX_BACKEND_BINARY = '/home/sgalland/git/autolatex/autolatex-backend.pl'
+# Use the development versions of the scripts
+AUTOLATEX_BINARY = os.path.join(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH)), 'autolatex.pl')
+if not os.path.exists(AUTOLATEX_BINARY):
+	AUTOLATEX_BINARY = which('autolatex')
+DEFAULT_AUTOLATEX_BINARY = AUTOLATEX_BINARY
+AUTOLATEX_BACKEND_BINARY = os.path.join(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH)), 'autolatex-backend.pl')
+if not os.path.exists(AUTOLATEX_BACKEND_BINARY):
+	AUTOLATEX_BACKEND_BINARY = which('autolatex-backend')
+DEFAULT_AUTOLATEX_BACKEND_BINARY = AUTOLATEX_BACKEND_BINARY
 
 # Path where the icons are installed
 TOOLBAR_ICON_PATH = os.path.join(os.path.dirname(__file__), 'icons', '24')
