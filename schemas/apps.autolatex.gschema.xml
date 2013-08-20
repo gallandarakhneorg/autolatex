@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="apps.autolatex" path="/apps/autolatex/">
+    <key type="s" name="autolatex_cmd">
+      <default></default>
+      <summary>Path to autolatex</summary>
+      <description>This is the absolute path to the binary 'autolatex'.</description>
+    </key>
+    <key type="s" name="autolatex_backend_cmd">
+      <default></default>
+      <summary>Path to autolatex-backend</summary>
+      <description>This is the absolute path to the binary 'autolatex-backend'.</description>
+    </key>
+  </schema>
+</schemalist>
