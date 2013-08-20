@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-18 23:38+0200\n"
+"POT-Creation-Date: 2013-08-20 18:42+0200\n"
 "PO-Revision-Date: 2013-05-21 21:37+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -22,48 +22,48 @@ msgstr ""
 msgid "Detecting images inside '{}'"
 msgstr "Détection du fichier TeX '{}'"
 
-#: autolatex.pl:194 autolatex.pl:207
+#: autolatex.pl:240 autolatex.pl:253
 #, fuzzy
 msgid "The configuration entry '{}' is not defined."
 msgstr "Le convertisseur '{}' est ignoré."
 
-#: autolatex.pl:224 autolatex.pl:241
+#: autolatex.pl:270 autolatex.pl:287
 #, fuzzy
 msgid "Launching '{}'"
 msgstr "Développement de '{}'"
 
-#: autolatex.pl:227 autolatex.pl:244
+#: autolatex.pl:273 autolatex.pl:290
 msgid "Launching '{}' in background"
 msgstr "Lancement de '{}' en tâche de fond"
 
-#: autolatex.pl:253
+#: autolatex.pl:299
 msgid "Unable to find a viewer."
 msgstr "Impossible de trouvé un visualisateur."
 
-#: autolatex.pl:461
+#: autolatex.pl:507
 msgid "Removing all the temporary files"
 msgstr "Suppression de tous les fichiers temporaires"
 
-#: autolatex.pl:468
+#: autolatex.pl:514
 msgid "Removing all the temporary and generated files"
 msgstr "Suppressions des fichiers temporaires et des figures générées"
 
-#: autolatex.pl:612
+#: autolatex.pl:658
 #, fuzzy
 msgid "Creating default project configuration file...\n"
 msgstr ""
 "Détection du fichier TeX à partir de la configuration du document: '{}'"
 
-#: autolatex.pl:616
+#: autolatex.pl:662
 #, fuzzy
 msgid "Creating default user configuration file...\n"
 msgstr "Enregistrement du fichier de configuration {}"
 
-#: autolatex.pl:625
+#: autolatex.pl:671
 msgid "Creating default makeindex style file...\n"
 msgstr "Création du fichier de style par défaut pour makeindex...\n"
 
-#: autolatex.pl:701
+#: autolatex.pl:750
 #, fuzzy
 msgid "Command line action '{}' is not supported."
 msgstr "L'option de ligne de commande '{}' est obsolète."

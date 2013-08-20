@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-18 23:38+0200\n"
+"POT-Creation-Date: 2013-08-20 18:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,43 +21,43 @@ msgstr ""
 msgid "Detecting images inside '{}'"
 msgstr ""
 
-#: autolatex.pl:194 autolatex.pl:207
+#: autolatex.pl:240 autolatex.pl:253
 msgid "The configuration entry '{}' is not defined."
 msgstr ""
 
-#: autolatex.pl:224 autolatex.pl:241
+#: autolatex.pl:270 autolatex.pl:287
 msgid "Launching '{}'"
 msgstr ""
 
-#: autolatex.pl:227 autolatex.pl:244
+#: autolatex.pl:273 autolatex.pl:290
 msgid "Launching '{}' in background"
 msgstr ""
 
-#: autolatex.pl:253
+#: autolatex.pl:299
 msgid "Unable to find a viewer."
 msgstr ""
 
-#: autolatex.pl:461
+#: autolatex.pl:507
 msgid "Removing all the temporary files"
 msgstr ""
 
-#: autolatex.pl:468
+#: autolatex.pl:514
 msgid "Removing all the temporary and generated files"
 msgstr ""
 
-#: autolatex.pl:612
+#: autolatex.pl:658
 msgid "Creating default project configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:616
+#: autolatex.pl:662
 msgid "Creating default user configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:625
+#: autolatex.pl:671
 msgid "Creating default makeindex style file...\n"
 msgstr ""
 
-#: autolatex.pl:701
+#: autolatex.pl:750
 msgid "Command line action '{}' is not supported."
 msgstr ""
 
