@@ -10,6 +10,8 @@ use Pod::Text;
 use Pod::Man;
 use Pod::Html;
 
+my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit' => 1 );
+
 # GENERAL INSTALLATION INFORMATIONS
 my $ALLOW_SYMBOLIC_LINK;
 my $INSTALLDIRECTORY;
@@ -17,7 +19,8 @@ my $BINDIRECTORY;
 my $ETCDIRECTORY;
 my $MANDIRECTORY;
 my $STYDIRECTORY;
-my $GEDITDIRECTORY;
+my $GEDITPLUGINDIRECTORY;
+my $GSETTINGSSCHEMADIRECTORY;
 
 sub dbg(@) {
 	use Data::Dumper;
@@ -348,86 +351,95 @@ sub DO_compile(\%) {
 #------------------------------------------------------------------------------------------
 sub DO_install(\%) {
 	print "DO AUTOLATEX INSTALLATION...\n";
-	if (($_[0]->{'create-links'})&&($_[0]->{'create-bin-links'})) {
-		installLinkedBin('autolatex.pl', $INSTALLDIRECTORY,'autolatex');
-		installLinkedBin('autolatex-gtk.pl',$INSTALLDIRECTORY,'autolatex-gtk');
-		installLinkedBin('autolatex-backend.pl',$INSTALLDIRECTORY,'autolatex-backend');
-	}
-	else {
-		installExec('autolatex.pl', $INSTALLDIRECTORY);
-		installExec('autolatex-gtk.pl',$INSTALLDIRECTORY);
-		installExec('autolatex-backend.pl',$INSTALLDIRECTORY);
-	}
-	install('AUTHORS', $INSTALLDIRECTORY);
-	install('VERSION', $INSTALLDIRECTORY);
-	if (($_[0]->{'create-links'})&&($_[0]->{'create-etc-links'})) {
-		my $cfgFile = installCfg('default.ist');
-		installLink($cfgFile,$INSTALLDIRECTORY);
-		$cfgFile = installCfg('default.cfg','config');
-		installLink($cfgFile,$INSTALLDIRECTORY,'default.cfg');
-	}
-	else {
-		install('default.ist',$INSTALLDIRECTORY);
-		install('default.cfg',$INSTALLDIRECTORY);
-	}
+	if ($MODULES{'core'}) {
+		if (($_[0]->{'create-links'})&&($_[0]->{'create-bin-links'})) {
+			installLinkedBin('autolatex.pl', $INSTALLDIRECTORY,'autolatex');
+			installLinkedBin('autolatex-gtk.pl',$INSTALLDIRECTORY,'autolatex-gtk');
+			installLinkedBin('autolatex-backend.pl',$INSTALLDIRECTORY,'autolatex-backend');
+		}
+		else {
+			installExec('autolatex.pl', $INSTALLDIRECTORY);
+			installExec('autolatex-gtk.pl',$INSTALLDIRECTORY);
+			installExec('autolatex-backend.pl',$INSTALLDIRECTORY);
+		}
+		install('AUTHORS', $INSTALLDIRECTORY);
+		install('VERSION', $INSTALLDIRECTORY);
+		if (($_[0]->{'create-links'})&&($_[0]->{'create-etc-links'})) {
+			my $cfgFile = installCfg('default.ist');
+			installLink($cfgFile,$INSTALLDIRECTORY);
+			$cfgFile = installCfg('default.cfg','config');
+			installLink($cfgFile,$INSTALLDIRECTORY,'default.cfg');
+		}
+		else {
+			install('default.ist',$INSTALLDIRECTORY);
+			install('default.cfg',$INSTALLDIRECTORY);
+		}
 
-	installInto(
-		File::Spec->catfile($INSTALLDIRECTORY,'translators'),
-		getFiles('translators','*'));
-
-	installInto(
-		File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Core'),
-		getFiles('pm','AutoLaTeX','Core','*.pm'));
-
-	installInto(
-		File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Make'),
-		getFiles('pm','AutoLaTeX','Make','*.pm'));
-
-	installInto(
-		File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'TeX'),
-		getFiles('pm','AutoLaTeX','TeX','*.pm'));
-
-	installInto(
-		File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI'),
-		getFiles('pm','AutoLaTeX','GUI','*.pm'));
-
-	installInto(
-		File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI'),
-		getFiles('pm','AutoLaTeX','GUI','*.png'));
-
-	installInto(
-		File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI','Gtk'),
-		getFiles('pm','AutoLaTeX','GUI','Gtk','*.pm'));
-
-	my @directories = getDirectoryBasenames('po');
-	foreach my $lang (@directories) {
 		installInto(
-			File::Spec->catfile($INSTALLDIRECTORY,'po',"$lang",'LC_MESSAGES'),
-			getFiles('po',"$lang",'LC_MESSAGES','*.mo'));
+			File::Spec->catfile($INSTALLDIRECTORY,'translators'),
+			getFiles('translators','*'));
+
+		installInto(
+			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Core'),
+			getFiles('pm','AutoLaTeX','Core','*.pm'));
+
+		installInto(
+			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Make'),
+			getFiles('pm','AutoLaTeX','Make','*.pm'));
+
+		installInto(
+			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'TeX'),
+			getFiles('pm','AutoLaTeX','TeX','*.pm'));
+
+		installInto(
+			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI'),
+			getFiles('pm','AutoLaTeX','GUI','*.pm'));
+
+		installInto(
+			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI'),
+			getFiles('pm','AutoLaTeX','GUI','*.png'));
+
+		installInto(
+			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI','Gtk'),
+			getFiles('pm','AutoLaTeX','GUI','Gtk','*.pm'));
+
+		my @directories = getDirectoryBasenames('po');
+		foreach my $lang (@directories) {
+			installInto(
+				File::Spec->catfile($INSTALLDIRECTORY,'po',"$lang",'LC_MESSAGES'),
+				getFiles('po',"$lang",'LC_MESSAGES','*.mo'));
+		}
+
+		installInto(
+			File::Spec->catfile($INSTALLDIRECTORY,'pod'),
+			getFiles('pod','*.pod'));
+
+		installMan('pod/autolatex.1.gz');
 	}
 
-	installInto(
-		File::Spec->catfile($INSTALLDIRECTORY,'pod'),
-		getFiles('pod','*.pod'));
-
-	installMan('pod/autolatex.1.gz');
-
-	installInto(
-		$STYDIRECTORY,
-		getFiles('sty','*'));
+	if ($MODULES{'sty'}) {
+		installInto(
+			$STYDIRECTORY,
+			getFiles('sty','*'));
+	}
 	
-	installInto(
-		$GEDITDIRECTORY,
-		getFiles('gedit','*'));
+	if ($MODULES{'gedit'}) {
+		installInto(
+			$GEDITPLUGINDIRECTORY,
+			getFiles('plugins', 'gedit','*'));
 
-	installInto(
-		File::Spec->catfile($GEDITDIRECTORY,'icons','24'),
-		getFiles('gedit','icons','24','*'));
+		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'icons','24'),
+			getFiles('plugins', 'gedit','icons','24','*'));
 
-	installInto(
-		File::Spec->catfile($GEDITDIRECTORY,'icons','16'),
-		getFiles('gedit','icons','16','*'));
+		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'icons','16'),
+			getFiles('plugins', 'gedit','icons','16','*'));
 
+		installInto(
+			$GSETTINGSSCHEMADIRECTORY,
+			getFiles('schemas', '*.gschema.xml'));
+	}
 }
 
 #------------------------------------------------------------------------------------------
@@ -498,6 +510,15 @@ sub DO_createMakefile(\%) {
 		push @options, '"--nobinlink"';
 	}
 
+	while (my ($module,$enable) = each(%MODULES)) {
+		if ($enable) {
+			push @options, "\"--enable=$module\"";
+		}
+		else {
+			push @options, "\"--disable=$module\"";
+		}
+	}
+
 	my $options = join(' ',@options);
 
 	my $filename = File::Spec->catfile($_[0]->{'directory'},"Makefile");
@@ -539,6 +560,14 @@ if (!GetOptions(
 		'link!' => \$options{'create-links'},
 		'binlink!' => \$options{'create-bin-links'},
 		'etclink!' => \$options{'create-etc-links'},
+		'enable=s' => sub { if (exists $MODULES{$_[1]}) { $MODULES{$_[1]} = 1; } },
+		'disable=s' => sub { if (exists $MODULES{$_[1]}) { $MODULES{$_[1]} = 0; } },
+		'modules' => sub {
+					foreach my $module (keys %MODULES) {
+						print STDOUT "$module\n";
+					}
+					exit(255);
+				},
 		)) {
 	exit(1);
 }
@@ -574,7 +603,8 @@ if (("$^O" eq 'MSWin32')||
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'autolatex','man','english');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
-	$GEDITDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
+	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
+	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
 }
 else {
 	# Unix compatible platform
@@ -597,7 +627,8 @@ else {
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'man1');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
-	$GEDITDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex');
+	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex');
+	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
 }
 
 # Run the action
