@@ -821,6 +821,9 @@ CONFIGURATION FILE
 
     *include module* : indicates if the translator should be loaded by
     default. Accepted values: yes or no.
+    *files to convert* : indicates a list of files that must be converter
+    this this translator. The files are separated by the path separator
+    given by the operating systems (':' on Unix, ';' on Windows).
 
 GRAPHIC USER INTERFACE
     A graphical user interface is available since version 5.0 to configure

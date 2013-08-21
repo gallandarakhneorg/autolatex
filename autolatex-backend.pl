@@ -324,6 +324,29 @@ elsif ($a1 eq 'set') {
 			exit(255);
 		}
 	}
+	elsif ($a2 eq 'images' && @projectConfigurationPath) {
+		my %new_config = readStdin();
+		if ($a3 eq 'true') {
+			my @keys = keys %projectConfiguration;
+			foreach my $key (@keys) {
+				if ($key =~ /^[^2]+2[^+_]+(?:\+[^+_]+)*(?:_[^.]+)?\.(.+)$/) {
+					my $param = $1;
+					if ($param ne 'include module') {
+						delete $projectConfiguration{$key};
+					}
+				}
+			}
+		}
+		while (my ($section, $v) = each(%new_config)) {
+			while (my ($key, $value) = each(%{$v})) {
+				if ($key ne 'automatic assignment') {
+					$projectConfiguration{"$section.$key"} = $value;
+				}
+			}
+		}
+		my $projectFile = getProjectConfigFilename(@projectConfigurationPath);
+		writeConfigFile($projectFile, %projectConfiguration);
+	}
 	else {
 		exit(255);
 	}
@@ -341,8 +364,8 @@ elsif (!$a1) {
 	print STDERR "\tIf 'resolved' is given, apply the resolution mechanism.\n\n";
 	print STDERR "\$> $bn get loads\n";
 	print STDERR "\tOutput the loading directives for translators.\n\n";
-	print STDERR "\$> $bn get figures\n";
-	print STDERR "\tOutput the list of figures detected by AutoLaTeX.\n";
+	print STDERR "\$> $bn get images\n";
+	print STDERR "\tOutput the list of figures detected by AutoLaTeX.\n\n";
 	print STDERR "\$> $bn set config user|project [true|false]\n";
 	print STDERR "\tRead from STDIN an ini file that is a new configuration for\n";
 	print STDERR "\tthe given level. The boolean param indicates if the configuration\n";
@@ -350,7 +373,12 @@ elsif (!$a1) {
 	print STDERR "\tskipped (if false, the default) during the setting process.\n\n";
 	print STDERR "\$> $bn set loads\n";
 	print STDERR "\tRead from STDIN an ini file for the loading directives of\n";
-	print STDERR "\ttranslators.\n";
+	print STDERR "\ttranslators.\n\n";
+	print STDERR "\$> $bn set images [true|false]\n";
+	print STDERR "\tRead from STDIN an ini file that is describing the attributes\n";
+	print STDERR "\tfor the translators. The boolean param indicates if the configuration\n";
+	print STDERR "\tkeys that are not given on STDIN will be removed (if true) or\n";
+	print STDERR "\tskipped (if false, the default) during the setting process.\n";
 }
 else {
 	exit(255);

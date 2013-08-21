@@ -1228,6 +1228,8 @@ The recognized directives are:
 
 =item I<include module> : indicates if the translator should be loaded by default. Accepted values: F<yes> or F<no>.
 
+=item I<files to convert> : indicates a list of files that must be converter this this translator. The files are separated by the path separator given by the operating systems (':' on Unix, ';' on Windows).
+
 =back
 
 =head1 GRAPHIC USER INTERFACE
