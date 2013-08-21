@@ -75,88 +75,9 @@ my %autolatexData = ();
 
 #------------------------------------------------------
 #
-# TRANSLATOR MANAGEMENT
-#
-#------------------------------------------------------
-
-sub al_loadtranslators() {
-	if (!$autolatexData{'translators'}) {
-		%{$autolatexData{'translators'}} = getTranslatorList(%configuration);
-	}
-	if (!$autolatexData{'loadableTranslators'}) {
-		%{$autolatexData{'loadableTranslators'}} = getLoadableTranslatorList(%configuration);
-
-		foreach my $translator (keys %{$autolatexData{'loadableTranslators'}}) {
-			# Load the translator
-			loadTranslator($translator, %{$autolatexData{'translators'}});
-
-			# Extract image extensions
-			foreach my $input (@{$autolatexData{'translators'}{$translator}{'transdef'}{'INPUT_EXTENSIONS'}{'value'}}) {
-				$autolatexData{'imageDatabase'}{"$input"}{'translator'} = $translator;
-			}
-		}
-	}
-}
-
-#------------------------------------------------------
-#
 # IMAGE MANAGEMENT
 #
 #------------------------------------------------------
-
-sub al_getimages() {
-	if (!$autolatexData{'imageDatabaseReady'} && exists $configuration{'generation.image directory'}) {
-		local* DIR;
-		locDbg(_T("Detecting images inside '{}'"), $configuration{'generation.image directory'});
-		my $rawdirs = $configuration{'generation.image directory'};
-		$rawdirs =~ s/^\s+//s;
-		$rawdirs =~ s/\s+$//s;
-		if ($rawdirs) {
-			my $pattern = "[\Q".getPathListSeparator()."\E]";
-			my @dirs = split( /$pattern/is, $rawdirs);
-			my @imageExtensions = keys $autolatexData{'imageDatabase'};
-			@imageExtensions = sort {
-							my $la = length($a);
-							my $lb = length($b);
-							if ($la==$lb) {
-								($a cmp $b);
-							}
-							else {
-								($lb - $la);
-							}
-						} @imageExtensions;
-			while (@dirs) {
-				my $dir = shift @dirs;
-				if (opendir(*DIR, "$dir")) {
-					while (my $fn = readdir(*DIR)) {
-						if ($fn ne File::Spec->curdir() && $fn ne File::Spec->updir()) {
-							my $ffn = File::Spec->catfile("$dir", "$fn");
-							if (-d "$ffn") {
-								push @dirs, "$ffn";
-							}
-							else {
-								my $selectedExtension = undef;
-								for(my $i=0; !$selectedExtension && $i<@imageExtensions; ++$i) {
-									if ($fn =~ /\Q$imageExtensions[$i]\E$/i) {
-										$selectedExtension = $imageExtensions[$i];
-									}
-								}
-								if ($selectedExtension) {
-									if (!$autolatexData{'imageDatabase'}{"$selectedExtension"}{'files'}) {
-										$autolatexData{'imageDatabase'}{"$selectedExtension"}{'files'} = [];
-									}
-									push @{$autolatexData{'imageDatabase'}{"$selectedExtension"}{'files'}}, "$ffn";
-								}
-							}
-						}
-					}
-					closedir(*DIR);
-				}
-			}
-		}
-		$autolatexData{'imageDatabaseReady'} = 1;
-	}
-}
 
 sub al_generateimages() {
 	if (cfgBoolean($configuration{'generation.generate images'})) {
@@ -173,19 +94,22 @@ sub al_run_images {
 	my $i_ref = shift;
 	# Force the generation of images
 	$configuration{'generation.generate images'} = 'yes';
-	al_loadtranslators();
-	al_getimages();
+	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	loadTranslatableImageList(%configuration,%autolatexData);
 	al_generateimages();
 }
 
 sub al_run_showimages {
-	my $i_ref = shift
-	al_loadtranslators();
-	al_getimages();
+	my $i_ref = shift;
+	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	loadTranslatableImageList(%configuration,%autolatexData);
 	my @images = ();
 	foreach my $value (values %{$autolatexData{'imageDatabase'}}) {
 		if (exists $value->{'files'}) {
-			push @images, @{$value->{'files'}};
+			foreach my $f (@{$value->{'files'}}) {
+				$f = File::Spec->abs2rel($f, $configuration{'__private__'}{'input.project directory'});
+				push @images, $f;
+			}
 		}
 	}
 	@images = sort @images;
@@ -194,12 +118,13 @@ sub al_run_showimages {
 
 sub al_run_showimagemap {
 	my $i_ref = shift;
-	al_loadtranslators();
-	al_getimages();
+	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	loadTranslatableImageList(%configuration,%autolatexData);
 	my %images = ();
 	foreach my $value (values %{$autolatexData{'imageDatabase'}}) {
 		if (exists $value->{'files'}) {
 			foreach my $img (@{$value->{'files'}}) {
+				$img = File::Spec->abs2rel($img, $configuration{'__private__'}{'input.project directory'});
 				$images{$img} = $value->{'translator'};
 				die("no translator for: $img\n") unless $images{$img};
 			}
@@ -317,8 +242,8 @@ sub al_make() {
 
 sub al_run_make {
 	my $i_ref = shift;
-	al_loadtranslators();
-	al_getimages();
+	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	loadTranslatableImageList(%configuration,%autolatexData);
 	al_generateimages();
 	al_make();
 }
@@ -326,8 +251,8 @@ sub al_run_make {
 sub al_run_makeandview {
 	my $i_ref = shift;
 	my $force = shift;
-	al_loadtranslators();
-	al_getimages();
+	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	loadTranslatableImageList(%configuration,%autolatexData);
 	al_generateimages();
 	al_make();
 	if ($force || cfgBoolean($configuration{'viewer.view'})) {
@@ -513,8 +438,8 @@ sub al_run_cleanall {
 
 	locDbg(_T("Removing all the temporary and generated files"));
 
-	al_loadtranslators();
-	al_getimages();
+	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	loadTranslatableImageList(%configuration,%autolatexData);
 
 	my ($a,$b) = al_getcleanfiles();
 	my ($c, $d) = al_getcleanmorefiles();
@@ -591,8 +516,8 @@ sub al_run_makeflat {
 	$biblio_option_on_cli = 'no' unless (defined($biblio_option_on_cli));
 	$configuration{'generation.biblio'} = $biblio_option_on_cli;
 
-	al_loadtranslators();
-	al_getimages();
+	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	loadTranslatableImageList(%configuration,%autolatexData);
 	al_generateimages();
 
 	# Generate all the document, in particular the BBL file.

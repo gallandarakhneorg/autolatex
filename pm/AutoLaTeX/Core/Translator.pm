@@ -37,12 +37,13 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '8.1';
+$VERSION = '9.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
 	      &makeTranslatorHumanReadable &extractTranslatorNameComponents
-	      &readTranslatorFile &runRootTranslator &runTranslator &loadTranslator ) ;
+	      &readTranslatorFile &runRootTranslator &runTranslator &loadTranslator
+              &loadTranslatorsFromConfiguration &loadTranslatableImageList ) ;
 @EXPORT_OK = qw();
 
 use strict;
@@ -999,6 +1000,164 @@ sub loadTranslator($\%) {
 		}
 	}
 
+}
+
+
+=pod
+
+=item B<loadTranslatorsFromConfiguration(%%)>
+
+Run the algorithm that permits to load the translator
+according to a given configuration.
+This function is provided to be invoked by the main
+program of AutoLaTex, or any other program that is
+needing to load the list of translators according
+to a configuration.
+
+I<Parameters:>
+
+=over 8
+
+=item * C<configuration> is the associative array that contains the configuration.
+
+=item * C<data> is the associative array that IS FILLED with the data of the loaded translators.
+
+=back
+
+I<Returns:> Nothing
+
+=cut
+sub loadTranslatorsFromConfiguration(\%\%) {
+	my $configuration = shift or confess("First parameter is mandatory: the associative array of the configuration");
+	my $data = shift or confess("Second parameter is mandatory: the associative array of loaded data");
+	if (!$data->{'translators'}) {
+		%{$data->{'translators'}} = getTranslatorList(%{$configuration});
+	}
+	if (!$data->{'loadableTranslators'}) {
+		%{$data->{'loadableTranslators'}} = getLoadableTranslatorList(%{$configuration});
+
+		foreach my $translator (keys %{$data->{'loadableTranslators'}}) {
+			# Load the translator
+			loadTranslator($translator, %{$data->{'translators'}});
+
+			# Extract image extensions
+			foreach my $input (@{$data->{'translators'}{$translator}{'transdef'}{'INPUT_EXTENSIONS'}{'value'}}) {
+				$data->{'imageDatabase'}{"$input"}{'translator'} = $translator;
+			}
+		}
+	}
+	return undef;
+}
+
+
+=pod
+
+=item B<loadTranslatableImageList(%%)>
+
+Run the algorithm that permits to load the list
+of the images that should be processed by the translators.
+This function is provided to be invoked by the main
+program of AutoLaTex, or any other program that is
+needing this list.
+
+I<Parameters:>
+
+=over 8
+
+=item * C<configuration> is the associative array that contains the configuration.
+
+=item * C<data> is the associative array that IS FILLED with the data of the pictures.
+
+=item * C<skipManualAssignment> (optional) is a boolean flag that indicates if the manual
+assignments with C<"*.files to convert"> from the configuration must be skipped.
+
+=back
+
+I<Returns:> Nothing
+
+=cut
+sub loadTranslatableImageList(\%\%;$) {
+	my $configuration = shift or confess("First parameter is mandatory: the associative array of the configuration");
+	my $data = shift or confess("Second parameter is mandatory: the associative array of loaded data");
+	my $skipManualAssignment = shift;
+	if (!$data->{'imageDatabaseReady'} && exists $configuration->{'generation.image directory'}) {
+		my $separator = getPathListSeparator();
+		# Prepare the configuration entries '*.files to convert'
+		if (!$skipManualAssignment) {
+			$configuration->{'__private__'}{'files to convert'} = {};
+			while (my ($k,$v) = each(%{$configuration})) {
+				if ($k =~ /^(.+)\.files\s+to\s+convert$/) {
+					my $trans = $1;
+					my @t = split(/\s*\Q$separator\E\s*/, $v);
+					foreach my $t (@t) {
+						$t = File::Spec->rel2abs($t, $configuration->{'__private__'}{'input.project directory'});
+						$configuration->{'__private__'}{'files to convert'}{$t} = $trans;
+					}
+				}
+			}
+		}
+		# Detect the image from the file system
+		local* DIR;
+		locDbg(_T("Detecting images inside '{}'"), $configuration->{'generation.image directory'});
+		my $rawdirs = $configuration->{'generation.image directory'};
+		$rawdirs =~ s/^\s+//s;
+		$rawdirs =~ s/\s+$//s;
+		if ($rawdirs) {
+			my $pattern = "[\Q".getPathListSeparator()."\E]";
+			my @dirs = split( /$pattern/is, $rawdirs);
+			my @imageExtensions = keys $data->{'imageDatabase'};
+			@imageExtensions = sort {
+							my $la = length($a);
+							my $lb = length($b);
+							if ($la==$lb) {
+								($a cmp $b);
+							}
+							else {
+								($lb - $la);
+							}
+						} @imageExtensions;
+			while (@dirs) {
+				my $dir = shift @dirs;
+				$dir = File::Spec->rel2abs($dir, $configuration->{'__private__'}{'input.project directory'});
+				if (opendir(*DIR, "$dir")) {
+					while (my $fn = readdir(*DIR)) {
+						if ($fn ne File::Spec->curdir() && $fn ne File::Spec->updir()) {
+							my $ffn = File::Spec->catfile("$dir", "$fn");
+							if (-d "$ffn") {
+								push @dirs, "$ffn";
+							}
+							else {
+								my $selectedExtension = undef;
+								if (!$skipManualAssignment &&
+								    $configuration->{'__private__'}{'files to convert'}{$ffn}) {
+									my $trans = $configuration->{'__private__'}{'files to convert'}{$ffn};
+									$selectedExtension = "$separator$separator$trans$separator$separator";
+									$data->{'imageDatabase'}{"$selectedExtension"}{'translator'} = $trans;
+									loadTranslator($trans, %{$data->{'translators'}});
+								}
+								if (!$selectedExtension) {
+									for(my $i=0; !$selectedExtension && $i<@imageExtensions; ++$i) {
+										if ($fn =~ /\Q$imageExtensions[$i]\E$/i) {
+											$selectedExtension = $imageExtensions[$i];
+										}
+									}
+								}
+								if ($selectedExtension) {
+									if (!$data->{'imageDatabase'}{"$selectedExtension"}{'files'}) {
+										$data->{'imageDatabase'}{"$selectedExtension"}{'files'} = [];
+									}
+									push @{$data->{'imageDatabase'}{"$selectedExtension"}{'files'}}, "$ffn";
+								}
+							}
+						}
+					}
+					closedir(*DIR);
+				}
+			}
+		}
+		$data->{'imageDatabaseReady'} = 1;
+	}
+	return undef;
 }
 
 1;

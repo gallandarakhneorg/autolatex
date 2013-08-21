@@ -63,6 +63,7 @@ use Carp;
 
 use AutoLaTeX::Core::Main;
 use AutoLaTeX::Core::Config;
+use AutoLaTeX::Core::OS;
 use AutoLaTeX::Core::Translator;
 
 sub readStdin() {
@@ -199,6 +200,66 @@ if ($a1 eq 'get') {
 			print STDOUT "\n";
 		}
 	}
+	elsif ($a2 eq 'images') {
+		my %autolatexData = ();
+		loadTranslatorsFromConfiguration(%currentConfiguration,%autolatexData);
+		loadTranslatableImageList(%currentConfiguration,%autolatexData,1);
+		# Convert 'files to convert' from scalar to array
+		my $separator = getPathListSeparator();
+		my %files_to_convert = ();
+		foreach my $key (keys %currentConfiguration) {
+			if ($key =~ /^(.+)\.files\s+to\s+convert$/) {
+				my $trans = $1;
+				my @f = split(/\s*\Q$separator\E\s*/, $currentConfiguration{$key});
+				foreach my $f (@f) {
+					$f = File::Spec->rel2abs($f, $currentConfiguration{'__private__'}{'input.project directory'});
+					$files_to_convert{$f} = $trans;
+				}
+			}
+		}
+		# Build the data for each translator
+		my %translators = ();
+		my %reinjected_files = ();
+		foreach my $value (values %{$autolatexData{'imageDatabase'}}) {
+			if (exists $value->{'files'} && $value->{'translator'}) {
+				if (!$translators{$value->{'translator'}}{'automatic assignment'}) {
+					$translators{$value->{'translator'}}{'automatic assignment'} = [];
+				}
+				foreach my $file (@{$value->{'files'}}) {
+					my $absfile = File::Spec->rel2abs($file, $currentConfiguration{'__private__'}{'input.project directory'});
+					my $relfile = File::Spec->abs2rel($absfile, $currentConfiguration{'__private__'}{'input.project directory'});
+					if ($files_to_convert{$absfile}) {
+						if (!$reinjected_files{$files_to_convert{$absfile}}) {
+							$reinjected_files{$files_to_convert{$absfile}} = [];
+						}
+						push @{$reinjected_files{$files_to_convert{$absfile}}}, $relfile;
+					}
+					else {
+						push @{$translators{$value->{'translator'}}{'automatic assignment'}}, $relfile;
+					}
+				}
+			}
+		}
+		# Reinject the manually selected files
+		while (my ($translator, $desc) = each(%reinjected_files)) {
+			if (!$translators{$translator}{'files to convert'}) {
+				$translators{$translator}{'files to convert'} = [];
+			}
+			push @{$translators{$translator}{'files to convert'}}, @{$desc};
+		}
+		# Output the data for each translator
+		while (my ($translator, $desc) = each(%translators)) {
+			print STDOUT "[$translator]\n";
+			while (my ($key, $files) = each(%{$desc})) {
+				if ($files && @{$files}) {
+					print STDOUT "$key=";
+					print STDOUT join($separator,@{$files});
+					print STDOUT "\n";
+				}
+			}
+			print STDOUT "\n";
+		}
+	}
 	else {
 		exit(255);
 	}
@@ -280,6 +341,8 @@ elsif (!$a1) {
 	print STDERR "\tIf 'resolved' is given, apply the resolution mechanism.\n\n";
 	print STDERR "\$> $bn get loads\n";
 	print STDERR "\tOutput the loading directives for translators.\n\n";
+	print STDERR "\$> $bn get figures\n";
+	print STDERR "\tOutput the list of figures detected by AutoLaTeX.\n";
 	print STDERR "\$> $bn set config user|project [true|false]\n";
 	print STDERR "\tRead from STDIN an ini file that is a new configuration for\n";
 	print STDERR "\tthe given level. The boolean param indicates if the configuration\n";
