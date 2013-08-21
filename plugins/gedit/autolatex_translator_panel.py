@@ -63,6 +63,7 @@ class Panel(Gtk.Table):
 		self._preload_icons()
 		# Top label
 		self._ui_label = Gtk.Label("List of available translators:\n(click on the second column to change the loading state of the translators)")
+		self._ui_label.set_alignment(0, 0.5)
 		self.attach(self._ui_label, 
 				0,1,0,1, # left, right, top and bottom columns
 				Gtk.AttachOptions.EXPAND, Gtk.AttachOptions.SHRINK, # x and y options
@@ -124,6 +125,44 @@ class Panel(Gtk.Table):
 		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.EXCLUDED), 'Not loaded'))
 		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.INHERITED), 'Unspecified, no conflict'))
 		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.INHERITED_CONFLICT), 'Unspecified, conflict'))
+		#
+		# Initialize the panel
+		#
+		if self._is_document_level:
+			left_level = Level.USER
+			right_level = Level.PROJECT
+		else:
+			left_level = Level.SYSTEM
+			right_level = Level.USER
+		# Get the data from the backend
+		self._translator_config = utils.backend_get_translators(self._directory)
+		self._load_config = utils.backend_get_loads(self._directory)
+		# Build the conflict map and the inclusion states
+		self._translator_conflict_candidates = {}
+		self._translator_inclusions_constants = {}
+		self._translator_inclusions = {}
+		for translator in self._translator_config.sections():
+			source = self._translator_config.get(translator, 'full-source')
+			if source not in self._translator_conflict_candidates:
+				self._translator_conflict_candidates[source] = []
+			self._translator_conflict_candidates[source].append(translator)
+			self._translator_inclusions_constants[translator] = self._compute_inclusion_state(translator, left_level, right_level)
+			self._translator_inclusions[translator] = self._compute_inclusion_state(translator, right_level, right_level)
+		# Detect initial conflicts
+		for translator in self._translator_config.sections():
+			self._update_translator_states(translator)
+		# Fill the table
+		self._translator_indexes = {}
+		index = 0
+		for translator in self._translator_config.sections():
+			human_readable = self._translator_config.get(translator, 'human-readable')
+			icon1 = self._get_level_icon(0, self._translator_inclusions_constants[translator])
+			icon2 = self._get_level_icon(1, self._translator_inclusions[translator])
+			self._ui_translator_list.append( [ icon1, icon2, translator, human_readable ] )
+			self._translator_indexes[translator] = index
+			index = index + 1
+		# Connect the UI events
+		self._ui_translator_list_widget.connect('button-press-event', self.on_list_click_action);
 
 	# Preloading the states' icons
 	def _preload_icons(self):
@@ -171,48 +210,11 @@ class Panel(Gtk.Table):
 					Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL,
 					0, top_padding)
 		text = Gtk.Label(label)
+		text.set_alignment(0, 0.5)
 		legend_alignment.attach(text, 1, 2, 0, 1,
 					Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL,
 					5, top_padding)
 		return legend_alignment
-
-	# Initialize the panel
-	def init(self):
-		if self._is_document_level:
-			left_level = Level.USER
-			right_level = Level.PROJECT
-		else:
-			left_level = Level.SYSTEM
-			right_level = Level.USER
-		# Get the data from the backend
-		self._translator_config = utils.backend_get_translators(self._directory)
-		self._load_config = utils.backend_get_loads(self._directory)
-		# Build the conflict map and the inclusion states
-		self._translator_conflict_candidates = {}
-		self._translator_inclusions_constants = {}
-		self._translator_inclusions = {}
-		for translator in self._translator_config.sections():
-			source = self._translator_config.get(translator, 'full-source')
-			if source not in self._translator_conflict_candidates:
-				self._translator_conflict_candidates[source] = []
-			self._translator_conflict_candidates[source].append(translator)
-			self._translator_inclusions_constants[translator] = self._compute_inclusion_state(translator, left_level, right_level)
-			self._translator_inclusions[translator] = self._compute_inclusion_state(translator, right_level, right_level)
-		# Detect initial conflicts
-		for translator in self._translator_config.sections():
-			self._update_translator_states(translator)
-		# Fill the table
-		self._translator_indexes = {}
-		index = 0
-		for translator in self._translator_config.sections():
-			human_readable = self._translator_config.get(translator, 'human-readable')
-			icon1 = self._get_level_icon(0, self._translator_inclusions_constants[translator])
-			icon2 = self._get_level_icon(1, self._translator_inclusions[translator])
-			self._ui_translator_list.append( [ icon1, icon2, translator, human_readable ] )
-			self._translator_indexes[translator] = index
-			index = index + 1
-		# Connect the UI events
-		self._ui_translator_list_widget.connect('button-press-event', self.on_list_click_action);
 
 	# Replies if the given translator, in the given state, may be assumed as included
 	def _is_includable_with(self, translator, state):
@@ -340,5 +342,4 @@ class Panel(Gtk.Table):
 				self._load_config.set(section_name, translator, 'true')
 			elif state == IconType.EXCLUDED:
 				self._load_config.set(section_name, translator, 'false')
-		utils.backend_set_loads(self._directory, self._load_config)
-		return True
+		return utils.backend_set_loads(self._directory, self._load_config)

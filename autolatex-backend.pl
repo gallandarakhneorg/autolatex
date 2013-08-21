@@ -105,29 +105,39 @@ if ($currentConfiguration{'__private__'}{'input.project directory'}) {
 my $a1 = $ARGV[0] || '';
 my $a2 = $ARGV[1] || '';
 my $a3 = $ARGV[2] || '';
+my $a4 = $ARGV[3] || '';
 
 if ($a1 eq 'get') {
 	if ($a2 eq 'config') {
 		my $tmpfile = tmpnam();
+		my %cfgOutput = ();
 		if ($a3 eq 'project') {
-			writeConfigFile($tmpfile, %projectConfiguration);
+			%cfgOutput = %projectConfiguration;
 		}
 		elsif ($a3 eq 'user') {
-			writeConfigFile($tmpfile, %userConfiguration);
+			%cfgOutput = %userConfiguration;
 		}
 		elsif ($a3 eq 'system') {
-			writeConfigFile($tmpfile, %systemConfiguration);
+			%cfgOutput = %systemConfiguration;
 		}
-		elsif (!$a3) {
+		elsif (!$a3 || $a3 eq 'all') {
 			# Reinject the main file because it was removed by the reading functions.
 			if ($projectConfiguration{'generation.main file'}) {
 				$currentConfiguration{'generation.main file'} = $projectConfiguration{'generation.main file'};
 			}
-			writeConfigFile($tmpfile, %currentConfiguration);
+			%cfgOutput = %currentConfiguration;
 		}
 		else {
 			exit(255);
 		}
+		if ($a4) {
+			foreach my $k (keys %cfgOutput) {
+				if ($k !~ /^\Q$a4.\E/) {
+					delete $cfgOutput{$k};
+				}
+			}
+		}
+		writeConfigFile($tmpfile, %cfgOutput);
 		local *INFILE;
 		open(*INFILE, "<$tmpfile") or exit(255);
 		while (my $line = <INFILE>) {
@@ -223,30 +233,58 @@ elsif ($a1 eq 'set') {
 			writeConfigFile($projectFile, %projectConfiguration);
 		}
 	}
+	elsif ($a2 eq 'config') {
+		my %new_config = readStdin();
+		if ($a3 eq 'user') {
+			if ($a4 eq 'true') {
+				%userConfiguration = ();
+			}
+			while (my ($section, $v) = each(%new_config)) {
+				while (my ($key, $value) = each(%{$v})) {
+					$userConfiguration{"$section.$key"} = $value;
+				}
+			}
+			my $userFile = getUserConfigFilename();
+			writeConfigFile($userFile, %userConfiguration);
+		}
+		elsif ($a3 eq 'project' && @projectConfigurationPath) {
+			if ($a4 eq 'true') {
+				%projectConfiguration = ();
+			}
+			while (my ($section, $v) = each(%new_config)) {
+				while (my ($key, $value) = each(%{$v})) {
+					$projectConfiguration{"$section.$key"} = $value;
+				}
+			}
+			my $projectFile = getProjectConfigFilename(@projectConfigurationPath);
+			writeConfigFile($projectFile, %projectConfiguration);
+		}
+		else {
+			exit(255);
+		}
+	}
 	else {
 		exit(255);
 	}
 }
 elsif (!$a1) {
 	my $bn = basename($0);
-	print STDERR "\$> $bn get config\n";
-	print STDERR "\tOutput the complete configuration\n";
-	print STDERR "\t(merge of the system, user and\n";
-	print STDERR "\tdocument configurations).\n\n";
-	print STDERR "\$> $bn get config system\n";
-	print STDERR "\tOutput the system configuration only.\n\n";
-	print STDERR "\$> $bn get config user\n";
-	print STDERR "\tOutput the user configuration only.\n\n";
-	print STDERR "\$> $bn get config project\n";
-	print STDERR "\tOutput the document configuration only.\n\n";
+	print STDERR "\$> $bn get config [all|system|user|project] [<section>]\n";
+	print STDERR "\tOutput the configuration for the given level.\n";
+	print STDERR "\tIf the 4th param is given, output only the section with\n";
+	print STDERR "\tthis name.\n\n";
 	print STDERR "\$> $bn get translators\n";
 	print STDERR "\tOutput the list of the installed translators.\n\n";
-	print STDERR "\$> $bn get conflits\n";
-	print STDERR "\tOutput the translators potentially under conflicts.\n\n";
-	print STDERR "\$> $bn get conflits resolved\n";
-	print STDERR "\tOutput the translators under conflicts after resolution.\n\n";
+	print STDERR "\$> $bn get conflits [resolved]\n";
+	print STDERR "\tOutput the translators potentially under conflicts.\n";
+	print STDERR "\tIf 'resolved' is given, apply the resolution mechanism.\n\n";
 	print STDERR "\$> $bn get loads\n";
-	print STDERR "\tOutput the loading directives for translators.\n";
+	print STDERR "\tOutput the loading directives for translators.\n\n";
+	print STDERR "\$> $bn set config user|project [true|false]\n";
+	print STDERR "\tRead from STDIN an ini file that is a new configuration for\n";
+	print STDERR "\tthe given level. The boolean param indicates if the configuration\n";
+	print STDERR "\tkeys that are not given on STDIN will be removed (if true) or\n";
+	print STDERR "\tskipped (if false, the default) during the setting process.\n\n";
 	print STDERR "\$> $bn set loads\n";
 	print STDERR "\tRead from STDIN an ini file for the loading directives of\n";
 	print STDERR "\ttranslators.\n";

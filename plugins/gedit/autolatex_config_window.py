@@ -24,16 +24,40 @@
 from gi.repository import Gtk, GdkPixbuf
 # AutoLaTeX internal libs
 import autolatex_utils as utils
+import autolatex_generator_panel as generator_panel
+import autolatex_figure_panel as figure_panel
 import autolatex_translator_panel as translator_panel
+import autolatex_viewer_panel as viewer_panel
 
 #---------------------------------
 # Global function to open the dialog
 #---------------------------------
 
-def open_configuration_dialog(parent, isDocumentLevel, directory):
-	dialog = Window(parent, isDocumentLevel, directory)
+def open_configuration_dialog(parent, is_document_level, directory):
+	dialog = Window(parent, is_document_level, directory)
 	dialog.run()
 	dialog.destroy()
+
+#---------------------------------
+# CLASS NotbookTab
+#---------------------------------
+
+class NotebookTab(Gtk.HBox):
+	__gtype_name__ = "AutoLaTeXConfigurationNotebookTab"
+
+	def __init__(self, label, icon):
+		Gtk.HBox.__init__(self,False,2)
+		self._label = label
+		pixbuf = GdkPixbuf.Pixbuf.new_from_file(utils.make_notebook_icon_path(icon))
+		iconwgt = Gtk.Image.new_from_pixbuf(pixbuf)
+		self.add(iconwgt)
+		labelwgt = Gtk.Label(self._label)
+		labelwgt.set_alignment(0, 0.5)
+		self.add(labelwgt)
+		self.show_all()
+
+	def get_text(self):
+		return self._label
 
 #---------------------------------
 # CLASS AutoLaTeXConfigurationWindow
@@ -43,9 +67,9 @@ def open_configuration_dialog(parent, isDocumentLevel, directory):
 class Window(Gtk.Dialog):
 	__gtype_name__ = "AutoLaTeXConfigurationWindow"
 
-	def __init__(self, parent, isDocumentLevel, directory):
+	def __init__(self, parent, is_document_level, directory):
 		Gtk.Dialog.__init__(self,
-			("Document Configuration" if isDocumentLevel else "User Configuration"),
+			("Document Configuration" if is_document_level else "User Configuration"),
 			parent, 0,
 			( Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY))
 		self.set_default_size(600, 500)
@@ -53,28 +77,39 @@ class Window(Gtk.Dialog):
 		self._ui_notebook = Gtk.Notebook()
 		self.get_content_area().add(self._ui_notebook);
 		# Tab for translators
-		self._ui_translatorTab = translator_panel.Panel(isDocumentLevel, directory)
+		tab = generator_panel.Panel(is_document_level, directory)
 		self._ui_notebook.append_page(
-				self._ui_translatorTab,
-				self._make_notebook_tab(
+				tab,
+				NotebookTab(
+					"Generator", "autolatex-compile.png"))
+		tab = figure_panel.Panel(is_document_level, directory, self)
+		self._ui_notebook.append_page(
+				tab,
+				NotebookTab(
+					"Figures", "autolatex-images.png"))
+		tab = translator_panel.Panel(is_document_level, directory)
+		self._ui_notebook.append_page(
+				tab,
+				NotebookTab(
 					"Translators", "autolatex-images.png"))
+		tab = viewer_panel.Panel(is_document_level, directory)
+		self._ui_notebook.append_page(
+				tab,
+				NotebookTab(
+					"Viewer", "autolatex-view.png"))
 		self.show_all()
-		# Init the notebook
-		self._ui_translatorTab.init()
 		# Listening the response signal
 		self.connect('response', self.on_response_signal);
-
-	def _make_notebook_tab(self, label, icon=''):
-		hbox = Gtk.HBox(False,2)
-		pixbuf = GdkPixbuf.Pixbuf.new_from_file(utils.make_notebook_icon_path(icon))
-		iconwgt = Gtk.Image.new_from_pixbuf(pixbuf)
-		hbox.add(iconwgt)
-		labelwgt = Gtk.Label(label)
-		hbox.add(labelwgt)
-		hbox.show_all()
-		return hbox
 
 	# Callback for response in the dialog
 	def on_response_signal(self, action, data=None):
 		if data == Gtk.ResponseType.APPLY:
-			self._ui_translatorTab.save()
+			for i in range(self._ui_notebook.get_n_pages()):
+				page = self._ui_notebook.get_nth_page(i)
+				result = page.save()
+				if not result:
+					tab_label = self._ui_notebook.get_tab_label(page)
+					dialog = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, "The page '%s' cannot save its fields.\n You will loose the changes on this pages." % tab_label.get_text())
+					answer = dialog.run()
+					dialog.destroy()
+

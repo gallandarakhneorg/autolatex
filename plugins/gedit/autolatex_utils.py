@@ -105,6 +105,16 @@ def backend_get_loads(directory):
 	string_in.close()
 	return config
 
+def backend_get_configuration(directory, level, section):
+	os.chdir(directory)
+	process = subprocess.Popen( [AUTOLATEX_BACKEND_BINARY, 'get', 'config', level, section], stdout=subprocess.PIPE )
+	data = process.communicate()[0]
+	string_in = StringIO.StringIO(data)
+	config = ConfigParser.ConfigParser()
+	config.readfp(string_in)
+	string_in.close()
+	return config
+
 def backend_set_loads(directory, load_config):
 	os.chdir(directory)
 	string_out = StringIO.StringIO()
@@ -112,4 +122,14 @@ def backend_set_loads(directory, load_config):
 	process = subprocess.Popen( [AUTOLATEX_BACKEND_BINARY, 'set', 'loads', ], stdin=subprocess.PIPE)
 	process.communicate(input=string_out.getvalue())
 	string_out.close()
+	return process.returncode == 0
+
+def backend_set_configuration(directory, level, settings):
+	os.chdir(directory)
+	string_out = StringIO.StringIO()
+	settings.write(string_out)
+	process = subprocess.Popen( [AUTOLATEX_BACKEND_BINARY, 'set', 'config', level, 'false' ], stdin=subprocess.PIPE)
+	process.communicate(input=string_out.getvalue())
+	string_out.close()
+	return process.returncode == 0
 

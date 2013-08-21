@@ -256,7 +256,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         self._texsensitive_actions = Gtk.ActionGroup("AutoLaTeXTeXSensitiveActions")
         self._texsensitive_actions.add_actions([
             ('AutoLaTeXDocumentConfAction', None, "Document configuration", 
-                None, "Change the configuration for the document", 
+                '<shift><ctrl>D', "Change the configuration for the document", 
                 self.on_document_configuration_action_activate),
         ])
         manager.insert_action_group(self._texsensitive_actions)
@@ -280,7 +280,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         self._general_actions = Gtk.ActionGroup("AutoLaTeXGeneralActions")
         self._general_actions.add_actions([
             ('AutoLaTeXUserConfAction', None, "User configuration", 
-                None, "Change the configuration for the user", 
+                '<shift><ctrl>U', "Change the configuration for the user", 
                 self.on_user_configuration_action_activate),
         ])
         manager.insert_action_group(self._general_actions)
