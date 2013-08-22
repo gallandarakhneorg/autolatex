@@ -124,7 +124,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 
     # Invoked when the configuration window is open
     def do_create_configure_widget(self):
-        return plugin_config.Panel(self._gsettings)
+        return plugin_config.Panel(self._gsettings, self.window)
 
     # Invoked when the plugin is activated 
     def do_activate(self):

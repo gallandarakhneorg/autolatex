@@ -47,29 +47,34 @@ class Manager:
 
 	def __init__(self):
 		if self._is_schema_installed(): 
+			self._sig_binded_signals = {}
 		        self.settings = Gio.Settings.new(GSETTINGS_BASE_KEY)
 			# Force application of gsettings
-			self._update_autolatex_cmd(self.settings.get_string('autolatex_cmd'))
-			self._update_autolatex_backend_cmd(self.settings.get_string('autolatex_backend_cmd'))
+			self._update_autolatex_cmd(self.settings.get_string('autolatex-cmd'))
+			self._update_autolatex_backend_cmd(self.settings.get_string('autolatex-backend-cmd'))
 			# Listen on changes
-			self.settings.connect("changed::autolatex_cmd", self.on_autolatex_cmd_changed)
-			self.settings.connect("changed::autolatex_back_cmd", self.on_autolatex_backend_cmd_changed)
+			self._sig_autolatex_cmd_changed = self.settings.connect("changed::autolatex-cmd", self.on_autolatex_cmd_changed)
+			self._sig_autolatex_backend_cmd_changed = self.settings.connect("changed::autolatex-backend-cmd", self.on_autolatex_backend_cmd_changed)
 		else:
 			self.settings = None
 
 	def unbind(self):
 		if self.settings:
-			self.settings.disconnect("changed::autolatex_cmd")
-			self.settings.disconnect("changed::autolatex_back_cmd")
+			self.settings.disconnect(self._sig_autolatex_cmd_changed)
+			self.settings.disconnect(self._sig_autolatex_backend_cmd_changed)
+			for key in self._sig_binded_signals:
+				self.settings.disconnect(self._sig_binded_signals[datakey])
+			self._sig_binded_signals = {}
 			self.settings.apply()
 
 	def connect(self, datakey, callback):
 		if self.settings:
-			self.settings.connect("changed::"+str(datakey), callback)
+			self._sig_binded_signals[datakey] = self.settings.connect("changed::"+str(datakey), callback)
 
 	def disconnect(self, datakey):
 		if self.settings:
-			self.settings.disconnect("changed::"+str(datakey))
+			self.settings.disconnect(self._sig_binded_signals[datakey])
+			del self._sig_binded_signals[datakey]
 
 	def _update_autolatex_cmd(self, cmd):
 		if cmd and os.path.isfile(cmd) and os.access(cmd, os.X_OK):
@@ -85,33 +90,37 @@ class Manager:
 
 	def on_autolatex_cmd_changed(self, settings, key, data=None):
 		if self.settings:
-			self._update_autolatex_cmd(self.settings.get_string('autolatex_cmd'))
+			self._update_autolatex_cmd(self.settings.get_string('autolatex-cmd'))
 
 	def on_autolatex_backend_cmd_changed(self, settings, key, data=None):
 		if self.settings:
-			self._update_autolatex_backend_cmd(self.settings.get_string('autolatex_backend_cmd'))
+			self._update_autolatex_backend_cmd(self.settings.get_string('autolatex-backend-cmd'))
 
 	def get_autolatex_cmd(self):
 		if self.settings:
-			return self.settings.get_string('autolatex_cmd')
+			path = self.settings.get_string('autolatex-cmd')
+			return path if path else None
 		else:
-			return utils.AUTOLATEX_BINARY
+			return None
 
 	def set_autolatex_cmd(self,path):
 		if self.settings:
-			self.settings.set_string('autolatex_cmd', str(path))
+			path = str(path) if path else ''
+			self.settings.set_string('autolatex-cmd', path)
 		else:
 			self._update_autolatex_cmd(path)
 
 	def get_autolatex_backend_cmd(self):
 		if self.settings:
-			return self.settings.get_string('autolatex_backend_cmd')
+			path = self.settings.get_string('autolatex-backend-cmd')
+			return path if path else None
 		else:
-			return utils.AUTOLATEX_BACKEND_BINARY
+			return None
 
 	def set_autolatex_backend_cmd(self, path):
 		if self.settings:
-			self.settings.set_string('autolatex_backend_cmd', str(path))
+			path = str(path) if path else ''
+			self.settings.set_string('autolatex-backend-cmd', path)
 		else:
 			self._update_autolatex_backend_cmd(path)
 

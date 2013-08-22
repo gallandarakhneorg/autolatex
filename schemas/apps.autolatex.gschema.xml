@@ -2,12 +2,12 @@
 <schemalist>
   <schema id="apps.autolatex" path="/apps/autolatex/">
     <key type="s" name="autolatex-cmd">
-      <default></default>
+      <default>""</default>
       <summary>Path to autolatex</summary>
       <description>This is the absolute path to the binary 'autolatex'.</description>
     </key>
     <key type="s" name="autolatex-backend-cmd">
-      <default></default>
+      <default>""</default>
       <summary>Path to autolatex-backend</summary>
       <description>This is the absolute path to the binary 'autolatex-backend'.</description>
     </key>

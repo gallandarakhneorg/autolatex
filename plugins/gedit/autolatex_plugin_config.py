@@ -30,12 +30,14 @@ from gi.repository import Gtk
 # Gtk panel that is managing the configuration of the plugin
 class Panel(Gtk.Table):
 
-	def __init__(self, settings):
+	def __init__(self, settings, window):
 		Gtk.Table.__init__(self,
 				2, #rows
-				3, #columns
+				2, #columns
 				False) #non uniform
 		self._settings = settings
+		self.window = window
+
 		# Create the components
 		label = "Path to autolatex"
 		ui_label = Gtk.Label(label)
@@ -50,12 +52,6 @@ class Panel(Gtk.Table):
 		self.attach(self._ui_edit_autolatex_cmd, 
 				1,2,0,1, # left, right, top and bottom columns
 				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				0,0) # horizontal and vertical paddings
-		self._ui_error_autolatex_cmd = Gtk.Image()
-		self.attach(self._ui_error_autolatex_cmd, 
-				2,3,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.SHRINK, # x options
 				Gtk.AttachOptions.SHRINK, # y options
 				0,0) # horizontal and vertical paddings
 		label = "Path to autolatex-backend"
@@ -74,38 +70,48 @@ class Panel(Gtk.Table):
 				Gtk.AttachOptions.SHRINK, # y options
 				0,0) # horizontal and vertical paddings
 		# Set the initial values
-		self._ui_edit_autolatex_cmd.set_filename(self._settings.get_autolatex_cmd())
-		self._ui_edit_autolatex_backend_cmd.set_filename(self._settings.get_autolatex_backend_cmd())
+		cmd = self._settings.get_autolatex_cmd()
+		if cmd:	self._ui_edit_autolatex_cmd.set_filename(cmd)
+		else: self._ui_edit_autolatex_cmd.unselect_all()
+		cmd = self._settings.get_autolatex_backend_cmd()
+		if cmd:	self._ui_edit_autolatex_backend_cmd.set_filename(cmd)
+		else: self._ui_edit_autolatex_backend_cmd.unselect_all()
 		# Attach signals
 		self._ui_hierarchy_connect_id = self.connect('hierarchy-changed', self.on_hierarchy_changed)
 
 	def on_hierarchy_changed(self, widget, previous_toplevel, data=None):
 		if previous_toplevel:
-			self._settings.disconnect('autolatex_cmd')
-			self._settings.disconnect('autolatex_backend_cmd')
-			self._ui_edit_autolatex_cmd.disconnect(self._ui_edit_autolatex_cmd_connect_id)
-			self._ui_edit_autolatex_backend_cmd.disconnect(self._ui_edit_autolatex_backend_cmd_connect_id)
+			self._settings.disconnect('autolatex-cmd')
+			self._settings.disconnect('autolatex-backend-cmd')
 			self.disconnect(self._ui_hierarchy_connect_id)
+			# Set the autolatex-cmd
+			filename = self._ui_edit_autolatex_cmd.get_filename()
+			self._settings.set_autolatex_cmd(filename)
+			filename = self._ui_edit_autolatex_backend_cmd.get_filename()
+			self._settings.set_autolatex_backend_cmd(filename)
 		else:
-			self._ui_edit_autolatex_cmd_connect_id = self._ui_edit_autolatex_cmd.connect('file-set', self.on_autolatex_cmd_field_changed)
-			self._ui_edit_autolatex_backend_cmd_connect_id = self._ui_edit_autolatex_backend_cmd.connect('file-set', self.on_autolatex_backend_cmd_field_changed)
-			self._settings.connect('autolatex_cmd', self.on_gsettings_changed)
-			self._settings.connect('autolatex_backend_cmd', self.on_gsettings_changed)
+			self._settings.connect('autolatex-cmd', self.on_gsettings_changed)
+			self._settings.connect('autolatex-backend-cmd', self.on_gsettings_changed)
 	
 	def on_gsettings_changed(self, settings, key, data=None):
-		if key == 'autolatex_cmd':
-			self._ui_edit_autolatex_cmd.set_filename(self._settings.get_autolatex_cmd())
-		elif key == 'autolatex_backend_cmd':
-			self._ui_edit_autolatex_backend_cmd.set_filename(self._settings.get_autolatex_backend_cmd())
-		
-	def on_autolatex_cmd_field_changed(self, widget, data=None):
-		filename = self._ui_edit_autolatex_cmd.get_filename()
-		self._settings.set_autolatex_cmd(filename)
-		if filename != self._settings.get_autolatex_cmd():
-			self._ui_error_autolatex_cmd.set_from_stock(Gtk.STOCK_STOP, Gtk.IconSize.MENU)
-		else:
-			self._ui_error_autolatex_cmd.clear()
-
-	def on_autolatex_backend_cmd_field_changed(self, widget, data=None):
-		self._settings.set_autolatex_backend_cmd(self._ui_edit_autolatex_backend_cmd.get_filename())
+		if key == 'autolatex-cmd':
+			gsettings_cmd = self._settings.get_autolatex_cmd()
+			window_cmd = self._ui_edit_autolatex_cmd.get_filename()
+			if gsettings_cmd != window_cmd:
+				dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "The path of AutoLaTeX has been changed by an external program. The new path is different from the one you have entered. Do you want to use the new path?")
+				answer = dialog.run()
+				dialog.destroy()
+				if  answer == Gtk.ResponseType.YES:
+					if gsettings_cmd: self._ui_edit_autolatex_cmd.set_filename(gsettings_cmd)
+					else: self._ui_edit_autolatex_cmd.unselect_all()
+		elif key == 'autolatex-backend-cmd':
+			gsettings_cmd = self._settings.get_autolatex_backend_cmd()
+			window_cmd = self._ui_edit_autolatex_backend_cmd.get_filename()
+			if gsettings_cmd != window_cmd:
+				dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "The path of AutoLaTeX Backend has been changed by an external program. The new path is different from the one you have entered. Do you want to use the new path?")
+				answer = dialog.run()
+				dialog.destroy()
+				if  answer == Gtk.ResponseType.YES:
+					if gsettings_cmd: self._ui_edit_autolatex_backend_cmd.set_filename(gsettings_cmd)
+					else: self._ui_edit_autolatex_backend_cmd.unselect_all()
 
