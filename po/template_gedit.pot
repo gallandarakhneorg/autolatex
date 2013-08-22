@@ -1,0 +1,319 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-08-22 20:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: plugins/gedit/autolatex/autolatex_viewer_panel.py:51
+msgid "Launch a viewer after compilation"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_viewer_panel.py:57
+msgid "Command for launching the viewer (optional)"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:72
+msgid ""
+"List of available translators:\n"
+"(click on the second column to change the loading state of the translators)"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:85
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:89
+msgid "usr"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:86
+msgid "doc"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:94
+msgid "name"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:96
+msgid "description"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:122
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:126
+msgid "Current user"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:123
+msgid "Current document"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:125
+msgid "All users"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:130
+msgid "Loaded, no conflict"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:131
+msgid "Loaded, conflict"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:132
+msgid "Not loaded"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:133
+msgid "Unspecified, no conflict"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_translator_panel.py:134
+msgid "Unspecified, conflict"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_figure_assignment_panel.py:58
+msgid "Figure"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_figure_assignment_panel.py:65
+msgid "Translator"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:146
+msgid ""
+"The programs 'autolatex' and 'autolatex-backend'\n"
+"were not found.\n"
+"Please fix the configuration of the AutoLaTeX plugin."
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:150
+msgid ""
+"The program 'autolatex' was not found.\n"
+"Please fix the configuration of the AutoLaTeX plugin."
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:154
+msgid ""
+"The program 'autolatex-backend' was not found.\n"
+"Please fix the configuration of the AutoLaTeX plugin."
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:211
+msgid "AutoLaTeX Console"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:238
+#: plugins/gedit/autolatex/__init__.py:239
+msgid "AutoLaTeX"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:246
+msgid "Generate images"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:247
+msgid "Generate the images with AutoLaTeX"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:249
+msgid "Compile"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:250
+msgid "Compile with AutoLaTeX"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:252
+msgid "Remove temporary files"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:253
+msgid "Clean with AutoLaTeX"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:255
+msgid "Clean all"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:256
+msgid "Clean all with AutoLaTeX"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:258
+msgid "View the PDF"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:259
+msgid "Open the PDF viewer"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:266
+msgid "Document configuration"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:267
+msgid "Change the configuration for the document"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:274
+msgid "Delete document configuration"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:275
+msgid "Delete the configuration for the document"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:282
+msgid "Delete user configuration"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:283
+msgid "Delete the configuration for the user"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:290
+msgid "User configuration"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:291
+msgid "Change the configuration for the user"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:402
+msgid ""
+"Do you want to create a configuration\n"
+"file for your document?"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:416
+msgid "Do you want to delete the document configuration?"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:429
+msgid ""
+"Do you want to create a configuration\n"
+"file at the user level?"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:441
+msgid "Do you want to delete the user configuration?"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_figure_panel.py:60
+msgid "Automatic generation of pictures with translators"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_figure_panel.py:66
+msgid "Search paths for the pictures"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_figure_panel.py:198
+msgid "Select a figure path"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:119
+msgid "Main TeX file (optional)"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:141
+msgid "Execute the bibliography tool (BibTeX, Bibber...)"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:147
+msgid "Type of generation"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:167
+msgid "Type of style for MakeIndex"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:177
+msgid "Specific '.ist' file"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:178
+msgid "Autodetect the style inside the project directory"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:179
+msgid "Use only the default AutoLaTeX style"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:180
+msgid "No style is passed to MakeIndex"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:181
+msgid ""
+"Custom definition by the user (do not change the original configuration)"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:189
+msgid "Style file for MakeIndex"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_config_window.py:80
+msgid "Document Configuration"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_config_window.py:80
+msgid "User Configuration"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_config_window.py:92
+msgid "Generator"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_config_window.py:97
+msgid "Figures"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_config_window.py:103
+msgid "List of figures"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_config_window.py:108
+msgid "Translators"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_config_window.py:113
+msgid "Viewer"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_config_window.py:126
+#, python-format
+msgid ""
+"The page '%s' cannot save its fields.\n"
+" You will loose the changes on this pages."
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:49
+msgid "Path to autolatex"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:64
+msgid "Path to autolatex-backend"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:108
+msgid ""
+"The path of AutoLaTeX has been changed by an external program. The new path "
+"is different from the one you have entered. Do you want to use the new path?"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:118
+msgid ""
+"The path of AutoLaTeX Backend has been changed by an external program. The "
+"new path is different from the one you have entered. Do you want to use the "
+"new path?"
+msgstr ""

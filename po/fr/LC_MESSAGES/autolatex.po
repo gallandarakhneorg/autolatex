@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-20 18:42+0200\n"
+"POT-Creation-Date: 2013-08-22 20:41+0200\n"
 "PO-Revision-Date: 2013-05-21 21:37+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -17,53 +17,48 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: autolatex.pl:110
-#, fuzzy
-msgid "Detecting images inside '{}'"
-msgstr "Détection du fichier TeX '{}'"
-
-#: autolatex.pl:240 autolatex.pl:253
+#: autolatex.pl:165 autolatex.pl:178
 #, fuzzy
 msgid "The configuration entry '{}' is not defined."
 msgstr "Le convertisseur '{}' est ignoré."
 
-#: autolatex.pl:270 autolatex.pl:287
+#: autolatex.pl:195 autolatex.pl:212
 #, fuzzy
 msgid "Launching '{}'"
 msgstr "Développement de '{}'"
 
-#: autolatex.pl:273 autolatex.pl:290
+#: autolatex.pl:198 autolatex.pl:215
 msgid "Launching '{}' in background"
 msgstr "Lancement de '{}' en tâche de fond"
 
-#: autolatex.pl:299
+#: autolatex.pl:224
 msgid "Unable to find a viewer."
 msgstr "Impossible de trouvé un visualisateur."
 
-#: autolatex.pl:507
+#: autolatex.pl:432
 msgid "Removing all the temporary files"
 msgstr "Suppression de tous les fichiers temporaires"
 
-#: autolatex.pl:514
+#: autolatex.pl:439
 msgid "Removing all the temporary and generated files"
 msgstr "Suppressions des fichiers temporaires et des figures générées"
 
-#: autolatex.pl:658
+#: autolatex.pl:583
 #, fuzzy
 msgid "Creating default project configuration file...\n"
 msgstr ""
 "Détection du fichier TeX à partir de la configuration du document: '{}'"
 
-#: autolatex.pl:662
+#: autolatex.pl:587
 #, fuzzy
 msgid "Creating default user configuration file...\n"
 msgstr "Enregistrement du fichier de configuration {}"
 
-#: autolatex.pl:671
+#: autolatex.pl:596
 msgid "Creating default makeindex style file...\n"
 msgstr "Création du fichier de style par défaut pour makeindex...\n"
 
-#: autolatex.pl:750
+#: autolatex.pl:675
 #, fuzzy
 msgid "Command line action '{}' is not supported."
 msgstr "L'option de ligne de commande '{}' est obsolète."
@@ -350,19 +345,19 @@ msgstr "Utilisation du style par défaut pour MakeIndex"
 msgid "Unselecting any style for MakeIndex"
 msgstr "Ignore les styles pour MakeIndex"
 
-#: pm/AutoLaTeX/Core/Translator.pm:161
+#: pm/AutoLaTeX/Core/Translator.pm:162
 msgid "Translate {} to {} with {} alternative"
 msgstr "Convertit {} vers {} avec la variante {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:167
+#: pm/AutoLaTeX/Core/Translator.pm:168
 msgid "Translate {} to {}"
 msgstr "Convertoit {} vers {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:216
+#: pm/AutoLaTeX/Core/Translator.pm:217
 msgid "Get translator list from {}"
 msgstr "Calcul de la liste des convertisseurs depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:303
+#: pm/AutoLaTeX/Core/Translator.pm:304
 msgid ""
 "Several possibilities exist for generating a figure from a {} file:\n"
 "{}\n"
@@ -388,19 +383,19 @@ msgstr ""
 "\n"
 "{}\n"
 
-#: pm/AutoLaTeX/Core/Translator.pm:411
+#: pm/AutoLaTeX/Core/Translator.pm:412
 msgid "Get loadable translators from {}"
 msgstr "Calcul des convertisseurs chargeables depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:425
+#: pm/AutoLaTeX/Core/Translator.pm:426
 msgid "Translator {} is ignored"
 msgstr "Le convertisseur {} est ignoré"
 
-#: pm/AutoLaTeX/Core/Translator.pm:506
+#: pm/AutoLaTeX/Core/Translator.pm:507
 msgid "Get translators from {}"
 msgstr "Chargement des convertisseurs depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:638
+#: pm/AutoLaTeX/Core/Translator.pm:639
 msgid ""
 "The block for the variable '{}' is not closed. Keyword '{}' was not found "
 "({}:{})."
@@ -408,7 +403,7 @@ msgstr ""
 "Le bloc pour la variable '{}' n'est pas fermé. Le mot-clé '{}' n'a pas été "
 "trouvé ({}:{})."
 
-#: pm/AutoLaTeX/Core/Translator.pm:782
+#: pm/AutoLaTeX/Core/Translator.pm:783
 msgid ""
 "You cannot call runTranslator() outside the call stack of runRootTranslator"
 "()."
@@ -416,20 +411,20 @@ msgstr ""
 "Vous ne pouvez pas appeller runTranslator() en dehors d'un appel à "
 "runRootTranslator()."
 
-#: pm/AutoLaTeX/Core/Translator.pm:815
+#: pm/AutoLaTeX/Core/Translator.pm:816
 msgid "{}: file not found or not readable."
 msgstr "{}: fichier non trouvé ou non lisible."
 
-#: pm/AutoLaTeX/Core/Translator.pm:854 pm/AutoLaTeX/Make/Make.pm:615
+#: pm/AutoLaTeX/Core/Translator.pm:855 pm/AutoLaTeX/Make/Make.pm:615
 #: pm/AutoLaTeX/Make/Make.pm:695 pm/AutoLaTeX/Make/Make.pm:739
 msgid "{} is up-to-date."
 msgstr "{} est à jour."
 
-#: pm/AutoLaTeX/Core/Translator.pm:860
+#: pm/AutoLaTeX/Core/Translator.pm:861
 msgid "{} -> {}"
 msgstr "{} -> {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:913
+#: pm/AutoLaTeX/Core/Translator.pm:914
 #, fuzzy
 msgid ""
 "Error inthe TRANSLATOR_FUNCTION of '{}':\n"
@@ -438,32 +433,37 @@ msgstr ""
 "Erreur dans la définition TRANSLATOR_FUNCTION de '{}':\n"
 "{}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:917
+#: pm/AutoLaTeX/Core/Translator.pm:918
 msgid "Unable to find the method of translation for '{}'."
 msgstr "Impossible de trouver un convertisseur pour '{}'."
 
-#: pm/AutoLaTeX/Core/Translator.pm:953
+#: pm/AutoLaTeX/Core/Translator.pm:954
 #, fuzzy
 msgid "Searching translator '{}'."
 msgstr "Chargement des convertisseurs depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:974
+#: pm/AutoLaTeX/Core/Translator.pm:975
 #, fuzzy
 msgid "The translator '{}' cannot be found."
 msgstr "Le convertisseur '{}' est ignoré."
 
-#: pm/AutoLaTeX/Core/Translator.pm:979
+#: pm/AutoLaTeX/Core/Translator.pm:980
 msgid "Linking '{}' to '{}'."
 msgstr "Création d'un alias de '{}' vers '{}'."
 
-#: pm/AutoLaTeX/Core/Translator.pm:986
+#: pm/AutoLaTeX/Core/Translator.pm:987
 msgid "'{}' is already loaded."
 msgstr "'{}' est déjà chargé."
 
-#: pm/AutoLaTeX/Core/Translator.pm:989
+#: pm/AutoLaTeX/Core/Translator.pm:990
 #, fuzzy
 msgid "Loading translator '{}'."
 msgstr "Calcul des convertisseurs chargeables depuis {}"
+
+#: pm/AutoLaTeX/Core/Translator.pm:1101
+#, fuzzy
+msgid "Detecting images inside '{}'"
+msgstr "Détection du fichier TeX '{}'"
 
 #: pm/AutoLaTeX/Core/Util.pm:216 pm/AutoLaTeX/Core/Util.pm:249
 msgid "no manual page found\n"

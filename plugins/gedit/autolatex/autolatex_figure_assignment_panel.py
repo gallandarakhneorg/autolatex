@@ -30,6 +30,13 @@ from gi.repository import Gtk
 import autolatex_utils as utils
 
 #---------------------------------
+# INTERNATIONALIZATION
+#---------------------------------
+
+import gettext
+_T = gettext.gettext
+
+#---------------------------------
 # CLASS Panel
 #---------------------------------
 
@@ -48,14 +55,14 @@ class Panel(Gtk.Table):
 		self._ui_figure_store = Gtk.ListStore(str, str)
 		self._ui_figure_widget = Gtk.TreeView()
 		self._ui_figure_widget.set_model(self._ui_figure_store)
-		self._ui_figure_widget.append_column(Gtk.TreeViewColumn("Figure", Gtk.CellRendererText(), text=0))
+		self._ui_figure_widget.append_column(Gtk.TreeViewColumn(_T("Figure"), Gtk.CellRendererText(), text=0))
 		renderer_combo = Gtk.CellRendererCombo()
 		renderer_combo.set_property("editable", True)
 		renderer_combo.set_property("model", self._ui_figure_edit_store)
 		renderer_combo.set_property("text-column", 0)
 		renderer_combo.set_property("has-entry", False)
 		renderer_combo.connect("edited", self.on_figure_translator_changed)
-		self._ui_figure_widget.append_column(Gtk.TreeViewColumn("Translator", renderer_combo, text=1))
+		self._ui_figure_widget.append_column(Gtk.TreeViewColumn(_T("Translator"), renderer_combo, text=1))
 		self._ui_figure_widget.set_headers_clickable(False)
 		self._ui_figure_widget.set_headers_visible(True)
 		self._ui_figure_selection = self._ui_figure_widget.get_selection()

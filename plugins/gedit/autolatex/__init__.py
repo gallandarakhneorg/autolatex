@@ -39,6 +39,14 @@ import autolatex_gsettings as gsettings
 import autolatex_plugin_config as plugin_config
 
 #---------------------------------
+# INTERNATIONALIZATION
+#---------------------------------
+
+import gettext
+_T = gettext.gettext
+utils.init_internationalization()
+
+#---------------------------------
 # DEFINITION OF THE GTK CONTRIBUTIONS
 #---------------------------------
 UI_XML = """<ui>
@@ -135,15 +143,15 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     # Check if the AutoLaTeX binaries were found
     def _check_autolatex_binaries(self):
 	if not utils.AUTOLATEX_BINARY and not utils.AUTOLATEX_BACKEND_BINARY:
-		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "The programs 'autolatex' and 'autolatex-backend'\nwere not found.\nPlease fix the configuration of the AutoLaTeX plugin.")
+		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _T("The programs 'autolatex' and 'autolatex-backend'\nwere not found.\nPlease fix the configuration of the AutoLaTeX plugin."))
 		answer = dialog.run()
 		dialog.destroy()
 	elif not utils.AUTOLATEX_BINARY:
-		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "The program 'autolatex' was not found.\nPlease fix the configuration of the AutoLaTeX plugin.")
+		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _T("The program 'autolatex' was not found.\nPlease fix the configuration of the AutoLaTeX plugin."))
 		answer = dialog.run()
 		dialog.destroy()
 	elif not utils.AUTOLATEX_BACKEND_BINARY:
-		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "The program 'autolatex-backend' was not found.\nPlease fix the configuration of the AutoLaTeX plugin.")
+		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _T("The program 'autolatex-backend' was not found.\nPlease fix the configuration of the AutoLaTeX plugin."))
 		answer = dialog.run()
 		dialog.destroy()
 
@@ -200,7 +208,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 			panel = self.window.get_bottom_panel()
 			panel.add_item(self._error_console,
 				"autolatex-console-panel",
-				"AutoLaTeX Console",
+				_T("AutoLaTeX Console"),
 				Gtk.Image.new_from_pixbuf(self._console_icon))
 		self._error_console.get_buffer().set_text(console_content)
 	        panel.activate_item(self._error_console)
@@ -227,60 +235,60 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	# Create the Top menu for AutoLaTeX
         self._menu = Gtk.ActionGroup("AutoLaTeXMenu")
         self._menu.add_actions([
-            ('AutoLaTeXMenu', None, "AutoLaTeX", 
-                None, "AutoLaTeX", 
+            ('AutoLaTeXMenu', None, _T("AutoLaTeX"), 
+                None, _T("AutoLaTeX"), 
                 None),
         ])
         manager.insert_action_group(self._menu)
 	# Create the group of actions that are needing an AutoLaTeX document
         self._document_actions = Gtk.ActionGroup("AutoLaTeXDocumentActions")
         self._document_actions.add_actions([
-	    ('AutoLaTeXGenerateImageAction', None, "Generate images", 
-                None, "Generate the images with AutoLaTeX", 
+	    ('AutoLaTeXGenerateImageAction', None, _T("Generate images"), 
+                None, _T("Generate the images with AutoLaTeX"), 
                 self.on_generateimage_action_activate),
-            ('AutoLaTeXCompileAction', None, "Compile", 
-                '<shift><ctrl>R', "Compile with AutoLaTeX", 
+            ('AutoLaTeXCompileAction', None, _T("Compile"), 
+                '<shift><ctrl>R', _T("Compile with AutoLaTeX"), 
                 self.on_compile_action_activate),
-            ('AutoLaTeXCleanAction', None, "Remove temporary files", 
-                None, "Clean with AutoLaTeX", 
+            ('AutoLaTeXCleanAction', None, _T("Remove temporary files"), 
+                None, _T("Clean with AutoLaTeX"), 
                 self.on_clean_action_activate),
-            ('AutoLaTeXCleanallAction', None, "Clean all", 
-                '<shift><ctrl>C', "Clean all with AutoLaTeX", 
+            ('AutoLaTeXCleanallAction', None, _T("Clean all"), 
+                '<shift><ctrl>C', _T("Clean all with AutoLaTeX"), 
                 self.on_cleanall_action_activate),
-            ('AutoLaTeXViewAction', None, "View the PDF", 
-                None, "Open the PDF viewer", 
+            ('AutoLaTeXViewAction', None, _T("View the PDF"), 
+                None, _T("Open the PDF viewer"), 
                 self.on_view_action_activate),
         ])
         manager.insert_action_group(self._document_actions)
 	# Create the group of actions that are needing an TeX document
         self._texsensitive_actions = Gtk.ActionGroup("AutoLaTeXTeXSensitiveActions")
         self._texsensitive_actions.add_actions([
-            ('AutoLaTeXDocumentConfAction', None, "Document configuration", 
-                '<shift><ctrl>D', "Change the configuration for the document", 
+            ('AutoLaTeXDocumentConfAction', None, _T("Document configuration"), 
+                None, _T("Change the configuration for the document"), 
                 self.on_document_configuration_action_activate),
         ])
         manager.insert_action_group(self._texsensitive_actions)
 	# Create the group of actions that are needing the configuration file of a document
         self._docconfsensitive_actions = Gtk.ActionGroup("AutoLaTeXDocConfSensitiveActions")
         self._docconfsensitive_actions.add_actions([
-            ('AutoLaTeXRemoveDocumentConfAction', None, "Delete document configuration", 
-                None, "Delete the configuration for the document", 
+            ('AutoLaTeXRemoveDocumentConfAction', None, _T("Delete document configuration"), 
+                None, _T("Delete the configuration for the document"), 
                 self.on_delete_document_configuration_action_activate),
         ])
         manager.insert_action_group(self._docconfsensitive_actions)
 	# Create the group of actions that are needing the configuration file of the user
         self._userconfsensitive_actions = Gtk.ActionGroup("AutoLaTeXUserConfSensitiveActions")
         self._userconfsensitive_actions.add_actions([
-            ('AutoLaTeXRemoveUserConfAction', None, "Delete user configuration", 
-                None, "Delete the configuration for the user", 
+            ('AutoLaTeXRemoveUserConfAction', None, _T("Delete user configuration"), 
+                None, _T("Delete the configuration for the user"), 
                 self.on_delete_user_configuration_action_activate),
         ])
         manager.insert_action_group(self._userconfsensitive_actions)
 	# Create the group of actions that are not needing any special document
         self._general_actions = Gtk.ActionGroup("AutoLaTeXGeneralActions")
         self._general_actions.add_actions([
-            ('AutoLaTeXUserConfAction', None, "User configuration", 
-                '<shift><ctrl>U', "Change the configuration for the user", 
+            ('AutoLaTeXUserConfAction', None, _T("User configuration"), 
+                None, _T("Change the configuration for the user"), 
                 self.on_user_configuration_action_activate),
         ])
         manager.insert_action_group(self._general_actions)
@@ -391,7 +399,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		cfgFile = os.path.join(directory,".autolatex_project.cfg")
 		runConfig = True
 		if not os.path.exists(cfgFile):
-			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, "Do you want to create a configuration\nfile for your document?")
+			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to create a configuration\nfile for your document?"))
 			answer = dialog.run()
 			dialog.destroy()
 			runConfig = (answer == Gtk.ResponseType.YES)
@@ -405,7 +413,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	if directory:
 		cfgFile = os.path.join(directory, '.autolatex_project.cfg')
 		if os.path.exists(cfgFile):
-			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, "Do you want to delete the document configuration?")
+			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to delete the document configuration?"))
 			answer = dialog.run()
 			dialog.destroy()
 			if answer == Gtk.ResponseType.YES:
@@ -418,7 +426,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		cfgFile = os.path.join(os.path.expanduser("~"),".autolatex")
 		runConfig = True
 		if not os.path.exists(cfgFile):
-			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, "Do you want to create a configuration\nfile at the user level?")
+			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to create a configuration\nfile at the user level?"))
 			answer = dialog.run()
 			dialog.destroy()
 			runConfig = (answer == Gtk.ResponseType.YES)
@@ -430,7 +438,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     def on_delete_user_configuration_action_activate(self, action, data=None):
 	cfgFile = os.path.join(os.path.expanduser("~"), '.autolatex')
 	if os.path.exists(cfgFile):
-		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, "Do you want to delete the user configuration?")
+		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to delete the user configuration?"))
 		answer = dialog.run()
 		dialog.destroy()
 		if answer == Gtk.ResponseType.YES:

@@ -26,6 +26,13 @@ from gi.repository import GObject, Gdk, Gtk, GdkPixbuf
 import autolatex_utils as utils
 
 #---------------------------------
+# INTERNATIONALIZATION
+#---------------------------------
+
+import gettext
+_T = gettext.gettext
+
+#---------------------------------
 # CLASS IconType
 #---------------------------------
 
@@ -62,7 +69,7 @@ class Panel(Gtk.Table):
 		self._is_document_level = isDocumentLevel
 		self._preload_icons()
 		# Top label
-		self._ui_label = Gtk.Label("List of available translators:\n(click on the second column to change the loading state of the translators)")
+		self._ui_label = Gtk.Label(_T("List of available translators:\n(click on the second column to change the loading state of the translators)"))
 		self._ui_label.set_alignment(0, 0.5)
 		self.attach(self._ui_label, 
 				0,1,0,1, # left, right, top and bottom columns
@@ -75,18 +82,18 @@ class Panel(Gtk.Table):
 		self._ui_translator_list_widget = Gtk.TreeView()
 		self._ui_translator_list_widget.set_model(self._ui_translator_list)
 		if isDocumentLevel:
-			label1 = 'usr'
-			self._clickable_column_label = 'doc'
+			label1 = _T('usr')
+			self._clickable_column_label = _T('doc')
 		else:
 			label1 = 'sys'
-			self._clickable_column_label = 'usr'
+			self._clickable_column_label = _T('usr')
 		column = Gtk.TreeViewColumn(label1, Gtk.CellRendererPixbuf(), pixbuf=0)
 		self._ui_translator_list_widget.append_column(column)
 		column = Gtk.TreeViewColumn(self._clickable_column_label, Gtk.CellRendererPixbuf(), pixbuf=1)
 		self._ui_translator_list_widget.append_column(column)
-		column = Gtk.TreeViewColumn("name", Gtk.CellRendererText(), text=2)
+		column = Gtk.TreeViewColumn(_T("name"), Gtk.CellRendererText(), text=2)
 		self._ui_translator_list_widget.append_column(column)
-		column = Gtk.TreeViewColumn("description", Gtk.CellRendererText(), text=3)
+		column = Gtk.TreeViewColumn(_T("description"), Gtk.CellRendererText(), text=3)
 		self._ui_translator_list_widget.append_column(column)
 		self._ui_translator_list_widget.set_headers_clickable(False)
 		self._ui_translator_list_widget.set_headers_visible(True)
@@ -112,19 +119,19 @@ class Panel(Gtk.Table):
 		# Help
 		#self._ui_left_toolbar.add (Gtk.HSeparator())
 		if self._is_document_level:
-			label1 = 'Current user'
-			label2 = 'Current document'
+			label1 = _T('Current user')
+			label2 = _T('Current document')
 		else:
-			label1 = 'All users'
-			label2 = 'Current user'
+			label1 = _T('All users')
+			label2 = _T('Current user')
 		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(0), label1))
 		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1), label2))
 		self._ui_left_toolbar.add(Gtk.HSeparator())
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1), 'Loaded, no conflict'))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.CONFLICT), 'Loaded, conflict'))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.EXCLUDED), 'Not loaded'))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.INHERITED), 'Unspecified, no conflict'))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.INHERITED_CONFLICT), 'Unspecified, conflict'))
+		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1), _T('Loaded, no conflict')))
+		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.CONFLICT), _T('Loaded, conflict')))
+		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.EXCLUDED), _T('Not loaded')))
+		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.INHERITED), _T('Unspecified, no conflict')))
+		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.INHERITED_CONFLICT), _T('Unspecified, conflict')))
 		#
 		# Initialize the panel
 		#

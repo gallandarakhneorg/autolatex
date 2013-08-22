@@ -26,6 +26,13 @@ from gi.repository import GObject, Gdk, Gtk, GdkPixbuf
 import autolatex_utils as utils
 
 #---------------------------------
+# INTERNATIONALIZATION
+#---------------------------------
+
+import gettext
+_T = gettext.gettext
+
+#---------------------------------
 # CLASS Panel
 #---------------------------------
 
@@ -41,13 +48,13 @@ class Panel(Gtk.Table):
 		self._is_document_level = is_document_level
 		self._directory = directory
 
-		self._ui_launch_viewer_checkbox = Gtk.CheckButton("Launch a viewer after compilation")
+		self._ui_launch_viewer_checkbox = Gtk.CheckButton(_T("Launch a viewer after compilation"))
 		self.attach(	self._ui_launch_viewer_checkbox,
 				0,2,0,1, # left, right, top and bottom columns
 				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
 				Gtk.AttachOptions.SHRINK, # y options
 				2,5); # horizontal and vertical paddings
-		self._ui_viewer_command_label = Gtk.Label("Command to launch the the viewer (optional)")
+		self._ui_viewer_command_label = Gtk.Label(_T("Command for launching the viewer (optional)"))
 		self._ui_viewer_command_label.set_alignment(0, 0.5)
 		self.attach(	self._ui_viewer_command_label, 
 				0,1,1,2, # left, right, top and bottom columns

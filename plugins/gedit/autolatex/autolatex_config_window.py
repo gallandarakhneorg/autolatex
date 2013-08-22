@@ -31,6 +31,13 @@ import autolatex_translator_panel as translator_panel
 import autolatex_viewer_panel as viewer_panel
 
 #---------------------------------
+# INTERNATIONALIZATION
+#---------------------------------
+
+import gettext
+_T = gettext.gettext
+
+#---------------------------------
 # Global function to open the dialog
 #---------------------------------
 
@@ -70,7 +77,7 @@ class Window(Gtk.Dialog):
 
 	def __init__(self, parent, is_document_level, directory):
 		Gtk.Dialog.__init__(self,
-			("Document Configuration" if is_document_level else "User Configuration"),
+			(_T("Document Configuration") if is_document_level else _T("User Configuration")),
 			parent, 0,
 			( Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY))
 		self.set_default_size(600, 500)
@@ -82,28 +89,28 @@ class Window(Gtk.Dialog):
 		self._ui_notebook.append_page(
 				tab,
 				NotebookTab(
-					"Generator", "autolatex-compile.png"))
+					_T("Generator"), "autolatex-compile.png"))
 		tab = figure_panel.Panel(is_document_level, directory, self)
 		self._ui_notebook.append_page(
 				tab,
 				NotebookTab(
-					"Figures", "autolatex-images.png"))
+					_T("Figures"), "autolatex-images.png"))
 		if is_document_level:
 			tab = figure_assignment_panel.Panel(directory)
 			self._ui_notebook.append_page(
 					tab,
 					NotebookTab(
-						"List of figures", "autolatex-images.png"))
+						_T("List of figures"), "autolatex-images.png"))
 		tab = translator_panel.Panel(is_document_level, directory)
 		self._ui_notebook.append_page(
 				tab,
 				NotebookTab(
-					"Translators", "autolatex-images.png"))
+					_T("Translators"), "autolatex-images.png"))
 		tab = viewer_panel.Panel(is_document_level, directory)
 		self._ui_notebook.append_page(
 				tab,
 				NotebookTab(
-					"Viewer", "autolatex-view.png"))
+					_T("Viewer"), "autolatex-view.png"))
 		self.show_all()
 		# Listening the response signal
 		self.connect('response', self.on_response_signal);
@@ -116,7 +123,7 @@ class Window(Gtk.Dialog):
 				result = page.save()
 				if not result:
 					tab_label = self._ui_notebook.get_tab_label(page)
-					dialog = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, "The page '%s' cannot save its fields.\n You will loose the changes on this pages." % tab_label.get_text())
+					dialog = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, _T("The page '%s' cannot save its fields.\n You will loose the changes on this pages.") % tab_label.get_text())
 					answer = dialog.run()
 					dialog.destroy()
 

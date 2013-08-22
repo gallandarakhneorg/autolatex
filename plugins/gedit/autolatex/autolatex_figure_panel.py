@@ -28,6 +28,13 @@ from gi.repository import Gtk, Gio
 import autolatex_utils as utils
 
 #---------------------------------
+# INTERNATIONALIZATION
+#---------------------------------
+
+import gettext
+_T = gettext.gettext
+
+#---------------------------------
 # CLASS Panel
 #---------------------------------
 
@@ -50,13 +57,13 @@ class Panel(Gtk.Table):
 				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
 				Gtk.AttachOptions.SHRINK, # y options
 				2,5); # horizontal and vertical paddings
-		ui_label = Gtk.Label("Automatic generation of pictures with translators")
+		ui_label = Gtk.Label(_T("Automatic generation of pictures with translators"))
 		ui_label.set_alignment(0, 0.5)
 		hbox.add(ui_label)
 		self._ui_is_figure_generated_checkbox = Gtk.Switch()
 		hbox.add(self._ui_is_figure_generated_checkbox)
 
-		self._ui_figure_path_label = Gtk.Label("Search paths for the pictures")
+		self._ui_figure_path_label = Gtk.Label(_T("Search paths for the pictures"))
 		self._ui_figure_path_label.set_alignment(0, 0.5)
 		self.attach(	self._ui_figure_path_label,
 				0,1,1,2, # left, right, top and bottom columns
@@ -188,7 +195,7 @@ class Panel(Gtk.Table):
 
 	# Invoked when the button "Add figure figure" was clicked
 	def on_figure_path_add_button_clicked(self, button, data=None):
-		dialog = Gtk.FileChooserDialog("Select a figure path", 
+		dialog = Gtk.FileChooserDialog(_T("Select a figure path"), 
 						self.window,
 						Gtk.FileChooserAction.SELECT_FOLDER,
 						[ Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,

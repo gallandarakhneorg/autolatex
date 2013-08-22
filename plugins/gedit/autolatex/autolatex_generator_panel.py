@@ -26,6 +26,13 @@ from gi.repository import GObject, Gdk, Gtk, GdkPixbuf
 import autolatex_utils as utils
 
 #---------------------------------
+# INTERNATIONALIZATION
+#---------------------------------
+
+import gettext
+_T = gettext.gettext
+
+#---------------------------------
 # CLASS GenerationType
 #---------------------------------
 
@@ -109,7 +116,7 @@ class Panel(Gtk.Table):
 		table_row = 0
 
 		if self._is_document_level:
-			ui_label = Gtk.Label("Main TeX file (optional)")
+			ui_label = Gtk.Label(_T("Main TeX file (optional)"))
 			ui_label.set_alignment(0, 0.5)
 			self.attach(	ui_label,
 					0,1,table_row,table_row+1, # left, right, top and bottom columns
@@ -131,13 +138,13 @@ class Panel(Gtk.Table):
 				Gtk.AttachOptions.SHRINK, # y options
 				2,5); # horizontal and vertical paddings
 		table_row = table_row + 1
-		ui_label = Gtk.Label("Execute the bibliography tool (BibTeX, Bibber...)")
+		ui_label = Gtk.Label(_T("Execute the bibliography tool (BibTeX, Bibber...)"))
 		ui_label.set_alignment(0, 0.5)
 		hbox.add(ui_label)
 		self._ui_run_biblio_checkbox = Gtk.Switch()
 		hbox.add(self._ui_run_biblio_checkbox)
 
-		ui_label = Gtk.Label("Type of generation")
+		ui_label = Gtk.Label(_T("Type of generation"))
 		ui_label.set_alignment(0, 0.5)
 		self.attach(	ui_label, 
 				0,1,table_row,table_row+1, # left, right, top and bottom columns
@@ -157,7 +164,7 @@ class Panel(Gtk.Table):
 				2,5); # horizontal and vertical paddings
 		table_row = table_row + 1
 
-		ui_label = Gtk.Label("Type of style for MakeIndex")
+		ui_label = Gtk.Label(_T("Type of style for MakeIndex"))
 		ui_label.set_alignment(0, 0.5)
 		self.attach(	ui_label, 
 				0,1,table_row,table_row+1, # left, right, top and bottom columns
@@ -167,11 +174,11 @@ class Panel(Gtk.Table):
 
 		self._ui_makeindex_type_combo = Gtk.ComboBoxText()
 		self._ui_makeindex_type_combo.set_name('makeindex_style_type')
-		self._ui_makeindex_type_combo.append_text("Specific '.ist' file")
-		self._ui_makeindex_type_combo.append_text("Autodetect the style inside the project directory")
-		self._ui_makeindex_type_combo.append_text("Use only the default AutoLaTeX style")
-		self._ui_makeindex_type_combo.append_text("No style is passed to MakeIndex")
-		self._ui_makeindex_type_combo.append_text("Custom definition by the user (do not change the original configuration)")
+		self._ui_makeindex_type_combo.append_text(_T("Specific '.ist' file"))
+		self._ui_makeindex_type_combo.append_text(_T("Autodetect the style inside the project directory"))
+		self._ui_makeindex_type_combo.append_text(_T("Use only the default AutoLaTeX style"))
+		self._ui_makeindex_type_combo.append_text(_T("No style is passed to MakeIndex"))
+		self._ui_makeindex_type_combo.append_text(_T("Custom definition by the user (do not change the original configuration)"))
 		self.attach(	self._ui_makeindex_type_combo, 
 				1,2,table_row,table_row+1, # left, right, top and bottom columns
 				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
@@ -179,7 +186,7 @@ class Panel(Gtk.Table):
 				2,5); # horizontal and vertical paddings
 		table_row = table_row + 1
 
-		label = "Style file for MakeIndex"
+		label = _T("Style file for MakeIndex")
 		self._ui_makeindex_file_label = Gtk.Label(label)
 		self._ui_makeindex_file_label.set_alignment(0, 0.5)
 		self.attach(	self._ui_makeindex_file_label, 

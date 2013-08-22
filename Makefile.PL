@@ -18,6 +18,7 @@ my $INSTALLDIRECTORY;
 my $BINDIRECTORY;
 my $ETCDIRECTORY;
 my $MANDIRECTORY;
+my $LOCALEDIRECTORY;
 my $STYDIRECTORY;
 my $GEDITPLUGINDIRECTORY;
 my $GSETTINGSSCHEMADIRECTORY;
@@ -25,6 +26,29 @@ my $GSETTINGSSCHEMADIRECTORY;
 sub dbg(@) {
 	use Data::Dumper;
 	die(Dumper(@_));
+}
+
+#------------------------------------------------------------------------------------------
+sub arrayContains(\@$) {
+	foreach my $e (@{$_[0]}) {
+		if ($_[1] eq $e) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+#------------------------------------------------------------------------------------------
+sub removeFromArray(\@@) {
+	my @tab2 = @_;
+	my $t = shift @tab2;
+	my @tab = ();
+	foreach my $e (@{$t}) {
+		if (!arrayContains(@tab2,$e)) {
+			push @tab, "$e";
+		}
+	}
+	@{$_[0]} = @tab;
 }
 
 #------------------------------------------------------------------------------------------
@@ -351,6 +375,7 @@ sub DO_compile(\%) {
 #------------------------------------------------------------------------------------------
 sub DO_install(\%) {
 	print "DO AUTOLATEX INSTALLATION...\n";
+	my @po_directories = getDirectoryBasenames('po');
 	if ($MODULES{'core'}) {
 		if (($_[0]->{'create-links'})&&($_[0]->{'create-bin-links'})) {
 			installLinkedBin('autolatex.pl', $INSTALLDIRECTORY,'autolatex');
@@ -403,11 +428,12 @@ sub DO_install(\%) {
 			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI','Gtk'),
 			getFiles('pm','AutoLaTeX','GUI','Gtk','*.pm'));
 
-		my @directories = getDirectoryBasenames('po');
-		foreach my $lang (@directories) {
+		foreach my $lang (@po_directories) {
+			my @files = getFiles('po',"$lang",'LC_MESSAGES','*.mo');
+			removeFromArray(@files, 'geditautolatex.mo');
 			installInto(
 				File::Spec->catfile($INSTALLDIRECTORY,'po',"$lang",'LC_MESSAGES'),
-				getFiles('po',"$lang",'LC_MESSAGES','*.mo'));
+				@files);
 		}
 
 		installInto(
@@ -430,16 +456,30 @@ sub DO_install(\%) {
 			getFiles('plugins', 'gedit','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'icons','24'),
-			getFiles('plugins', 'gedit','icons','24','*'));
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex'),
+			getFiles('plugins', 'gedit','autolatex','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'icons','16'),
-			getFiles('plugins', 'gedit','icons','16','*'));
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','icons','24'),
+			getFiles('plugins', 'gedit','autolatex','icons','24','*'));
+
+		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','icons','16'),
+			getFiles('plugins', 'gedit','autolatex','icons','16','*'));
 
 		installInto(
 			$GSETTINGSSCHEMADIRECTORY,
 			getFiles('schemas', '*.gschema.xml'));
+
+		installInto(
+			$GSETTINGSSCHEMADIRECTORY,
+			getFiles('schemas', '*.gschema.xml'));
+
+		foreach my $lang (@po_directories) {
+			install(
+				File::Spec->catfile('po',"$lang",'LC_MESSAGES','geditautolatex.mo'),
+				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
+		}
 	}
 }
 
@@ -604,6 +644,7 @@ if (("$^O" eq 'MSWin32')||
 	$BINDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex');
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'autolatex','man','english');
+	$LOCALEDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex', 'locale');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
 	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
 	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
@@ -628,6 +669,7 @@ else {
 	$BINDIRECTORY = File::Spec->catfile("$PREFIX",'bin');
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'man1');
+	$LOCALEDIRECTORY = File::Spec->catfile("$PREFIX",'share', 'locale');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
 	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex');
 	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');

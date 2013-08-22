@@ -65,6 +65,7 @@ use AutoLaTeX::Core::Main;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::OS;
 use AutoLaTeX::Core::Translator;
+use AutoLaTeX::Core::Config;
 
 sub readStdin() {
 	my $tmpfile = tmpnam();
@@ -87,6 +88,8 @@ sub readStdin() {
 }
 
 setDebugLevel(0);
+
+localeInit("$PERLSCRIPTDIR",'autolatex')
 
 my %currentConfiguration = mainProgram(0);
 

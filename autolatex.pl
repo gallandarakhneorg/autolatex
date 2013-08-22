@@ -562,6 +562,7 @@ sub al_run_makeflat {
 # script parameters
 my @ORIGINAL_ARGV = @ARGV;
 setDebugLevel(0);
+localeInit("$PERLSCRIPTDIR",'autolatex')
 %configuration = mainProgram(); # Exit on error
 
 if (getDebugLevel()>=6) {

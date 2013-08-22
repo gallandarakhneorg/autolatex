@@ -24,6 +24,13 @@
 from gi.repository import Gtk
 
 #---------------------------------
+# INTERNATIONALIZATION
+#---------------------------------
+
+import gettext
+_T = gettext.gettext
+
+#---------------------------------
 # CLASS Panel
 #---------------------------------
 
@@ -39,7 +46,7 @@ class Panel(Gtk.Table):
 		self.window = window
 
 		# Create the components
-		label = "Path to autolatex"
+		label = _T("Path to autolatex")
 		ui_label = Gtk.Label(label)
 		self.attach(ui_label, 
 				0,1,0,1, # left, right, top and bottom columns
@@ -54,7 +61,7 @@ class Panel(Gtk.Table):
 				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x options
 				Gtk.AttachOptions.SHRINK, # y options
 				0,0) # horizontal and vertical paddings
-		label = "Path to autolatex-backend"
+		label = _T("Path to autolatex-backend")
 		ui_label = Gtk.Label(label)
 		self.attach(ui_label, 
 				0,1,1,2, # left, right, top and bottom columns
@@ -98,7 +105,7 @@ class Panel(Gtk.Table):
 			gsettings_cmd = self._settings.get_autolatex_cmd()
 			window_cmd = self._ui_edit_autolatex_cmd.get_filename()
 			if gsettings_cmd != window_cmd:
-				dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "The path of AutoLaTeX has been changed by an external program. The new path is different from the one you have entered. Do you want to use the new path?")
+				dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, _T("The path of AutoLaTeX has been changed by an external program. The new path is different from the one you have entered. Do you want to use the new path?"))
 				answer = dialog.run()
 				dialog.destroy()
 				if  answer == Gtk.ResponseType.YES:
@@ -108,7 +115,7 @@ class Panel(Gtk.Table):
 			gsettings_cmd = self._settings.get_autolatex_backend_cmd()
 			window_cmd = self._ui_edit_autolatex_backend_cmd.get_filename()
 			if gsettings_cmd != window_cmd:
-				dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "The path of AutoLaTeX Backend has been changed by an external program. The new path is different from the one you have entered. Do you want to use the new path?")
+				dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, _T("The path of AutoLaTeX Backend has been changed by an external program. The new path is different from the one you have entered. Do you want to use the new path?"))
 				answer = dialog.run()
 				dialog.destroy()
 				if  answer == Gtk.ResponseType.YES:

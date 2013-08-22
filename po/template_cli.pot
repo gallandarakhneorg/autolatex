@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-20 18:42+0200\n"
+"POT-Creation-Date: 2013-08-22 20:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,47 +17,43 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: autolatex.pl:110
-msgid "Detecting images inside '{}'"
-msgstr ""
-
-#: autolatex.pl:240 autolatex.pl:253
+#: autolatex.pl:165 autolatex.pl:178
 msgid "The configuration entry '{}' is not defined."
 msgstr ""
 
-#: autolatex.pl:270 autolatex.pl:287
+#: autolatex.pl:195 autolatex.pl:212
 msgid "Launching '{}'"
 msgstr ""
 
-#: autolatex.pl:273 autolatex.pl:290
+#: autolatex.pl:198 autolatex.pl:215
 msgid "Launching '{}' in background"
 msgstr ""
 
-#: autolatex.pl:299
+#: autolatex.pl:224
 msgid "Unable to find a viewer."
 msgstr ""
 
-#: autolatex.pl:507
+#: autolatex.pl:432
 msgid "Removing all the temporary files"
 msgstr ""
 
-#: autolatex.pl:514
+#: autolatex.pl:439
 msgid "Removing all the temporary and generated files"
 msgstr ""
 
-#: autolatex.pl:658
+#: autolatex.pl:583
 msgid "Creating default project configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:662
+#: autolatex.pl:587
 msgid "Creating default user configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:671
+#: autolatex.pl:596
 msgid "Creating default makeindex style file...\n"
 msgstr ""
 
-#: autolatex.pl:750
+#: autolatex.pl:675
 msgid "Command line action '{}' is not supported."
 msgstr ""
 
@@ -289,19 +285,19 @@ msgstr ""
 msgid "Unselecting any style for MakeIndex"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:161
+#: pm/AutoLaTeX/Core/Translator.pm:162
 msgid "Translate {} to {} with {} alternative"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:167
+#: pm/AutoLaTeX/Core/Translator.pm:168
 msgid "Translate {} to {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:216
+#: pm/AutoLaTeX/Core/Translator.pm:217
 msgid "Get translator list from {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:303
+#: pm/AutoLaTeX/Core/Translator.pm:304
 msgid ""
 "Several possibilities exist for generating a figure from a {} file:\n"
 "{}\n"
@@ -315,71 +311,75 @@ msgid ""
 "{}\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:411
+#: pm/AutoLaTeX/Core/Translator.pm:412
 msgid "Get loadable translators from {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:425
+#: pm/AutoLaTeX/Core/Translator.pm:426
 msgid "Translator {} is ignored"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:506
+#: pm/AutoLaTeX/Core/Translator.pm:507
 msgid "Get translators from {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:638
+#: pm/AutoLaTeX/Core/Translator.pm:639
 msgid ""
 "The block for the variable '{}' is not closed. Keyword '{}' was not found "
 "({}:{})."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:782
+#: pm/AutoLaTeX/Core/Translator.pm:783
 msgid ""
 "You cannot call runTranslator() outside the call stack of runRootTranslator"
 "()."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:815
+#: pm/AutoLaTeX/Core/Translator.pm:816
 msgid "{}: file not found or not readable."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:854 pm/AutoLaTeX/Make/Make.pm:615
+#: pm/AutoLaTeX/Core/Translator.pm:855 pm/AutoLaTeX/Make/Make.pm:615
 #: pm/AutoLaTeX/Make/Make.pm:695 pm/AutoLaTeX/Make/Make.pm:739
 msgid "{} is up-to-date."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:860
+#: pm/AutoLaTeX/Core/Translator.pm:861
 msgid "{} -> {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:913
+#: pm/AutoLaTeX/Core/Translator.pm:914
 msgid ""
 "Error inthe TRANSLATOR_FUNCTION of '{}':\n"
 "{}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:917
+#: pm/AutoLaTeX/Core/Translator.pm:918
 msgid "Unable to find the method of translation for '{}'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:953
+#: pm/AutoLaTeX/Core/Translator.pm:954
 msgid "Searching translator '{}'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:974
+#: pm/AutoLaTeX/Core/Translator.pm:975
 msgid "The translator '{}' cannot be found."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:979
+#: pm/AutoLaTeX/Core/Translator.pm:980
 msgid "Linking '{}' to '{}'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:986
+#: pm/AutoLaTeX/Core/Translator.pm:987
 msgid "'{}' is already loaded."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:989
+#: pm/AutoLaTeX/Core/Translator.pm:990
 msgid "Loading translator '{}'."
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Translator.pm:1101
+msgid "Detecting images inside '{}'"
 msgstr ""
 
 #: pm/AutoLaTeX/Core/Util.pm:216 pm/AutoLaTeX/Core/Util.pm:249

@@ -9,6 +9,8 @@ xgettext -L perl -k_T --from-code=UTF-8 --files-from=po/POTFILES_ui.in -o po/tem
 
 xgettext -L perl -k_T --from-code=UTF-8 --files-from=po/POTFILES_gtk.in -o po/template_gtk.pot || exit 1
 
+xgettext -L python -k_T --from-code=UTF-8 --files-from=po/POTFILES_gedit.in -o po/template_gedit.pot || exit 1
+
 #############################################################
 echo "Updating the existing translations..."
 
@@ -25,4 +27,9 @@ done
 for PO_FILE in po/*/LC_MESSAGES/autolatexgtk.po
 do
 	msgmerge -U "$PO_FILE" "po/template_gtk.pot" || exit 1
+done
+
+for PO_FILE in po/*/LC_MESSAGES/geditautolatex.po
+do
+	msgmerge -U "$PO_FILE" "po/template_gedit.pot" || exit 1
 done

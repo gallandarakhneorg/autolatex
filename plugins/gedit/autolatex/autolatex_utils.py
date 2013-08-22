@@ -25,6 +25,7 @@ import os
 import subprocess
 import ConfigParser
 import StringIO
+import gettext
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import Gio
 
@@ -56,9 +57,14 @@ while os.path.islink(AUTOLATEX_PLUGIN_PATH):
 	AUTOLATEX_PLUGIN_PATH = p.resolve_relative_path(os.readlink(AUTOLATEX_PLUGIN_PATH)).get_path()
 AUTOLATEX_PLUGIN_PATH = os.path.dirname(AUTOLATEX_PLUGIN_PATH)
 
+# PO path
+AUTOLATEX_PO_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'po')
+if not os.path.exists(os.path.join(AUTOLATEX_PO_PATH, 'fr', 'LC_MESSAGES', 'geditautolatex.mo')):
+	AUTOLATEX_PO_PATH = '/usr/share/locale'
+
 # Binary file of AutoLaTeX
 # Use the development versions of the scripts
-AUTOLATEX_BINARY = os.path.join(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH)), 'autolatex.pl')
+AUTOLATEX_BINARY = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'autolatex.pl')
 if not os.path.exists(AUTOLATEX_BINARY):
 	AUTOLATEX_BINARY = which('autolatex')
 DEFAULT_AUTOLATEX_BINARY = AUTOLATEX_BINARY
@@ -68,11 +74,14 @@ if not os.path.exists(AUTOLATEX_BACKEND_BINARY):
 DEFAULT_AUTOLATEX_BACKEND_BINARY = AUTOLATEX_BACKEND_BINARY
 
 # Path where the icons are installed
-TOOLBAR_ICON_PATH = os.path.join(os.path.dirname(__file__), 'icons', '24')
-NOTEBOOK_ICON_PATH = os.path.join(os.path.dirname(__file__), 'icons', '16')
-TABLE_ICON_PATH = os.path.join(os.path.dirname(__file__), 'icons', '16')
+TOOLBAR_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '24')
+NOTEBOOK_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '16')
+TABLE_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '16')
 
 
+def init_internationalization():
+	gettext.bindtextdomain('geditautolatex', AUTOLATEX_PO_PATH)
+	gettext.textdomain('geditautolatex')
 
 def make_toolbar_icon_path(name):
 	return os.path.join(TOOLBAR_ICON_PATH, name)
