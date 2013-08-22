@@ -48,6 +48,9 @@ DESCRIPTION
     documentation on the use of AutoLaTeX as well as configuration and
     installation instructions.
 
+    AutoLaTeX provides several graphical user interfaces. See the section
+    below for details.
+
 TARGETS
     AutoLaTeX provides a fixed set of targets, the arguments to pass to
     AutoLaTeX to run a module, for all projects. The default target is all.
@@ -60,9 +63,6 @@ TARGETS
     biblio
         Performs all processing that permits to generate the bibliography
         (bibtex, biber...)
-
-    bibtex
-        Deprecated. See biblio.
 
     clean
         Cleans the current working directory by removing all LaTeX temp
@@ -100,11 +100,12 @@ TARGETS
     showimages
         Display the filenames of the figures.
 
+    showimagemap
+        Display the filenames of the figures, and for each of them, the
+        selected translator.
+
     showpath
         Show the value of the environment variable PATH
-
-    showvars
-        DEPRECATED.
 
     update
         Update the local copy with the changes from a SCM system (CVS, SVN,
@@ -128,9 +129,6 @@ OPTIONS
         Enable or disable the call to the bibliography tool (BibTeX,
         Biber...)
 
-    --[no]bibtex
-        Deprecated. See --nbiblio.
-
     --createconfig[=type]
         Do not compile the LaTeX document, but create a configuration file.
         The created configuration file depends on the type value. If the
@@ -148,9 +146,6 @@ OPTIONS
         Create a default MakeIndex style file into the project directory.
         The created file will be named 'default.ist'. If a file with this
         name already is existing, it will be overwritten.
-
-    --createmakefile
-        DEPRECATED.
 
     --defaultist
         Allow AutoLaTeX to use MakeIndex with the default style (ist file).
@@ -232,10 +227,6 @@ OPTIONS
 
         The options --index and --defaultist also permit to change the
         behavior of AutoLaTeX against MakeIndex.
-
-    -o=directory
-    --output=directory
-        DEPRECATED.
 
     --pdf
         Do the compilation to produce a PDF document.
@@ -736,10 +727,9 @@ CONFIGURATION FILE
     *generate images* : indicates if AutoLaTeX automatically generates the
     figures. Accepted values: yes or no
     *image directory* : Specify the directories inside which AutoLaTeX will
-    find the pictures which must be processed by the translators. Each time
-    this option is put on the command line, a directory is added inside the
-    list of the directories to explore. The different paths are separated by
-    the path-separator character (':' on Unix, ';' on Windows).
+    find the pictures which must be processed by the translators. The
+    different paths are separated by the path-separator character (':' on
+    Unix, ';' on Windows).
     *generation type* : indicates the type of generation. Accepted values:
 
         pdf - generate a PDF document
@@ -753,8 +743,9 @@ CONFIGURATION FILE
         xelatex - use xelatex
         lualatex - use lualatex
 
-    *makeindex style* : specifies the style that must be used by makeindex.
-    This is a list of values separated by comas. The values should be:
+    *makeindex style* : specifies the style that must be used by MakeIndex.
+    This is a list of values separated by comas, in the preference order.
+    The values should be:
 
         <filename> - if a filename was specified, AutoLaTeX assumes that it
         is the .ist file;
@@ -831,19 +822,28 @@ GRAPHIC USER INTERFACE
 
     The available user interfaces are:
 
-    autolatex-gtk : a GTK-based user interface.
+    gedit-autolatex-plugin: This is the *official* and up-to-date UI of
+    AutoLaTeX. A plugin for the lightweight editor Gedit
+    <https://projects.gnome.org/gedit> is provided. You could launch
+    AutoLaTeX and configure it through the differents provided panels.
+    autolatex-gtk: It is the first UI for AutoLaTeX written in Perl and
+    based on Gtk. It is now considered as *obsolete*, even still maintained.
+    You could launch AutoLaTeX and configure it through the differents
+    provided panels.
 
 BUG REPORT AND FEEDBACK
-    To report bugs, provide feedback, suggest new features, etc. visit the
-    AutoLaTeX Project management page at <http://www.arakhne.org/autolatex/>
-    or send email to the author at galland@arakhne.org.
+    To report bugs, provide feedback, suggest new features, etc. (in
+    prefered order): a) visit the developer site on GitHub
+    <https://github.com/gallandarakhneorg/autolatex/>, b) visit the
+    AutoLaTeX main page <http://www.arakhne.org/autolatex/>, or c) send
+    email to the main author at galland@arakhne.org.
 
 SYSTEM REQUIREMENTS
     AutoLaTeX may be directly used from any directory where it is
     uncompressed. But you may want to compile and install the additional
     files (manual...)
 
-    To configure and install AutoLaTeX, you will need GNU make.
+    To configure and install AutoLaTeX, you may need GNU make.
 
     You need to install the package Compress::Zlib to compile and install
     AutoLaTeX. This package is not required for the execution of AutoLaTeX.
@@ -872,6 +872,9 @@ INSTALLATION
     make install
 
     make clean
+
+    The file "INSTALL" gives more details on the installation, and it
+    provides other ways to compile/install AutoLaTeX.
 
 AUTOLATEX LICENSE
     GNU Public License (GPL)

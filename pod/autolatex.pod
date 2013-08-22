@@ -57,6 +57,9 @@ The remainder of this manual will provide complete
 documentation on the use of AutoLaTeX as well as
 configuration and installation instructions.
 
+AutoLaTeX provides several graphical user interfaces.
+See the section below for details.
+
 =head1 TARGETS
 
 AutoLaTeX provides a fixed set of targets, the arguments to
@@ -76,10 +79,6 @@ the configuration or the CLI is enabling the viewer.
 
 Performs all processing that permits to generate the
 bibliography (bibtex, biber...)
-
-=item B<bibtex>
-
-Deprecated. See B<biblio>.
 
 =item B<clean>
 
@@ -127,13 +126,13 @@ Performs all processing that permits to generate the index
 
 Display the filenames of the figures.
 
+=item B<showimagemap>
+
+Display the filenames of the figures, and for each of them, the selected translator.
+
 =item B<showpath>
 
 Show the value of the environment variable PATH
-
-=item B<showvars>
-
-DEPRECATED.
 
 =item B<update>
 
@@ -166,10 +165,6 @@ for its termination before stopping its execution.
 
 Enable or disable the call to the bibliography tool (BibTeX, Biber...)
 
-=item B<--[no]bibtex>
-
-Deprecated. See B<--nbiblio>.
-
 =item B<--createconfig[=S<type>]>
 
 Do not compile the LaTeX document, but create a
@@ -194,10 +189,6 @@ Create a default MakeIndex style file into the project
 directory. The created file will be named
 'default.ist'. If a file with this name already is
 existing, it will be overwritten.
-
-=item B<--createmakefile>
-
-DEPRECATED.
 
 =item B<--defaultist>
 
@@ -303,12 +294,6 @@ Avoid AutoLaTeX to use MakeIndex.
 
 The options --index and --defaultist also permit to
 change the behavior of AutoLaTeX against MakeIndex.
-
-=item B<-o=F<directory>>
-
-=item B<--output=F<directory>>
-
-DEPRECATED.
 
 =item B<--pdf>
 
@@ -1122,7 +1107,7 @@ The recognized directives are:
 
 =item I<generate images> : indicates if AutoLaTeX automatically generates the figures. Accepted values: F<yes> or F<no>
 
-=item I<image directory> : Specify the directories inside which AutoLaTeX will find the pictures which must be processed by the translators. Each time this option is put on the command line, a directory is added inside the list of the directories to explore. The different paths are separated by the path-separator character (F<':'> on Unix, F<';'> on Windows).
+=item I<image directory> : Specify the directories inside which AutoLaTeX will find the pictures which must be processed by the translators. The different paths are separated by the path-separator character (F<':'> on Unix, F<';'> on Windows).
 
 =item I<generation type> : indicates the type of generation. Accepted values:
 
@@ -1150,7 +1135,7 @@ The recognized directives are:
 
 =back
 
-=item I<makeindex style> : specifies the style that must be used by makeindex. This is a list of values separated by comas. The values should be:
+=item I<makeindex style> : specifies the style that must be used by MakeIndex. This is a list of values separated by comas, in the preference order. The values should be:
 
 =over 8
 
@@ -1240,19 +1225,24 @@ The available user interfaces are:
 
 =over 4
 
-=item B<autolatex-gtk> : a GTK-based user interface.
+=item B<gedit-autolatex-plugin>: This is the I<official> and up-to-date UI of AutoLaTeX. A plugin for the lightweight editor Gedit <https://projects.gnome.org/gedit> is provided. You could launch AutoLaTeX and configure it through the differents provided panels.
+
+=item B<autolatex-gtk>: It is the first UI for AutoLaTeX written in Perl and based on Gtk. It is now considered as I<obsolete>, even still maintained. You could launch AutoLaTeX and configure it through the differents provided panels.
 
 =back
 
 =head1 BUG REPORT AND FEEDBACK
 
-To report bugs, provide feedback, suggest new features, etc. visit the AutoLaTeX Project management page at <http://www.arakhne.org/autolatex/> or send email to the author at L<galland@arakhne.org>.
+To report bugs, provide feedback, suggest new features, etc. (in prefered order):
+a) visit the developer site on GitHub <https://github.com/gallandarakhneorg/autolatex/>,
+b) visit the AutoLaTeX main page <http://www.arakhne.org/autolatex/>, or
+c) send email to the main author at L<galland@arakhne.org>.
 
 =head1 SYSTEM REQUIREMENTS
 
 AutoLaTeX may be directly used from any directory where it is uncompressed. But you may want to compile and install the additional files (manual...) 
 
-To configure and install AutoLaTeX, you will need GNU make.
+To configure and install AutoLaTeX, you may need GNU make.
 
 You need to install the package Compress::Zlib to compile and install AutoLaTeX. This package is not required for the execution of AutoLaTeX. In addition, to compile AutoLaTeX, you need to install the 'msgfmt' command which is a part of 'gettext'.
 
@@ -1281,6 +1271,9 @@ F<make>
 F<make install>
 
 F<make clean>
+
+
+The file C<INSTALL> gives more details on the installation, and it provides other ways to compile/install AutoLaTeX.
 
 =head1 AUTOLATEX LICENSE
 

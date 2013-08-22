@@ -291,7 +291,7 @@ sub DO_compile(\%) {
 	my $poDirectory = File::Spec->catfile($_[0]->{'directory'},'po');
 
 	# Generate the READMEs
-	my $text_parser = Pod::Text->new('sentence'=>0,);
+	my $text_parser = Pod::Text->new('sentence'=>0, 'utf8'=>1);
 
 	opendir(*DIR, "$podDirectory") or die("$podDirectory: $!\n");
 	while (my $file = readdir(*DIR)) {
@@ -415,6 +415,7 @@ sub DO_install(\%) {
 			getFiles('pod','*.pod'));
 
 		installMan('pod/autolatex.1.gz');
+		installMan('pod/autolatex.fr.1.gz');
 	}
 
 	if ($MODULES{'sty'}) {
@@ -448,6 +449,7 @@ sub DO_clean(\%) {
 	#rm(File::Spec->catfile($_[0]->{'directory'},'README'));
 	rm(File::Spec->catfile($_[0]->{'directory'},'README_FR'));
 	rm(File::Spec->catfile($_[0]->{'directory'},'pod','autolatex.1.gz'));
+	rm(File::Spec->catfile($_[0]->{'directory'},'pod','autolatex.fr.1.gz'));
 
 	local *DIR;
 	local *DIR2;
