@@ -37,7 +37,7 @@ class Panel(Gtk.Table):
 
 	def __init__(self, is_document_level, directory, window):
 		Gtk.Table.__init__(self,
-				5, #rows
+				3, #rows
 				2, #columns
 				False) #non uniform
 		self._is_document_level = is_document_level
