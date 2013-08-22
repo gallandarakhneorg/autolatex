@@ -26,6 +26,7 @@ from gi.repository import Gtk, GdkPixbuf
 import autolatex_utils as utils
 import autolatex_generator_panel as generator_panel
 import autolatex_figure_panel as figure_panel
+import autolatex_figure_assignment_panel as figure_assignment_panel
 import autolatex_translator_panel as translator_panel
 import autolatex_viewer_panel as viewer_panel
 
@@ -87,6 +88,12 @@ class Window(Gtk.Dialog):
 				tab,
 				NotebookTab(
 					"Figures", "autolatex-images.png"))
+		if is_document_level:
+			tab = figure_assignment_panel.Panel(directory)
+			self._ui_notebook.append_page(
+					tab,
+					NotebookTab(
+						"List of figures", "autolatex-images.png"))
 		tab = translator_panel.Panel(is_document_level, directory)
 		self._ui_notebook.append_page(
 				tab,

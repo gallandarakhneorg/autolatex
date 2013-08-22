@@ -225,6 +225,9 @@ if ($a1 eq 'get') {
 				if (!$translators{$value->{'translator'}}{'automatic assignment'}) {
 					$translators{$value->{'translator'}}{'automatic assignment'} = [];
 				}
+				if (!$translators{$value->{'translator'}}{'overriden assignment'}) {
+					$translators{$value->{'translator'}}{'overriden assignment'} = [];
+				}
 				foreach my $file (@{$value->{'files'}}) {
 					my $absfile = File::Spec->rel2abs($file, $currentConfiguration{'__private__'}{'input.project directory'});
 					my $relfile = File::Spec->abs2rel($absfile, $currentConfiguration{'__private__'}{'input.project directory'});
@@ -232,6 +235,7 @@ if ($a1 eq 'get') {
 						if (!$reinjected_files{$files_to_convert{$absfile}}) {
 							$reinjected_files{$files_to_convert{$absfile}} = [];
 						}
+						push @{$translators{$value->{'translator'}}{'overriden assignment'}}, $relfile;
 						push @{$reinjected_files{$files_to_convert{$absfile}}}, $relfile;
 					}
 					else {
@@ -326,20 +330,19 @@ elsif ($a1 eq 'set') {
 	}
 	elsif ($a2 eq 'images' && @projectConfigurationPath) {
 		my %new_config = readStdin();
-		if ($a3 eq 'true') {
-			my @keys = keys %projectConfiguration;
-			foreach my $key (@keys) {
-				if ($key =~ /^[^2]+2[^+_]+(?:\+[^+_]+)*(?:_[^.]+)?\.(.+)$/) {
-					my $param = $1;
-					if ($param ne 'include module') {
-						delete $projectConfiguration{$key};
-					}
+		my @keys = keys %projectConfiguration;
+		foreach my $key (@keys) {
+			if ($key =~ /^[^2]+2[^+_]+(?:\+[^+_]+)*(?:_[^.]+)?\.(.+)$/) {
+				my $param = $1;
+				if (($a3 eq 'true' && $param ne 'include module') ||
+				    ($a3 ne 'true' && $param eq 'files to convert')) {
+					delete $projectConfiguration{$key};
 				}
 			}
 		}
 		while (my ($section, $v) = each(%new_config)) {
 			while (my ($key, $value) = each(%{$v})) {
-				if ($key ne 'automatic assignment') {
+				if ($key ne 'automatic assignment' && $key ne 'overriden assignment') {
 					$projectConfiguration{"$section.$key"} = $value;
 				}
 			}
