@@ -1,6 +1,7 @@
 [Plugin]
 Loader=python
 Module=autolatex
+Version=1.3.5
 IAge=3
 Name=AutoLaTeX
 Name[en_GB]=AutoLaTeX
@@ -8,8 +9,7 @@ Name[fr]=AutoLaTeX
 Description=Compile TeX documents with AutoLaTeX
 Description[en_GB]=Compile TeX documents with AutoLaTeX
 Description[fr]=Compiler des fichiers TeX avec AutoLaTeX
-Icon=gedit-plugin
-Author= Stéphane Galland <galland@arakhne.org>
+Icon=autolatex-icon
+Authors=Stéphane Galland  <galland@arakhne.org>
 Copyright=Copyright © 2013 Stéphane Galland
 Website=http://www.arakhne.org/autolatex
-Version=1.3.4
