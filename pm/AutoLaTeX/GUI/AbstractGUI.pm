@@ -44,7 +44,7 @@ use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Exporter;
 
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 
 #------------------------------------------------------
 #
@@ -53,7 +53,7 @@ use AutoLaTeX::Core::Locale;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "5.1" ;
+my $VERSION = "6.0" ;
 
 =pod
 
@@ -74,7 +74,7 @@ Parameters are:
 =cut
 sub setCommandLine($@) : method {
 	my $self = shift;
-	my $command = shift || $self->localeErr(_T("Command name not specified"));
+	my $command = shift || printErr(_T("Command name not specified"));
 	$self->{'ARGV'} = [ @_ ];
 	unshift @{$self->{'ARGV'}}, "$command";
 	$self->{'ARGV'};
@@ -125,7 +125,6 @@ fill the attribute C<{'DATA'}{'translators'}>.
 =cut
 sub initializeDialogContent() : method {
 	my $self = shift;
-	$self->initLocale('autolatexgui');
 }
 
 =pod

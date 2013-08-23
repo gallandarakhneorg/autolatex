@@ -64,7 +64,7 @@ use AutoLaTeX::Core::Main;
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::OS;
 use AutoLaTeX::Core::Config;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::Translator;
 use AutoLaTeX::Make::Make;
 use AutoLaTeX::TeX::Flattener;
@@ -162,7 +162,7 @@ sub al_run_commit {
 		system($configuration{'scm.scm commit'});
 	}
 	else {
-		printWarn(locGet(_T('The configuration entry \'{}\' is not defined.'), 'scm.scm commit'));
+		printWarn(formatText(_T('The configuration entry \'{}\' is not defined.'), 'scm.scm commit'));
 	}
 }
 
@@ -175,7 +175,7 @@ sub al_run_update {
 		system($configuration{'scm.scm update'});
 	}
 	else {
-		printWarn(locGet(_T('The configuration entry \'{}\' is not defined.'), 'scm.scm update'));
+		printWarn(formatText(_T('The configuration entry \'{}\' is not defined.'), 'scm.scm update'));
 	}
 }
 
@@ -192,10 +192,10 @@ sub al_view() {
 	my $isWaiting = !cfgBoolean($configuration{'viewer.asynchronous run'});
 	if ($configuration{'viewer.viewer'}) {
 		if ($isWaiting) {
-			printDbgFor(2, locGet(_T("Launching '{}'"), $configuration{'viewer.viewer'}));
+			printDbgFor(2, formatText(_T("Launching '{}'"), $configuration{'viewer.viewer'}));
 		}
 		else {
-			printDbgFor(2, locGet(_T("Launching '{}' in background"), $configuration{'viewer.viewer'}));
+			printDbgFor(2, formatText(_T("Launching '{}' in background"), $configuration{'viewer.viewer'}));
 		}
 		runCommandSilently(
 			{ 'wait' => $isWaiting },
@@ -209,10 +209,10 @@ sub al_view() {
 				if ($bin) {
 					$v = 1;
 					if ($isWaiting) {
-						printDbgFor(2, locGet(_T("Launching '{}'"), $bin));
+						printDbgFor(2, formatText(_T("Launching '{}'"), $bin));
 					}
 					else {
-						printDbgFor(2, locGet(_T("Launching '{}' in background"), $bin));
+						printDbgFor(2, formatText(_T("Launching '{}' in background"), $bin));
 					}
 					runCommandSilently(
 						{ 'wait' => $isWaiting },
@@ -221,7 +221,7 @@ sub al_view() {
 			}
 		}
 		if (!$v) {
-			printErr(locGet(_T('Unable to find a viewer.')));
+			printErr(formatText(_T('Unable to find a viewer.')));
 		}
 	}
 }
@@ -429,14 +429,14 @@ sub al_getcleanmorefiles() {
 sub al_run_clean {
 	my $i_ref = shift;
 	my ($a,$b) = al_getcleanfiles();
-	locDbg(_T("Removing all the temporary files"));
+	printDbg(_T("Removing all the temporary files"));
 	al_applyCleanRecursively(@$a,@$b);
 }
 
 sub al_run_cleanall {
 	my $i_ref = shift;
 
-	locDbg(_T("Removing all the temporary and generated files"));
+	printDbg(_T("Removing all the temporary and generated files"));
 
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
 	loadTranslatableImageList(%configuration,%autolatexData);
@@ -561,8 +561,11 @@ sub al_run_makeflat {
 
 # script parameters
 my @ORIGINAL_ARGV = @ARGV;
+
 setDebugLevel(0);
-localeInit("$PERLSCRIPTDIR",'autolatex')
+
+initTextDomain('autolatex', File::Spec->catfile(getAutoLaTeXDir(), 'po'), 'UTF-8');
+
 %configuration = mainProgram(); # Exit on error
 
 if (getDebugLevel()>=6) {
@@ -581,11 +584,11 @@ if (defined $configuration{'__private__'}{'action.create config file'}) {
 	my $filename;
         if (($configuration{'__private__'}{'action.create config file'})&&
             ($configuration{'__private__'}{'action.create config file'} eq 'project')) {
-                locDbg(_T("Creating default project configuration file...\n"));
+                printDbg(_T("Creating default project configuration file...\n"));
                 $filename = getProjectConfigFilename($configuration{'__private__'}{'output.directory'});
         }
         else {
-                locDbg(_T("Creating default user configuration file...\n"));
+                printDbg(_T("Creating default user configuration file...\n"));
                 $filename = getUserConfigFilename();
         }
         copy(getSystemConfigFilename(),"$filename") or printErr("$filename:", "$!");
@@ -594,7 +597,7 @@ if (defined $configuration{'__private__'}{'action.create config file'}) {
 
 # Run the action of the IST file generation
 if (defined($configuration{'__private__'}{'action.create ist file'})) {
-        locDbg(_T("Creating default makeindex style file...\n"));
+        printDbg(_T("Creating default makeindex style file...\n"));
         my $filename = File::Spec->catfile($configuration{'__private__'}{'output.directory'},"default.ist");
         copy(getSystemISTFilename(),"$filename") or printErr("$filename:","$!");
 	$optionalAction = 1;
@@ -673,7 +676,7 @@ for(my $i=0; $i<@ARGV; $i++) {
 		al_run_makeflat(\$i);
 	}
 	else {
-		printErr(locGet(_T('Command line action \'{}\' is not supported.'),$ARGV[$i]));
+		printErr(formatText(_T('Command line action \'{}\' is not supported.'),$ARGV[$i]));
 	}
 
 }

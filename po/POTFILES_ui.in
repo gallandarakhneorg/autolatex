@@ -1,9 +1,0 @@
-# List of source files containing translatable strings.
-
-# GUI     
-pm/AutoLaTeX/GUI/AbstractGeneralPanel.pm
-pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm
-pm/AutoLaTeX/GUI/AbstractToolPanel.pm
-pm/AutoLaTeX/GUI/WidgetUtil.pm
-pm/AutoLaTeX/GUI/AbstractGUI.pm
-

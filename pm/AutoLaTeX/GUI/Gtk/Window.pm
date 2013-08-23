@@ -52,7 +52,7 @@ use Glib qw(TRUE FALSE);
 use Gtk2 qw/-init -threads-init/;
 
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::GUI::AbstractGUI;
 use AutoLaTeX::GUI::Gtk::WidgetUtil;
 use AutoLaTeX::GUI::Gtk::ToolPanel;
@@ -66,7 +66,7 @@ use AutoLaTeX::GUI::Gtk::TranslatorPanel;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "6.0" ;
+my $VERSION = "7.0" ;
 
 #------------------------------------------------------
 #
@@ -118,7 +118,7 @@ sub new(\%\%\%\%) : method {
 	$self->attr('CONFIGURATIONS','PROJECT') = $_[3];
 
 	# Set the windows attributes
-	$self->set_title (locGet(_T("AutoLaTeX {}"),getAutoLaTeXVersion()));
+	$self->set_title (formatText(_T("AutoLaTeX {}"),getAutoLaTeXVersion()));
 	$self->connectSignal($self,'delete-event','onQuit');
 
 	return $self;
@@ -139,7 +139,7 @@ sub setAdminUser($) : method {
 		$title = "$1";
 	}
 	if ($_[0]) {
-		$title .= " ".$self->localeGet("*ADMINISTRATOR*");
+		$title .= " "._T("*ADMINISTRATOR*");
 	}
 	$self->set_title ("$title");
 }
@@ -230,8 +230,6 @@ sub initializeDialogContent() : method {
 
 	$self->SUPER::initializeDialogContent();
 
-	$self->initLocale('autolatexgtk');
-
 	# Main layout
 	my $mainLayout = Gtk2::Table->new (
 						2, #rows
@@ -266,7 +264,7 @@ sub initializeDialogContent() : method {
 	$toolTab->setAdminUser( $self->isAdminUser() );
 	$self->attr('NOTEBOOK_PANEL','toolPanel') = $toolTab;
 	$notebook->append_page($toolTab, $self->makeNotebookTab(
-				$self->localeGet(_T("Tools")), "tools.png"));
+				_T("Tools"), "tools.png"));
 
 	# Open the project configuration
 	if ($self->hasProject ()) {
@@ -276,7 +274,7 @@ sub initializeDialogContent() : method {
 		$projectConfTab->setAdminUser( $self->isAdminUser() );
 		$self->attr('NOTEBOOK_PANEL','projectConfiguration') = $projectConfTab;
 		$notebook->append_page($projectConfTab, $self->makeNotebookTab(
-				$self->localeGet(_T("Project Configuration")), "projectLevel.png"));
+				_T("Project Configuration"), "projectLevel.png"));
 	}
 
 	# Create the user configuration panel
@@ -286,7 +284,7 @@ sub initializeDialogContent() : method {
 	$userConfTab->setAdminUser( $self->isAdminUser() );
 	$self->attr('NOTEBOOK_PANEL','userConfiguration') = $userConfTab;
 	$notebook->append_page($userConfTab, $self->makeNotebookTab(
-				$self->localeGet(_T("User Configuration")), "userLevel.png"));
+				_T("User Configuration"), "userLevel.png"));
 
 	# Open the system configuration only if root
 	if ($self->isAdminUser ()) {
@@ -296,7 +294,7 @@ sub initializeDialogContent() : method {
 		$systemConfTab->setAdminUser( $self->isAdminUser() );
 		$self->attr('NOTEBOOK_PANEL','systemConfiguration') = $systemConfTab;
 		$notebook->append_page($systemConfTab, $self->makeNotebookTab(
-				$self->localeGet(_T("System Configuration")), "systemLevel.png"));
+				_T("System Configuration"), "systemLevel.png"));
 	}
 
 	# Create the translator panel
@@ -363,10 +361,10 @@ sub onTranslatorPanelStateChanged($$) {
 
 	my $tabTitle;
 	if ($conflict) {
-		$tabTitle = $self->makeNotebookTab($self->localeGet(_T("Translators")), "translators_err.png", "translators.png", "translators_err.png", "translators.png", "translators_err.png", "translators.png", "translators_err.png");
+		$tabTitle = $self->makeNotebookTab(_T("Translators"), "translators_err.png", "translators.png", "translators_err.png", "translators.png", "translators_err.png", "translators.png", "translators_err.png");
 	}
 	else {
-		$tabTitle = $self->makeNotebookTab($self->localeGet(_T("Translators")), "translators.png");
+		$tabTitle = $self->makeNotebookTab(_T("Translators"), "translators.png");
 	}
 
 	if ($self->hasattr('NOTEBOOK_PANEL','translatorConfiguration')) {
@@ -396,7 +394,7 @@ sub onNotebookPageChanged($$) {
 	if ($oldpagenum>=0) {
 		my $pageObj = $notebook->get_nth_page ($oldpagenum);
 		if ($pageObj->can('savePanelContent')) {
-			printDbgFor(3,locGet(_T("Saving hidden notebook panel")));
+			printDbgFor(3,_T("Saving hidden notebook panel"));
 			$pageObj->savePanelContent ();
 		}
 	}

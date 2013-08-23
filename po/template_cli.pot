@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-22 20:58+0200\n"
+"POT-Creation-Date: 2013-08-23 16:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,20 +41,68 @@ msgstr ""
 msgid "Removing all the temporary and generated files"
 msgstr ""
 
-#: autolatex.pl:583
+#: autolatex.pl:587
 msgid "Creating default project configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:587
+#: autolatex.pl:591
 msgid "Creating default user configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:596
+#: autolatex.pl:600
 msgid "Creating default makeindex style file...\n"
 msgstr ""
 
-#: autolatex.pl:675
+#: autolatex.pl:679
 msgid "Command line action '{}' is not supported."
+msgstr ""
+
+#: autolatex-backend.pl:379
+msgid "<section>"
+msgstr ""
+
+#: autolatex-backend.pl:380
+msgid ""
+"Output the configuration for the given level. If the 4th param is given, "
+"output only the section with this name."
+msgstr ""
+
+#: autolatex-backend.pl:383
+msgid "Output the list of the installed translators."
+msgstr ""
+
+#: autolatex-backend.pl:386
+msgid ""
+"Output the translators potentially under conflicts. If 'resolved' is given, "
+"apply the resolution mechanism."
+msgstr ""
+
+#: autolatex-backend.pl:389
+msgid "Output the loading directives for translators."
+msgstr ""
+
+#: autolatex-backend.pl:392
+msgid "Output the list of figures detected by AutoLaTeX."
+msgstr ""
+
+#: autolatex-backend.pl:395
+msgid ""
+"Read from STDIN an ini file that is a new configuration for the given level. "
+"The boolean param indicates if the configuration keys that are not given on "
+"STDIN will be removed (if true) or skipped (if false, the default) during "
+"the setting process."
+msgstr ""
+
+#: autolatex-backend.pl:398
+msgid "Read from STDIN an ini file for the loading directives of translators."
+msgstr ""
+
+#: autolatex-backend.pl:401
+msgid ""
+"Read from STDIN an ini file that is describing the attributes for the "
+"translators. The boolean param indicates if the configuration keys that are "
+"not given on STDIN will be removed (if true) or skipped (if false, the "
+"default) during the setting process."
 msgstr ""
 
 #: pm/AutoLaTeX/Core/Config.pm:63
@@ -184,35 +232,35 @@ msgstr ""
 msgid "Indicates if the viewer is launched in background, or not."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:459
+#: pm/AutoLaTeX/Core/Config.pm:448
 msgid "Opening configuration file {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:471
+#: pm/AutoLaTeX/Core/Config.pm:460
 msgid "Succeed on reading"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:474
+#: pm/AutoLaTeX/Core/Config.pm:463
 msgid "Failed to read {}: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:535
+#: pm/AutoLaTeX/Core/Config.pm:524
 msgid "Writing configuration file {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:546
+#: pm/AutoLaTeX/Core/Config.pm:535
 msgid "Adding configuration comments"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:560
+#: pm/AutoLaTeX/Core/Config.pm:549
 msgid "Configuration of the translator"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:574
+#: pm/AutoLaTeX/Core/Config.pm:563
 msgid "Saving configuration comments"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:639
+#: pm/AutoLaTeX/Core/Config.pm:628
 msgid ""
 "AutoLaTeX has detecting an old fashion syntax for the configuration file {}\n"
 "Please regenerate this file with the command line option --fixconfig."
@@ -247,15 +295,15 @@ msgstr ""
 msgid "Detecting several TeX files: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:305
+#: pm/AutoLaTeX/Core/Main.pm:311
 msgid "Detecting TeX file from project's configuration: '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:336
+#: pm/AutoLaTeX/Core/Main.pm:342
 msgid "Using TeX file '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:339
+#: pm/AutoLaTeX/Core/Main.pm:345
 msgid ""
 "No LaTeX file found nor specified for the directory '{}'.\n"
 " You must specify one on the command line option -f, or set the the variable "
@@ -263,25 +311,25 @@ msgid ""
 "'Main.tex'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:344
+#: pm/AutoLaTeX/Core/Main.pm:350
 msgid "Applying command line options"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:417
+#: pm/AutoLaTeX/Core/Main.pm:423
 msgid "Selecting project's style for MakeIndex: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:421
+#: pm/AutoLaTeX/Core/Main.pm:427
 msgid ""
 "Unable to selected a project's style for MakeIndex: no file or too many .ist "
 "files in directory {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:426
+#: pm/AutoLaTeX/Core/Main.pm:432
 msgid "Selecting the system default style for MakeIndex"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Main.pm:430
+#: pm/AutoLaTeX/Core/Main.pm:436
 msgid "Unselecting any style for MakeIndex"
 msgstr ""
 
@@ -321,6 +369,10 @@ msgstr ""
 
 #: pm/AutoLaTeX/Core/Translator.pm:507
 msgid "Get translators from {}"
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Translator.pm:633
+msgid "Line outside a definition ({}:{})."
 msgstr ""
 
 #: pm/AutoLaTeX/Core/Translator.pm:639
@@ -382,50 +434,62 @@ msgstr ""
 msgid "Detecting images inside '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:216 pm/AutoLaTeX/Core/Util.pm:249
+#: pm/AutoLaTeX/Core/Util.pm:171
+msgid ""
+"No read access to the VERSION file of AutoLaTeX. AutoLaTeX should not be "
+"properly installed. Assuming version: {}\n"
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Util.pm:175
+msgid ""
+"Unable to find the VERSION file of AutoLaTeX. AutoLaTeX should not be "
+"properly installed. Assuming version: {}\n"
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Util.pm:213 pm/AutoLaTeX/Core/Util.pm:246
 msgid "no manual page found\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:484 pm/AutoLaTeX/Core/Util.pm:503
-#: pm/AutoLaTeX/Core/Util.pm:531 pm/AutoLaTeX/Core/Util.pm:547
+#: pm/AutoLaTeX/Core/Util.pm:561 pm/AutoLaTeX/Core/Util.pm:580
+#: pm/AutoLaTeX/Core/Util.pm:596 pm/AutoLaTeX/Core/Util.pm:612
 msgid "[AutoLaTeX]"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:547
+#: pm/AutoLaTeX/Core/Util.pm:612
 msgid "Warning: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:574 pm/AutoLaTeX/Core/Util.pm:628
-#: pm/AutoLaTeX/Core/Util.pm:713 pm/AutoLaTeX/Core/Util.pm:755
+#: pm/AutoLaTeX/Core/Util.pm:639 pm/AutoLaTeX/Core/Util.pm:693
+#: pm/AutoLaTeX/Core/Util.pm:778 pm/AutoLaTeX/Core/Util.pm:820
 msgid ""
 "Command line is:\n"
 "{}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:578 pm/AutoLaTeX/Core/Util.pm:633
-#: pm/AutoLaTeX/Core/Util.pm:717
+#: pm/AutoLaTeX/Core/Util.pm:643 pm/AutoLaTeX/Core/Util.pm:698
+#: pm/AutoLaTeX/Core/Util.pm:782
 msgid "Can't redirect STDOUT: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:579 pm/AutoLaTeX/Core/Util.pm:634
-#: pm/AutoLaTeX/Core/Util.pm:718
+#: pm/AutoLaTeX/Core/Util.pm:644 pm/AutoLaTeX/Core/Util.pm:699
+#: pm/AutoLaTeX/Core/Util.pm:783
 msgid "Can't redirect STDERR: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:592 pm/AutoLaTeX/Core/Util.pm:647
-#: pm/AutoLaTeX/Core/Util.pm:652 pm/AutoLaTeX/TeX/Flattener.pm:111
+#: pm/AutoLaTeX/Core/Util.pm:657 pm/AutoLaTeX/Core/Util.pm:712
+#: pm/AutoLaTeX/Core/Util.pm:717 pm/AutoLaTeX/TeX/Flattener.pm:111
 #: pm/AutoLaTeX/Make/Make.pm:515 pm/AutoLaTeX/Make/Make.pm:631
 #: pm/AutoLaTeX/Make/Make.pm:964 pm/AutoLaTeX/Make/Make.pm:969
 #: pm/AutoLaTeX/Make/Make.pm:989
 msgid "{}: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:603 pm/AutoLaTeX/Core/Util.pm:671
-#: pm/AutoLaTeX/Core/Util.pm:735 pm/AutoLaTeX/Core/Util.pm:770
+#: pm/AutoLaTeX/Core/Util.pm:668 pm/AutoLaTeX/Core/Util.pm:736
+#: pm/AutoLaTeX/Core/Util.pm:800 pm/AutoLaTeX/Core/Util.pm:835
 msgid "Unable to fork for the system command: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Util.pm:809
+#: pm/AutoLaTeX/Core/Util.pm:874
 msgid "Waiting for system command sub-processes"
 msgstr ""
 

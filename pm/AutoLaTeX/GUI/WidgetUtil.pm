@@ -47,7 +47,7 @@ use Exporter;
 use File::Basename;
 use File::Spec;
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 
 #------------------------------------------------------
 #
@@ -56,118 +56,13 @@ use AutoLaTeX::Core::Locale;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "5.1" ;
-
-# List of locales
-my %LOCALES = ();
+my $VERSION = "6.0" ;
 
 #------------------------------------------------------
 #
 # Functions
 #
 #------------------------------------------------------
-
-=pod
-
-=item * initLocale($;$)
-
-Initialize a locale for this object.
-
-=over 4
-
-=item the name of the locale domain
-
-=item the directory where are stored the locale files. If not given, assume "autolatex_dir/po"
-
-=back
-
-=cut
-sub initLocale($;$) {
-	my $self = shift;
-	my $domain = shift || die('you must specify a locale domain');;
-	my $directory = shift;
-
-	unless (exists $LOCALES{"$domain"}) {
-		$directory = File::Spec->catfile (getAutoLaTeXDir(), 'po')
-			unless ($directory);
-		my $locale = AutoLaTeX::Core::Locale->new($directory,$domain);
-		$LOCALES{"$domain"} = $locale;
-	}
-}
-
-=pod
-
-=item * localeGet($@)
-
-Replies a localized message.
-
-The substrings C<$0>, C<$1>, C<$2>... will be substituted by
-the corresponding values passed in parameters after the message id.
-
-The substrings C<${0}>, C<${1}>, C<${2}>... will be substituted by
-the corresponding values passed in parameters after the message id.
-
-The substrings C<#0>, C<#1>, C<#2>... will be substituted by
-the corresponding values passed in parameters after the message id.
-
-The substrings C<#{0}>, C<#{1}>, C<#{2}>... will be substituted by
-the corresponding values passed in parameters after the message id.
-
-The substrings C<{}> will be replaced by the value passed in parameters
-that corresponds to the C<{}>, e.g. the first C<{}> will be replaced by the
-first value, the second C<{}> by the second value...
-
-=over 4
-
-=item the id of the string
-
-=item the list of substitution values.
-
-=back
-
-I<Returns:> the localized string.
-
-=cut
-sub localeGet($@) {
-	my $self = shift;
-	my $msgId = shift;
-	if (%LOCALES) {
-		my $msg;
-		foreach my $localeServer (values %LOCALES) {
-			$msg = $localeServer->getRaw ($msgId);
-			if (($msg)&&($msg ne $msgId)) {
-				return localeSubstitute ($msg,@_);
-			}
-		}
-	}
-	return localeSubstitute($msgId,@_);
-}
-
-=pod
-
-=item * localeDbg($@)
-
-Equivalent to printDbg($self->localeGet).
-
-=cut
-sub localeDbg($@) {
-	my $self = shift;
-	my $msgId = shift;
-	printDbg($self->localeGet($msgId,@_));
-}
-
-=pod
-
-=item * localeErr($@)
-
-Equivalent to printErr($self->localeGet).
-
-=cut
-sub localeErr($@) {
-	my $self = shift;
-	my $msgId = shift;
-	printErr($self->localeGet($msgId,@_));
-}
 
 =pod
 

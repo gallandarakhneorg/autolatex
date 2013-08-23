@@ -51,7 +51,7 @@ use File::Basename;
 
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::Main;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::GUI::AbstractToolPanel;
 use AutoLaTeX::GUI::Gtk::WidgetUtil;
 
@@ -62,7 +62,7 @@ use AutoLaTeX::GUI::Gtk::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "6.0" ;
+my $VERSION = "7.0" ;
 
 # Available commands
 my @LAUNCH_COMMAND_ORDER = ( 'gnome', 'kde', 'stdout' );
@@ -70,12 +70,6 @@ my %LAUNCH_COMMANDS = (
 	'gnome' => [ 'gnome-terminal', '-x', 'autolatex' ],
 	'kde' => [ 'konsole', '-e', 'autolatex' ],
 	'stdout' => [ 'autolatex' ],
-	);
-my %LAUNCH_COMMAND_LIST_ORIG = (
-	_T('01_No prefered launcher, use first available') => 'none',
-	_T('02_Gnome terminal') => 'gnome',
-	_T('03_KDE console') => 'kde',
-	_T('04_No graphical terminal') => 'stdout',
 	);
 my %LAUNCH_COMMAND_LIST = ();
 
@@ -129,7 +123,7 @@ sub initControls() : method {
 	my $self = shift;
 
 	# Build components
-	my $filenameLabel = Gtk2::Label->new ($self->localeGet(_T("Main TeX file:")));
+	my $filenameLabel = Gtk2::Label->new (_T("Main TeX file:"));
 	$self->attach ($filenameLabel, 
 				0,1,0,1, # left, right, top and bottom columns
 				'shrink','shrink', # x and y options
@@ -141,7 +135,7 @@ sub initControls() : method {
 				['fill','expand'],'shrink', # x and y options
 				20,20); # horizontal and vertical paddings
 
-	my $preferedUILabel = Gtk2::Label->new ($self->localeGet(_T("Prefered Launcher:")));
+	my $preferedUILabel = Gtk2::Label->new (_T("Prefered Launcher:"));
 	$self->attach ($preferedUILabel, 
 				0,1,1,2, # left, right, top and bottom columns
 				'shrink','shrink', # x and y options
@@ -169,19 +163,19 @@ sub initControls() : method {
 	$self->connectSignal($compileButton,'clicked','onCompileButtonClicked');
 	$buttonList->add ($compileButton);	
 
-	my $cleanCompileButton = Gtk2::Button->new_with_label ($self->localeGet(_T("Clean and Execute")));
+	my $cleanCompileButton = Gtk2::Button->new_with_label (_T("Clean and Execute"));
 	$cleanCompileButton->set_image (Gtk2::Image->new_from_stock ('gtk-execute', 'button'));
 	$self->attr('CONTROLS','CLEAN_COMPILE_BUTTON') = $cleanCompileButton;
 	$self->connectSignal($cleanCompileButton,'clicked','onCleanCompileButtonClicked');
 	$buttonList->add ($cleanCompileButton);	
 
-	my $cleanButton = Gtk2::Button->new_with_label ($self->localeGet(_T("Clean")));
+	my $cleanButton = Gtk2::Button->new_with_label (_T("Clean"));
 	$cleanButton->set_image (Gtk2::Image->new_from_file ($self->getIconPath('clean.png')));
 	$self->attr('CONTROLS','CLEAN_BUTTON') = $cleanButton;
 	$self->connectSignal($cleanButton,'clicked','onCleanButtonClicked');
 	$buttonList->add ($cleanButton);	
 
-	my $cleanallButton = Gtk2::Button->new_with_label ($self->localeGet(_T("Clean all")));
+	my $cleanallButton = Gtk2::Button->new_with_label (_T("Clean all"));
 	$cleanallButton->set_image (Gtk2::Image->new_from_file ($self->getIconPath('cleanall.png')));
 	$self->attr('CONTROLS','CLEANALL_BUTTON') = $cleanallButton;
 	$self->connectSignal($cleanallButton,'clicked','onCleanallButtonClicked');
@@ -203,18 +197,11 @@ sub initializeToolPanel() : method {
 	my $self = shift;
 	$self->SUPER::initializeToolPanel();
 
-	$self->initLocale('autolatexgtk');
-
 	unless (%LAUNCH_COMMAND_LIST) {
-		while (my ($k,$v) = each(%LAUNCH_COMMAND_LIST_ORIG)) {
-			if ($k =~ /^([0-9]+_)(.*)$/) {
-				$k = "$1".$self->localeGet("$2");
-			}
-			else {
-				$k = $self->localeGet("$k");
-			}
-			$LAUNCH_COMMAND_LIST{"$k"} = $v;
-		}
+		$LAUNCH_COMMAND_LIST{'01_'._T('No prefered launcher, use first available')} = 'none';
+		$LAUNCH_COMMAND_LIST{'02_'._T('Gnome terminal')} = 'gnome';
+		$LAUNCH_COMMAND_LIST{'03_'._T('KDE console')} = 'kde';
+		$LAUNCH_COMMAND_LIST{'04_'._T('No graphical terminal')} = 'stdout';
 	}
 
 	$self->initControls();
@@ -249,7 +236,7 @@ Save the GUI configuration inside the specified configuration.
 sub saveGUIConfiguration(\%) {
 	my $self = shift;
 	my $preferedUI = $self->attr('CONFIGURATION','gtk.preferred launcher');
-	printDbgFor(4,locGet(_T("Preferred launcher: {}"), $preferedUI));
+	printDbgFor(4,formatText(_T("Preferred launcher: {}"), $preferedUI));
 	$_[0]->{'gtk.preferred launcher'} = $preferedUI;
 }
 
@@ -298,7 +285,7 @@ Launching AutoLaTeX inside a child process.
 sub launchAutoLaTeX(@) : method {
 	my $self = shift;
 
-	$self->localeDbg(_T("Launching AutoLaTeX with parameters: {}"),join(' ',@_));
+	printDbg(formatText(_T("Launching AutoLaTeX with parameters: {}"),join(' ',@_)));
 	printDbgIndent();
 
 	$self->attr('CONTROLS','COMPILE_BUTTON')->set_sensitive (FALSE);
@@ -311,10 +298,10 @@ sub launchAutoLaTeX(@) : method {
 
 	my $preferedUI = $self->attr('CONFIGURATION','gtk.preferred launcher');
 	if (($preferedUI)&&(exists $LAUNCHERS{"$preferedUI"})) {
-		$self->localeDbg(_T("trying prefered launcher: {}"), $preferedUI);
+		printDbg(formatText(_T("trying prefered launcher: {}"), $preferedUI));
 		my $command = $LAUNCHERS{"$preferedUI"};
 		if (runSystemCommand($self,@{$command}, @_) == 0) {
-			$self->localeDbg(_T("launch succeeded"));
+			printDbg(_T("launch succeeded"));
 			$succeed = 1;
 		}
 		delete $LAUNCHERS{"$preferedUI"};
@@ -323,10 +310,10 @@ sub launchAutoLaTeX(@) : method {
 	unless ($succeed) {
 		foreach my $cmdlabel (@LAUNCH_COMMAND_ORDER) {
 			if (exists $LAUNCHERS{"$cmdlabel"}) {
-				$self->localeDbg(_T("trying {}"),$cmdlabel);
+				printDbg(formatText(_T("trying {}"),$cmdlabel));
 				my $command = $LAUNCHERS{"$cmdlabel"};
 				if (runSystemCommand($self,@{$command}, @_) == 0) {
-					$self->localeDbg(_T("launch succeeded"));
+					printDbg(_T("launch succeeded"));
 					$succeed = 1;
 					last;
 				}

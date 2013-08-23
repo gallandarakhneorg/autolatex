@@ -2,10 +2,11 @@
 
 # Main program
 autolatex.pl
+autolatex-backend.pl
 
 # Core libraries
 pm/AutoLaTeX/Core/Config.pm
-pm/AutoLaTeX/Core/Locale.pm
+pm/AutoLaTeX/Core/IntUtils.pm
 pm/AutoLaTeX/Core/Main.pm
 pm/AutoLaTeX/Core/OS.pm
 pm/AutoLaTeX/Core/Translator.pm

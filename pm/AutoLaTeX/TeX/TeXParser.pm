@@ -106,7 +106,7 @@ use Exporter;
 use Carp ;
 
 use AutoLaTeX::Core::Util ;
-use AutoLaTeX::Core::Locale ;
+use AutoLaTeX::Core::IntUtils ;
 
 #------------------------------------------------------
 #
@@ -115,7 +115,7 @@ use AutoLaTeX::Core::Locale ;
 #------------------------------------------------------
 
 # Version number of the parser
-my $VERSION = "4.0" ;
+my $VERSION = "5.0" ;
 
 # Definition of the default text-mode macros
 my %TEX_DEFAULT_TEXT_MODE_MACROS = (
@@ -598,7 +598,7 @@ sub parse($;$) : method {
 				if ($self->is_math_mode()) {
 					if (!$isMath) {
 						$self->warning(
-							locGet(_T("you cannot use in text mode the active character '{}', which is defined in math mode"), $sep),
+							formatText(_T("you cannot use in text mode the active character '{}', which is defined in math mode"), $sep),
 							$lineno) ;
 						if (__isset($sep)) {
 							$self->callListener( 'outputString', undef, $sep ) ;
@@ -614,7 +614,7 @@ sub parse($;$) : method {
 				else {
 					if (!$isText) {
 						$self->warning(
-							locGet(_T("you cannot use in math mode the active character '{}', which is defined in text mode"), $sep),
+							formatText(_T("you cannot use in math mode the active character '{}', which is defined in text mode"), $sep),
 							$lineno) ;
 						if (__isset($sep)) {
 							$self->callListener( 'outputString', undef, $sep ) ;
@@ -799,7 +799,7 @@ sub parse_cmd($$;$) : method {
 		($expandTo,$tex) = $self->run_cmd( $cmd_prefix.$cmdname, $trans, $tex, $lineno ) ;
 	}
 	else {
-		$self->warning( locGet(_T("invalid syntax for the TeX command: {}"),$cmd_prefix.$_[0]),
+		$self->warning( formatText(_T("invalid syntax for the TeX command: {}"),$cmd_prefix.$_[0]),
 		                    $lineno ) ;
 	}
 
@@ -841,7 +841,7 @@ sub parse_active_char($$) : method {
 		($expandTo,$tex) = $self->run_cmd( $activeChar, $trans, $tex, $lineno ) ;
 	}
 	else {
-		$self->warning( locGet(_T("invalid syntax for the TeX active character: {}"), $_[0]),
+		$self->warning( formatText(_T("invalid syntax for the TeX active character: {}"), $_[0]),
 		                    $lineno ) ;
 		$expandTo = substr($tex,0,1) || '' ;
 		$tex = substr($tex,1) || '' ;
@@ -924,13 +924,13 @@ sub search_cmd_trans($$;$) : method {
 		}
 	}
 
-	printDbgFor(5, locGet(_T('Found parameter definition for \'{}\': math={}; text={}'), $_[0], 
+	printDbgFor(5, formatText(_T('Found parameter definition for \'{}\': math={}; text={}'), $_[0], 
 			(defined($math) ? $math : '<undef>'), (defined($text) ? $text : '<undef>')));
 
 	if ( $found_math || $found_text ) {
 		if ( $self->is_math_mode() ) {
 			if ( ! $found_math ) {
-				$self->warning( locGet(_T("the command {}{} was not defined for math-mode, assumes to use the text-mode version instead"), ( $special ? '' : '\\' ), $_[0]),
+				$self->warning( formatText(_T("the command {}{} was not defined for math-mode, assumes to use the text-mode version instead"), ( $special ? '' : '\\' ), $_[0]),
 					$lineno ) ;
 				return $text ;
 			}
@@ -939,7 +939,7 @@ sub search_cmd_trans($$;$) : method {
 			}
 		}
 		elsif ( ! $found_text ) {
-			$self->warning( locGet(_T("the command {}{}  was not defined for text-mode, assumes to use the math-mode version instead"), ( $special ? '' : '\\' ), $_[0]),
+			$self->warning( formatText(_T("the command {}{}  was not defined for text-mode, assumes to use the math-mode version instead"), ( $special ? '' : '\\' ), $_[0]),
 			      $lineno ) ;
 			return $math ;
 		}
@@ -991,7 +991,7 @@ sub run_cmd($$$$) : method {
 
 	if ( $_[1] ) {
 		# This macro has params
-		printDbgFor(5, locGet(_T('Expanding \'{}\''), $cmdname));
+		printDbgFor(5, formatText(_T('Expanding \'{}\''), $cmdname));
 		($tex,my $params, my $rawparams) = $self->eat_cmd_parameters( $_[1], $tex, $cmdname, $lineno ) ;
 		# Apply the macro
 		$expandTo = $self->callListener('expandMacro', 
@@ -1000,7 +1000,7 @@ sub run_cmd($$$$) : method {
 	}
 	else {
 		# No param, put the HTML string inside the output stream
-		printDbgFor(5, locGet(_T('Expanding \'{}\''), $cmdname));
+		printDbgFor(5, formatText(_T('Expanding \'{}\''), $cmdname));
 		$expandTo = $self->callListener('expandMacro', 
 					$cmdname,
 					$cmdname);
@@ -1042,7 +1042,7 @@ sub eat_cmd_parameters($$$$) : method {
 	my $lineno = $_[3] || 0 ;
 	my @params = () ;
 	my $rawparams = '';
-	printDbgFor(5, locGet(_T('Macro prototype of \'{}\': {}'), $macro, $p_params));
+	printDbgFor(5, formatText(_T('Macro prototype of \'{}\': {}'), $macro, $p_params));
 	while ( $p_params =~ /((?:\!?\{\})|(?:\!?\[[^\]]*\])|-|\\)/sg ) {
 		my $p = $1 ;
 		# Eats no significant white spaces
@@ -1113,7 +1113,7 @@ sub eat_cmd_parameters($$$$) : method {
 				my $msg = substr($tex, 0, 50);
 				$msg =~ s/[\n\r]/\\n/sg;
 				$msg =~ s/\t/\\t/sg;
-				$msg = locGet(_T("expected a TeX macro for expanding the macro {}, here: '{}'"), $macro, $msg);
+				$msg = formatText(_T("expected a TeX macro for expanding the macro {}, here: '{}'"), $macro, $msg);
 				$self->printWarn($msg, $lineno ) ;
 				push @params, { 'eval' => 1,
 						'text' => '',
@@ -1129,7 +1129,7 @@ sub eat_cmd_parameters($$$$) : method {
 			$rawparams .= "$context";
 		}
 		else {
-			confess( locGet(_T("unable to recognize the following argument specification: {}"), $p) ) ;
+			confess( formatText(_T("unable to recognize the following argument specification: {}"), $p) ) ;
 		}
 	}
 	return ($tex,\@params,$rawparams) ;

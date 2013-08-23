@@ -1,4 +1,3 @@
-# autolatex - Util.pm
 # Copyright (C) 1998-13  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -37,16 +36,17 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Util;
 
-$VERSION = '2.0';
+$VERSION = '3.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
               &getAutoLaTeXName &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
               &setAutoLaTeXInfo &showManual &printDbg &printErr &printWarn &setDebugLevel 
 	      &getDebugLevel &printDbgFor &dumpDbgFor &arrayIndexOf &printDbgIndent
 	      &printDbgUnindent &runCommandOrFail &runSystemCommand
-              &notifySystemCommandListeners &locDbg &exitDbg &addSlashes
+              &notifySystemCommandListeners &exitDbg &addSlashes
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
-	      &runCommandSilently &removePathPrefix &trim ) ;
+	      &runCommandSilently &removePathPrefix &trim &formatText
+	      &makeMessage &makeMessageLong ) ;
 @EXPORT_OK = qw();
 
 use strict;
@@ -57,7 +57,7 @@ use POSIX ":sys_wait_h";
 use Carp;
 use Data::Dumper;
 
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 
 my $autoLaTeXName = undef;
 my $autoLaTeXDirectory = undef;
@@ -153,9 +153,6 @@ sub setAutoLaTeXInfo($$$) {
 	$autoLaTeXName = "$_[1]";
 	$autoLaTeXDirectory = File::Spec->rel2abs("$_[2]");
 
-	# Set the local directory
-	localeInit("$autoLaTeXDirectory");
-
 	# Detect the version number
 	my $versionFile = File::Spec->catfile($autoLaTeXDirectory,'VERSION');
 	if (-f "$versionFile") {
@@ -171,11 +168,11 @@ sub setAutoLaTeXInfo($$$) {
 			close(*VERSIONFILE);
 		}
 		else {
-			print STDERR locGet("No read access to the VERSION file of AutoLaTeX. AutoLaTeX should not be properly installed. Assuming version: {}\n",$autoLaTeXVersion);
+			print STDERR formatText(_T("No read access to the VERSION file of AutoLaTeX. AutoLaTeX should not be properly installed. Assuming version: {}\n"),$autoLaTeXVersion);
 		}
 	}
 	else {
-		print STDERR locGet("Unable to find the VERSION file of AutoLaTeX. AutoLaTeX should not be properly installed. Assuming version: {}\n", $autoLaTeXVersion);
+		print STDERR formatText(_T("Unable to find the VERSION file of AutoLaTeX. AutoLaTeX should not be properly installed. Assuming version: {}\n"), $autoLaTeXVersion);
 	}
 }
 
@@ -213,7 +210,7 @@ sub showManual(@) {
 		my ($localePod,$localeLang);
 		local *DIR;
 		opendir(*DIR,File::Spec->catfile(@_))
-			or die(locGet(_T("no manual page found\n")));
+			or die(_T("no manual page found\n"));
 		while (my $file = readdir(*DIR)) {
 			if (($file ne '.')&&($file ne '..')) {
 				if ($file =~ /^\Q$filename\E[._\-]\Q$currentLocale$ext\E$/) {
@@ -246,7 +243,7 @@ sub showManual(@) {
 			exit(0);
 		}
 	}
-	print STDERR locGet(_T("no manual page found\n"));
+	print STDERR _T("no manual page found\n");
 	exit(255);
 }
 
@@ -387,27 +384,107 @@ sub removeFromArray(\@@) {
 	@{$_[0]} = @tab;
 }
 
-sub makeMessage($$@) {
-	my $limit = shift;
-	my $indent = shift;
-	my @part = split(/\n/, join(' ',@_));
+=pod
+
+=item B<makeMessageLong(\%@)>
+
+Cut the given string at the given column.
+
+I<The supported keys of the first parameter are:>
+
+=over 8
+
+=item * limit: is the maximal number of characters per lines.
+
+=item * indent: is the number of white spaces to add at the beginning of each line.
+
+=item * prefix_nosplit: is the text to put at the beginning of a line, before any spliting.
+
+=item * prefix_split: is the text to put at the beginning of a line, after spliting.
+
+=item * postfix_split: is the text to put at the end of a line, when spliting.
+
+=item * indent_char: is the character to use as the indentation unit.
+
+=back
+
+I<Returns:> the given strings, restricted to the given limit for each line.
+
+=cut
+sub makeMessageLong(\%@) {
+	my $params = shift;
+	my $limit = $params->{'limit'};
+	my $indent = $params->{'indent'};
+	my $prefix_nosplit = $params->{'prefix_nosplit'} || '';
+	my $prefix_split = $params->{'prefix_split'} || '';
+	my $postfix_split = $params->{'postfix_split'} || '';
+	my $indent_char = $params->{'indent_char'} || ' ';
 	$limit -= $indent;
 	my $indentstr = '';
 	while (length($indentstr)<$indent) {
-		$indentstr .= ' ';
+		$indentstr .= $indent_char;
 	}
 	my @text = ();
-	foreach my $p (@part) {
+	my @lines = split(/\n/, join(' ',@_));
+	foreach my $line (@lines) {
+		my @words = split(/\s+/, $line);
 		my $splitted = undef;
-		while (length("$p")>$limit) {
-			push @text, ($splitted?'>':' ').$indentstr.substr("$p", 0, $limit)."[...]";
-			$p = substr("$p", $limit);
-			$splitted = 1;
+		my $currentLine = '';
+		for(my $i=0; $i<@words; $i++) {
+			my $word = $words[$i];
+			if (!$currentLine) {
+				$currentLine = $prefix_nosplit.$indentstr.$word;
+			}
+			elsif ((length($currentLine)+length($word)+1)>$limit) {
+				$currentLine .= $postfix_split;
+				push @text, $currentLine;
+				$currentLine = $prefix_split.$indentstr.$word;
+			}
+			else {
+				$currentLine .= ' '.$word;
+			}
 		}
-		push @text, ($splitted?'>':' ').$indentstr."$p" if ($p);
+		if ($currentLine) {
+			push @text, $currentLine;
+		}
+		@words = undef;
 	}
-	@part = undef;
+	@lines = undef;
 	return @text;
+}
+
+=pod
+
+=item B<makeMessage($$@)>
+
+Cut the given string at the given column.
+
+I<Parameters:>
+
+=over 8
+
+=item * limit: is the maximal number of characters per lines.
+
+=item * indent: is the number of white spaces to add at the beginning of each line.
+
+=item * rest of the parameters: are the strings to output.
+
+=back
+
+I<Returns:> the given strings, restricted to the given limit for each line.
+
+=cut
+sub makeMessage($$@) {
+	my $limit = shift;
+	my $indent = shift;
+	my %params = (	'limit' => $limit,
+			'indent' => $indent,
+			'prefix_nosplit' => '',
+			'prefix_split' => '...',
+			'postfix_split' => '...',
+			'indent_char' => ' ',
+	);
+	return makeMessageLong(%params, @_);
 }
 
 =pod
@@ -508,18 +585,6 @@ sub dumpDbgFor($@) {
 
 =pod
 
-=item B<locDbg($@)>
-
-Equivalent to printDbg(locGet(@_))
-
-=cut
-sub locDbg($@) {
-	my $msgId = shift;
-	printDbg(locGet($msgId, @_));
-}
-
-=pod
-
 =item B<printErr(@)>
 
 display an error message and exit. The parameters will be displayed separated by a space character.
@@ -528,7 +593,7 @@ display an error message and exit. The parameters will be displayed separated by
 sub printErr(@) {
 	my @text = makeMessage(55,0,@_);
 	foreach my $p (@text) {
-		print STDERR (_T("[AutoLaTeX]"), ' ', locGet("Error: {}","$p"), "\n");
+		print STDERR (_T("[AutoLaTeX]"), ' ', formatText("Error: {}","$p"), "\n");
 	}
 	exit(255);
 	undef;
@@ -544,7 +609,7 @@ display a warning message. The parameters will be displayed separated by a space
 sub printWarn(@) {
 	my @text = makeMessage(50,0,@_);
 	foreach my $p (@text) {
-		print STDERR (_T("[AutoLaTeX]"), ' ', locGet(_T("Warning: {}"),"$p"), "\n");
+		print STDERR (_T("[AutoLaTeX]"), ' ', formatText(_T("Warning: {}"),"$p"), "\n");
 	}
 	1;
 }
@@ -571,12 +636,12 @@ I<Returns:> Always C<0>.
 =cut
 sub runCommandOrFailRedirectTo($@) {
 	my $stdoutfile = shift;
-	printDbgFor(4, locGet(_T("Command line is:\n{}"), join(' ',@_)));
+	printDbgFor(4, formatText(_T("Command line is:\n{}"), join(' ',@_)));
 	my $pid = fork();
 	if ($pid == 0) {
 		# Child process
-		open(STDOUT, '>', "$stdoutfile") or printErr(locGet(_T("Can't redirect STDOUT: {}"), $!));
-		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(locGet(_T("Can't redirect STDERR: {}"), $!));
+		open(STDOUT, '>', "$stdoutfile") or printErr(formatText(_T("Can't redirect STDOUT: {}"), $!));
+		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
 		select STDERR; $| = 1;  # make unbuffered
 		select STDOUT; $| = 1;  # make unbuffered
 		exec(@_);
@@ -589,7 +654,7 @@ sub runCommandOrFailRedirectTo($@) {
 		if ($kpid>0) {
 			local *LOGFILE;
 			if ($exitcode!=0) {
-				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(locGet(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
+				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
 				while (my $line = <LOGFILE>) {
 					print STDERR $line;
 				}
@@ -600,7 +665,7 @@ sub runCommandOrFailRedirectTo($@) {
 		unlink("autolatex_exec_stderr.log");
 	}
 	else {
-		printErr(locGet(_T("Unable to fork for the system command: {}"),join(' ',@_)));
+		printErr(formatText(_T("Unable to fork for the system command: {}"),join(' ',@_)));
 	}
 	return 0;
 }
@@ -625,13 +690,13 @@ replied.
 
 =cut
 sub runCommandOrFail(@) {
-	printDbgFor(4, locGet(_T("Command line is:\n{}"), join(' ',@_)));
+	printDbgFor(4, formatText(_T("Command line is:\n{}"), join(' ',@_)));
 	my $wantstdout = wantarray;
 	my $pid = fork();
 	if ($pid == 0) {
 		# Child process
-		open(STDOUT, '>', "autolatex_exec_stdout.log") or printErr(locGet(_T("Can't redirect STDOUT: {}"), $!));
-		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(locGet(_T("Can't redirect STDERR: {}"), $!));
+		open(STDOUT, '>', "autolatex_exec_stdout.log") or printErr(formatText(_T("Can't redirect STDOUT: {}"), $!));
+		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
 		select STDERR; $| = 1;  # make unbuffered
 		select STDOUT; $| = 1;  # make unbuffered
 		exec(@_);
@@ -644,12 +709,12 @@ sub runCommandOrFail(@) {
 		if ($kpid>0) {
 			local *LOGFILE;
 			if ($exitcode!=0) {
-				open(*LOGFILE, "< autolatex_exec_stdout.log") or printErr(locGet(_T("{}: {}"), "autolatex_exec_stdout.log", $!));
+				open(*LOGFILE, "< autolatex_exec_stdout.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stdout.log", $!));
 				while (my $line = <LOGFILE>) {
 					print STDOUT $line;
 				}
 				close(*LOGFILE);
-				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(locGet(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
+				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
 				while (my $line = <LOGFILE>) {
 					print STDERR $line;
 				}
@@ -668,7 +733,7 @@ sub runCommandOrFail(@) {
 		}
 	}
 	else {
-		printErr(locGet(_T("Unable to fork for the system command: {}"),join(' ',@_)));
+		printErr(formatText(_T("Unable to fork for the system command: {}"),join(' ',@_)));
 	}
 	return 0;
 }
@@ -710,12 +775,12 @@ sub runCommandSilently(@) {
 	if ($_[0] && isHash($_[0])) {
 		$opts = shift;
 	}
-	printDbgFor(4, locGet(_T("Command line is:\n{}"), join(' ',@_)));
+	printDbgFor(4, formatText(_T("Command line is:\n{}"), join(' ',@_)));
 	my $pid = fork();
 	if ($pid == 0) {
 		# Child process
-		open(STDOUT, '>', File::Spec->devnull()) or printErr(locGet(_T("Can't redirect STDOUT: {}"), $!));
-		open(STDERR, '>', File::Spec->devnull()) or printErr(locGet(_T("Can't redirect STDERR: {}"), $!));
+		open(STDOUT, '>', File::Spec->devnull()) or printErr(formatText(_T("Can't redirect STDOUT: {}"), $!));
+		open(STDERR, '>', File::Spec->devnull()) or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
 		select STDERR; $| = 1;  # make unbuffered
 		select STDOUT; $| = 1;  # make unbuffered
 		exec(@_);
@@ -732,7 +797,7 @@ sub runCommandSilently(@) {
 		}
 	}
 	else {
-		printErr(locGet(_T("Unable to fork for the system command: {}"),join(' ',@_)));
+		printErr(formatText(_T("Unable to fork for the system command: {}"),join(' ',@_)));
 		return 1;
 	}
 }
@@ -752,7 +817,7 @@ This subroutine does not block the caller.
 
 =cut
 sub runSystemCommand($@) {
-	printDbgFor(4, locGet(_T("Command line is:\n{}"), join(' ',@_)));
+	printDbgFor(4, formatText(_T("Command line is:\n{}"), join(' ',@_)));
 	my $listener = shift;
 	my $pid = fork();
 	if ($pid == 0) {
@@ -767,7 +832,7 @@ sub runSystemCommand($@) {
 		return 0;
 	}
 	else {
-		printErr(locGet(_T("Unable to fork for the system command: {}"),join(' ',@_)));
+		printErr(formatText(_T("Unable to fork for the system command: {}"),join(' ',@_)));
 		return 1;
 	}
 }
@@ -806,7 +871,7 @@ Wait for the termination of asynchronous commands.
 =cut
 sub waitForSystemCommandTerminaison() {
 	if (%runningChildren) {
-		locDbg(_T("Waiting for system command sub-processes"));
+		printDbg(_T("Waiting for system command sub-processes"));
 		printDbgIndent();
 		while (my ($pid,$data) = each(%runningChildren)) {
 			if ($runningChildren{"$pid"}{'command'}) {
@@ -949,6 +1014,53 @@ sub trim($) {
 	$s =~ s/\s+$//s;
 	return $s;
 }
+
+=pod
+
+=item B<formatText($@)>
+
+Replies the string after substitutions.
+
+The substrings C<$0>, C<$1>, C<$2>... will be substituted by
+the corresponding values passed in parameters after the message id.
+
+The substrings C<${0}>, C<${1}>, C<${2}>... will be substituted by
+the corresponding values passed in parameters after the message id.
+
+The substrings C<#0>, C<#1>, C<#2>... will be substituted by
+the corresponding values passed in parameters after the message id.
+
+The substrings C<#{0}>, C<#{1}>, C<#{2}>... will be substituted by
+the corresponding values passed in parameters after the message id.
+
+The substrings C<{}> will be replaced by the value passed in parameters
+that corresponds to the C<{}>, e.g. the first C<{}> will be replaced by the
+first value, the second C<{}> by the second value...
+
+=over 4
+
+=item the id of the string
+
+=item the list of substitution values.
+
+=back
+
+I<Returns:> the localized string.
+
+=cut
+sub formatText($@) {
+	my $msg = shift;
+	if (@_) {
+		for(my $i=0; $i<@_; $i++) {
+			$msg =~ s/[\$\#]\Q{$i}\E/$_[$i]/g;
+			$msg =~ s/[\$\#]\Q$i\E/$_[$i]/g;
+		}
+		my $i=0;
+		$msg =~ s/\Q{}\E/my $v;if ($i<@_) {$v=$_[$i]||'';$i++;} else {$v="{}";}"$v";/eg;
+	}
+	return $msg;
+}
+
 
 
 

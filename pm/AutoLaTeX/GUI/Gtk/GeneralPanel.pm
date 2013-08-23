@@ -49,7 +49,7 @@ use Gtk2;
 use Gtk2::SimpleList;
 
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::GUI::AbstractGeneralPanel;
 use AutoLaTeX::GUI::Gtk::WidgetUtil;
 
@@ -60,22 +60,10 @@ use AutoLaTeX::GUI::Gtk::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "8.0" ;
+my $VERSION = "9.0" ;
 
-my %GENERATION_TYPES_ORIG = (
-	_T('01_Generate PDF document') => 'pdf',
-	_T('02_Generate DVI document') => 'dvi',
-	_T('03_Generate Postscript document') => 'ps',
-	_T('04_Generate PDF document via Postscript') => 'pspdf',
-	);
 my %GENERATION_TYPES = ();
 
-my %MAKEINDEX_STYLE_TYPES_ORIG = (
-	_T('01_Use current configuration file value') => '',
-	_T('02_Auto-detect the style inside the project directory') => '@detect',
-	_T('03_Use only the default AutoLaTeX style') => '@system',
-	_T('04_No style is passed to MakeIndex') => '@none',
-	);
 my %MAKEINDEX_STYLE_TYPES = ();
 
 #------------------------------------------------------
@@ -136,7 +124,7 @@ sub initControls() : method {
 
 	# GENERATION part
 	{
-		my $generationFrame = Gtk2::Frame->new($self->localeGet(_T("Generation")));
+		my $generationFrame = Gtk2::Frame->new(_T("Generation"));
 		$self->attach ($generationFrame, 
 					0,1,0,1, # left, right, top and bottom columns
 					['expand','fill'],['expand','fill'], # x and y options
@@ -147,7 +135,7 @@ sub initControls() : method {
 						FALSE); #non uniform
 		$generationFrame->add ($subtable);
 
-		my $label1 = Gtk2::Label->new ($self->localeGet(_T("Main TeX file (optional):")));
+		my $label1 = Gtk2::Label->new (_T("Main TeX file (optional):"));
 		$subtable->attach ($label1, 
 					0,1,0,1, # left, right, top and bottom columns
 					'shrink','shrink', # x and y options
@@ -161,7 +149,7 @@ sub initControls() : method {
 					2,2); # horizontal and vertical paddings
 		$self->attr('EDITORS','MAIN_TEX_FILE') = $edit1;
 
-		my $label2b = Gtk2::CheckButton->new ($self->localeGet(_T("Run bibliography tool")));
+		my $label2b = Gtk2::CheckButton->new (_T("Run bibliography tool"));
 		$self->connectSignal($label2b,'toggled','onRunBiblioToggled');
 		$subtable->attach ($label2b, 
 					0,2,1,2, # left, right, top and bottom columns
@@ -169,7 +157,7 @@ sub initControls() : method {
 					2,2); # horizontal and vertical paddings
 		$self->attr('EDITORS','ENABLE_BIBLIO') = $label2b;
 
-		my $label2 = Gtk2::CheckButton->new ($self->localeGet(_T("Automatic generation of pictures")));
+		my $label2 = Gtk2::CheckButton->new (_T("Automatic generation of pictures"));
 		$self->connectSignal($label2,'toggled','onGenerateImageToggled');
 		$subtable->attach ($label2, 
 					0,2,2,3, # left, right, top and bottom columns
@@ -178,7 +166,7 @@ sub initControls() : method {
 		$self->attr('EDITORS','AUTO_PICTURE_GENERATION') = $label2;
 
 
-		my $label3 = Gtk2::Label->new ($self->localeGet(_T("Image search directory:")));
+		my $label3 = Gtk2::Label->new (_T("Image search directory:"));
 		$subtable->attach ($label3, 
 					0,1,3,4, # left, right, top and bottom columns
 					'shrink','shrink', # x and y options
@@ -192,7 +180,7 @@ sub initControls() : method {
 					2,2); # horizontal and vertical paddings
 		$self->attr('EDITORS','AUTO_GENERATE_IMAGE_DIRECTORY') = $edit2;
 
-		my $label4 = Gtk2::Label->new ($self->localeGet(_T("Type of generation:")));
+		my $label4 = Gtk2::Label->new (_T("Type of generation:"));
 		$subtable->attach ($label4, 
 					0,1,4,5, # left, right, top and bottom columns
 					'shrink','shrink', # x and y options
@@ -207,7 +195,7 @@ sub initControls() : method {
 					2,2); # horizontal and vertical paddings
 		$self->attr('EDITORS','GENERATION_TYPE') = $edit3;
 
-		my $label5 = Gtk2::Label->new ($self->localeGet(_T("Type of MakeIndex style research:")));
+		my $label5 = Gtk2::Label->new (_T("Type of MakeIndex style research:"));
 		$subtable->attach ($label5, 
 					0,1,5,6, # left, right, top and bottom columns
 					'shrink','shrink', # x and y options
@@ -225,7 +213,7 @@ sub initControls() : method {
 
 	# VIEWER part
 	{
-		my $viewerFrame = Gtk2::Frame->new($self->localeGet(_T("Viewer")));
+		my $viewerFrame = Gtk2::Frame->new(_T("Viewer"));
 		$self->attach ($viewerFrame, 
 					0,1,1,2, # left, right, top and bottom columns
 					['expand','fill'],['expand','fill'], # x and y options
@@ -236,7 +224,7 @@ sub initControls() : method {
 						FALSE); #non uniform
 		$viewerFrame->add ($subtable);
 
-		my $label1 = Gtk2::CheckButton->new ($self->localeGet(_T("Launch a viewer after compilation")));
+		my $label1 = Gtk2::CheckButton->new (_T("Launch a viewer after compilation"));
 		$self->connectSignal($label1,'toggled','onLaunchViewerToggled');
 		$subtable->attach ($label1, 
 					0,2,0,1, # left, right, top and bottom columns
@@ -244,7 +232,7 @@ sub initControls() : method {
 					2,2); # horizontal and vertical paddings
 		$self->attr('EDITORS','LAUNCH_VIEWER') = $label1;
 
-		my $label2 = Gtk2::Label->new ($self->localeGet(_T("Command of the viewer (optional):")));
+		my $label2 = Gtk2::Label->new (_T("Command of the viewer (optional):"));
 		$subtable->attach ($label2, 
 					0,1,1,2, # left, right, top and bottom columns
 					'shrink','shrink', # x and y options
@@ -262,7 +250,7 @@ sub initControls() : method {
 
 	# CLEAN part
 	{
-		my $cleaningFrame = Gtk2::Frame->new($self->localeGet(_T("Cleaning")));
+		my $cleaningFrame = Gtk2::Frame->new(_T("Cleaning"));
 		$self->attach ($cleaningFrame, 
 					0,1,2,3, # left, right, top and bottom columns
 					['expand','fill'],['expand','fill'], # x and y options
@@ -273,7 +261,7 @@ sub initControls() : method {
 						FALSE); #non uniform
 		$cleaningFrame->add ($subtable);
 
-		my $label1 = Gtk2::Label->new ($self->localeGet(_T("Files to clean:")));
+		my $label1 = Gtk2::Label->new (_T("Files to clean:"));
 		$subtable->attach ($label1, 
 					0,1,0,1, # left, right, top and bottom columns
 					'shrink','shrink', # x and y options
@@ -287,7 +275,7 @@ sub initControls() : method {
 					2,2); # horizontal and vertical paddings
 		$self->attr('EDITORS','FILES_TO_CLEAN') = $edit1;
 
-		my $label2 = Gtk2::Label->new ($self->localeGet(_T("Files to desintegrate:")));
+		my $label2 = Gtk2::Label->new (_T("Files to desintegrate:"));
 		$subtable->attach ($label2, 
 					0,1,1,2, # left, right, top and bottom columns
 					'shrink','shrink', # x and y options
@@ -304,7 +292,7 @@ sub initControls() : method {
 
 	# SCM part
 	{
-		my $scmFrame = Gtk2::Frame->new($self->localeGet(_T("SCM support")));
+		my $scmFrame = Gtk2::Frame->new(_T("SCM support"));
 		$self->attach ($scmFrame, 
 					0,1,3,4, # left, right, top and bottom columns
 					['expand','fill'],['expand','fill'], # x and y options
@@ -315,7 +303,7 @@ sub initControls() : method {
 						FALSE); #non uniform
 		$scmFrame->add ($subtable);
 
-		my $label1 = Gtk2::Label->new ($self->localeGet(_T("Update command line:")));
+		my $label1 = Gtk2::Label->new (_T("Update command line:"));
 		$subtable->attach ($label1, 
 					0,1,0,1, # left, right, top and bottom columns
 					'shrink','shrink', # x and y options
@@ -329,7 +317,7 @@ sub initControls() : method {
 					2,2); # horizontal and vertical paddings
 		$self->attr('EDITORS','SCM_UPDATE') = $edit1;
 
-		my $label2 = Gtk2::Label->new ($self->localeGet(_T("Commit command line:")));
+		my $label2 = Gtk2::Label->new (_T("Commit command line:"));
 		$subtable->attach ($label2, 
 					0,1,1,2, # left, right, top and bottom columns
 					'shrink','shrink', # x and y options
@@ -356,30 +344,18 @@ sub initializeGeneralPanel() : method {
 	my $self = shift;
 	$self->SUPER::initializeGeneralPanel();
 
-	$self->initLocale('autolatexgtk');
-
 	unless (%GENERATION_TYPES) {
-		while (my ($k,$v) = each(%GENERATION_TYPES_ORIG)) {
-			if ($k =~ /^([0-9]+_)(.*)$/) {
-				$k = "$1".$self->localeGet("$2");
-			}
-			else {
-				$k = $self->localeGet("$k");
-			}
-			$GENERATION_TYPES{"$k"} = $v;
-		}
+		$GENERATION_TYPES{'01_'._T('Generate PDF document')} = 'pdf';
+		$GENERATION_TYPES{'02_'._T('Generate DVI document')} = 'dvi';
+		$GENERATION_TYPES{'03_'._T('Generate Postscript document')} = 'ps';
+		$GENERATION_TYPES{'04_'._T('Generate PDF document via Postscript')} = 'pspdf';
 	}
 
 	unless (%MAKEINDEX_STYLE_TYPES) {
-		while (my ($k,$v) = each(%MAKEINDEX_STYLE_TYPES_ORIG)) {
-			if ($k =~ /^([0-9]+_)(.*)$/) {
-				$k = "$1".$self->localeGet("$2");
-			}
-			else {
-				$k = $self->localeGet("$k");
-			}
-			$MAKEINDEX_STYLE_TYPES{"$k"} = $v;
-		}
+		$MAKEINDEX_STYLE_TYPES{'01_'._T('Use current configuration file value')} = '';
+		$MAKEINDEX_STYLE_TYPES{'02_'._T('Auto-detect the style inside the project directory')} = '@detect';
+		$MAKEINDEX_STYLE_TYPES{'03_'._T('Use only the default AutoLaTeX style')} = '@system';
+		$MAKEINDEX_STYLE_TYPES{'04_'._T('No style is passed to MakeIndex')} = '@none';
 	}
 
 	$self->initControls();

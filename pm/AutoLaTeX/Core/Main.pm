@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '16.0';
+$VERSION = '17.0';
 $COPYRIGHT_YEAR = '2013';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -45,7 +45,7 @@ use File::Basename;
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::OS;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::TeX::DocumentDetector;
 
 #------------------------------------------------------
@@ -54,7 +54,7 @@ use AutoLaTeX::TeX::DocumentDetector;
 #
 #------------------------------------------------------
 sub analyzeCommandLineOptions(\%) {
-	locDbg(_T("Reading command line options"));
+	printDbg(_T("Reading command line options"));
 
 	$_[0]->{'__private__'}{'config.command line'} = {};
 	my $realcfg = $_[0];
@@ -74,7 +74,7 @@ sub analyzeCommandLineOptions(\%) {
 
 		# DEPRECATED
 		'createmakefile' => sub {
-					printWarn(locGet(_T('Command line option \'{}\' is deprecated.'), '--createmakefile'));
+					printWarn(formatText(_T('Command line option \'{}\' is deprecated.'), '--createmakefile'));
 				},
 
 		'defaultist' => sub { 
@@ -154,7 +154,7 @@ sub analyzeCommandLineOptions(\%) {
 
 		# DEPRECATED
 		'output=s' => sub {
-					printWarn(locGet(_T('Command line option \'{}\' is deprecated.'), '--output'));
+					printWarn(formatText(_T('Command line option \'{}\' is deprecated.'), '--output'));
 				},
 
 		'pdf' => sub { $cfg->{'generation.generation type'} = 'pdf'; },
@@ -169,7 +169,7 @@ sub analyzeCommandLineOptions(\%) {
 
 		# DEPRECATED
 		'pspdf' => sub { 
-					printWarn(locGet(_T('Command line option \'{}\' is deprecated.'), '--pspdf'));
+					printWarn(formatText(_T('Command line option \'{}\' is deprecated.'), '--pspdf'));
 			},
 
 		'quiet' => sub { $debugLevel = 0; },
@@ -183,7 +183,7 @@ sub analyzeCommandLineOptions(\%) {
 		'v+' => \$debugLevel,
 
 		'version' => sub { if (getAutoLaTeXLaunchingName() ne getAutoLaTeXName()) {
-					locPrint(_T("{} {} ({}) - {} platform\n(c) 1998-{} Stephane GALLAND <galland\@arakhne.org> (under GPL)\n"),
+					print formatText(_T("{} {} ({}) - {} platform\n(c) 1998-{} Stephane GALLAND <galland\@arakhne.org> (under GPL)\n"),
 						getAutoLaTeXLaunchingName(),
 						getAutoLaTeXVersion(),
 						getAutoLaTeXName(),
@@ -191,7 +191,7 @@ sub analyzeCommandLineOptions(\%) {
 						$COPYRIGHT_YEAR);
 				   }
 				   else {
-					locPrint(_T("{} {} - {} platform\n(c) 1998-{} Stephane GALLAND <galland\@arakhne.org> (under GPL)\n"),
+					print formatText(_T("{} {} - {} platform\n(c) 1998-{} Stephane GALLAND <galland\@arakhne.org> (under GPL)\n"),
 						getAutoLaTeXLaunchingName(),
 						getAutoLaTeXVersion(),
 						getOperatingSystem(),
@@ -238,10 +238,10 @@ sub detectMainTeXFile(\%) {
 			File::Spec->catfile(
 				$configuration->{'__private__'}{'output.directory'},
 				$basename);
-		locDbg(_T("Selecting TeX file '{}'"), $basename);
+		printDbg(formatText(_T("Selecting TeX file '{}'"), $basename));
 	}
 	else {
-		locDbg(_T("Detecting several TeX files: {}"),join(' ',@texfiles));
+		printDbg(formatText(_T("Detecting several TeX files: {}"),join(' ',@texfiles)));
 		# Issue #9: try to detect the file with the \documentclass
 		my @documents = ();
 		foreach my $file (@texfiles) {
@@ -255,7 +255,7 @@ sub detectMainTeXFile(\%) {
 				File::Spec->catfile(
 					$configuration->{'__private__'}{'output.directory'},
 					$basename);
-			locDbg(_T("Selecting TeX file '{}'"), $basename);
+			printDbg(formatText(_T("Selecting TeX file '{}'"), $basename));
 		}
 	}
 }
@@ -270,6 +270,12 @@ sub mainProgram(;$) {
 	$exitOnError = 1 if (!defined($exitOnError));
 	# Get system and user configurations
 	my %configuration = readConfiguration();
+
+	# Put the internationalization values in the configuration
+	$configuration{'__private__'}{'internationalization'}{'locale'} = getCurrentLocale();
+	$configuration{'__private__'}{'internationalization'}{'language'} = getCurrentLanguage();
+	$configuration{'__private__'}{'internationalization'}{'codeset'} = getCurrentCodeset();
+	$configuration{'__private__'}{'internationalization'}{'domains'} = getActiveTextDomains();
 
 	# Analyze and apply the command line
 	analyzeCommandLineOptions(%configuration);
@@ -302,7 +308,7 @@ sub mainProgram(;$) {
 			if (exists $configuration{'generation.main file'}) {
 				if (!$configuration{'__private__'}{'input.latex file'}) {
 					$configuration{'__private__'}{'input.latex file'} = basename($configuration{'generation.main file'});
-					locDbg(_T("Detecting TeX file from project's configuration: '{}'"),$configuration{'__private__'}{'input.latex file'});
+					printDbg(formatText(_T("Detecting TeX file from project's configuration: '{}'"),$configuration{'__private__'}{'input.latex file'}));
 				}
 				delete $configuration{'generation.main file'};
 			}
@@ -333,10 +339,10 @@ sub mainProgram(;$) {
 	}
 
 	if ($configuration{'__private__'}{'input.latex file'}) {
-		locDbg(_T("Using TeX file '{}'"),$configuration{'__private__'}{'input.latex file'});
+		printDbg(formatText(_T("Using TeX file '{}'"),$configuration{'__private__'}{'input.latex file'}));
 	}
 	elsif ($exitOnError) {
-		printErr(locGet(_T("No LaTeX file found nor specified for the directory '{}'.\n You must specify one on the command line option -f, or set the the variable 'generation.main file' in your configuration file, rename one of your files 'Main.tex'."), $configuration{'__private__'}{'output.directory'}));
+		printErr(formatText(_T("No LaTeX file found nor specified for the directory '{}'.\n You must specify one on the command line option -f, or set the the variable 'generation.main file' in your configuration file, rename one of your files 'Main.tex'."), $configuration{'__private__'}{'output.directory'}));
 	}
 
 	# now apply the command line options into the configuration
@@ -414,20 +420,20 @@ sub mainProgram(;$) {
 					closedir(*DIR);
 					if (@istfiles==1) {
 						$configuration{'__private__'}{'output.ist file'} = File::Spec->rel2abs(pop @istfiles);
-						locDbg(_T("Selecting project's style for MakeIndex: {}"), $configuration{'__private__'}{'output.ist file'});
+						printDbg(formatText(_T("Selecting project's style for MakeIndex: {}"), $configuration{'__private__'}{'output.ist file'}));
 					}
 					else {
 						delete $configuration{'__private__'}{'output.ist file'};
-						locDbg(_T("Unable to selected a project's style for MakeIndex: no file or too many .ist files in directory {}"), $configuration{'__private__'}{'output.directory'});
+						printDbg(formatText(_T("Unable to selected a project's style for MakeIndex: no file or too many .ist files in directory {}"), $configuration{'__private__'}{'output.directory'}));
 					}
 				}
 				elsif ($isttype eq '@system') {
 					$configuration{'__private__'}{'output.ist file'} = getSystemISTFilename();
-					locDbg(_T("Selecting the system default style for MakeIndex"));
+					printDbg(formatText(_T("Selecting the system default style for MakeIndex")));
 				}
 				elsif ($isttype eq '@none') {
 					delete $configuration{'__private__'}{'output.ist file'};
-					locDbg(_T("Unselecting any style for MakeIndex"));
+					printDbg(formatText(_T("Unselecting any style for MakeIndex")));
 				}
 
 				if (($configuration{'__private__'}{'output.ist file'})&&

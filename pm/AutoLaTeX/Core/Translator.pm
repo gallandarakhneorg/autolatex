@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '9.0';
+$VERSION = '10.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -57,7 +57,7 @@ use File::Copy;
 
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::Config;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::OS;
 
 # Sorted list of the levels
@@ -159,13 +159,13 @@ I<Returns:> the description of the translator.
 sub makeTranslatorHumanReadable($) {
 	my $data = shift;
 	if ($data->{'variante'}) {
-		return locGet(_T("Translate {} to {} with {} alternative"),
+		return formatText(_T("Translate {} to {} with {} alternative"),
 					$data->{'full-source'},
 					$data->{'target'},
 					$data->{'variante'});
 	}
 	else {
-		return locGet(_T("Translate {} to {}"),
+		return formatText(_T("Translate {} to {}"),
 					$data->{'full-source'},
 					$data->{'target'});
 	}
@@ -214,7 +214,7 @@ sub getTranslatorFilesFrom(\%$\%$$$;$) {
 		my @dirs = ( "$filename" );
 		while (@dirs) {
 			my $dirname = shift @dirs;
-			locDbg(_T("Get translator list from {}"),$dirname);
+			formatText(_T("Get translator list from {}"),$dirname);
 			if (opendir(*DIR,"$dirname")) {
 				while (my $file = readdir(*DIR)) {
 					if ( $file ne File::Spec->curdir() && $file ne File::Spec->updir() ) {
@@ -301,7 +301,7 @@ sub resolveConflicts(\%) {
 					$excludemsg = "[$excludename]\ninclude module = no\n";
 				}
 			}
-			printErr(locGet(_T("Several possibilities exist for generating a figure from a {} file:\n{}\n\nYou must specify which to include (resp. exclude) with --include (resp. --exclude).\n\nIt is recommended to update your {} file with the following configuration for each translator to exclude (example on the translator {}):\n\n{}\n"),
+			printErr(formatText(_T("Several possibilities exist for generating a figure from a {} file:\n{}\n\nYou must specify which to include (resp. exclude) with --include (resp. --exclude).\n\nIt is recommended to update your {} file with the following configuration for each translator to exclude (example on the translator {}):\n\n{}\n"),
 				$source,
 				$msg,
 				getUserConfigFilename(),
@@ -409,7 +409,7 @@ sub getLoadableTranslatorList(\%) {
 
 	# Load distribution modules
 	my $filename = File::Spec->catfile(getAutoLaTeXDir(),"translators");
-	locDbg(_T("Get loadable translators from {}"),$filename);
+	printDbg(formatText(_T("Get loadable translators from {}"),$filename));
 	printDbgIndent();
 	opendir(*DIR,"$filename")
 		or printErr("$filename:","$!");
@@ -423,7 +423,7 @@ sub getLoadableTranslatorList(\%) {
 				$includes{"$scriptname"} = "$fullname";
 			}
 			else {
-				locDbg(_T("Translator {} is ignored"),$scriptname);
+				printDbg(formatText(_T("Translator {} is ignored"),$scriptname));
 			}
 		}
 	}
@@ -504,7 +504,7 @@ sub getTranslatorList(\%;$) {
 
 	# Load distribution modules
 	my $filename = File::Spec->catfile(getAutoLaTeXDir(),"translators");
-	locDbg(_T("Get translators from {}"),$filename);
+	printDbg(formatText(_T("Get translators from {}"),$filename));
 	printDbgIndent();
 	opendir(*DIR,"$filename") or printErr("$filename:","$!");
 	while (my $file = readdir(*DIR)) {
@@ -601,7 +601,7 @@ sub readTranslatorFile($$) {
 			}
 		}
 		elsif ($line !~ /^\s*[#;]/) {
-			if ($line =~ /^\s*([azA-Z0-9_]+)(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\<\<([a-zA-Z0-9_]+)\s*(.*?)\s*$/) {
+			if ($line =~ /^\s*([azA-Z0-9_]+)(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\<\<([a-zA-Z0-9_]+)\s*(.*?)\s*$/i) {
 				($curvar, my $mode, $eol, my $value) = ($1, $2, $3, $4);
 				if (!$mode ||
 				    ($ispdfmode && lc($mode) eq 'pdf') ||
@@ -630,13 +630,13 @@ sub readTranslatorFile($$) {
 				}
 			}
 			elsif ($line !~ /^\s*$/) {
-				printErr(locGet("Line outside a definition ({}:{}).",$lineno, $file));
+				printErr(formatText(_T("Line outside a definition ({}:{})."),$lineno, $file));
 			}
 		}
 	}
 	close(*FILE);
 	if ($eol) {
-		printErr(locGet(_T("The block for the variable '{}' is not closed. Keyword '{}' was not found ({}:{})."),
+		printErr(formatText(_T("The block for the variable '{}' is not closed. Keyword '{}' was not found ({}:{})."),
 				$curvar, $eol, $file, $lineno));
 	}
 
@@ -780,7 +780,7 @@ sub runTranslator($$$) {
 	my $in = shift || confess("input is mandatory");
 	my $out = shift || confess("output is mandatory");
 	if (!$ROOT_TRANSLATORS{'translators'}) {
-		printErr(locGet(_T("You cannot call runTranslator() outside the call stack of runRootTranslator().")));
+		printErr(_T("You cannot call runTranslator() outside the call stack of runRootTranslator()."));
 	}
 	printDbgIndent();
 	$ROOT_TRANSLATORS{'loglevel'}++;
@@ -813,7 +813,7 @@ sub _runTranslator($$$$$$$) {
 	$out = File::Spec->rel2abs("$out");
 	
 	if (! -r "$in") {
-		printErr(locGet(_T("{}: file not found or not readable."), $in));
+		printErr(formatText(_T("{}: file not found or not readable."), $in));
 	}
 
 	if (!exists $translators->{"$transname"} ||
@@ -852,13 +852,13 @@ sub _runTranslator($$$$$$$) {
 
 		if (defined($outChange) && $inChange<$outChange) {
 			# No need to translate again
-			printDbgFor(2, locGet(_T("{} is up-to-date."), basename($out)));
+			printDbgFor(2, formatText(_T("{} is up-to-date."), basename($out)));
 			return 1;
 		}
 	}
 
 	if ($logLevel) {
-		printDbgFor($logLevel, locGet(_T("{} -> {}"), basename($in), basename($out)));
+		printDbgFor($logLevel, formatText(_T("{} -> {}"), basename($in), basename($out)));
 	}
 
 	if ($translators->{"$transname"}{'transdef'}{'COMMAND_LINE'}{'value'}) {
@@ -911,11 +911,11 @@ sub _runTranslator($$$$$$$) {
 		if (!defined($c) && $@) {
 			my $msg = "$@";
 			$msg =~ s/(\(eval\s+[0-9]+\)\s*line\s+)([0-9]+)/$1.($2 + $lineno)."($2)"/egsi;
-			printErr(locGet(_T("Error inthe TRANSLATOR_FUNCTION of '{}':\n{}"), $transname, $msg));
+			printErr(formatText(_T("Error inthe TRANSLATOR_FUNCTION of '{}':\n{}"), $transname, $msg));
 		}
 	}
 	else {
-		printErr(locGet(_T("Unable to find the method of translation for '{}'."),
+		printErr(formatText(_T("Unable to find the method of translation for '{}'."),
 				$transname));
 	}
 
@@ -951,7 +951,7 @@ sub loadTranslator($\%) {
 	my $name = shift || confess('you must pass the name of the translator to load');
 	my $translators = shift || confess('you must pass the descriptions of the translators');
 
-	printDbgFor(4, locGet(_T("Searching translator '{}'."), $name));
+	printDbgFor(4, formatText(_T("Searching translator '{}'."), $name));
 
 	# Check if the translator name corresponds to an existing translator.
 	# If not, try to find a variante.
@@ -972,22 +972,22 @@ sub loadTranslator($\%) {
 			}
 		}
 		if (!$linkname && !$loadedlinkname) {
-			printErr(locGet(_T("The translator '{}' cannot be found."), $name));
+			printErr(formatText(_T("The translator '{}' cannot be found."), $name));
 		}
 		elsif ($loadedlinkname) {
 			$linkname = $loadedlinkname;
 		}
-		printDbgFor(4, locGet(_T("Linking '{}' to '{}'."), $name, $linkname));
+		printDbgFor(4, formatText(_T("Linking '{}' to '{}'."), $name, $linkname));
 		$translators->{"$name"} = $translators->{"$linkname"};
 		$name = $linkname;
 	}
 
 	# Load the translator if not already loaded
 	if (exists $translators->{$name}{'transdef'}) {
-		printDbgFor(4, locGet(_T("'{}' is already loaded."), $name));
+		printDbgFor(4, formatText(_T("'{}' is already loaded."), $name));
 	}
 	else {
-		printDbgFor(4, locGet(_T("Loading translator '{}'."), $name));
+		printDbgFor(4, formatText(_T("Loading translator '{}'."), $name));
 		# Read the translator definition
 		$translators->{$name}{'transdef'} = readTranslatorFile(
 							$translators->{$name}{'file'},
@@ -1098,7 +1098,7 @@ sub loadTranslatableImageList(\%\%;$) {
 		}
 		# Detect the image from the file system
 		local* DIR;
-		locDbg(_T("Detecting images inside '{}'"), $configuration->{'generation.image directory'});
+		printDbg(formatText(_T("Detecting images inside '{}'"), $configuration->{'generation.image directory'}));
 		my $rawdirs = $configuration->{'generation.image directory'};
 		$rawdirs =~ s/^\s+//s;
 		$rawdirs =~ s/\s+$//s;

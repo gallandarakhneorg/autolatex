@@ -50,7 +50,7 @@ use Gtk2 qw/-init -threads-init/;
 use File::Basename;
 use File::Spec;
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::GUI::WidgetUtil;
 
@@ -61,7 +61,7 @@ use AutoLaTeX::GUI::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "6.0" ;
+my $VERSION = "7.0" ;
 
 # Does the GTK Main loop must be quitted
 my $QUITGTK = TRUE;
@@ -220,7 +220,7 @@ sub getIcon($) {
 	}
 
 	my $iconPath = $self->getIconPath($iconName);
-	printErr($self->localeGet(_T("icon not found: {}"), $iconName)) unless ($iconPath);
+	printErr(formatText(_T("icon not found: {}"), $iconName)) unless ($iconPath);
 
 	my $icon = Gtk2::Gdk::Pixbuf->new_from_file ($iconPath);
 
@@ -258,14 +258,14 @@ sub connectSignal($$$) : method {
 		my $refprocname = $procname;
 		my $refobj = $obj;
 		if ($refself->isAllowedSignal($refprocname,$refobj)) {
-			$self->localeDbg(_T("{}: on Gtk signal '{}', calling {}(\$)"),scalar(localtime),$signame,$procname);
+			printDbg(formatText(_T("{}: on Gtk signal '{}', calling {}(\$)"),scalar(localtime),$signame,$procname));
 			eval("\$refself->$procname(\@_);");
 			if ($@) {
-				printDbg(locGet(_T("{}(\$):"),$procname),$@);
+				printDbg(formatText(_T("{}(\$):"),$procname),$@);
 			}		
 		}
 		else {
-			$self->localeDbg(_T("Ignoring Gtk signal '{}'"),$signame);
+			printDbg(formatText(_T("Ignoring Gtk signal '{}'"),$signame));
 		}
 	};
 

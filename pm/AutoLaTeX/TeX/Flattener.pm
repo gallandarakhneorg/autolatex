@@ -40,7 +40,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::Flattener;
 
-$VERSION = '4.0';
+$VERSION = '5.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &flattenTeX ) ;
 @EXPORT_OK = qw();
@@ -55,7 +55,7 @@ use File::Copy;
 use File::Path qw(make_path remove_tree);
 
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::TeX::TeXParser;
 
 my %MACROS = (
@@ -108,9 +108,9 @@ sub flattenTeX($$\@$) {
 		remove_tree("$output");
 	}
 
-	make_path("$output") or printErr(locGet(_T("{}: {}"), $output, $!));
+	make_path("$output") or printErr(formatText(_T("{}: {}"), $output, $!));
 	
-	locDbg(locGet(_T('Analysing {}'), basename($input)));
+	printDbg(formatText(_T('Analysing {}'), basename($input)));
 	my $content = readFileLines("$input");
 
 	my $listener = AutoLaTeX::TeX::Flattener->_new($input, $output, $imageDb, $usebiblio);
@@ -125,15 +125,15 @@ sub flattenTeX($$\@$) {
 	$parser->parse( $content );
 
 	my $outputFile = File::Spec->catfile($output, basename($input));
-	locDbg(locGet(_T('Writing {}'), basename($outputFile)));
+	printDbg(formatText(_T('Writing {}'), basename($outputFile)));
 	writeFileLines($outputFile, $listener->{'data'}{'expandedContent'});
 
 	# Make the copy of the resources
 	foreach my $cat ('bib', 'cls', 'bst', 'sty', 'figures') {
 		while (my ($source, $target) = each(%{$listener->{'data'}{$cat}})) {
 			$target = File::Spec->catfile("$output", "$target");
-			locDbg(locGet(_T('Copying resource {} to {}'), basename($source), basename($target)));
-			copy("$source", "$target") or printErr(locGet(_T("{} -> {}: {}"), $source, $target, $!));
+			printDbg(formatText(_T('Copying resource {} to {}'), basename($source), basename($target)));
+			copy("$source", "$target") or printErr(formatText(_T("{} -> {}: {}"), $source, $target, $!));
 		}
 	}
 }
@@ -237,7 +237,7 @@ sub _findPicture($) {
 		}
 
 		if (!$filename) {
-			printErr(locGet(_T('Picture not found: {}'), $texname));
+			printErr(formatText(_T('Picture not found: {}'), $texname));
 		}
 		else {
 			my $ext;
@@ -285,7 +285,7 @@ sub _expandMacro($$@) : method {
 						"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n\n";
 				}
 				else {
-					printErr(locGet(_T('File not found: {}'), $filename));
+					printErr(formatText(_T('File not found: {}'), $filename));
 				}
 			}
 		}
@@ -403,7 +403,7 @@ sub _expandMacro($$@) : method {
 				return $ret;
 			}
 			else {
-				printErr(locGet(_T('File not found: {}'), $bblFile));
+				printErr(formatText(_T('File not found: {}'), $bblFile));
 			}
 		}
 	}

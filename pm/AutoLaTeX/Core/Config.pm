@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Config;
 
-$VERSION = '8.0';
+$VERSION = '9.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getProjectConfigFilename &getUserConfigFilename &getSystemConfigFilename
               &getSystemISTFilename &readConfiguration &readConfigFile &getUserConfigDirectory
@@ -55,7 +55,7 @@ use Config::Simple;
 
 use AutoLaTeX::Core::OS;
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 
 #######################################################
 # Comments for the sections of the configuration file
@@ -136,17 +136,6 @@ my %CONFIGURATION_COMMENTS = (
 #		ouput.ist file
 #		output.latex basename
 
-
-
-
-
-#no warnings 'redefine';
-#sub Config::Simple::READ_DELIM() {
-#	return '\s*'.getPathListSeparator().'\s*';
-#}
-#sub Config::Simple::READ_DELIM() {
-#	return getPathListSeparator();
-#}
 
 =pod
 
@@ -456,7 +445,7 @@ I<Returns:> nothing
 sub readConfigFile($\%;$) {
 	my $filename = shift;
 	die('second parameter of readConfigFile() is not a hash') unless(isHash($_[0]));
-	locDbg(_T("Opening configuration file {}"),$filename);
+	printDbg(formatText(_T("Opening configuration file {}"),$filename));
 	if (-r "$filename") {
 		my $cfgReader = new Config::Simple("$filename");
 		my %config = $cfgReader->vars();
@@ -468,10 +457,10 @@ sub readConfigFile($\%;$) {
 				$_[0]->{"$k"} = rebuiltConfigValue("$k",$v);
 			}
 		}
-		locDbg(_T("Succeed on reading"));
+		printDbg(_T("Succeed on reading"));
 	}
 	else {
-		locDbg(_T("Failed to read {}: {}"),$filename,$!);
+		printDbg(formatText(_T("Failed to read {}: {}"),$filename,$!));
 	}
 	1;
 }
@@ -532,7 +521,7 @@ sub writeConfigFile($\%) {
 	die('second parameter of writeConfigGile() is not a hash') unless(isHash($_[0]));
 
 	# Write the values
-	locDbg(_T("Writing configuration file {}"),$filename);
+	printDbg(formatText(_T("Writing configuration file {}"),$filename));
 	printDbgIndent();
 	my $cfgWriter = new Config::Simple(syntax=>'ini');
 	while (my ($attr,$value) = each (%{$_[0]})) {
@@ -543,7 +532,7 @@ sub writeConfigFile($\%) {
 	$cfgWriter->write("$filename");
 
 	# Updating for comments
-	locDbg(_T("Adding configuration comments"));
+	printDbg(_T("Adding configuration comments"));
 	local *CFGFILE;
 	open (*CFGFILE, "< $filename") or printErr("$filename:","$!");
 	my @lines = ();
@@ -571,7 +560,7 @@ sub writeConfigFile($\%) {
 	}
 	close(*CFGFILE);
 
-	locDbg(_T("Saving configuration comments"));
+	printDbg(_T("Saving configuration comments"));
 	local *CFGFILE;
 	open (*CFGFILE, "> $filename") or printErr("$filename:","$!");
 	print CFGFILE (@lines);
@@ -636,7 +625,7 @@ sub ensureAccendentCompatibility($$$$) {
 	}
 
 	if (($changed)&&(!$_[3])) {
-		printWarn(locGet(_T("AutoLaTeX has detecting an old fashion syntax for the configuration file {}\nPlease regenerate this file with the command line option --fixconfig."),$_[2]));
+		printWarn(formatText(_T("AutoLaTeX has detecting an old fashion syntax for the configuration file {}\nPlease regenerate this file with the command line option --fixconfig."), $_[2]));
 		$_[3] = 1;
 	}
 
@@ -804,7 +793,7 @@ __END__
 
 =head1 BUG REPORT AND FEEDBACK
 
-To report bugs, provide feedback, suggest new features, etc. visit the AutoLaTeX Project management page at <http://www.arakhne.org/autolatex/> or send email to the author at L<galland@arakhne.org>.
+To report bugs, provide feedback, suggest new features, etc. (in prefered order): a) visit the developer site on GitHub <https://github.com/gallandarakhneorg/autolatex/>, b) visit the AutoLaTeX main page <http://www.arakhne.org/autolatex/>, or c) send email to the main author at galland@arakhne.org.
 
 =head1 LICENSE
 

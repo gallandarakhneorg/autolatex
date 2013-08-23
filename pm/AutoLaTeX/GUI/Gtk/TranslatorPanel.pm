@@ -49,7 +49,7 @@ use Gtk2;
 use Gtk2::SimpleList;
 
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::Translator;
 use AutoLaTeX::GUI::AbstractTranslatorPanel;
@@ -62,7 +62,7 @@ use AutoLaTeX::GUI::Gtk::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "6.0" ;
+my $VERSION = "7.0" ;
 
 #------------------------------------------------------
 #
@@ -139,7 +139,7 @@ sub initControls() : method {
 	my $self = shift;
 
 	# Label
-	my $label = Gtk2::Label->new($self->localeGet(_T("List of available translators:\n(click on the three left columns to change the loading state of the translators)")));
+	my $label = Gtk2::Label->new(_T("List of available translators:\n(click on the three left columns to change the loading state of the translators)"));
 	$self->attach ($label, 
 				0,1,0,1, # left, right, top and bottom columns
 				'expand','shrink', # x and y options
@@ -217,7 +217,7 @@ sub makeLegend($$;$) {
 	my $iconLabel = Gtk2::Image->new_from_pixbuf($icon);
 	$legendAlignment->attach ($iconLabel, 0, 1, 0, 1, 'fill', 'fill', 0, $topPadding);
 
-	my $text = Gtk2::Label->new ($self->localeGet($textlabel));
+	my $text = Gtk2::Label->new ($textlabel);
 	$legendAlignment->attach ($text, 1, 2, 0, 1, 'fill', 'fill', 5, $topPadding);
 
 	return $legendAlignment;
@@ -236,7 +236,6 @@ fill the attribute C<{'DATA'}{'translators'}>.
 sub initializeTranslatorPanel() : method {
 	my $self = shift;
 	$self->SUPER::initializeTranslatorPanel();
-	$self->initLocale('autolatexgtk');
 	$self->initControls();
 	$self->detectTranslatorConflicts();
 	$self->fillTranslatorList();

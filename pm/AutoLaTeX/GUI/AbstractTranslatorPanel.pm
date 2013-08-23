@@ -46,7 +46,7 @@ use Exporter;
 
 use AutoLaTeX::GUI::WidgetUtil;
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::Translator;
 use AutoLaTeX::Core::Config;
 
@@ -57,7 +57,7 @@ use AutoLaTeX::Core::Config;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "6.0" ;
+my $VERSION = "7.0" ;
 
 =pod
 
@@ -72,7 +72,6 @@ fill the attribute C<{'DATA'}{'translators'}>.
 sub initializeTranslatorPanel() : method {
 	my $self = shift;
 
-	$self->initLocale ('autolatexgui');
 	my %translators = $self->readTranslatorList();
 	$self->attr('TRANSLATORS') = \%translators;
 }
@@ -130,7 +129,7 @@ sub applyInclusionsInConfiguration(\%$) {
 			$_[0]->{"$transName.include module"} = $val;
 		}
 	}
-	$self->localeDbg(_T("No change detected")) unless ($hasChanged);
+	printDbg(_T("No change detected")) unless ($hasChanged);
 	return $hasChanged;
 }
 
@@ -147,7 +146,7 @@ sub savePanelContent() : method {
 
 	# System level
 	if ($self->isAdminUser()) {
-		$self->localeDbg(_T("Saving system configuration about translators"));
+		printDbg(_T("Saving system configuration about translators"));
 		printDbgIndent();
 		%configuration = readOnlySystemConfiguration(1);
 		if ($self->applyInclusionsInConfiguration(\%configuration,'system')) {
@@ -157,7 +156,7 @@ sub savePanelContent() : method {
 	}
 
 	# User level
-	$self->localeDbg(_T("Saving user configuration about translators"));
+	printDbg(_T("Saving user configuration about translators"));
 	printDbgIndent();
 	%configuration = readOnlyUserConfiguration(1);
 	if ($self->applyInclusionsInConfiguration(\%configuration,'user')) {
@@ -167,7 +166,7 @@ sub savePanelContent() : method {
 
 	# Project level
 	if ($self->hasProject()) {
-		$self->localeDbg(_T("Saving project configuration about translators"));
+		printDbg(_T("Saving project configuration about translators"));
 		printDbgIndent();
 		%configuration = %{readOnlyProjectConfiguration($self->attr('CONFIGURATIONS','PROJECT','__private__','input.project directory'))};
 		if ($self->applyInclusionsInConfiguration(\%configuration,'project')) {

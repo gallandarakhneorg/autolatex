@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# autolatex - autolatex.pl
+# autolatex - autolatex-gtk.pl
 # Copyright (C) 2007-13  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -59,15 +59,10 @@ use File::Spec ;
 	AutoLaTeX::Core::Util::setAutoLaTeXInfo("$LAUNCHINGNAME","$PERLSCRIPTNAME","$PERLSCRIPTDIR");
 }
 
-use Locale::gettext;
-use POSIX; # Needed for setlocale()
-
 use AutoLaTeX::Core::Main;
 use AutoLaTeX::Core::Config;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::GUI::Gtk::Window;
-
-# Set the default locale
-setlocale(LC_MESSAGES, "");
 
 #------------------------------------------------------
 #
@@ -76,6 +71,10 @@ setlocale(LC_MESSAGES, "");
 #------------------------------------------------------
 
 setDebugLevel(0);
+
+initTextDomain('autolatexgtk', File::Spec->catfile(getAutoLaTeXDir(), 'po'), 'UTF-8');
+initTextDomain('autolatex', File::Spec->catfile(getAutoLaTeXDir(), 'po'), 'UTF-8');
+
 my %currentConfiguration = mainProgram(0);
 
 my %systemConfiguration = readOnlySystemConfiguration();

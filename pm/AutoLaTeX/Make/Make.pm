@@ -69,13 +69,13 @@ use File::Spec;
 use Carp;
 
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::OS;
 use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '5.1';
+our $VERSION = '6.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -324,10 +324,10 @@ sub _computeDependenciesForRootFile($) : method {
 	my @files = ( $rootfile );
 	while (@files) {
 		my $file = shift @files;
-		printDbgFor(2, locGet(_T("Parsing '{}'"), $file));
+		printDbgFor(2, formatText(_T("Parsing '{}'"), $file));
 		if (-f "$file" ) {
 			printDbgIndent();
-			printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$file)));
+			printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$file)));
 			$self->{'files'}{$file} = {
 				'type' => 'tex',
 				'dependencies' => {},
@@ -349,7 +349,7 @@ sub _computeDependenciesForRootFile($) : method {
 							if ($dpath !~ /\.$cat/) {
 								$dpath .= ".$cat";
 							}
-							printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
+							printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
 							$self->{'files'}{$dpath} = {
 								'type' => $cat,
 								'dependencies' => {},
@@ -369,7 +369,7 @@ sub _computeDependenciesForRootFile($) : method {
 				if ($deps{'biblio'}) {
 					while (my ($bibdb,$bibdt) = each(%{$deps{'biblio'}})) {
 						my $bblfile = File::Spec->catfile("$rootdir", "$bibdb.bbl");
-						printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
+						printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
 						$self->{'files'}{"$bblfile"} = {
 							'type' => 'bbl',
 							'dependencies' => {},
@@ -387,7 +387,7 @@ sub _computeDependenciesForRootFile($) : method {
 									if ($dpath !~ /\.$cat/) {
 										$dpath .= ".$cat";
 									}
-									printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
+									printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
 									$self->{'files'}{$dpath} = {
 										'type' => $cat,
 										'dependencies' => {},
@@ -405,14 +405,14 @@ sub _computeDependenciesForRootFile($) : method {
 				#
 				if ($deps{'idx'}) {
 					my $idxfile = "$roottemplate.idx";
-					printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$idxfile)));
+					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$idxfile)));
 					$self->{'files'}{"$idxfile"} = {
 						'type' => 'idx',
 						'dependencies' => {},
 						'change' => lastFileChange("$idxfile"),
 					};
 					my $indfile = "$roottemplate.ind";
-					printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$indfile)));
+					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$indfile)));
 					$self->{'files'}{"$indfile"} = {
 						'type' => 'ind',
 						'dependencies' => { $idxfile => undef },
@@ -425,7 +425,7 @@ sub _computeDependenciesForRootFile($) : method {
 		}
 	}
 
-	printDbgFor(2, locGet(_T("Parsing auxiliary files")));
+	printDbgFor(2, formatText(_T("Parsing auxiliary files")));
 	printDbgIndent();
 
 	#
@@ -441,7 +441,7 @@ sub _computeDependenciesForRootFile($) : method {
 				my %data = getAuxBibliographyData("$auxfile");
 				if ($data{'databases'} || $data{'styles'}) {
 					my $bblfile = File::Spec->catfile("$rootdir", "$bibdb.bbl");
-					printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
+					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
 					$self->{'files'}{"$bblfile"} = {
 						'type' => 'bbl',
 						'dependencies' => {},
@@ -452,7 +452,7 @@ sub _computeDependenciesForRootFile($) : method {
 						foreach my $style (@{$data{'styles'}}) {
 							my $bstfile = File::Spec->catfile("$rootdir", "$style.bst");
 							if (-r "$bstfile") {
-								printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$bstfile)));
+								printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bstfile)));
 								$self->{'files'}{"$bstfile"} = {
 									'type' => 'bst',
 									'dependencies' => {},
@@ -466,7 +466,7 @@ sub _computeDependenciesForRootFile($) : method {
 						foreach my $db (@{$data{'databases'}}) {
 							my $bibfile = File::Spec->catfile("$rootdir", "$db.bib");
 							if (-r "$bibfile") {
-								printDbgFor(3, locGet(_T("Adding file '{}'"), removePathPrefix($rootdir,$bibfile)));
+								printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bibfile)));
 								$self->{'files'}{"$bibfile"} = {
 									'type' => 'bib',
 									'dependencies' => {},
@@ -512,16 +512,16 @@ sub runLaTeX($;$) : method {
 	my $logFile = File::Spec->catfile(dirname($file), basename($file, '.tex').'.log');
 	my $continueToCompile;
 	do {
-		printDbg(locGet(_T('{}: {}'), 'PDFLATEX', basename($file))); 
+		printDbg(formatText(_T('{}: {}'), 'PDFLATEX', basename($file))); 
 		$continueToCompile = 0;
 		$self->{'warnings'} = {};
 		unlink($logFile);
 		my $exitcode = runCommandSilently(@{$self->{'latex_cmd'}}, $file);
 		local *LOGFILE;
 		if ($exitcode!=0) {
-			printDbg(locGet(_T("{}: Error when generating {}"), 'PDFLATEX', basename($file)));
+			printDbg(formatText(_T("{}: Error when generating {}"), 'PDFLATEX', basename($file)));
 			open(*LOGFILE, "< $logFile") or printErr("$logFile: $!");
-			printDbg(locGet(_T("{}: The first error found in the log file is:"), 'PDFLATEX'));
+			printDbg(formatText(_T("{}: The first error found in the log file is:"), 'PDFLATEX'));
 			my $step = 0;
 			my $line;
 			while (*LOGFILE && ($line = <LOGFILE>) && ($step!=1)) {
@@ -534,7 +534,7 @@ sub runLaTeX($;$) : method {
 					$step = 15;
 				}
 			}
-			printDbg(locGet(_T("{}: End of error log."), 'PDFLATEX'));
+			printDbg(formatText(_T("{}: End of error log."), 'PDFLATEX'));
 			close(*LOGFILE);
 			exit(255);
 		}
@@ -612,7 +612,7 @@ sub build() : method {
 			}
 		}
 		else {
-			printDbgFor(2, locGet(_T('{} is up-to-date.'), basename($rootFile)));
+			printDbgFor(2, formatText(_T('{} is up-to-date.'), basename($rootFile)));
 		}
 
 		# Write building stamps
@@ -628,7 +628,7 @@ sub build() : method {
 				my $psFile = File::Spec->catfile($dirname, $basename.'.ps');
 				my $psDate = lastFileChange("$psFile");
 				if (!$psDate || ($dviDate>=$psDate)) {
-					printDbg(locGet(_T('{}: {}'), 'DVI2PS', basename($dviFile))); 
+					printDbg(formatText(_T('{}: {}'), 'DVI2PS', basename($dviFile))); 
 					runCommandOrFail(@{$self->{'dvi2ps_cmd'}}, $dviFile);
 				}
 			}
@@ -636,13 +636,13 @@ sub build() : method {
 
 		# Output the last LaTeX warning indicators.
 		if ($self->{'warnings'}{'multiple_definition'}) {
-			print STDERR locGet(_T("LaTeX Warning: There were multiply-defined labels.\n"));
+			print STDERR _T("LaTeX Warning: There were multiply-defined labels.\n");
 		}
 		if ($self->{'warnings'}{'undefined_reference'}) {
-			print STDERR locGet(_T("LaTeX Warning: There were undefined references.\n"));
+			print STDERR _T("LaTeX Warning: There were undefined references.\n");
 		}
 		if ($self->{'warnings'}{'undefined_citation'}) {
-			print STDERR locGet(_T("LaTeX Warning: There were undefined citations.\n"));
+			print STDERR _T("LaTeX Warning: There were undefined citations.\n");
 		}
 		if ($self->{'warnings'}{'other_warning'}) {
 			my $texFile = $rootFile;
@@ -650,7 +650,7 @@ sub build() : method {
 				$texFile = $self->{'files'}{$rootFile}{'mainFile'};
 			}
 			my $logFile = File::Spec->catfile(dirname($texFile), basename($texFile, '.tex').'.log');
-			print STDERR locGet(_T("LaTeX Warning: Please look inside {} for the other the warning messages.\n"),
+			print STDERR formatText(_T("LaTeX Warning: Please look inside {} for the other the warning messages.\n"),
 					basename($logFile));
 		}
 
@@ -692,7 +692,7 @@ sub buildBiblio() : method {
 			}
 		}
 		else {
-			printDbgFor(2, locGet(_T('{} is up-to-date.'), basename($rootFile)));
+			printDbgFor(2, formatText(_T('{} is up-to-date.'), basename($rootFile)));
 		}
 
 		# Write building stamps
@@ -736,7 +736,7 @@ sub buildMakeIndex() : method {
 			}
 		}
 		else {
-			printDbgFor(2, locGet(_T('{} is up-to-date.'), basename($rootFile)));
+			printDbgFor(2, formatText(_T('{} is up-to-date.'), basename($rootFile)));
 		}
 
 		# Write building stamps
@@ -961,12 +961,12 @@ sub __build_bbl($$$) : method {
 	if ($self->{'is_biblio_enable'}) {
 		my $basename = basename($file,'.bbl');
 		if ($filedesc->{'use_biber'}) {
-			printDbg(locGet(_T('{}: {}'), 'BIBER', basename($basename))); 
+			printDbg(formatText(_T('{}: {}'), 'BIBER', basename($basename))); 
 			runCommandOrFail(@{$self->{'biber_cmd'}}, "$basename");
 		}
 		else {
 			my $auxFile = File::Spec->catfile(dirname($file),"$basename.aux");
-			printDbg(locGet(_T('{}: {}'), 'BIBTEX', basename($auxFile))); 
+			printDbg(formatText(_T('{}: {}'), 'BIBTEX', basename($auxFile))); 
 			runCommandOrFail(@{$self->{'bibtex_cmd'}}, "$auxFile");
 		}
 	}
@@ -986,11 +986,11 @@ sub __build_ind($$$) : method {
 	if ($self->{'is_makeindex_enable'}) {
 		my $basename = basename($file,'.ind');
 		my $idxFile = File::Spec->catfile(dirname($file),"$basename.idx");
-		printDbg(locGet(_T('{}: {}'), 'MAKEINDEX', basename($idxFile))); 
+		printDbg(formatText(_T('{}: {}'), 'MAKEINDEX', basename($idxFile))); 
 		my @styleArgs = ();
 		my $istFile = $self->{'configuration'}{'__private__'}{'output.ist file'};
 		if ($istFile && -f "$istFile") {
-			printDbgFor(2, locGet(_T('Style file: {}'), $istFile)); 
+			printDbgFor(2, formatText(_T('Style file: {}'), $istFile)); 
 			push @styleArgs, '-s', "$istFile";
 		}
 		runCommandOrFail(@{$self->{'makeindex_cmd'}}, @styleArgs, "$idxFile");

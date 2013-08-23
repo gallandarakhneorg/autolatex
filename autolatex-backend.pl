@@ -66,6 +66,7 @@ use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::OS;
 use AutoLaTeX::Core::Translator;
 use AutoLaTeX::Core::Config;
+use AutoLaTeX::Core::IntUtils;
 
 sub readStdin() {
 	my $tmpfile = tmpnam();
@@ -87,9 +88,24 @@ sub readStdin() {
 	return %rcfg;
 }
 
+sub printComment($$) {
+	my $cmd = shift;
+	my $comment = shift;
+	print STDERR "\$> $cmd\n";
+	my %params = (	'limit' => 70,
+			'indent' => 5,
+			'prefix_nosplit' => '',
+			'prefix_split' => '',
+			'postfix_split' => '',
+			'indent_char' => ' ',
+	);
+	my $text = join("\n", makeMessageLong(%params, $comment));
+	print STDERR "$text\n\n";
+}
+
 setDebugLevel(0);
 
-localeInit("$PERLSCRIPTDIR",'autolatex')
+initTextDomain('autolatex', File::Spec->catfile(getAutoLaTeXDir(), 'po'), 'UTF-8');
 
 my %currentConfiguration = mainProgram(0);
 
@@ -359,32 +375,30 @@ elsif ($a1 eq 'set') {
 }
 elsif (!$a1) {
 	my $bn = basename($0);
-	print STDERR "\$> $bn get config [all|system|user|project] [<section>]\n";
-	print STDERR "\tOutput the configuration for the given level.\n";
-	print STDERR "\tIf the 4th param is given, output only the section with\n";
-	print STDERR "\tthis name.\n\n";
-	print STDERR "\$> $bn get translators\n";
-	print STDERR "\tOutput the list of the installed translators.\n\n";
-	print STDERR "\$> $bn get conflits [resolved]\n";
-	print STDERR "\tOutput the translators potentially under conflicts.\n";
-	print STDERR "\tIf 'resolved' is given, apply the resolution mechanism.\n\n";
-	print STDERR "\$> $bn get loads\n";
-	print STDERR "\tOutput the loading directives for translators.\n\n";
-	print STDERR "\$> $bn get images\n";
-	print STDERR "\tOutput the list of figures detected by AutoLaTeX.\n\n";
-	print STDERR "\$> $bn set config user|project [true|false]\n";
-	print STDERR "\tRead from STDIN an ini file that is a new configuration for\n";
-	print STDERR "\tthe given level. The boolean param indicates if the configuration\n";
-	print STDERR "\tkeys that are not given on STDIN will be removed (if true) or\n";
-	print STDERR "\tskipped (if false, the default) during the setting process.\n\n";
-	print STDERR "\$> $bn set loads\n";
-	print STDERR "\tRead from STDIN an ini file for the loading directives of\n";
-	print STDERR "\ttranslators.\n\n";
-	print STDERR "\$> $bn set images [true|false]\n";
-	print STDERR "\tRead from STDIN an ini file that is describing the attributes\n";
-	print STDERR "\tfor the translators. The boolean param indicates if the configuration\n";
-	print STDERR "\tkeys that are not given on STDIN will be removed (if true) or\n";
-	print STDERR "\tskipped (if false, the default) during the setting process.\n";
+	printComment(
+		"$bn get config [all|system|user|project] ["._T("<section>")."]",
+		_T("Output the configuration for the given level. If the 4th param is given, output only the section with this name."));
+	printComment(
+		"$bn get translators",
+		_T("Output the list of the installed translators."));
+	printComment(
+		"$bn get conflits [resolved]",
+		_T("Output the translators potentially under conflicts. If 'resolved' is given, apply the resolution mechanism."));
+	printComment(
+		"$bn get loads",
+		_T("Output the loading directives for translators."));
+	printComment(
+		"$bn get images",
+		_T("Output the list of figures detected by AutoLaTeX."));
+	printComment(
+		"$bn set config user|project [true|false]",
+		_T("Read from STDIN an ini file that is a new configuration for the given level. The boolean param indicates if the configuration keys that are not given on STDIN will be removed (if true) or skipped (if false, the default) during the setting process."));
+	printComment(
+		"$bn set loads",
+		_T("Read from STDIN an ini file for the loading directives of translators."));
+	printComment(
+		"$bn set images [true|false]",
+		_T("Read from STDIN an ini file that is describing the attributes for the translators. The boolean param indicates if the configuration keys that are not given on STDIN will be removed (if true) or skipped (if false, the default) during the setting process."));
 }
 else {
 	exit(255);

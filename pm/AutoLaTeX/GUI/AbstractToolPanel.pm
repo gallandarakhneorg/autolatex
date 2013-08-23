@@ -45,7 +45,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Exporter;
 
 use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::Locale;
+use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::GUI::WidgetUtil;
 
@@ -56,7 +56,7 @@ use AutoLaTeX::GUI::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "7.0" ;
+my $VERSION = "8.0" ;
 
 
 =pod
@@ -68,7 +68,6 @@ Initializing the panel content before displaying.
 =cut
 sub initializeToolPanel() : method {
 	my $self = shift;
-	$self->initLocale('autolatexgui');
 }
 
 =pod
@@ -83,7 +82,7 @@ saveGUIConfiguration() instead.
 sub savePanelContent() {
 	my $self = shift;
 
-	$self->localeDbg (_T("Saving tool configuration"));
+	printDbg(_T("Saving tool configuration"));
 	printDbgIndent ();
 
 	my %configuration = readOnlyUserConfiguration();
