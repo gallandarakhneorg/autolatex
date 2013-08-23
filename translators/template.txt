@@ -41,6 +41,8 @@
 # Command line to invoke to translate the files from input to output.
 # $in is the environment variable for the input filename.
 # $out is the environment variable for the output filename.
+# $outbasename is the basename without the extension and the dirname of the output file.
+# $outwoext is the basename without the extension but with the dirname of the out file.
 # You could use environment variables by prefixing them with the character
 # "$", even on Window operating systems. We decide to use the Unix standard
 # to obtain a single configuration file for all the operating systems.
@@ -66,8 +68,11 @@
 # Perl code to invoke to translate the files from input to output.
 # $in is the environment variable for the input filename.
 # $out is the environment variable for the output filename.
+# $outbasename is the basename without the extension and the dirname of the out file.
+# $outwoext is the basename without the extension but with the dirname of the out file.
 # @inexts is the array of the extensions defined in variable INPUT_EXTENSIONS.
-# $outext is the extension defined in variable OUTPUT_EXTENSION.
+# $outext is the first extension defined in variable OUTPUT_EXTENSION.
+# @outexts are the extensions defined in variable OUTPUT_EXTENSION.
 # $ispdfmode indicates if the translator is used in PDF mode.
 # $isepsmode indicates if the translator is used in EPS mode.
 # If the command line is empty, you must define a Perl function in 
@@ -76,6 +81,7 @@
 
 # List of patterns that are representing the output files to remove when cleaning.
 # The syntax of the variable is a space-separated list of shell patterns.
-# $in is the basename (without the extension) of the input file.
+# $in is the basename (without the extension and without the directory) of the input file.
+# $out is the basename (without the extension and without the directory) of the output file.
 ;FILES_TO_CLEAN =
 

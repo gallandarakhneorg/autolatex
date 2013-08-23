@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '10.0';
+$VERSION = '11.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -730,13 +730,27 @@ sub runRootTranslator(\%$$\%$) {
 	my $translators = shift || confess("translators are mandatory");
 	my $force = shift;
 
-	my $out;
-	if ($in =~ /^(.*)\.[^.]+$/) {
-		$out = "$1";
+	my $out = undef;
+	my @transexts = sort {
+				my $la = length($a);
+				my $lb = length($b);
+				my $c = $lb <=> $la;
+				if ($c) {
+					($c);
+				}
+				else {
+					($a cmp $b);
+				}
+			}
+			@{$translators->{"$transname"}{'transdef'}{'INPUT_EXTENSIONS'}{'value'}};
+	my $i = 0;
+	while (($i<@transexts) && (!$out)) {
+		if ($in =~ /^(.+)\Q$transexts[$i]\E$/i) {
+			$out = "$1";
+		}
+		$i++;
 	}
-	else {
-		$out = "$in";
-	}
+	$out = "$in" unless ($out);
 	$out .= $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
 
 	$ROOT_TRANSLATORS{'configuration'} = $configuration;
@@ -873,6 +887,9 @@ sub _runTranslator($$$$$$$) {
 		}
 		$environment{'in'} = $in;
 		$environment{'out'} = $out;
+		my $ext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
+		$environment{'outbasename'} = basename($out, $ext);
+		$environment{'outwoext'} = File::Spec->catfile(dirname($out), $environment{'outbasename'});
 		# Create the CLI to run
 		my @cli = parseCLI(\%environment, "$cli");
 		
@@ -906,6 +923,9 @@ sub _runTranslator($$$$$$$) {
 		my @inexts = @{$translators->{"$transname"}{'transdef'}{'INPUT_EXTENSIONS'}{'value'}};
 		my $outext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0];
 		my @outexts = @{$translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}};
+		my $ext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
+		my $outbasename = basename($out, $ext);
+		my $outwoext = File::Spec->catfile(dirname($out), $outbasename);
 		
 		my $c = eval $code;
 		if (!defined($c) && $@) {

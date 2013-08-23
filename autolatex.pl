@@ -484,6 +484,7 @@ sub al_run_cleanall {
 					$localpattern .= '$out'."\Q$outputExtension\E";
 				}
 			}
+
 			$localpattern =~ s/\\?\$in/\Q$in\E/g;
 			$localpattern =~ s/\\?\$out/\Q$out\E/g;
 
