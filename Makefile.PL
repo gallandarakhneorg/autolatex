@@ -30,7 +30,17 @@ sub dbg(@) {
 }
 
 #------------------------------------------------------------------------------------------
+sub isArray($) {
+	return 0 unless defined($_[0]) ;
+	my $r = ref( $_[0] ) ;
+	return ( $r eq "ARRAY" ) ;
+}
+
+#------------------------------------------------------------------------------------------
 sub arrayContains(\@$) {
+	if (!$_[0]) {
+		return 0;
+	}
 	foreach my $e (@{$_[0]}) {
 		if ($_[1] eq $e) {
 			return 1;
@@ -95,7 +105,8 @@ sub rm($) {
 }
 
 #------------------------------------------------------------------------------------------
-sub getFilesRec($@) {
+sub getFilesRec($$@) {
+	my $exceptions = shift || [];
 	my $directory = shift;
 	my $pattern = shift;
 	my @list = ();
@@ -111,7 +122,8 @@ sub getFilesRec($@) {
 			or die("$directory: $!\n");
 		while (my $d = readdir(*DIR)) {
 			if (($d ne File::Spec->curdir())&&($d ne File::Spec->updir())&&
-			    ($d =~ /^$pattern$/)) {
+			    ($d =~ /^$pattern$/) &&
+			    (!arrayContains(@{$exceptions}, "$d"))) {
 				my $full = File::Spec->catfile($directory,$d);
 				if (-d "$full") {
 					push @subdirs, "$full";
@@ -125,7 +137,7 @@ sub getFilesRec($@) {
 
 		# Go into sub directories
 		foreach my $d (@subdirs) {
-			my @l = &getFilesRec("$d",@_);
+			my @l = &getFilesRec($exceptions,"$d",@_);
 			push @list, @l;
 		}
 	}
@@ -133,11 +145,19 @@ sub getFilesRec($@) {
 }
 sub getFiles(@) {
 	my $firstpart = shift;
-	if ($firstpart) {
-		return getFilesRec('.',$firstpart,@_);
+	my $exceptions;
+	if (isArray($firstpart)) {
+		$exceptions = $firstpart;
+		$firstpart = shift;
 	}
 	else {
-		return getFilesRec(FileSpec->rootdir(),@_);
+		$exceptions = [];
+	}
+	if ($firstpart) {
+		return getFilesRec($exceptions, '.',$firstpart,@_);
+	}
+	else {
+		return getFilesRec($exceptions, FileSpec->rootdir(),@_);
 	}
 }
 
@@ -429,9 +449,9 @@ sub DO_install(\%) {
 			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI','Gtk'),
 			getFiles('pm','AutoLaTeX','GUI','Gtk','*.pm'));
 
+		my @po_exceptions = ('geditautolatex.mo');
 		foreach my $lang (@po_directories) {
-			my @files = getFiles('po',"$lang",'LC_MESSAGES','*.mo');
-			removeFromArray(@files, 'geditautolatex.mo');
+			my @files = getFiles(\@po_exceptions, 'po',"$lang",'LC_MESSAGES','*.mo');
 			installInto(
 				File::Spec->catfile($INSTALLDIRECTORY,'po',"$lang",'LC_MESSAGES'),
 				@files);
