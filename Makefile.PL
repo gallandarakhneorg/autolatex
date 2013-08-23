@@ -19,6 +19,7 @@ my $BINDIRECTORY;
 my $ETCDIRECTORY;
 my $MANDIRECTORY;
 my $LOCALEDIRECTORY;
+my $ICONDIRECTORY;
 my $STYDIRECTORY;
 my $GEDITPLUGINDIRECTORY;
 my $GSETTINGSSCHEMADIRECTORY;
@@ -480,6 +481,10 @@ sub DO_install(\%) {
 				File::Spec->catfile('po',"$lang",'LC_MESSAGES','geditautolatex.mo'),
 				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
 		}
+
+		install(
+			'autolatex-icon.png',
+			$ICONDIRECTORY);
 	}
 }
 
@@ -645,6 +650,7 @@ if (("$^O" eq 'MSWin32')||
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'autolatex','man','english');
 	$LOCALEDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex', 'locale');
+	$ICONDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex', 'icons');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
 	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
 	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
@@ -670,6 +676,7 @@ else {
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'man1');
 	$LOCALEDIRECTORY = File::Spec->catfile("$PREFIX",'share', 'locale');
+	$ICONDIRECTORY = File::Spec->catfile("$PREFIX",'share', 'icons');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
 	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex');
 	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
