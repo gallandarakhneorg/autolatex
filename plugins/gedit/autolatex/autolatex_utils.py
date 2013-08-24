@@ -60,7 +60,7 @@ AUTOLATEX_PLUGIN_PATH = os.path.dirname(AUTOLATEX_PLUGIN_PATH)
 # PO path
 AUTOLATEX_PO_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'po')
 if not os.path.exists(os.path.join(AUTOLATEX_PO_PATH, 'fr', 'LC_MESSAGES', 'geditautolatex.mo')):
-	AUTOLATEX_PO_PATH = '/usr/share/locale'
+	AUTOLATEX_PO_PATH = None # Default locale path
 
 # Binary file of AutoLaTeX
 # Use the development versions of the scripts
@@ -68,7 +68,7 @@ AUTOLATEX_BINARY = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
 if not os.path.exists(AUTOLATEX_BINARY):
 	AUTOLATEX_BINARY = which('autolatex')
 DEFAULT_AUTOLATEX_BINARY = AUTOLATEX_BINARY
-AUTOLATEX_BACKEND_BINARY = os.path.join(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH)), 'autolatex-backend.pl')
+AUTOLATEX_BACKEND_BINARY = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'autolatex-backend.pl')
 if not os.path.exists(AUTOLATEX_BACKEND_BINARY):
 	AUTOLATEX_BACKEND_BINARY = which('autolatex-backend')
 DEFAULT_AUTOLATEX_BACKEND_BINARY = AUTOLATEX_BACKEND_BINARY

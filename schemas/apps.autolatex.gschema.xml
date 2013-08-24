@@ -11,5 +11,10 @@
       <summary>Path to autolatex-backend</summary>
       <description>This is the absolute path to the binary 'autolatex-backend'.</description>
     </key>
+    <key type="b" name="force-synctex">
+      <default>true</default>
+      <summary>Force the use of SyncTeX</summary>
+      <description>Indicates if SyncTeX msut be used, even if the configuration files are set to not use it.</description>
+    </key>
   </schema>
 </schemalist>

@@ -164,6 +164,19 @@ class Panel(Gtk.Table):
 				2,5); # horizontal and vertical paddings
 		table_row = table_row + 1
 
+		hbox = Gtk.HBox()
+		self.attach(	hbox, 
+				0,2,table_row,table_row+1, # left, right, top and bottom columns
+				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
+				Gtk.AttachOptions.SHRINK, # y options
+				2,5); # horizontal and vertical paddings
+		table_row = table_row + 1
+		ui_label = Gtk.Label(_T("Use SyncTeX when generating the document"))
+		ui_label.set_alignment(0, 0.5)
+		hbox.add(ui_label)
+		self._ui_run_synctex_checkbox = Gtk.Switch()
+		hbox.add(self._ui_run_synctex_checkbox)
+
 		ui_label = Gtk.Label(_T("Type of style for MakeIndex"))
 		ui_label.set_alignment(0, 0.5)
 		self.attach(	ui_label, 
@@ -213,6 +226,7 @@ class Panel(Gtk.Table):
 		if self._is_document_level:
 			self._ui_main_tex_file_editor.set_text(self._get_settings_str('main file'))
 		self._ui_run_biblio_checkbox.set_active(self._get_settings_bool('biblio', True))
+		self._ui_run_synctex_checkbox.set_active(self._get_settings_bool('synctex', False))
 		self._ui_generation_type_combo.set_active(
 				GenerationType.index(self._get_settings_str('generation type', GenerationType.PDF)))
 		self._makeindex_value = self._get_settings_str('makeindex style', '@detect, @system')
@@ -261,6 +275,8 @@ class Panel(Gtk.Table):
 		self._settings.set('generation', 'main file', self._ui_main_tex_file_editor.get_text())
 		self._settings.set('generation', 'biblio', 
 				'true' if self._ui_run_biblio_checkbox.get_active() else 'false')
+		self._settings.set('generation', 'synctex', 
+				'true' if self._ui_run_synctex_checkbox.get_active() else 'false')
 		self._settings.set('generation', 'generation type', 
 				GenerationType.label(self._ui_generation_type_combo.get_active()))
 		self._settings.set('generation', 'makeindex style', 
