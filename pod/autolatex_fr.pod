@@ -321,6 +321,13 @@ pour lequel la valeur doit être initialisée. Si aucun
 S<convertisseur> est donné, "generation' est utilisé comme préfixe
 par défaut.
 
+=item B<--[no]synctex>
+
+Activer ou désactiver la génération du fichier de sortie avec SyncTeX.
+SyncTeX est un mécanisme qui permet de lié un visualisateur et un
+éditeur TeX. Quand vous cliquez dans l'un, l'autre logiciel met en
+surbrillance la ligne correspondante de son côté.
+
 =item B<-v>
 
 Chaque fois que cette option est donnée, AutoLaTeX est plus
@@ -1134,6 +1141,8 @@ Les directives reconnues sont :
 =item F<lualatex> - utilise F<lualatex>
 
 =back
+
+=item I<synctex> : indique si le document généré doit être produit en utilisant SyncTeX, ou non.
 
 =item I<makeindex style> : spécification du style d'index utilisé par MakeIndex. La valeur de cette directive est une liste de valeurs séparées par des virgules, dans l'ordre de préférence. Les différentes valeurs supportées sont :
 

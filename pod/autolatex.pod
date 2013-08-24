@@ -327,6 +327,13 @@ translator for which the value must ve overridden. If
 S<translator> is not given then "generation" is the
 default prefix.
 
+=item B<--[no]synctex>
+
+Enable or disable the generation of the output file with SyncTeX.
+SyncTeX is a system that is permitting to link a viewer and 
+the TeX editor. When you click in one, the other software is
+highlighting the corresponding line.
+
 =item B<-v>
 
 Each time this option was specified, AutoLaTeX is more
@@ -1134,6 +1141,8 @@ The recognized directives are:
 =item F<lualatex> - use F<lualatex>
 
 =back
+
+=item I<synctex> : indicates if the output document may be produced with SyncTeX, or not.
 
 =item I<makeindex style> : specifies the style that must be used by MakeIndex. This is a list of values separated by comas, in the preference order. The values should be:
 

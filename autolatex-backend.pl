@@ -151,9 +151,26 @@ if ($a1 eq 'get') {
 			exit(255);
 		}
 		if ($a4) {
-			foreach my $k (keys %cfgOutput) {
-				if ($k !~ /^\Q$a4.\E/) {
-					delete $cfgOutput{$k};
+			if ($a4 eq '__private__') {
+				%cfgOutput =  %{$cfgOutput{'__private__'}};
+				if ($cfgOutput{'internationalization'}) {
+					$cfgOutput{'internationalization.locale'} = $cfgOutput{'internationalization'}{'locale'} || '';
+					$cfgOutput{'internationalization.language'} = $cfgOutput{'internationalization'}{'language'} || '';
+					$cfgOutput{'internationalization.codeset'} = $cfgOutput{'internationalization'}{'codeset'} || '';
+					$cfgOutput{'internationalization.domains'} = join(',',@{$cfgOutput{'internationalization'}{'domains'}});
+					delete $cfgOutput{'internationalization'}
+				}
+				foreach my $k (keys %cfgOutput) {
+					unless (defined($cfgOutput{$k})) {
+						$cfgOutput{$k} = ''
+					}
+				}
+			}
+			else {
+				foreach my $k (keys %cfgOutput) {
+					if ($k !~ /^\Q$a4.\E/) {
+						delete $cfgOutput{$k};
+					}
 				}
 			}
 		}
@@ -377,7 +394,7 @@ elsif (!$a1) {
 	my $bn = basename($0);
 	printComment(
 		"$bn get config [all|system|user|project] ["._T("<section>")."]",
-		_T("Output the configuration for the given level. If the 4th param is given, output only the section with this name."));
+		_T("Output the configuration for the given level. If the 4th param is given, output only the section with this name. If section is \"__private__\", the hidden configuration is output."));
 	printComment(
 		"$bn get translators",
 		_T("Output the list of the installed translators."));

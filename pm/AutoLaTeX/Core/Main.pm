@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '17.0';
+$VERSION = '18.1';
 $COPYRIGHT_YEAR = '2013';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -56,8 +56,8 @@ use AutoLaTeX::TeX::DocumentDetector;
 sub analyzeCommandLineOptions(\%) {
 	printDbg(_T("Reading command line options"));
 
-	$_[0]->{'__private__'}{'config.command line'} = {};
 	my $realcfg = $_[0];
+	$_[0]->{'__private__'}{'config.command line'} = {};
 	my $cfg = \%{$_[0]->{'__private__'}{'config.command line'}};
 	my $debugLevel = getDebugLevel();
 
@@ -72,11 +72,6 @@ sub analyzeCommandLineOptions(\%) {
 
 		'createist' => \$realcfg->{'__private__'}{'action.create ist file'},
 
-		# DEPRECATED
-		'createmakefile' => sub {
-					printWarn(formatText(_T('Command line option \'{}\' is deprecated.'), '--createmakefile'));
-				},
-
 		'defaultist' => sub { 
 					$cfg->{'generation.makeindex style'} = '@system';
 				},
@@ -84,12 +79,6 @@ sub analyzeCommandLineOptions(\%) {
 		'dvi' => sub { 
 				$cfg->{'generation.generation type'} = 'dvi';
 			},
-
-		'bibtex!' => sub {
-					printWarn("The command line option '--bibtex' is deprecated.");
-					$cfg->{'generation.biblio'} = ($_[1] ? 'yes' : 'no');
-					$realcfg->{'__private__'}{'CLI.biblio'} = ($_[1] ? 'yes' : 'no'); # For makeflat action
-		},
 
 		'biblio!' => sub {
 					$cfg->{'generation.biblio'} = ($_[1] ? 'yes' : 'no');
@@ -152,11 +141,6 @@ sub analyzeCommandLineOptions(\%) {
 
 		'noview' => sub { $cfg->{'viewer.view'} = 'no'; },
 
-		# DEPRECATED
-		'output=s' => sub {
-					printWarn(formatText(_T('Command line option \'{}\' is deprecated.'), '--output'));
-				},
-
 		'pdf' => sub { $cfg->{'generation.generation type'} = 'pdf'; },
 
 		'pdflatex' => 	sub { 
@@ -167,14 +151,11 @@ sub analyzeCommandLineOptions(\%) {
 				$cfg->{'generation.generation type'} = 'ps';
 			},
 
-		# DEPRECATED
-		'pspdf' => sub { 
-					printWarn(formatText(_T('Command line option \'{}\' is deprecated.'), '--pspdf'));
-			},
-
 		'quiet' => sub { $debugLevel = 0; },
 
 		'set=s%'  => sub { $cfg->{'generation.set'}{$_[1]} = $_[2]; },
+
+		'synctex!'  => sub { $cfg->{'generation.synctex'} = ($_[1] ? 'yes' : 'no'); },
 
 		'xelatex' => 	sub { 
 					$cfg->{'generation.tex compiler'} = 'xelatex';

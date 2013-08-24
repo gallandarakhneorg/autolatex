@@ -14,15 +14,15 @@ echo "Updating the existing translations..."
 
 for PO_FILE in po/*/LC_MESSAGES/autolatex.po
 do
-	msgmerge -U "$PO_FILE" "po/template_cli.pot" || exit 1
+	msgmerge --backup=none -U "$PO_FILE" "po/template_cli.pot" || exit 1
 done
 
 for PO_FILE in po/*/LC_MESSAGES/autolatexgtk.po
 do
-	msgmerge -U "$PO_FILE" "po/template_gtk.pot" || exit 1
+	msgmerge --backup=none -U "$PO_FILE" "po/template_gtk.pot" || exit 1
 done
 
 for PO_FILE in po/*/LC_MESSAGES/geditautolatex.po
 do
-	msgmerge -U "$PO_FILE" "po/template_gedit.pot" || exit 1
+	msgmerge --backup=none -U "$PO_FILE" "po/template_gedit.pot" || exit 1
 done

@@ -4,8 +4,7 @@
 # Stephane Galland <galland@arakhne.org>, 2013.
 #
 msgid ""
-msgstr ""
-"Project-Id-Version: AutoLaTeX 16.0\n"
+msgstr "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-23 16:13+0200\n"
 "PO-Revision-Date: 2013-05-21 22:26+0200\n"
@@ -250,8 +249,7 @@ msgid ""
 "List of available translators:\n"
 "(click on the three left columns to change the loading state of the "
 "translators)"
-msgstr ""
-"Liste des convertisseurs disponibles :\n"
+msgstr "Liste des convertisseurs disponibles :\n"
 "(cliquer sur les trois premières colonnes pour changer l'état des "
 "convertisseurs)"
 

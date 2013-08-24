@@ -70,12 +70,13 @@ use Carp;
 
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::IntUtils;
+use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::OS;
 use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '6.0';
+our $VERSION = '8.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -84,6 +85,7 @@ my %COMMAND_DEFINITIONS = (
 		'to_dvi' => ['--output-format=dvi'],
 		'to_ps' => undef,
 		'to_pdf' => ['--output-format=pdf'],
+		'synctex' => '-synctex=1',
 	},
 	'latex' => {
 		'cmd' => 'latex',
@@ -91,6 +93,7 @@ my %COMMAND_DEFINITIONS = (
 		'to_dvi' => ['--output-format=dvi'],
 		'to_ps' => undef,
 		'to_pdf' => ['--output-format=pdf'],
+		'synctex' => '-synctex=1',
 	},
 	'xelatex' => {
 		'cmd' => 'xelatex',
@@ -98,6 +101,7 @@ my %COMMAND_DEFINITIONS = (
 		'to_dvi' => ['--no-pdf'],
 		'to_ps' => undef,
 		'to_pdf' => [],
+		'synctex' => '-synctex=1',
 	},
 	'lualatex' => {
 		'cmd' => 'luatex',
@@ -105,6 +109,7 @@ my %COMMAND_DEFINITIONS = (
 		'to_dvi' => ['--output-format=dvi'],
 		'to_ps' => undef,
 		'to_pdf' => ['--output-format=pdf'],
+		'synctex' => '-synctex=1',
 	},
 	'bibtex' => {
 		'cmd' => 'bibtex',
@@ -184,6 +189,12 @@ sub new(\%) : method {
 		confess("No command definition for '$compiler'") unless ($def);
 		push @{$self->{'latex_cmd'}}, $def->{'cmd'}, @{$def->{'flags'}};
 		confess("No command definition for '$compiler/".$self->{'type'}."'") unless (exists $def->{'to_'.$self->{'type'}});
+
+		# Support of SyncTeX
+		if (cfgBoolean($_[0]->{'generation.synctex'}) && $def->{'synctex'}) {
+			push @{$self->{'latex_cmd'}}, $def->{'synctex'};
+		}
+
 		my $target = $def->{'to_'.$self->{'type'}};
 		if (defined($target)) {
 			push @{$self->{'latex_cmd'}}, @{$target};

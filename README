@@ -251,6 +251,12 @@ OPTIONS
         the value must ve overridden. If translator is not given then
         "generation" is the default prefix.
 
+    --[no]synctex
+        Enable or disable the generation of the output file with SyncTeX.
+        SyncTeX is a system that is permitting to link a viewer and the TeX
+        editor. When you click in one, the other software is highlighting
+        the corresponding line.
+
     -v  Each time this option was specified, AutoLaTeX is more verbose. Note
         that 1) if you put 5 times the -v option on the command line,
         AutoLaTeX will consider the Perl warnings as errors; 2) if you put 6
@@ -743,6 +749,8 @@ CONFIGURATION FILE
         xelatex - use xelatex
         lualatex - use lualatex
 
+    *synctex* : indicates if the output document may be produced with
+    SyncTeX, or not.
     *makeindex style* : specifies the style that must be used by MakeIndex.
     This is a list of values separated by comas, in the preference order.
     The values should be:

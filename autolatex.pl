@@ -380,7 +380,7 @@ sub al_getcleanfiles() {
 	my @filestoclean = (
 		'.autolatex_stamp', 'autolatex_stamp',
 		'autolatex_exec_stderr.log', 'autolatex_exec_stdout.log',
-		"$outputFile.pdf", "$outputFile.dvi", "$outputFile.xdvi", "$outputFile.xdv", "$outputFile.ps",
+		"$outputFile.pdf", "$outputFile.dvi", "$outputFile.xdvi", "$outputFile.xdv", "$outputFile.ps", "$outputFile.synctex.gz", "$outputFile.synctex",
 	);
 	my @filestocleanrec = (
 		'*.aux', '*.log', '*.bbl', '*.blg',

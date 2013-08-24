@@ -112,6 +112,9 @@ my %CONFIGURATION_COMMENTS = (
 							"loaded. This is a list of paths separated by the path ".
 							"separator character used by your operating system: ':' ".
 							"on Unix platforms or ';' on Windows platforms for example."),
+	'generation.synctex'			=> _T(	"Indicates if the PDF document must be produced with the SyncTeX flag on or not. ".
+							"SyncTeX enables to link a PDF viewer (as evince) and a text editor (as Gedit). ".
+							"When you click inside one, the other is highlighting the line in its side."),
 	# SCM
 	'scm.scm commit'			=> _T(	"Tool to launch when a SCM commit action is requested. ".
 							"Basically the SCM tools are CVS, SVN, or GIT."),
