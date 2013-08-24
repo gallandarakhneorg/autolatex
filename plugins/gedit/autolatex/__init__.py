@@ -24,6 +24,7 @@
 import os
 import subprocess
 import tempfile
+import re
 # Try to use the threading library if it is available
 try:
     import threading as _threading
@@ -53,20 +54,24 @@ UI_XML = """<ui>
 <menubar name="MenuBar">
     <menu name="ToolsMenu" action="Tools">
       <placeholder name="ToolsOps_3">
-	<menu name="AutoLaTeXMenu" action="AutoLaTeXMenu">
-	  <menuitem name="AutoLaTeXGenerateImageAction" action="AutoLaTeXGenerateImageAction"/>
-	  <menuitem name="AutoLaTeXCompileAction" action="AutoLaTeXCompileAction"/>
+	<menu action="AutoLaTeXMenu">
+	  <menuitem action="AutoLaTeXGenerateImageAction"/>
+	  <menuitem action="AutoLaTeXCompileAction"/>
+	  <menu action="AutoLaTeXSyncTeXMenu">
+	    <menuitem action="AutoLaTeXEnableSyncTeXAction"/>
+	    <menuitem action="AutoLaTeXUpdateForSyncTeXAction"/>
+          </menu>
 	  <separator />
-	  <menuitem name="AutoLaTeXCleanAction" action="AutoLaTeXCleanAction"/>
-	  <menuitem name="AutoLaTeXCleanallAction" action="AutoLaTeXCleanallAction"/>
+	  <menuitem action="AutoLaTeXCleanAction"/>
+	  <menuitem action="AutoLaTeXCleanallAction"/>
 	  <separator />
-	  <menuitem name="AutoLaTeXViewAction" action="AutoLaTeXViewAction"/>
+	  <menuitem action="AutoLaTeXViewAction"/>
 	  <separator />
-	  <menuitem name="AutoLaTeXDocumentConfAction" action="AutoLaTeXDocumentConfAction"/>
-	  <menuitem name="AutoLaTeXRemoveDocumentConfAction" action="AutoLaTeXRemoveDocumentConfAction"/>
+	  <menuitem action="AutoLaTeXDocumentConfAction"/>
+	  <menuitem action="AutoLaTeXRemoveDocumentConfAction"/>
 	  <separator />
-	  <menuitem name="AutoLaTeXUserConfAction" action="AutoLaTeXUserConfAction"/>
-	  <menuitem name="AutoLaTeXRemoveUserConfAction" action="AutoLaTeXRemoveUserConfAction"/>
+	  <menuitem action="AutoLaTeXUserConfAction"/>
+	  <menuitem action="AutoLaTeXRemoveUserConfAction"/>
         </menu>
       </placeholder>
     </menu>
@@ -74,9 +79,9 @@ UI_XML = """<ui>
 <toolbar name="ToolBar">
     <placeholder name="AutoLaTeX_toolbar">
         <separator/>
-        <toolitem name="AutoLaTeXCompileAction" action="AutoLaTeXCompileAction"/>
-        <toolitem name="AutoLaTeXCleanAction" action="AutoLaTeXCleanAction"/>
-        <toolitem name="AutoLaTeXViewAction" action="AutoLaTeXViewAction"/>
+        <toolitem action="AutoLaTeXCompileAction"/>
+        <toolitem action="AutoLaTeXCleanAction"/>
+        <toolitem action="AutoLaTeXViewAction"/>
     </placeholder>
 </toolbar>
 </ui>"""
@@ -129,6 +134,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	self._console_icon = None # Icon of the error console
 	self._error_console = None # Current instance of the error console
 	self._gsettings = gsettings.Manager()
+	self._syntex_regex = re.compile('\%.*mainfile:\s*(.*)$')
 
     # Invoked when the configuration window is open
     def do_create_configure_widget(self):
@@ -137,8 +143,16 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     # Invoked when the plugin is activated 
     def do_activate(self):
 	self._console_icon = self._get_icon('console')
+	if not self._gsettings:
+		self._gsettings = gsettings.Manager()
         self._add_ui()
 	self._check_autolatex_binaries()
+
+    # Invoke when the plugin is desactivated
+    def do_deactivate(self):
+        self._remove_ui()
+	self._gsettings.unbind()
+	self._gsettings = None
 
     # Check if the AutoLaTeX binaries were found
     def _check_autolatex_binaries(self):
@@ -154,12 +168,6 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _T("The program 'autolatex-backend' was not found.\nPlease fix the configuration of the AutoLaTeX plugin."))
 		answer = dialog.run()
 		dialog.destroy()
-
-    # Invoke when the plugin is desactivated
-    def do_deactivate(self):
-	self._gsettings.unbind()
-	self._gsettings = None
-        self._remove_ui()
 
     # Invoke when the UI is updated
     def do_update_state(self):
@@ -193,7 +201,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		if self._userconfsensitive_actions:
 		    self._userconfsensitive_actions.set_sensitive(hasUserConfFile
 				and not self._compilation_under_progress)
-
+		
     # Update the UI according to the flag "compilation under progress"
     # and to compilation outputs
     def _update_action_validity(self, valid, console_content):
@@ -240,6 +248,14 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
                 None),
         ])
         manager.insert_action_group(self._menu)
+	# Create the menu for SyncTeX
+        self._synctex_menu = Gtk.ActionGroup("AutoLaTeXSyncTeXMenu")
+        self._synctex_menu.add_actions([
+            ('AutoLaTeXSyncTeXMenu', Gtk.STOCK_DISCONNECT, _T("SyncTeX"), 
+                None, _T("SyncTeX"), 
+                None),
+        ])
+	manager.insert_action_group(self._synctex_menu)
 	# Create the group of actions that are needing an AutoLaTeX document
         self._document_actions = Gtk.ActionGroup("AutoLaTeXDocumentActions")
         self._document_actions.add_actions([
@@ -286,7 +302,15 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         manager.insert_action_group(self._userconfsensitive_actions)
 	# Create the group of actions that are not needing any special document
         self._general_actions = Gtk.ActionGroup("AutoLaTeXGeneralActions")
+        self._general_actions.add_toggle_actions([
+            ('AutoLaTeXEnableSyncTeXAction', None, _T("Force the use of SyncTeX"), 
+                None, _T("Use SyncTeX even if the document and user configurations say 'no'"), 
+                self.on_enable_synctex_action_activate),
+	])
         self._general_actions.add_actions([
+            ('AutoLaTeXUpdateForSyncTeXAction', None, _T("Update TeX file with SyncTeX reference"), 
+                None, _T("Update the text of the TeX file to add the reference to the main document"), 
+                self.on_update_for_synctex_action_activate),
             ('AutoLaTeXUserConfAction', None, _T("User configuration"), 
                 None, _T("Change the configuration for the user"), 
                 self.on_user_configuration_action_activate),
@@ -306,9 +330,16 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	# Add the Gtk contributions
         self._ui_merge_id = manager.add_ui_from_string(UI_XML)
         manager.ensure_update()
-        
+	# Change the state of the check-boxes
+	checkbox = self._general_actions.get_action('AutoLaTeXEnableSyncTeXAction')
+	checkbox.set_active(self._gsettings.get_force_synctex())
+	# Connect from gsettings
+	self._gsettings.connect('force-synctex', self.on_gsettings_changed)
+
     # Remove all contributions to the Gtk UI
     def _remove_ui(self):
+	# Disconnect from gsettings
+	self._gsettings.disconnect('force-synctex')
 	# Remove the error console
 	if (self._error_console):
 		panel = self.window.get_bottom_panel()
@@ -319,7 +350,10 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         manager.remove_ui(self._ui_merge_id)
         manager.remove_action_group(self._document_actions)
         manager.remove_action_group(self._texsensitive_actions)
+        manager.remove_action_group(self._docconfsensitive_actions)
+        manager.remove_action_group(self._userconfsensitive_actions)
         manager.remove_action_group(self._general_actions)
+	manager.remove_action_group(self._synctex_menu)
         manager.remove_action_group(self._menu)
         manager.ensure_update()
     
@@ -378,20 +412,31 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	    thread = AutoLaTeXExecutionThread(self, directory, directive, params)
 	    thread.start()
 
+    def _apply_general_autolatex_cli_options(self, params):
+	if self._gsettings.get_force_synctex():
+		params = [ '--synctex' ] + params
+	params = [ utils.DEFAULT_LOG_LEVEL ] + params
+	return params
+
     def on_clean_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('clean', [ '--noview', utils.DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('clean', self._apply_general_autolatex_cli_options(
+			[ '--noview' ]))
 
     def on_cleanall_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('cleanall', [ '--noview', utils.DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('cleanall', self._apply_general_autolatex_cli_options(
+			[ '--noview' ]))
 
     def on_compile_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('all', [ '--noview', utils.DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('all', self._apply_general_autolatex_cli_options(
+			[ '--noview' ]))
 
     def on_generateimage_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('images', [ '--noview', utils.DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('images', self._apply_general_autolatex_cli_options(
+			[ '--noview' ]))
 
     def on_view_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('view', [ '--asyncview', utils.DEFAULT_LOG_LEVEL ])
+	self._launch_AutoLaTeX('view', self._apply_general_autolatex_cli_options(
+			[ '--asyncview' ]))
 
     def on_document_configuration_action_activate(self, action, data=None):
 	directory = self._find_AutoLaTeX_dir()
@@ -444,4 +489,66 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		if answer == Gtk.ResponseType.YES:
 			os.unlink(cfgFile)
 			self.do_update_state()
+
+    def on_enable_synctex_action_activate(self, action, data=None):
+	checkbox = self._general_actions.get_action('AutoLaTeXEnableSyncTeXAction')
+	self._gsettings.set_force_synctex(checkbox.get_active())
+
+    def on_update_for_synctex_action_activate(self, action, data=None):
+	if self._is_TeX_document():
+		directory = self._find_AutoLaTeX_dir()
+		view = self.window.get_active_view()
+		text_buffer = view.get_buffer()
+		found = None
+		# Search in the first tree lines
+		if text_buffer.get_line_count() > 0:
+			found = self.__search_for_synctex_flag(text_buffer, 0)
+		# Search in the last tree lines
+		if not found and text_buffer.get_line_count() > 3:
+			found = self.__search_for_synctex_flag(text_buffer,
+					max(3,text_buffer.get_line_count()-3))
+		# Add the SyncTeX flag
+		if not found:
+			private_config = utils.backend_get_configuration(
+						directory,
+						'all', '__private__');
+			main_file = private_config.get('input', 'latex file', '');
+			current_dir = Gio.File.new_for_path(os.getcwd())
+			main_file = current_dir.resolve_relative_path(main_file).get_path()
+        		current_document = self.window.get_active_document()
+			document_file = Gedit.Document.get_location(current_document)
+			if document_file:
+				document_filename = current_dir.resolve_relative_path(document_file.get_path())
+				document_filename = document_filename.get_path()
+				if main_file != document_filename:
+					document_dir = document_file.get_parent()
+					rel_path = os.path.relpath(main_file, document_dir.get_path())
+					text_buffer.insert_interactive(
+						text_buffer.get_iter_at_line(0),
+						unicode("% mainfile: "+rel_path+"\n"),
+						-1,
+						view.get_editable())
+
+    def __search_for_synctex_flag(self, text_buffer, line_number):
+	found = None
+	i = 0
+	text_iter1 = text_buffer.get_iter_at_line(line_number)
+	while text_iter1 and i<3 and not found:
+		text_iter2 = text_iter1.copy();
+		text_iter2.forward_to_line_end()
+		line = text_iter1.get_visible_text(text_iter2)
+		mo = re.match(self._syntex_regex, line)
+		if mo:
+			found = mo.group(1)
+		text_iter1 = text_iter2
+		if not text_iter1.forward_line():
+			i = 4
+		else:
+			i = i + 1
+	return found
+
+    def on_gsettings_changed(self, settings, key, data=None):
+	if key == 'force-synctex':
+		checkbox = self._general_actions.get_action('AutoLaTeXEnableSyncTeXAction')
+		checkbox.set_active(self._gsettings.get_force_synctex())
 

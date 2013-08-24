@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-23 16:54+0200\n"
+"POT-Creation-Date: 2013-08-25 00:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,123 +89,146 @@ msgstr ""
 msgid "Translator"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:146
+#: plugins/gedit/autolatex/__init__.py:160
 msgid ""
 "The programs 'autolatex' and 'autolatex-backend'\n"
 "were not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:150
+#: plugins/gedit/autolatex/__init__.py:164
 msgid ""
 "The program 'autolatex' was not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:154
+#: plugins/gedit/autolatex/__init__.py:168
 msgid ""
 "The program 'autolatex-backend' was not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:211
+#: plugins/gedit/autolatex/__init__.py:219
 msgid "AutoLaTeX Console"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:238
-#: plugins/gedit/autolatex/__init__.py:239
+#: plugins/gedit/autolatex/__init__.py:246
+#: plugins/gedit/autolatex/__init__.py:247
 msgid "AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:246
+#: plugins/gedit/autolatex/__init__.py:254
+#: plugins/gedit/autolatex/__init__.py:255
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:90
+msgid "SyncTeX"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:262
 msgid "Generate images"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:247
+#: plugins/gedit/autolatex/__init__.py:263
 msgid "Generate the images with AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:249
+#: plugins/gedit/autolatex/__init__.py:265
 msgid "Compile"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:250
+#: plugins/gedit/autolatex/__init__.py:266
 msgid "Compile with AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:252
+#: plugins/gedit/autolatex/__init__.py:268
 msgid "Remove temporary files"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:253
+#: plugins/gedit/autolatex/__init__.py:269
 msgid "Clean with AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:255
+#: plugins/gedit/autolatex/__init__.py:271
 msgid "Clean all"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:256
+#: plugins/gedit/autolatex/__init__.py:272
 msgid "Clean all with AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:258
+#: plugins/gedit/autolatex/__init__.py:274
 msgid "View the PDF"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:259
+#: plugins/gedit/autolatex/__init__.py:275
 msgid "Open the PDF viewer"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:266
+#: plugins/gedit/autolatex/__init__.py:282
 msgid "Document configuration"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:267
+#: plugins/gedit/autolatex/__init__.py:283
 msgid "Change the configuration for the document"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:274
+#: plugins/gedit/autolatex/__init__.py:290
 msgid "Delete document configuration"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:275
+#: plugins/gedit/autolatex/__init__.py:291
 msgid "Delete the configuration for the document"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:282
+#: plugins/gedit/autolatex/__init__.py:298
 msgid "Delete user configuration"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:283
+#: plugins/gedit/autolatex/__init__.py:299
 msgid "Delete the configuration for the user"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:290
+#: plugins/gedit/autolatex/__init__.py:306
+msgid "Force the use of SyncTeX"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:307
+msgid "Use SyncTeX even if the document and user configurations say 'no'"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:311
+msgid "Update TeX file with SyncTeX reference"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:312
+msgid ""
+"Update the text of the TeX file to add the reference to the main document"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:314
 msgid "User configuration"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:291
+#: plugins/gedit/autolatex/__init__.py:315
 msgid "Change the configuration for the user"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:402
+#: plugins/gedit/autolatex/__init__.py:447
 msgid ""
 "Do you want to create a configuration\n"
 "file for your document?"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:416
+#: plugins/gedit/autolatex/__init__.py:461
 msgid "Do you want to delete the document configuration?"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:429
+#: plugins/gedit/autolatex/__init__.py:474
 msgid ""
 "Do you want to create a configuration\n"
 "file at the user level?"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:441
+#: plugins/gedit/autolatex/__init__.py:486
 msgid "Do you want to delete the user configuration?"
 msgstr ""
 
@@ -233,32 +256,36 @@ msgstr ""
 msgid "Type of generation"
 msgstr ""
 
-#: plugins/gedit/autolatex/autolatex_generator_panel.py:167
-msgid "Type of style for MakeIndex"
-msgstr ""
-
-#: plugins/gedit/autolatex/autolatex_generator_panel.py:177
-msgid "Specific '.ist' file"
-msgstr ""
-
-#: plugins/gedit/autolatex/autolatex_generator_panel.py:178
-msgid "Autodetect the style inside the project directory"
-msgstr ""
-
-#: plugins/gedit/autolatex/autolatex_generator_panel.py:179
-msgid "Use only the default AutoLaTeX style"
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:174
+msgid "Use SyncTeX when generating the document"
 msgstr ""
 
 #: plugins/gedit/autolatex/autolatex_generator_panel.py:180
+msgid "Type of style for MakeIndex"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:190
+msgid "Specific '.ist' file"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:191
+msgid "Autodetect the style inside the project directory"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:192
+msgid "Use only the default AutoLaTeX style"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:193
 msgid "No style is passed to MakeIndex"
 msgstr ""
 
-#: plugins/gedit/autolatex/autolatex_generator_panel.py:181
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:194
 msgid ""
 "Custom definition by the user (do not change the original configuration)"
 msgstr ""
 
-#: plugins/gedit/autolatex/autolatex_generator_panel.py:189
+#: plugins/gedit/autolatex/autolatex_generator_panel.py:202
 msgid "Style file for MakeIndex"
 msgstr ""
 
@@ -297,23 +324,42 @@ msgid ""
 " You will loose the changes on this pages."
 msgstr ""
 
-#: plugins/gedit/autolatex/autolatex_plugin_config.py:49
-msgid "Path to autolatex"
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:51
+msgid "Paths of the tools"
 msgstr ""
 
-#: plugins/gedit/autolatex/autolatex_plugin_config.py:64
-msgid "Path to autolatex-backend"
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:58
+msgid "Path of 'autolatex'"
 msgstr ""
 
-#: plugins/gedit/autolatex/autolatex_plugin_config.py:108
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:73
+msgid "Path to 'autolatex-backend'"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:98
+msgid "Enable SyncTeX (overriding the configurations)"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:110
+msgid "Update the TeX files with the SyncTeX flags"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:169
 msgid ""
-"The path of AutoLaTeX has been changed by an external program. The new path "
+"The path of AutoLaTeX has been changed by an external software. The new path "
 "is different from the one you have entered. Do you want to use the new path?"
 msgstr ""
 
-#: plugins/gedit/autolatex/autolatex_plugin_config.py:118
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:179
 msgid ""
-"The path of AutoLaTeX Backend has been changed by an external program. The "
+"The path of AutoLaTeX Backend has been changed by an external software. The "
 "new path is different from the one you have entered. Do you want to use the "
 "new path?"
+msgstr ""
+
+#: plugins/gedit/autolatex/autolatex_plugin_config.py:189
+msgid ""
+"The enabling flag for SyncTeX has been changed by an external software. The "
+"new flag is different from the one inside the preference dialog box. Do you "
+"want to use the new flag?"
 msgstr ""

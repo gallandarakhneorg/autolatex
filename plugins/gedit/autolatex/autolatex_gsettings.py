@@ -39,14 +39,15 @@ GSETTINGS_BASE_KEY = "apps.autolatex"
 
 class Manager:
 
-	def _is_schema_installed(self):
+	def _is_schema_installed():
 		for schema in Gio.Settings.list_schemas():
 			if schema == GSETTINGS_BASE_KEY:
 				return True
 		return False
-
+	_is_schema_installed = staticmethod(_is_schema_installed)
+	
 	def __init__(self):
-		if self._is_schema_installed(): 
+		if Manager._is_schema_installed(): 
 			self._sig_binded_signals = {}
 		        self.settings = Gio.Settings.new(GSETTINGS_BASE_KEY)
 			# Force application of gsettings
@@ -57,12 +58,13 @@ class Manager:
 			self._sig_autolatex_backend_cmd_changed = self.settings.connect("changed::autolatex-backend-cmd", self.on_autolatex_backend_cmd_changed)
 		else:
 			self.settings = None
+			self._data = { 'force-synctex': True }
 
 	def unbind(self):
 		if self.settings:
 			self.settings.disconnect(self._sig_autolatex_cmd_changed)
 			self.settings.disconnect(self._sig_autolatex_backend_cmd_changed)
-			for key in self._sig_binded_signals:
+			for datakey in self._sig_binded_signals:
 				self.settings.disconnect(self._sig_binded_signals[datakey])
 			self._sig_binded_signals = {}
 			self.settings.apply()
@@ -107,6 +109,7 @@ class Manager:
 		if self.settings:
 			path = str(path) if path else ''
 			self.settings.set_string('autolatex-cmd', path)
+			self.settings.apply()
 		else:
 			self._update_autolatex_cmd(path)
 
@@ -121,6 +124,20 @@ class Manager:
 		if self.settings:
 			path = str(path) if path else ''
 			self.settings.set_string('autolatex-backend-cmd', path)
+			self.settings.apply()
 		else:
 			self._update_autolatex_backend_cmd(path)
+
+	def get_force_synctex(self):
+		if self.settings:
+			return self.settings.get_boolean('force-synctex')
+		else:
+			return self._data['force-synctex']
+
+	def set_force_synctex(self, is_force):
+		if self.settings:
+			self.settings.set_boolean('force-synctex', bool(is_force))
+			self.settings.apply()
+		else:
+			self._data['force-synctex'] = bool(is_force)
 
