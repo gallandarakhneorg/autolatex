@@ -112,8 +112,9 @@ sub getFilesRec($$@) {
 	my @list = ();
 	if (($pattern)&&(-d "$directory")) {
 		# Make a pattern
-		$pattern =~ s/\./\\./g;
-		$pattern =~ s/\*/.*/g;
+		my $repattern = "$pattern";
+		$repattern =~ s/\./\\./g;
+		$repattern =~ s/\*/.*/g;
 
 		# Get the directory content
 		my @subdirs = ();
@@ -122,7 +123,7 @@ sub getFilesRec($$@) {
 			or die("$directory: $!\n");
 		while (my $d = readdir(*DIR)) {
 			if (($d ne File::Spec->curdir())&&($d ne File::Spec->updir())&&
-			    ($d =~ /^$pattern$/) &&
+			    ($d =~ /^$repattern$/) &&
 			    (!arrayContains(@{$exceptions}, "$d"))) {
 				my $full = File::Spec->catfile($directory,$d);
 				if (-d "$full") {
@@ -137,7 +138,7 @@ sub getFilesRec($$@) {
 
 		# Go into sub directories
 		foreach my $d (@subdirs) {
-			my @l = &getFilesRec($exceptions,"$d",@_);
+			my @l = &getFilesRec($exceptions,"$d", @_);
 			push @list, @l;
 		}
 	}
@@ -157,7 +158,7 @@ sub getFiles(@) {
 		return getFilesRec($exceptions, '.',$firstpart,@_);
 	}
 	else {
-		return getFilesRec($exceptions, FileSpec->rootdir(),@_);
+		return getFilesRec($exceptions, File::Spec->rootdir(),@_);
 	}
 }
 
@@ -326,8 +327,48 @@ sub installExecInto($@) {
 }
 
 #------------------------------------------------------------------------------------------
+sub checkPMInstallation($@) {
+	my $projectDir = shift || die("no project directory");
+	my %installed = ();
+	foreach my $file (@_) {
+		print "checking Perl modules in ".basename($file)."\n";
+		local *PMFILE;
+		open(*PMFILE, "<$file") or die("$file: $!\n");
+		while (my $line = <PMFILE>) {
+			if ($line =~ /^\s*use\s+([A-Z][_A-Za-z0-9]+(?:\:\:[_A-Za-z0-9]+)*)/) {
+				my $pack = $1;
+				if (!$installed{$pack}) {
+					my $ret = system("perl -e \"BEGIN{push \@INC, \\\"$projectDir\\\";} use $pack;\"");
+					if ($ret != 0) {
+						exit(255);
+					}
+					else {
+						$installed{$pack} = 1;
+					}
+				}
+			}
+		}
+		close(*PMFILE);
+	}
+	print "Detected Perl modules:\n";
+	foreach my $key (keys %installed) {
+		print "\t$key\n";
+	}
+}
+
+#------------------------------------------------------------------------------------------
 sub DO_compile(\%) {
 	print "DO AUTOLATEX COMPILATION...\n";
+
+	my @direlts = File::Spec->splitdir($_[0]->{'directory'});
+	my @pmFiles = ();
+	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'Core', '*.pm'));
+	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'Make', '*.pm'));
+	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'TeX', '*.pm'));
+	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'GUI', '*.pm'));
+	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'Gtk', '*.pm'));
+	@pmFiles = (@pmFiles, getFiles(@direlts, '*.pl'));
+	checkPMInstallation(File::Spec->catfile($_[0]->{'directory'}, 'pm'), @pmFiles);
 
 	local *DIR;
 	local *DIR2;
