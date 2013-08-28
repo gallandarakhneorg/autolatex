@@ -46,6 +46,7 @@ $VERSION = '9.0';
 	      &setInclusionFlags &reinitInclusionFlags &cfgIsBoolean ) ;
 @EXPORT_OK = qw();
 
+require 5.014;
 use strict;
 use warnings;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);

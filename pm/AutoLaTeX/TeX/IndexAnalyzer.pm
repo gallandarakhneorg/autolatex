@@ -42,6 +42,7 @@ $VERSION = '1.0';
 @EXPORT = qw( &getIdxIndexDefinitions &makeIdxIndexDefinitionMd5 ) ;
 @EXPORT_OK = qw();
 
+require 5.014;
 use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Config; # Perl configuration

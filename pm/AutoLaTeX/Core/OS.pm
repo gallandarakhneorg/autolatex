@@ -43,6 +43,7 @@ $VERSION = '5.0';
 	      &touch &readlink_osindep &parseCLI &parseCLIWithExceptions &lastFileChange ) ;
 @EXPORT_OK = qw();
 
+require 5.014;
 use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Config; # Perl configuration

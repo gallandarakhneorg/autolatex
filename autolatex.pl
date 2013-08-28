@@ -18,7 +18,7 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-require 5.004;
+require 5.014;
 
 use strict ;
 
@@ -26,6 +26,8 @@ use File::Basename ;
 use File::Spec ;
 use File::Copy ;
 use Carp;
+
+$| = 1; # autoflush to get the progress indicator working
 
 #------------------------------------------------------
 #
@@ -65,6 +67,7 @@ use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::OS;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::IntUtils;
+use AutoLaTeX::Core::Progress;
 use AutoLaTeX::Core::Translator;
 use AutoLaTeX::Make::Make;
 use AutoLaTeX::TeX::Flattener;
@@ -73,20 +76,53 @@ use AutoLaTeX::TeX::Flattener;
 my %configuration;
 my %autolatexData = ();
 
+# Helping function to init the progress bar
+sub __initProgress($) {
+	my $max = shift;
+	if ($configuration{'__private__'}{'action.show progress'}) {
+		return AutoLaTeX::Core::Progress->new($max);
+	}
+	return undef;
+}
+
+sub __subProgress($;$) {
+	my $progress = shift;
+	my $inparent = shift;
+	if ($progress) {
+		if ($inparent) {
+			return $progress->subProgress($inparent);
+		}
+		else {
+			return $progress->subProgress();
+		}
+	}
+	return undef;
+}
+
 #------------------------------------------------------
 #
 # IMAGE MANAGEMENT
 #
 #------------------------------------------------------
 
-sub al_generateimages() {
+sub al_generateimages($) {
+	my $progress = shift;
 	if (cfgBoolean($configuration{'generation.generate images'})) {
-		foreach my $entry (values %{$autolatexData{'imageDatabase'}}) {
+		my $pv = 0;
+		my $imageCount = $autolatexData{'numberOfImages'};
+		$progress->setMax($imageCount) if ($progress);
+		foreach my $formatName (@{$autolatexData{'activatedImageExtensions'}}) {
+			my $entry = $autolatexData{'imageDatabase'}{"$formatName"};
 			my $trans = $entry->{'translator'};
-			foreach my $file (@{$entry->{'files'}}) {
-				runRootTranslator(%configuration, $trans, $file, %{$autolatexData{'translators'}}, 0);
+			my $fileCount = ($entry->{'files'}) ? @{$entry->{'files'}} : 0;
+			if ($fileCount>0) {
+				foreach my $file (@{$entry->{'files'}}) {
+					runRootTranslator(%configuration, $trans, $file, %{$autolatexData{'translators'}}, 0);
+					$progress->increment() if ($progress);
+				}
 			}
 		}
+		$progress->stop() if ($progress);
 	}
 }
 
@@ -94,9 +130,13 @@ sub al_run_images {
 	my $i_ref = shift;
 	# Force the generation of images
 	$configuration{'generation.generate images'} = 'yes';
+	my $progress = __initProgress(10000);
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	$progress->setValue(100) if ($progress);
 	loadTranslatableImageList(%configuration,%autolatexData);
-	al_generateimages();
+	$progress->setValue(200) if ($progress);
+	al_generateimages(__subProgress($progress));
+	$progress->stop() if ($progress);
 }
 
 sub al_run_showimages {
@@ -232,48 +272,63 @@ sub al_view() {
 #
 #------------------------------------------------------
 
-sub al_make() {
+sub al_make($) {
+	my $progress = shift;
 	my $make = AutoLaTeX::Make::Make->new(\%configuration);
 	$make->enableBiblio(cfgBoolean($configuration{'generation.biblio'}));
 	$make->generationType($configuration{'generation.generation type'});
 	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
-	$make->build();
+	$make->build($progress);
 }
 
 sub al_run_make {
 	my $i_ref = shift;
+	my $progress = __initProgress(10000);
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	$progress->setValue(100) if ($progress);
 	loadTranslatableImageList(%configuration,%autolatexData);
-	al_generateimages();
-	al_make();
+	$progress->setValue(200) if ($progress);
+	al_generateimages(__subProgress($progress, 2500));
+	al_make(__subProgress($progress));
+	$progress->stop() if ($progress);
 }
 
 sub al_run_makeandview {
 	my $i_ref = shift;
 	my $force = shift;
+	my $progress = __initProgress(10000);
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
+	$progress->setValue(100) if ($progress);
 	loadTranslatableImageList(%configuration,%autolatexData);
-	al_generateimages();
-	al_make();
+	$progress->setValue(200) if ($progress);
+	al_generateimages(__subProgress($progress, 2500));
+	al_make(__subProgress($progress, 7000));
 	if ($force || cfgBoolean($configuration{'viewer.view'})) {
 		al_view();
 	}
+	$progress->stop() if ($progress);
 }
 
 sub al_run_biblio {
 	my $i_ref = shift;
+	my $progress = __initProgress(10000);
 	my $make = AutoLaTeX::Make::Make->new(\%configuration);
 	$make->enableBiblio(1);
 	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
-	$make->buildBiblio();
+	$progress->setValue(1000) if ($progress);
+	$make->buildBiblio(__subProgress($progress));
+	$progress->stop() if ($progress);
 }
 
 sub al_run_makeindex {
 	my $i_ref = shift;
+	my $progress = __initProgress(10000);
 	my $make = AutoLaTeX::Make::Make->new(\%configuration);
 	$make->enableMakeIndex(1);
 	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
-	$make->buildMakeIndex();
+	$progress->setValue(1000) if ($progress);
+	$make->buildMakeIndex(__subProgress($progress));
+	$progress->stop() if ($progress);
 }
 
 #------------------------------------------------------
@@ -302,6 +357,9 @@ sub al_shell2re($) {
 	}
 	if ($shell) {
 		$re .= "\Q$shell\E";
+	}
+	if ($re) {
+		$re = "(?:$re)";
 	}
 	return $re;
 }
@@ -356,14 +414,14 @@ sub al_applyCleanRecursively(\@\@) {
 					push @dirs, "$ffn";
 				}
 				elsif ($absFiles{$ffn}) {
-						unlink("$ffn");
+						secure_unlink("$ffn");
 				}
 				else {
 					if ($rootdir && $tpatterns && $fn =~ /^$tpatterns$/s) {
-						unlink("$ffn");
+						secure_unlink("$ffn");
 					}
 					elsif ($dpatterns && $fn =~ /^$dpatterns$/s) {
-						unlink("$ffn");
+						secure_unlink("$ffn");
 					}
 				}
 			}
@@ -430,7 +488,7 @@ sub al_run_clean {
 	my $i_ref = shift;
 	my ($a,$b) = al_getcleanfiles();
 	printDbg(_T("Removing all the temporary files"));
-	al_applyCleanRecursively(@$a,@$b);
+	al_applyCleanRecursively(@$a, @$b);
 }
 
 sub al_run_cleanall {
@@ -490,14 +548,18 @@ sub al_run_cleanall {
 
 			local *DIR;
 			if (opendir(*DIR, "$dir")) {
+				my @files_to_remove = ();
 				while (my $fn = readdir(*DIR)) {
 					if ($fn ne File::Spec->curdir() && $fn ne File::Spec->updir()
-						&& $fn =~ /^$localpattern$/s) {
+						&& $fn =~ /^(?:$localpattern)$/s) {
 						my $ffn = File::Spec->catfile("$dir","$fn");
-						unlink("$ffn");
+						push @files_to_remove, $ffn;
 					}
 				}
 				closedir(*DIR);
+				foreach my $fn (@files_to_remove) {
+					secure_unlink("$fn");
+				}
 			}
 		}
 	}
@@ -512,6 +574,8 @@ sub al_run_cleanall {
 sub al_run_makeflat {
 	my $i_ref = shift;
 
+	my $progress = __initProgress(10000);
+
 	# Treat the command line option --biblio
 	my $biblio_option_on_cli = $configuration{'__private__'}{'CLI.biblio'};
 	$biblio_option_on_cli = 'no' unless (defined($biblio_option_on_cli));
@@ -519,12 +583,17 @@ sub al_run_makeflat {
 
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
 	loadTranslatableImageList(%configuration,%autolatexData);
-	al_generateimages();
+
+	$progress->setValue(200) if ($progress);
+
+	al_generateimages(__subProgress($progress, 2500));
 
 	# Generate all the document, in particular the BBL file.
 	if (!cfgBoolean($biblio_option_on_cli)) {
-		al_make();
+		al_make(__subProgress($progress, 4500));
 	}
+
+	$progress->setValue(7200) if ($progress);
 
 	my $output = File::Spec->catfile(
 			dirname($configuration{'__private__'}{'input.latex file'}),
@@ -534,6 +603,8 @@ sub al_run_makeflat {
 	my @images;
 	{
 		my %images = ();
+		my $sprogress = __subProgress($progress, 1800);
+		$sprogress->setMax($autolatexData{'numberOfImages'}) if ($sprogress);
 		foreach my $trans (values %{$autolatexData{'imageDatabase'}}) {
 			if ($trans->{'files'}) {
 				my $transname = $trans->{'translator'};
@@ -545,13 +616,18 @@ sub al_run_makeflat {
 					foreach my $ext (@{$transdef->{'OUTPUT_EXTENSIONS'}{'value'}}) {
 						$images{"$template$ext"} = 1;
 					}
+					$sprogress->increment() if ($sprogress);
 				}
 			}
 		}
 		@images = keys %images;
 	}
 
+	$progress->setValue(9000) if ($progress);
+
 	flattenTeX($configuration{'__private__'}{'input.latex file'}, $output, @images, cfgBoolean($biblio_option_on_cli));
+
+	$progress->stop() if ($progress);
 }
 
 #------------------------------------------------------
@@ -572,9 +648,18 @@ initTextDomain('autolatex', File::Spec->catfile(getAutoLaTeXDir(), 'po'), 'UTF-8
 if (getDebugLevel()>=6) {
 	exitDbg(\%configuration, \@ORIGINAL_ARGV);
 }
+elsif ($configuration{'__private__'}{'action.debug mode'}) {
+	setDebugLevel(5);
+	# Force to fail on Perl warnings
+	$SIG{__WARN__} = sub { confess(@_); };
+}
 elsif (getDebugLevel()>=5) {
 	# Force to fail on Perl warnings
 	$SIG{__WARN__} = sub { confess(@_); };
+}
+
+if ($configuration{'__private__'}{'action.show progress'}) {
+	setDebugLevel(0); # Force to be not verbose when progress indicator is displayed
 }
 
 @ORIGINAL_ARGV = (); # Not more necessary

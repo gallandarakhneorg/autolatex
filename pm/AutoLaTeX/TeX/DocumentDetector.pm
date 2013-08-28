@@ -42,6 +42,7 @@ $VERSION = '1.0';
 @EXPORT = qw( &isLaTeXDocument ) ;
 @EXPORT_OK = qw();
 
+require 5.014;
 use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use AutoLaTeX::TeX::TeXParser;

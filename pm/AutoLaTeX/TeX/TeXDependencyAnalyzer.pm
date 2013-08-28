@@ -42,6 +42,7 @@ $VERSION = '4.0';
 @EXPORT = qw( &getDependenciesOfTeX ) ;
 @EXPORT_OK = qw();
 
+require 5.014;
 use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Config; # Perl configuration

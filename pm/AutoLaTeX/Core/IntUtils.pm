@@ -36,12 +36,12 @@ The provided functions are:
 
 =cut
 package AutoLaTeX::Core::IntUtils;
-require 5.004;
 
 our @ISA = qw( Exporter );
 our @EXPORT = qw( &_T &initTextDomain &getCurrentLocale &getCurrentLanguage &getCurrentCodeset &getActiveTextDomains );
 our @EXPORT_OK = qw();
 
+require 5.014;
 use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Exporter;

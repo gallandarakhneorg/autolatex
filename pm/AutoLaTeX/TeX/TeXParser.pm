@@ -100,6 +100,7 @@ package AutoLaTeX::TeX::TeXParser;
 @EXPORT = qw();
 @EXPORT_OK = qw( );
 
+require 5.014;
 use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Exporter;
