@@ -595,9 +595,16 @@ sub al_run_makeflat {
 
 	$progress->setValue(7200) if ($progress);
 
-	my $output = File::Spec->catfile(
+	my $output = $configuration{'makeflat.output'};
+	if (!$output) {
+		my $basename = $configuration{'makeflat.basename'};
+		if (!$basename) {
+			$basename = 'flat_version';
+		}
+		$output = File::Spec->catfile(
 			dirname($configuration{'__private__'}{'input.latex file'}),
-			'flat_version');
+			$basename);
+	}
 
 	# Build the list of images
 	my @images;

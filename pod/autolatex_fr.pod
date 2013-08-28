@@ -117,6 +117,23 @@ de choisir si la bibliographie sera laissée dans un fichier
 BibTeX ou sera placée directement à l'intérieur du fichier TeX.
 Cette dernière est l'option par défaut.
 
+Si vous ne voulez pas de la version "plate" soit créée dans un
+sous-répertoire nommé 'flat_version', bous pouvez donner
+le chemin du répertoire dans lequel écrire la version "plate",
+ou donner le nom de base du répertoire dans lequel écrire.
+
+Pour changer le chemin du répertoire de sortie de la version
+"plate", vous devez utiliser l'option en ligne de commande
+suivante :
+
+F<--set makeflat.output=>I<chemin>
+
+Pour changer le nom de base du répertoire de sortie de la version
+"plate", vous devez utiliser l'option en ligne de commande
+suivante :
+
+F<--set makeflat.basename=>I<nom>
+
 =item B<makeindex>
 
 Lancement de l'outils de création d'un index : MakeIndex.

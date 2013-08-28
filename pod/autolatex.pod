@@ -117,6 +117,20 @@ F<--biblio> to determine if the bibliography must be put
 in a BibTeX file or inline inside the TeX file (default is
 inline).
 
+If you do not want to output the flat version in a subdirectory
+named 'flat_version', you could set the output directory or
+the output basename.
+
+To change the output path for the flat
+version, you could use the CLI option:
+
+F<--set makeflat.output=>I<path>
+
+To change only the basename of the output path for the flat
+version, you must use the CLI option:
+
+F<--set makeflat.basename=>I<name>
+
 =item B<makeindex>
 
 Performs all processing that permits to generate the index

@@ -1,4 +1,4 @@
-# autolatex - autolatex.py
+# autolatex - __init__.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -57,21 +57,29 @@ UI_XML = """<ui>
 	<menu action="AutoLaTeXMenu">
 	  <menuitem action="AutoLaTeXGenerateImageAction"/>
 	  <menuitem action="AutoLaTeXCompileAction"/>
+	  <menuitem action="AutoLaTeXCleanAction"/>
+	  <menuitem action="AutoLaTeXCleanallAction"/>
 	  <menu action="AutoLaTeXSyncTeXMenu">
 	    <menuitem action="AutoLaTeXEnableSyncTeXAction"/>
 	    <menuitem action="AutoLaTeXUpdateForSyncTeXAction"/>
+            <placeholder name="AutoLaTeXSyncTeXOps"/>
           </menu>
-	  <separator />
-	  <menuitem action="AutoLaTeXCleanAction"/>
-	  <menuitem action="AutoLaTeXCleanallAction"/>
+          <placeholder name="AutoLaTeXCompileOps"/>
 	  <separator />
 	  <menuitem action="AutoLaTeXViewAction"/>
+          <placeholder name="AutoLaTeXViewOps"/>
 	  <separator />
-	  <menuitem action="AutoLaTeXDocumentConfAction"/>
-	  <menuitem action="AutoLaTeXRemoveDocumentConfAction"/>
+	  <menuitem action="AutoLaTeXMakeFlatAction"/>
+          <placeholder name="AutoLaTeXExportOps"/>
 	  <separator />
-	  <menuitem action="AutoLaTeXUserConfAction"/>
-	  <menuitem action="AutoLaTeXRemoveUserConfAction"/>
+	  <menu action="AutoLaTeXConfigMenu">
+	    <menuitem action="AutoLaTeXDocumentConfAction"/>
+	    <menuitem action="AutoLaTeXRemoveDocumentConfAction"/>
+	    <separator />
+	    <menuitem action="AutoLaTeXUserConfAction"/>
+	    <menuitem action="AutoLaTeXRemoveUserConfAction"/>
+            <placeholder name="AutoLaTeXConfigOps"/>
+          </menu>
         </menu>
       </placeholder>
     </menu>
@@ -256,6 +264,14 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
                 None),
         ])
 	manager.insert_action_group(self._synctex_menu)
+	# Create the menu for Configurations
+        self._synctex_menu = Gtk.ActionGroup("AutoLaTeXConfigMenu")
+        self._synctex_menu.add_actions([
+            ('AutoLaTeXConfigMenu', None, _T("Configuration"), 
+                None, _T("Configuration of the AutoLaTeX processes"), 
+                None),
+        ])
+	manager.insert_action_group(self._synctex_menu)
 	# Create the group of actions that are needing an AutoLaTeX document
         self._document_actions = Gtk.ActionGroup("AutoLaTeXDocumentActions")
         self._document_actions.add_actions([
@@ -274,6 +290,9 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
             ('AutoLaTeXViewAction', None, _T("View the PDF"), 
                 None, _T("Open the PDF viewer"), 
                 self.on_view_action_activate),
+            ('AutoLaTeXMakeFlatAction', None, _T("Create flat version"), 
+                None, _T("Create a flat version of the document, to be submitted to on-line publication systems (Elsevier...)"), 
+                self.on_makeflat_action_activate),
         ])
         manager.insert_action_group(self._document_actions)
 	# Create the group of actions that are needing an TeX document
@@ -551,4 +570,12 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	if key == 'force-synctex':
 		checkbox = self._general_actions.get_action('AutoLaTeXEnableSyncTeXAction')
 		checkbox.set_active(self._gsettings.get_force_synctex())
+
+    def on_enable_synctex_action_activate(self, action, data=None):
+	checkbox = self._general_actions.get_action('AutoLaTeXEnableSyncTeXAction')
+	self._gsettings.set_force_synctex(checkbox.get_active())
+
+    def on_makeflat_action_activate(self, action, data=None):
+	self._launch_AutoLaTeX('makeflat', self._apply_general_autolatex_cli_options(
+			[ '--noview' ]))
 
