@@ -38,7 +38,7 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '4.0';
+our $VERSION = '5.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
@@ -48,7 +48,7 @@ our $VERSION = '4.0';
 	      &printDbgUnindent &runCommandOrFail &runSystemCommand
               &notifySystemCommandListeners &exitDbg &addSlashes
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
-	      &runCommandSilently &removePathPrefix &trim &formatText
+	      &runCommandSilently &removePathPrefix &trim &trim_ws &formatText
 	      &makeMessage &makeMessageLong &secure_unlink ) ;
 @EXPORT_OK = qw( $INTERNAL_MESSAGE_PREFIX );
 
@@ -1010,7 +1010,7 @@ sub removePathPrefix($$) {
 
 =item B<trim($)>
 
-Remove the trailing white spaces.
+Remove the trailing spaces (including white spaces, tabulations, carriage-returns, new-lines...).
 
 =over 4
 
@@ -1024,6 +1024,27 @@ sub trim($) {
 	my $s = "$str";
 	$s =~ s/^\s+//s;
 	$s =~ s/\s+$//s;
+	return $s;
+}
+
+=pod
+
+=item B<trimws($)>
+
+Remove the trailing white spaces (and only the white spaces).
+
+=over 4
+
+=item I<str> the string to parse.
+
+=back
+
+=cut
+sub trim_ws($) {
+	my $str = $_[0] || '';
+	my $s = "$str";
+	$s =~ s/^ //s;
+	$s =~ s/ $//s;
 	return $s;
 }
 

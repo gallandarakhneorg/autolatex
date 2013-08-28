@@ -77,39 +77,39 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '10.0';
+our $VERSION = '11.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
 		'cmd' => 'pdflatex',
-		'flags' => ['-interaction', 'batchmode'],
-		'to_dvi' => ['--output-format=dvi'],
+		'flags' => ['-halt-on-error', '-interaction', 'batchmode', '-file-line-error'],
+		'to_dvi' => ['-output-format=dvi'],
 		'to_ps' => undef,
-		'to_pdf' => ['--output-format=pdf'],
+		'to_pdf' => ['-output-format=pdf'],
 		'synctex' => '-synctex=1',
 	},
 	'latex' => {
 		'cmd' => 'latex',
-		'flags' => ['-interaction', 'batchmode'],
-		'to_dvi' => ['--output-format=dvi'],
+		'flags' => ['-halt-on-error', '-interaction', 'batchmode', '-file-line-error'],
+		'to_dvi' => ['-output-format=dvi'],
 		'to_ps' => undef,
-		'to_pdf' => ['--output-format=pdf'],
+		'to_pdf' => ['-output-format=pdf'],
 		'synctex' => '-synctex=1',
 	},
 	'xelatex' => {
 		'cmd' => 'xelatex',
-		'flags' => ['-interaction', 'batchmode'],
-		'to_dvi' => ['--no-pdf'],
+		'flags' => ['-halt-on-error', '-interaction', 'batchmode', '-file-line-error'],
+		'to_dvi' => ['-no-pdf'],
 		'to_ps' => undef,
 		'to_pdf' => [],
 		'synctex' => '-synctex=1',
 	},
 	'lualatex' => {
 		'cmd' => 'luatex',
-		'flags' => ['-interaction', 'batchmode'],
-		'to_dvi' => ['--output-format=dvi'],
+		'flags' => ['-halt-on-error', '-interaction', 'batchmode', '-file-line-error'],
+		'to_dvi' => ['-output-format=dvi'],
 		'to_ps' => undef,
-		'to_pdf' => ['--output-format=pdf'],
+		'to_pdf' => ['-output-format=pdf'],
 		'synctex' => '-synctex=1',
 	},
 	'bibtex' => {
@@ -531,23 +531,70 @@ sub runLaTeX($;$) : method {
 		my $exitcode = runCommandSilently(@{$self->{'latex_cmd'}}, $file);
 		local *LOGFILE;
 		if ($exitcode!=0) {
-			printDbg(formatText(_T("{}: Error when generating {}"), 'PDFLATEX', basename($file)));
-			open(*LOGFILE, "< $logFile") or printErr("$logFile: $!");
-			printDbg(formatText(_T("{}: The first error found in the log file is:"), 'PDFLATEX'));
-			my $step = 0;
+			printDbg(formatText(_T("{}: Error when processing {}"), 'PDFLATEX', basename($file)));
+			# Parse the log to extract the blocks of messages
 			my $line;
-			while (*LOGFILE && ($line = <LOGFILE>) && ($step!=1)) {
-				if ($step>1) {
-					print STDERR "$line";
-					$step--;
+			my $fatal_error = undef;
+			my @log_blocks = ();
+			my $current_log_block = '';
+			my $current_matches_pattern = 0;
+			open(*LOGFILE, "< $logFile") or printErr("$logFile: $!");
+			while (*LOGFILE && ($line = <LOGFILE>) && !$fatal_error) {
+				my $is_empty_line = (!$line || $line =~/^\s*$/);
+				if ($is_empty_line) {
+					if ($current_log_block && $current_matches_pattern) {
+						push @log_blocks, $current_log_block;
+					}
+					$current_log_block = '';
+					$current_matches_pattern = 0;
 				}
-				elsif ($line =~ /^\!/) {
-					print STDERR "$line";
-					$step = 15;
+				else {
+					# Does the block indicates a fatal error?
+					if ($line =~ /^(.+:[0-9]+:)\s*\Q==>\E\s*fatal\s+error/i) {
+						$fatal_error = $current_log_block.$1;
+						$current_log_block = '';
+						$current_matches_pattern = 0;
+					}
+					else {
+						if (!$current_matches_pattern
+						    && $line =~ /^(.+:[0-9]+:)/) {
+							$current_matches_pattern = 1;
+						}
+						$current_log_block .= $line;
+					}
 				}
 			}
-			printDbg(formatText(_T("{}: End of error log."), 'PDFLATEX'));
 			close(*LOGFILE);
+			if ($current_log_block && $current_matches_pattern) {
+				push @log_blocks, $current_log_block;
+			}
+
+			# Search the fatal error inside the blocks
+			my $extracted_message = '';
+			if ($fatal_error) {
+				my $i = 0; 
+				while ($fatal_error && $i<@log_blocks) {
+					my $block = $log_blocks[$i];
+					if ($block =~ /\Q$fatal_error\E(.*)$/s) {
+						$extracted_message = $1;
+						$fatal_error =~ s/[\n\r]+//gs;
+						$extracted_message = $fatal_error.$extracted_message;
+						$fatal_error = undef;
+					}
+					$i++;
+				}
+			}
+
+			# Display the message
+			if ($extracted_message) {
+				printDbg(formatText(_T("{}: The first error found in the log file is:"), 'PDFLATEX'));
+				print STDERR $extracted_message;
+				printDbg(formatText(_T("{}: End of error log."), 'PDFLATEX'));
+			}
+			else {
+				printDbg(formatText(_T("{}: Unable to extract the error from the log. Please read the log file."), 'PDFLATEX'));
+			}
+
 			exit(255);
 		}
 		elsif ($enableLoop) {
