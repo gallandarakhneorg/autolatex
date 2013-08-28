@@ -101,30 +101,113 @@ UI_XML = """<ui>
 # Launch AutoLaTeX inside a thread, and wait for the result
 class AutoLaTeXExecutionThread(_threading.Thread):
     # caller is an instance of AutoLaTeXPlugin
+    # label is the text to display in the info bar. If none, there is no info bar.
+    # gsettings is the object that permits to access to the Gsettings
     # directory is the path to set as the current path
     # directive is the AutoLaTeX command
     # params are the CLI options for AutoLaTeX
-    def __init__(self, caller, directory, directive, params):
+    def __init__(self, caller, label, gsettings, directory, directive, params):
 	_threading.Thread.__init__(self)
 	self.daemon = True
+	self._enable_info_bar = gsettings.get_progress_info_visibility()
 	self._caller = caller
+	self._is_action_canceled = False
+	self._info_bar_label = label
+	self._info_bar = None
+	self._sig_info_bar = 0
 	self._directory = directory
 	self._cmd = [utils.AUTOLATEX_BINARY] + params
 	if directive:
-		self._cmd.append(directive);
+		self._cmd.append(directive)
 
     # Run the thread
     def run(self):
+	self._is_action_canceled = False
+	progress_line_pattern = None
+
+	# Test if the progress info must be shown
+	activate_progress = (self._enable_info_bar and self._info_bar_label != None)
+
+	if activate_progress:
+		# Add the info bar the inside of the Gtk thread
+		GObject.idle_add(self._add_info_bar)
+		# Updat the command line to obtain the progress data
+		self._cmd.append('--progress=n')
+		# Compile a regular expression to extract the progress amount
+		progress_line_pattern = re.compile("^\\[\\s*([0-9]+)\\%\\]\\s+[#.]+(.*)$")
+
+	# Launch the subprocess
 	os.chdir(self._directory)
 	process = subprocess.Popen(self._cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	output = ''
 	if process:
-	    out, err = process.communicate()
-	    retcode = process.returncode
-	    if retcode != 0:
-		output = out + err
-	# Update the UI for the inside of the Gtk thread
+	    if activate_progress:
+		# Use the info bar to draw the progress of the task
+		process.poll()
+		# Loop until the subprocess is dead
+		while process.returncode == None and not self._is_action_canceled:
+			if not process.stdout.closed:
+				# Read a line from STDOUT and extract the progress amount
+				process.stdout.flush()
+				line = process.stdout.readline()
+				if line:
+					mo = re.match(progress_line_pattern, line)
+					if mo:
+						amount = (float(mo.group(1)) / 100.)
+						comment = mo.group(2).strip()
+						GObject.idle_add(self._update_info_bar, amount, comment)
+
+			process.poll()
+		# Kill the subprocess if 
+		if self._is_action_canceled:
+			process.kill()
+		# Finalize the execution support of the subprocess
+		elif process.returncode != 0:
+			for line in process.stderr:
+				output = output + line
+		process.stdout.close()
+		process.stderr.close()
+	    else:
+		# Silent execution of the task
+	        out, err = process.communicate()
+	        retcode = process.returncode
+	        if retcode != 0:
+		    output = out + err
+
+	# Remove the info bar from the inside of the Gtk thread
+	GObject.idle_add(self._hide_info_bar)
+	# Update the rest of the UI from the inside of the Gtk thread
 	GObject.idle_add(self._caller._update_action_validity, True, output)
+
+    def _add_info_bar(self):
+	gedit_tab = self._caller.window.get_active_tab()
+	self._info_bar = Gedit.ProgressInfoBar()
+	self._info_bar.set_stock_image(Gtk.STOCK_EXECUTE)
+	self._info_bar.set_text(self._info_bar_label)
+	self._sig_info_bar = self._info_bar.connect("response",
+				self._on_cancel_action);
+	self._info_bar.show()
+	gedit_tab.set_info_bar(self._info_bar)
+
+    def _hide_info_bar(self):
+	if self._info_bar:
+		self._info_bar.disconnect(self._sig_info_bar);
+		self._info_bar.destroy()
+		self._info_bar = None
+
+    def _update_info_bar(self, progressValue, comment):
+	if self._info_bar:
+		self._info_bar.set_fraction(progressValue)
+		if comment:
+			self._info_bar.set_text(comment)
+
+    def _on_cancel_action(self, widget, response, data=None):
+	if response == Gtk.ResponseType.CANCEL:
+		self._is_action_canceled = True
+		if self._info_bar:
+			self._info_bar.set_response_sensitive(
+				Gtk.ResponseType.CANCEL,
+				False)
 
 #---------------------------------
 # CLASS AutoLaTeXPlugin
@@ -424,11 +507,11 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 
 	return adir
 
-    def _launch_AutoLaTeX(self, directive, params):
+    def _launch_AutoLaTeX(self, label, directive, params):
 	directory = self._find_AutoLaTeX_dir()
 	if directory:
 	    GObject.idle_add(self._update_action_validity, False, None)
-	    thread = AutoLaTeXExecutionThread(self, directory, directive, params)
+	    thread = AutoLaTeXExecutionThread(self, label, self._gsettings, directory, directive, params)
 	    thread.start()
 
     def _apply_general_autolatex_cli_options(self, params):
@@ -438,23 +521,33 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	return params
 
     def on_clean_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('clean', self._apply_general_autolatex_cli_options(
+	self._launch_AutoLaTeX(
+			_T("Removing the generated files (except the figures)"),
+			'clean', self._apply_general_autolatex_cli_options(
 			[ '--noview' ]))
 
     def on_cleanall_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('cleanall', self._apply_general_autolatex_cli_options(
+	self._launch_AutoLaTeX(
+			_T("Removing the generated files and figures"),
+			'cleanall', self._apply_general_autolatex_cli_options(
 			[ '--noview' ]))
 
     def on_compile_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('all', self._apply_general_autolatex_cli_options(
+	self._launch_AutoLaTeX(
+			_T("Generating the document"),
+			'all', self._apply_general_autolatex_cli_options(
 			[ '--noview' ]))
 
     def on_generateimage_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('images', self._apply_general_autolatex_cli_options(
+	self._launch_AutoLaTeX(
+			_T("Generating the figures with the translators"),
+			'images', self._apply_general_autolatex_cli_options(
 			[ '--noview' ]))
 
     def on_view_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('view', self._apply_general_autolatex_cli_options(
+	self._launch_AutoLaTeX(
+			_T("Launching the viewer"),
+			'view', self._apply_general_autolatex_cli_options(
 			[ '--asyncview' ]))
 
     def on_document_configuration_action_activate(self, action, data=None):
@@ -468,7 +561,9 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 			dialog.destroy()
 			runConfig = (answer == Gtk.ResponseType.YES)
 			if runConfig:
-				self._launch_AutoLaTeX('', [ '--createconfig=project', utils.DEFAULT_LOG_LEVEL ])
+				self._launch_AutoLaTeX(
+					None,
+					'', [ '--createconfig=project', utils.DEFAULT_LOG_LEVEL ])
 		if runConfig:
 			config_window.open_configuration_dialog(self.window, True, directory)
 
@@ -495,7 +590,9 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 			dialog.destroy()
 			runConfig = (answer == Gtk.ResponseType.YES)
 			if runConfig:
-				self._launch_AutoLaTeX('', [ '--createconfig=user', utils.DEFAULT_LOG_LEVEL ])
+				self._launch_AutoLaTeX(
+					None,
+					'', [ '--createconfig=user', utils.DEFAULT_LOG_LEVEL ])
 		if runConfig:
 				config_window.open_configuration_dialog(self.window, False, directory)
 
@@ -576,6 +673,8 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	self._gsettings.set_force_synctex(checkbox.get_active())
 
     def on_makeflat_action_activate(self, action, data=None):
-	self._launch_AutoLaTeX('makeflat', self._apply_general_autolatex_cli_options(
+	self._launch_AutoLaTeX(
+			_T("Making the \"flat\" version of the document"),
+			'makeflat', self._apply_general_autolatex_cli_options(
 			[ '--noview' ]))
 

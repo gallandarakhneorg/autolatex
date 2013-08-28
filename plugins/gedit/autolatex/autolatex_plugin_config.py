@@ -39,7 +39,7 @@ class Panel(Gtk.Table):
 
 	def __init__(self, settings, window):
 		Gtk.Table.__init__(self,
-				2, #rows
+				3, #rows
 				1, #columns
 				False) #non uniform
 		self._settings = settings
@@ -47,6 +47,7 @@ class Panel(Gtk.Table):
 
 		# Create the components
 
+		# Row 1: Paths
 		ui_frame = Gtk.Frame()
 		ui_frame.set_label(_T("Paths of the tools"));
 		self.attach(ui_frame, 
@@ -86,6 +87,7 @@ class Panel(Gtk.Table):
 				Gtk.AttachOptions.SHRINK, # y options
 				5,5) # horizontal and vertical paddings
 
+		# Row 2: SyncTex
 		ui_frame = Gtk.Frame()
 		ui_frame.set_label(_T("SyncTeX"));
 		self.attach(ui_frame, 
@@ -108,6 +110,29 @@ class Panel(Gtk.Table):
 				Gtk.AttachOptions.SHRINK, # y options
 				5,5) # horizontal and vertical paddings
 
+		# Row 3: UI parameters
+		ui_frame = Gtk.Frame()
+		ui_frame.set_label(_T("Configuration of the UI"));
+		self.attach(ui_frame, 
+				0,1,2,3, # left, right, top and bottom columns
+				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND,  # x options
+				Gtk.AttachOptions.SHRINK, # y options
+				5,5) # horizontal and vertical paddings
+		ui_table = Gtk.Table(2, 1, False)
+		ui_frame.add(ui_table)
+		ui_label = Gtk.Label(_T("Show the progress info bar"))
+		ui_table.attach(ui_label, 
+				0,1,0,1, # left, right, top and bottom columns
+				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND,  # x options
+				Gtk.AttachOptions.SHRINK, # y options
+				5,5) # horizontal and vertical paddings
+		self._ui_show_progress_info_bar = Gtk.Switch()
+		ui_table.attach(self._ui_show_progress_info_bar, 
+				1,2,0,1, # left, right, top and bottom columns
+				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x options
+				Gtk.AttachOptions.SHRINK, # y options
+				5,5) # horizontal and vertical paddings
+
 		# Set the initial values
 		self.on_initialize_fields()
 		# Attach signals
@@ -118,12 +143,14 @@ class Panel(Gtk.Table):
 			self._settings.disconnect('autolatex-cmd')
 			self._settings.disconnect('autolatex-backend-cmd')
 			self._settings.disconnect('force-synctex')
+			self._settings.disconnect('show-progress-info')
 			self.disconnect(self._ui_hierarchy_connect_id)
 			self.on_save_changes()
 		else:
 			self._settings.connect('autolatex-cmd', self.on_gsettings_changed)
 			self._settings.connect('autolatex-backend-cmd', self.on_gsettings_changed)
 			self._settings.connect('force-synctex', self.on_gsettings_changed)
+			self._settings.connect('show-progress-info', self.on_gsettings_changed)
 
 	# Invoked when the different fields in the preference box must be initialized
 	def on_initialize_fields(self):
@@ -135,6 +162,8 @@ class Panel(Gtk.Table):
 		else: self._ui_edit_autolatex_backend_cmd.unselect_all()
 		flag = self._settings.get_force_synctex()
 		self._ui_use_synctex.set_active(flag)
+		flag = self._settings.get_progress_info_visibility()
+		self._ui_show_progress_info_bar.set_active(flag)
 
 	# Invoked when the changes in the preference dialog box should be saved
 	def on_save_changes(self):
@@ -144,6 +173,8 @@ class Panel(Gtk.Table):
 		self._settings.set_autolatex_backend_cmd(filename)
 		force_synctex = self._ui_use_synctex.get_active()
 		self._settings.set_force_synctex(force_synctex)
+		show_info_bar = self._ui_show_progress_info_bar.get_active()
+		self._settings.set_progress_info_visibility(show_info_bar)
 	
 	def on_gsettings_changed(self, settings, key, data=None):
 		if key == 'autolatex-cmd':
@@ -175,4 +206,13 @@ class Panel(Gtk.Table):
 				dialog.destroy()
 				if  answer == Gtk.ResponseType.YES:
 					self._ui_use_synctex.set_active(gsettings_flag)
+		elif key == 'show-progress-info':
+			gsettings_flag = self._settings.get_progress_info_visibility()
+			window_flag = self._ui_show_progress_info_bar.get_active()
+			if gsettings_flag != window_flag:
+				dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, _T("The enabling flag for the progress info bar has been changed by an external software. The new flag is different from the one inside the preference dialog box. Do you want to use the new flag?"))
+				answer = dialog.run()
+				dialog.destroy()
+				if  answer == Gtk.ResponseType.YES:
+					self._ui_show_progress_info_bar.set_active(gsettings_flag)
 

@@ -14,7 +14,12 @@
     <key type="b" name="force-synctex">
       <default>true</default>
       <summary>Force the use of SyncTeX</summary>
-      <description>Indicates if SyncTeX msut be used, even if the configuration files are set to not use it.</description>
+      <description>Indicates if SyncTeX must be used, even if the configuration files are set to not use it.</description>
+    </key>
+    <key type="b" name="show-progress-info">
+      <default>true</default>
+      <summary>Enable or disable the progress info</summary>
+      <description>Indicates a progress info should be displayed when long-time operations are processing.</description>
     </key>
   </schema>
 </schemalist>

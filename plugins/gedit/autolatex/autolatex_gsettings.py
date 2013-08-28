@@ -58,7 +58,7 @@ class Manager:
 			self._sig_autolatex_backend_cmd_changed = self.settings.connect("changed::autolatex-backend-cmd", self.on_autolatex_backend_cmd_changed)
 		else:
 			self.settings = None
-			self._data = { 'force-synctex': True }
+			self._data = { 'force-synctex': True, 'show-progress-info': True }
 
 	def unbind(self):
 		if self.settings:
@@ -140,4 +140,17 @@ class Manager:
 			self.settings.apply()
 		else:
 			self._data['force-synctex'] = bool(is_force)
+
+	def get_progress_info_visibility(self):
+		if self.settings:
+			return self.settings.get_boolean('show-progress-info')
+		else:
+			return self._data['show-progress-info']
+
+	def set_progress_info_visibility(self, is_shown):
+		if self.settings:
+			self.settings.set_boolean('show-progress-info', bool(is_shown))
+			self.settings.apply()
+		else:
+			self._data['show-progress-info'] = bool(is_shown)
 
