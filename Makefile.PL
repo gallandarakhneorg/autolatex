@@ -8,7 +8,6 @@ use File::Copy;
 use Compress::Zlib;
 use Pod::Text;
 use Pod::Man;
-use Pod::Html;
 
 my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit' => 1 );
 
@@ -394,7 +393,7 @@ sub DO_compile(\%) {
 	closedir(*DIR);
 
 	# Generate the manuals
-	my $man_parser = Pod::Man->new('release'=>$_[0]->{'version'}, section => 1);
+	my $man_parser = Pod::Man->new('release'=>$_[0]->{'version'}, section => 1, 'utf8'=>1);
 
 	opendir(*DIR, "$podDirectory") or die("$podDirectory: $!\n");
 	while (my $file = readdir(*DIR)) {
