@@ -38,6 +38,7 @@ import autolatex_utils as utils
 import autolatex_config_window as config_window
 import autolatex_gsettings as gsettings
 import autolatex_plugin_config as plugin_config
+import autolatex_error_console as error_console
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -300,16 +301,13 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	if (console_content):
 		if (not self._error_console or self._error_console.get_parent == None):
 			if (not self._error_console):
-				self._error_console = Gtk.TextView()
-				self._error_console.set_editable(False)
-				self._error_console.set_hscroll_policy(Gtk.ScrollablePolicy.NATURAL)
-				self._error_console.set_vscroll_policy(Gtk.ScrollablePolicy.NATURAL)
+				self._error_console = error_console.ErrorConsole(self.window)
 			panel = self.window.get_bottom_panel()
 			panel.add_item(self._error_console,
 				"autolatex-console-panel",
 				_T("AutoLaTeX Console"),
 				Gtk.Image.new_from_pixbuf(self._console_icon))
-		self._error_console.get_buffer().set_text(console_content)
+		self._error_console.set_log(console_content, self._find_AutoLaTeX_dir())
 	        panel.activate_item(self._error_console)
 		if panel.get_property("visible") == False:
                         panel.set_property("visible", True)
