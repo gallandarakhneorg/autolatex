@@ -140,5 +140,5 @@ TRANSLATOR_FUNCTION =<<EOL {
 }
 EOL
 
-FILES_TO_CLEAN = $out_*.png
+FILES_TO_CLEAN = $out_*.png $out
 

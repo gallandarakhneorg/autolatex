@@ -81,5 +81,5 @@ TRANSLATOR_FUNCTION =<<EOL {
 }
 EOL
 
-FILES_TO_CLEAN = $out_*.pdf $out_*.eps
+FILES_TO_CLEAN = $out_*.pdf $out_*.eps $out
 
