@@ -37,6 +37,7 @@ $COPYRIGHT_YEAR = '2013';
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
 @EXPORT_OK = qw();
 
+require 5.014;
 use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION $COPYRIGHT_YEAR);
 
@@ -71,6 +72,8 @@ sub analyzeCommandLineOptions(\%) {
 		'createconfig:s' => \$realcfg->{'__private__'}{'action.create config file'},
 
 		'createist' => \$realcfg->{'__private__'}{'action.create ist file'},
+
+		'debug' => \$realcfg->{'__private__'}{'action.create ist file'},
 
 		'defaultist' => sub { 
 					$cfg->{'generation.makeindex style'} = '@system';
@@ -146,6 +149,10 @@ sub analyzeCommandLineOptions(\%) {
 		'pdflatex' => 	sub { 
 					$cfg->{'generation.tex compiler'} = 'pdflatex';
 				},
+
+		'progress!' => sub { 
+				$realcfg->{'__private__'}{'action.show progress'} = $_[1];
+			},
 
 		'ps' => sub { 
 				$cfg->{'generation.generation type'} = 'ps';

@@ -190,6 +190,11 @@ directory. The created file will be named
 'default.ist'. If a file with this name already is
 existing, it will be overwritten.
 
+=item B<--debug>
+
+Run AutoLaTeX in debug mode. The verbose level is 5, and
+all the warnings in the Perl code are assumed to be errors.
+
 =item B<--defaultist>
 
 Allow AutoLaTeX to use MakeIndex with the default
@@ -302,6 +307,10 @@ Do the compilation to produce a PDF document.
 =item B<--pdflatex>
 
 Use the LaTeX command: F<pdflatex>.
+
+=item B<--[no]progress>
+
+Enable or disable the progression indicator.
 
 =item B<--ps>
 

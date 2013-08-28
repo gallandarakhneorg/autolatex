@@ -187,6 +187,12 @@ Créer un fichier de style MakeIndex dans le répertoire du
 document LaTeX. Le fichier créé sera nommé 'default.ist'.
 Si un fichier portant ce nom existe déjà, il sera écrasé.
 
+=item B<--debug>
+
+Execute AutoLaTeX en mode Debug. Le niveau de verbiage est à 5, et
+tous les warnings générés par le code Perl sont considérés comme
+des erreurs.
+
 =item B<--defaultist>
 
 Autorise AutoLaTeX à utiliser le fichier de style MakeIndex
@@ -298,6 +304,10 @@ AutoLaTeX produit un fichier PDF.
 =item B<--pdflatex>
 
 Utilise le compilateur LaTeX : F<pdflatex>.
+
+=item B<--[no]progress>
+
+Activer ou désactiver l'affichage de la progression des tâches.
 
 =item B<--ps>
 

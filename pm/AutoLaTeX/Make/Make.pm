@@ -54,12 +54,12 @@ This section contains only the methods in TeXParser.pm itself.
 
 =cut
 package AutoLaTeX::Make::Make;
-require 5.004;
 
 our @ISA = qw( Exporter );
 our @EXPORT = qw( );
 our @EXPORT_OK = qw();
 
+require 5.014;
 use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Exporter;
@@ -72,11 +72,12 @@ use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::OS;
+use AutoLaTeX::Core::Progress;
 use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '8.0';
+our $VERSION = '10.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -595,36 +596,66 @@ sub _testLaTeXWarningOn($) : method {
 
 =pod
 
-=item * build()
+=item * build($)
 
 Build all the root files.
 
+=over 4
+
+=item B<progress> (optional) is the progress indicator to use.
+
+=back
+
 =cut
-sub build() : method {
+sub build(;$) : method {
 	my $self = shift;
+	my $progress = shift;
+
+	my $progValue;
+	if ($progress) {
+		my $numberOfRootFiles = @{$self->{'rootFiles'}};
+		$progress->setMax($numberOfRootFiles*100);
+		$progValue = 0;
+	}
 
 	foreach my $rootFile (@{$self->{'rootFiles'}}) {
+
+		my $sprogress = undef;
+		if ($progress) {
+			$sprogress = $progress->subProgress(100);
+			$sprogress->setMax(1000);
+		}
+
 		# Read building stamps
 		$self->_readBuildStamps($rootFile);
+
+		$sprogress->setValue(10) if ($sprogress);
 
 		# Launch at least one LaTeX compilation
 		$self->runLaTeX($rootFile);
 
+		$sprogress->setValue(210) if ($sprogress);
+
 		# Compute the dependencies of the file
 		$self->_computeDependenciesForRootFile($rootFile);
+
+		$sprogress->setValue(260) if ($sprogress);
 
 		# Construct the build list and launch the required builds
 		my @builds = $self->_buildExecutionList("$rootFile");
 
+		$sprogress->setValue(310) if ($sprogress);
+
 		# Build the files
 		if (@builds) {
+			my $sprogStep = 600 / @builds;
 			foreach my $file (@builds) {
 				$self->_build($rootFile, $file);
+				$sprogress->increment($sprogStep) if ($sprogress);
 			}
 		}
-		else {
-			printDbgFor(2, formatText(_T('{} is up-to-date.'), basename($rootFile)));
-		}
+
+		$sprogress->setValue(910) if ($sprogress);
 
 		# Write building stamps
 		$self->_writeBuildStamps($rootFile);
@@ -665,30 +696,64 @@ sub build() : method {
 					basename($logFile));
 		}
 
+		if ($progress) {
+			$progValue += 100;
+			$progress->setValue($progValue);
+		}
 	}
+
+	$progress->stop() if ($progress);
 
 	return undef;
 }
 
 =pod
 
-=item * buildBiblio()
+=item * buildBiblio($)
 
 Launch the Biblio only.
 
+=over 4
+
+=item B<progress> (optional) is the progress indicator to use.
+
+=back
+
 =cut
-sub buildBiblio() : method {
+sub buildBiblio(;$) : method {
 	my $self = shift;
+	my $progress = shift;
+
+	my $progValue;
+	if ($progress) {
+		my $numberOfRootFiles = @{$self->{'rootFiles'}};
+		$progress->setMax($numberOfRootFiles*100);
+		$progValue = 0;
+	}
 
 	foreach my $rootFile (@{$self->{'rootFiles'}}) {
+
+		my $sprogress = undef;
+		if ($progress) {
+			$sprogress = $progress->subProgress(100);
+			$sprogress->setMax(1000);
+		}
+
 		# Read building stamps
 		$self->_readBuildStamps($rootFile);
+
+		$sprogress->setValue(10) if ($sprogress);
 
 		# Compute the dependencies of the file
 		$self->_computeDependenciesForRootFile($rootFile);
 
+		$sprogress->setValue(60) if ($sprogress);
+
 		# Construct the build list and launch the required builds
 		my @builds = $self->_buildExecutionList("$rootFile",1);
+
+		$sprogress->setValue(110) if ($sprogress);
+
 		if (@builds) {
 			foreach my $file (@builds) {
 				if (exists $self->{'files'}{$file}) {
@@ -706,32 +771,69 @@ sub buildBiblio() : method {
 			printDbgFor(2, formatText(_T('{} is up-to-date.'), basename($rootFile)));
 		}
 
+		$sprogress->setValue(990) if ($sprogress);
+
 		# Write building stamps
 		$self->_writeBuildStamps($rootFile);
+
+		if ($progress) {
+			$progValue += 100;
+			$progress->setValue($progValue);
+		}
 	}
+
+	$progress->stop() if ($progress);
 
 	return undef;
 }
 
 =pod
 
-=item * buildMakeIndex()
+=item * buildMakeIndex($)
 
 Launch the MakeIndex only.
 
+=over 4
+
+=item B<progress> (optional) is the progress indicator to use.
+
+=back
+
 =cut
-sub buildMakeIndex() : method {
+sub buildMakeIndex(;$) : method {
 	my $self = shift;
+	my $progress = shift;
+
+	my $progValue;
+	if ($progress) {
+		my $numberOfRootFiles = @{$self->{'rootFiles'}};
+		$progress->setMax($numberOfRootFiles*100);
+		$progValue = 0;
+	}
 
 	foreach my $rootFile (@{$self->{'rootFiles'}}) {
+
+		my $sprogress = undef;
+		if ($progress) {
+			$sprogress = $progress->subProgress(100);
+			$sprogress->setMax(1000);
+		}
+
 		# Read building stamps
 		$self->_readBuildStamps($rootFile);
+
+		$sprogress->setValue(10) if ($sprogress);
 
 		# Compute the dependencies of the file
 		$self->_computeDependenciesForRootFile($rootFile);
 
+		$sprogress->setValue(60) if ($sprogress);
+
 		# Construct the build list and launch the required builds
 		my @builds = $self->_buildExecutionList("$rootFile",1);
+
+		$sprogress->setValue(110) if ($sprogress);
+
 		if (@builds) {
 			foreach my $file (@builds) {
 				if (exists $self->{'files'}{$file}) {
@@ -750,9 +852,18 @@ sub buildMakeIndex() : method {
 			printDbgFor(2, formatText(_T('{} is up-to-date.'), basename($rootFile)));
 		}
 
+		$sprogress->setValue(990) if ($sprogress);
+
 		# Write building stamps
 		$self->_writeBuildStamps($rootFile);
+
+		if ($progress) {
+			$progValue += 100;
+			$progress->setValue($progValue);
+		}
 	}
+
+	$progress->stop() if ($progress);
 
 	return undef;
 }

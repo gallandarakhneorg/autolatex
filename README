@@ -147,6 +147,10 @@ OPTIONS
         The created file will be named 'default.ist'. If a file with this
         name already is existing, it will be overwritten.
 
+    --debug
+        Run AutoLaTeX in debug mode. The verbose level is 5, and all the
+        warnings in the Perl code are assumed to be errors.
+
     --defaultist
         Allow AutoLaTeX to use MakeIndex with the default style (ist file).
         The default style is provided by AutoLaTeX.
@@ -233,6 +237,9 @@ OPTIONS
 
     --pdflatex
         Use the LaTeX command: pdflatex.
+
+    --[no]progress
+        Enable or disable the progression indicator.
 
     --ps
         Do the compilation to produce a Postscript document, when possible.

@@ -36,7 +36,10 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Util;
 
-$VERSION = '3.0';
+our $INTERNAL_MESSAGE_PREFIX = '';
+
+our $VERSION = '4.0';
+
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
               &getAutoLaTeXName &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
@@ -46,13 +49,15 @@ $VERSION = '3.0';
               &notifySystemCommandListeners &exitDbg &addSlashes
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
 	      &runCommandSilently &removePathPrefix &trim &formatText
-	      &makeMessage &makeMessageLong ) ;
-@EXPORT_OK = qw();
+	      &makeMessage &makeMessageLong &secure_unlink ) ;
+@EXPORT_OK = qw( $INTERNAL_MESSAGE_PREFIX );
 
+require 5.014;
 use strict;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 
 use File::Spec;
+use File::Path qw(remove_tree);
 use POSIX ":sys_wait_h";
 use Carp;
 use Data::Dumper;
@@ -558,7 +563,8 @@ sub printDbgFor($@) {
 	if ($debugLevel>=$requestedLevel) {
 		my @text = makeMessage(60,$dbgIndent,@_);
 		foreach my $p (@text) {
-			print STDERR (_T("[AutoLaTeX]"), " $p", "\n");
+			print STDERR ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), " $p", "\n");
+			$INTERNAL_MESSAGE_PREFIX = '';
 		}
 	}
 	1;
@@ -577,7 +583,8 @@ sub dumpDbgFor($@) {
 		use Data::Dumper;
 		my @text = makeMessage(60,$dbgIndent,Dumper(@_));
 		foreach my $p (@text) {
-			print STDERR (_T("[AutoLaTeX]"), " $p", "\n");
+			print STDERR ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), " $p", "\n");
+			$INTERNAL_MESSAGE_PREFIX = '';
 		}
 	}
 	1;
@@ -593,7 +600,8 @@ display an error message and exit. The parameters will be displayed separated by
 sub printErr(@) {
 	my @text = makeMessage(55,0,@_);
 	foreach my $p (@text) {
-		print STDERR (_T("[AutoLaTeX]"), ' ', formatText("Error: {}","$p"), "\n");
+		print STDERR ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), ' ', formatText("Error: {}","$p"), "\n");
+		$INTERNAL_MESSAGE_PREFIX = '';
 	}
 	exit(255);
 	undef;
@@ -609,7 +617,8 @@ display a warning message. The parameters will be displayed separated by a space
 sub printWarn(@) {
 	my @text = makeMessage(50,0,@_);
 	foreach my $p (@text) {
-		print STDERR (_T("[AutoLaTeX]"), ' ', formatText(_T("Warning: {}"),"$p"), "\n");
+		print STDERR ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), ' ', formatText(_T("Warning: {}"),"$p"), "\n");
+		$INTERNAL_MESSAGE_PREFIX = '';
 	}
 	1;
 }
@@ -656,7 +665,8 @@ sub runCommandOrFailRedirectTo($@) {
 			if ($exitcode!=0) {
 				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
 				while (my $line = <LOGFILE>) {
-					print STDERR $line;
+					print STDERR $INTERNAL_MESSAGE_PREFIX.$line;
+					$INTERNAL_MESSAGE_PREFIX = '';
 				}
 				close(*LOGFILE);
 			}
@@ -711,12 +721,14 @@ sub runCommandOrFail(@) {
 			if ($exitcode!=0) {
 				open(*LOGFILE, "< autolatex_exec_stdout.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stdout.log", $!));
 				while (my $line = <LOGFILE>) {
-					print STDOUT $line;
+					print STDOUT $INTERNAL_MESSAGE_PREFIX.$line;
+					$INTERNAL_MESSAGE_PREFIX = '';
 				}
 				close(*LOGFILE);
 				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
 				while (my $line = <LOGFILE>) {
-					print STDERR $line;
+					print STDERR $INTERNAL_MESSAGE_PREFIX.$line;
+					$INTERNAL_MESSAGE_PREFIX = '';
 				}
 				close(*LOGFILE);
 				@_ = map { '\''.addSlashes($_).'\''; } @_;
@@ -1061,6 +1073,25 @@ sub formatText($@) {
 	return $msg;
 }
 
+=pod
+
+=item B<secure_unlink(@)>
+
+Remove the specifiec files or the directories.
+This function invokes remove_tree or unlink according
+to the type of the file to remove.
+
+=cut
+sub secure_unlink(@) {
+	foreach my $file (@_) {
+		if (-d "$file") {
+			remove_tree("$file");
+		}
+		else {
+			unlink("$file");
+		}
+	}
+}
 
 
 

@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '11.0';
+$VERSION = '12.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -46,6 +46,7 @@ $VERSION = '11.0';
               &loadTranslatorsFromConfiguration &loadTranslatableImageList ) ;
 @EXPORT_OK = qw();
 
+require 5.014;
 use strict;
 
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION @ALL_LEVELS);
@@ -1101,6 +1102,7 @@ sub loadTranslatableImageList(\%\%;$) {
 	my $data = shift or confess("Second parameter is mandatory: the associative array of loaded data");
 	my $skipManualAssignment = shift;
 	if (!$data->{'imageDatabaseReady'} && exists $configuration->{'generation.image directory'}) {
+		$data->{'numberOfImages'} = 0;
 		my $separator = getPathListSeparator();
 		# Prepare the configuration entries '*.files to convert'
 		if (!$skipManualAssignment) {
@@ -1167,6 +1169,8 @@ sub loadTranslatableImageList(\%\%;$) {
 										$data->{'imageDatabase'}{"$selectedExtension"}{'files'} = [];
 									}
 									push @{$data->{'imageDatabase'}{"$selectedExtension"}{'files'}}, "$ffn";
+									$data->{'activatedImageExtensions'}{"$selectedExtension"} = 1;
+									$data->{'numberOfImages'}++;
 								}
 							}
 						}
@@ -1174,6 +1178,10 @@ sub loadTranslatableImageList(\%\%;$) {
 					closedir(*DIR);
 				}
 			}
+		}
+		if ($data->{'activatedImageExtensions'}) {
+			my @keys = keys %{$data->{'activatedImageExtensions'}};
+			$data->{'activatedImageExtensions'} = \@keys;
 		}
 		$data->{'imageDatabaseReady'} = 1;
 	}
