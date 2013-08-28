@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '18.1';
+$VERSION = '19.0';
 $COPYRIGHT_YEAR = '2013';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -150,8 +150,13 @@ sub analyzeCommandLineOptions(\%) {
 					$cfg->{'generation.tex compiler'} = 'pdflatex';
 				},
 
-		'progress!' => sub { 
-				$realcfg->{'__private__'}{'action.show progress'} = $_[1];
+		'progress:s' => sub { 
+				if ($_[1] eq 'n') {
+					$realcfg->{'__private__'}{'action.show progress'} = 'n';
+				}
+				else {
+					$realcfg->{'__private__'}{'action.show progress'} = 'r';
+				}
 			},
 
 		'ps' => sub { 

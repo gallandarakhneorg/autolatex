@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-28 14:21+0200\n"
+"POT-Creation-Date: 2013-08-28 18:20+0200\n"
 "PO-Revision-Date: 2013-05-21 21:37+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -16,43 +16,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: autolatex.pl:205 autolatex.pl:218
+#: autolatex.pl:208 autolatex.pl:221
 msgid "The configuration entry '{}' is not defined."
 msgstr "Le clé de configuration '{}' n'est pas définie."
 
-#: autolatex.pl:235 autolatex.pl:252
+#: autolatex.pl:238 autolatex.pl:255
 msgid "Launching '{}'"
 msgstr "Lancement de '{}'"
 
-#: autolatex.pl:238 autolatex.pl:255
+#: autolatex.pl:241 autolatex.pl:258
 msgid "Launching '{}' in background"
 msgstr "Lancement de '{}' en tâche de fond"
 
-#: autolatex.pl:264
+#: autolatex.pl:267
 msgid "Unable to find a viewer."
 msgstr "Impossible de trouvé un visualisateur."
 
-#: autolatex.pl:490
+#: autolatex.pl:493
 msgid "Removing all the temporary files"
 msgstr "Suppression de tous les fichiers temporaires"
 
-#: autolatex.pl:497
+#: autolatex.pl:500
 msgid "Removing all the temporary and generated files"
 msgstr "Suppression des fichiers temporaires et des figures générées"
 
-#: autolatex.pl:673
+#: autolatex.pl:683
 msgid "Creating default project configuration file...\n"
 msgstr "Création du fichier de configuration du project...\n"
 
-#: autolatex.pl:677
+#: autolatex.pl:687
 msgid "Creating default user configuration file...\n"
 msgstr "Création du fichier de configuration utilisateur...\n"
 
-#: autolatex.pl:686
+#: autolatex.pl:696
 msgid "Creating default makeindex style file...\n"
 msgstr "Création du fichier de style par défaut pour makeindex...\n"
 
-#: autolatex.pl:765
+#: autolatex.pl:775
 msgid "Command line action '{}' is not supported."
 msgstr "L'option de ligne de commande '{}' n'est pas reconnue."
 
@@ -336,7 +336,7 @@ msgstr ""
 msgid "Reading command line options"
 msgstr "Lecture des options de la ligne de commande"
 
-#: pm/AutoLaTeX/Core/Main.pm:174
+#: pm/AutoLaTeX/Core/Main.pm:179
 msgid ""
 "{} {} ({}) - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
@@ -344,7 +344,7 @@ msgstr ""
 "{} {} ({}) - plate-forme {}\n"
 "(c) 1998-{} Stéphane GALLAND <galland@arakhne.org> (sous GPL)\n"
 
-#: pm/AutoLaTeX/Core/Main.pm:182
+#: pm/AutoLaTeX/Core/Main.pm:187
 msgid ""
 "{} {} - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
@@ -352,24 +352,24 @@ msgstr ""
 "{} {} - plate-forme {}\n"
 "(c) 1998-{} Stéphane GALLAND <galland@arakhne.org> (sous GPL)\n"
 
-#: pm/AutoLaTeX/Core/Main.pm:229 pm/AutoLaTeX/Core/Main.pm:246
+#: pm/AutoLaTeX/Core/Main.pm:234 pm/AutoLaTeX/Core/Main.pm:251
 msgid "Selecting TeX file '{}'"
 msgstr "Sélection du fichier TeX '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:232
+#: pm/AutoLaTeX/Core/Main.pm:237
 msgid "Detecting several TeX files: {}"
 msgstr "Détection de plusieurs fichiers TeX: {}"
 
-#: pm/AutoLaTeX/Core/Main.pm:299
+#: pm/AutoLaTeX/Core/Main.pm:304
 msgid "Detecting TeX file from project's configuration: '{}'"
 msgstr ""
 "Détection du fichier TeX à partir de la configuration du document: '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:330
+#: pm/AutoLaTeX/Core/Main.pm:335
 msgid "Using TeX file '{}'"
 msgstr "Utilisation du fichier TeX '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:333
+#: pm/AutoLaTeX/Core/Main.pm:338
 msgid ""
 "No LaTeX file found nor specified for the directory '{}'.\n"
 " You must specify one on the command line option -f, or set the the variable "
@@ -383,15 +383,15 @@ msgstr ""
 "main file' dans l'un de vos fichiers de configuration, soit renommer l'un de "
 "vos fichiers TeX avec le nom 'Main.tex'."
 
-#: pm/AutoLaTeX/Core/Main.pm:338
+#: pm/AutoLaTeX/Core/Main.pm:343
 msgid "Applying command line options"
 msgstr "Application des options de la ligne de commande"
 
-#: pm/AutoLaTeX/Core/Main.pm:411
+#: pm/AutoLaTeX/Core/Main.pm:416
 msgid "Selecting project's style for MakeIndex: {}"
 msgstr "Sélection du style pour MakeIndex: {}"
 
-#: pm/AutoLaTeX/Core/Main.pm:415
+#: pm/AutoLaTeX/Core/Main.pm:420
 msgid ""
 "Unable to selected a project's style for MakeIndex: no file or too many .ist "
 "files in directory {}"
@@ -399,11 +399,11 @@ msgstr ""
 "Impossible de déterminer le style pour MakeIndex: pas de fichier .ist ou "
 "trop de fichiers .ist dans le répertoire {}"
 
-#: pm/AutoLaTeX/Core/Main.pm:420
+#: pm/AutoLaTeX/Core/Main.pm:425
 msgid "Selecting the system default style for MakeIndex"
 msgstr "Utilisation du style par défaut pour MakeIndex"
 
-#: pm/AutoLaTeX/Core/Main.pm:424
+#: pm/AutoLaTeX/Core/Main.pm:429
 msgid "Unselecting any style for MakeIndex"
 msgstr "Ignore les styles pour MakeIndex"
 

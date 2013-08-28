@@ -1,3 +1,4 @@
+=encoding UTF-8
 =head1 NAME
 
 autolatex - Compilers des documents TeX
@@ -322,9 +323,14 @@ AutoLaTeX produit un fichier PDF.
 
 Utilise le compilateur LaTeX : F<pdflatex>.
 
-=item B<--[no]progress>
+=item B<--progress[=n]>
 
 Activer ou désactiver l'affichage de la progression des tâches.
+La valeur passée à ce paramètre permet de déterminer quel
+caractère sera affiché à la fin de chaque ligne.
+Par défaut, le caractère retour-chariot C<\r> est utilisé.
+Si vous spécifiez une valeur égale à "C<n>", le caractère
+saut-à-ligne C<\n> sera utilisé.
 
 =item B<--ps>
 

@@ -62,7 +62,7 @@ use Carp;
 use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::Util qw($INTERNAL_MESSAGE_PREFIX);
 
-our $VERSION = '1.0';
+our $VERSION = '2.0';
 
 #------------------------------------------------------
 #
@@ -90,6 +90,7 @@ sub new(;$) : method {
 			'bar-width' => 40,
 			'comment' => '',
 			'previous-message-size' => 0,
+			'carriage-return' => 1,
 		};
 	}
 	bless( $self, $class );
@@ -118,6 +119,40 @@ sub _newChild($$$) : method {
 	bless( $self, $class );
 
 	return $self;
+}
+
+=pod
+
+=item * setCarriageReturn($)
+
+Enable or disable the use of the carraige-return character
+C<\r> at the end of the lines. If the carriage-return
+character is not used, the new-line character C<\n> is
+used.
+
+=over 4
+
+=item B<use_carriage_return>
+
+=over
+
+=cut
+sub setCarriageReturn($) : method {
+	my $self = shift;
+	$self->{'carriage-return'} = shift;
+}
+
+=pod
+
+=item * getCarriageReturn()
+
+Replies if the carriage-return character is used at the end
+of the output lines.
+
+=cut
+sub getCarriageReturn() : method {
+	my $self = shift;
+	return $self->{'carriage-return'};
 }
 
 =pod
@@ -318,7 +353,7 @@ sub _report() : method {
 			$tmp_l++;
 		}
 		$self->{'previous-message-size'} = $l;
-		if ($value>=$max) {
+		if (!$self->{'carriage-return'} || ($value>=$max)) {
 			print STDOUT "$message\n";
 		}
 		else {

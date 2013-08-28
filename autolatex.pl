@@ -79,8 +79,11 @@ my %autolatexData = ();
 # Helping function to init the progress bar
 sub __initProgress($) {
 	my $max = shift;
-	if ($configuration{'__private__'}{'action.show progress'}) {
-		return AutoLaTeX::Core::Progress->new($max);
+	my $show = $configuration{'__private__'}{'action.show progress'};
+	if ($show) {
+		my $progress = AutoLaTeX::Core::Progress->new($max);
+		$progress->setCarriageReturn($show ne 'n');
+		return $progress;
 	}
 	return undef;
 }

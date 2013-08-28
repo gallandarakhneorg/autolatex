@@ -322,9 +322,14 @@ Do the compilation to produce a PDF document.
 
 Use the LaTeX command: F<pdflatex>.
 
-=item B<--[no]progress>
+=item B<--progress[=n]>
 
 Enable or disable the progression indicator.
+The value of the parameter permits to determine what is
+the character that will be print out at the end of the
+lines. By default, the carriage-return character C<\r>
+is used. If you specify a value equals to "C<n>", the
+new-line character C<\n> will be used.
 
 =item B<--ps>
 

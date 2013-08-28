@@ -252,8 +252,12 @@ OPTIONS
     --pdflatex
         Use the LaTeX command: pdflatex.
 
-    --[no]progress
-        Enable or disable the progression indicator.
+    --progress[=n]
+        Enable or disable the progression indicator. The value of the
+        parameter permits to determine what is the character that will be
+        print out at the end of the lines. By default, the carriage-return
+        character "\r" is used. If you specify a value equals to ""n"", the
+        new-line character "\n" will be used.
 
     --ps
         Do the compilation to produce a Postscript document, when possible.
@@ -704,17 +708,16 @@ CONFIGURATION FILE
         systems).
 
     *   User Configuration: two cases: the configuration directory named
-        $HOME/.autolatex on Unix, or
-        C:\Documents and Settings\<user>\Local Settings\Application Data\aut
-        olatex on Windows exists; or not.
+        $HOME/.autolatex on Unix, or C:\Documents and Settings\<user>\Local
+        Settings\Application Data\autolatex on Windows exists; or not.
 
         In the first case, the configuration file is stored inside the
         directory and is named autolatex.conf.
 
         In the second case, the configuration file is inside the user
-        directory and is named $HOME/.autolatex on Unix, and
-        C:\Documents and Settings\<user>\Local Settings\Application Data\aut
-        olatex.conf on Windows.
+        directory and is named $HOME/.autolatex on Unix, and C:\Documents
+        and Settings\<user>\Local Settings\Application Data\autolatex.conf
+        on Windows.
 
     *   Project Configuration: the configuration file in the same directory
         as the main TeX file of the project. It is named
