@@ -46,11 +46,13 @@ def open_configuration_dialog(parent, is_document_level, directory):
 # CLASS NotbookTab
 #---------------------------------
 
-class _NotebookTab(Gtk.HBox):
+class _NotebookTab(Gtk.Box):
 	__gtype_name__ = "AutoLaTeXConfigurationNotebookTab"
 
 	def __init__(self, label, icon):
-		Gtk.HBox.__init__(self,False,2)
+		Gtk.Box.__init__(self,False,2)
+		self.set_property('orientation', Gtk.Orientation.HORIZONTAL)
+		self.set_property('expand', False)
 		self._label = label
 		pixbuf = GdkPixbuf.Pixbuf.new_from_file(utils.make_notebook_icon_path(icon))
 		iconwgt = Gtk.Image.new_from_pixbuf(pixbuf)

@@ -35,13 +35,16 @@ _T = gettext.gettext
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the plugin
-class Panel(Gtk.Table):
+class Panel(Gtk.Grid):
 
 	def __init__(self, settings, window):
-		Gtk.Table.__init__(self,
-				3, #rows
-				1, #columns
-				False) #non uniform
+		Gtk.Grid.__init__(self)
+		self.set_row_homogeneous(False)
+		self.set_column_homogeneous(False)
+		self.set_row_spacing(5)
+		self.set_property('orientation', Gtk.Orientation.VERTICAL)
+		self.set_property('margin', 5)
+		self.set_property('vexpand', False)
 		self._settings = settings
 		self.window = window
 
@@ -50,88 +53,101 @@ class Panel(Gtk.Table):
 		# Row 1: Paths
 		ui_frame = Gtk.Frame()
 		ui_frame.set_label(_T("Paths of the tools"));
-		self.attach(ui_frame, 
-				0,1,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, Gtk.AttachOptions.SHRINK, # x and y options
-				5,5) # horizontal and vertical paddings
-		ui_table = Gtk.Table(2, 2, False)
+		ui_frame.set_property('margin', 5)
+		self.add(ui_frame)
+		ui_table = Gtk.Grid()
+		ui_table.set_row_homogeneous(True)
+		ui_table.set_column_homogeneous(False)
+		ui_table.set_row_spacing(5)
+		ui_table.set_column_spacing(5)
+		ui_table.set_property('margin', 5)
 		ui_frame.add(ui_table)
 		label = _T("Path of 'autolatex'")
 		ui_label = Gtk.Label(label)
+		ui_label.set_property('hexpand', False)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
 		ui_table.attach(ui_label, 
-				0,1,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.SHRINK, Gtk.AttachOptions.SHRINK, # x and y options
-				5,5) # horizontal and vertical paddings
+				0,0,1,1) # left, top, width, height
 		self._ui_edit_autolatex_cmd = Gtk.FileChooserButton()
 		self._ui_edit_autolatex_cmd.set_width_chars(40)
 		self._ui_edit_autolatex_cmd.set_title(label)
 		self._ui_edit_autolatex_cmd.set_create_folders(False)
+		self._ui_edit_autolatex_cmd.set_property('hexpand', True)
+		self._ui_edit_autolatex_cmd.set_property('vexpand', False)
 		ui_table.attach(self._ui_edit_autolatex_cmd, 
-				1,2,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				5,5) # horizontal and vertical paddings
+				1,0,1,1) # left, top, width, height
 		label = _T("Path to 'autolatex-backend'")
 		ui_label = Gtk.Label(label)
+		ui_label.set_property('hexpand', False)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
 		ui_table.attach(ui_label, 
-				0,1,1,2, # left, right, top and bottom columns
-				Gtk.AttachOptions.SHRINK, Gtk.AttachOptions.SHRINK, # x and y options
-				5,5) # horizontal and vertical paddings
+				0,1,1,1) # left, right, top and bottom columns
 		self._ui_edit_autolatex_backend_cmd = Gtk.FileChooserButton()
 		self._ui_edit_autolatex_backend_cmd.set_width_chars(40)
 		self._ui_edit_autolatex_backend_cmd.set_title(label)
 		self._ui_edit_autolatex_backend_cmd.set_create_folders(False)
+		self._ui_edit_autolatex_backend_cmd.set_property('hexpand', True)
+		self._ui_edit_autolatex_backend_cmd.set_property('vexpand', False)
 		ui_table.attach(self._ui_edit_autolatex_backend_cmd, 
-				1,2,1,2, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				5,5) # horizontal and vertical paddings
+				1,1,1,1) # left, top, width, height
 
 		# Row 2: SyncTex
 		ui_frame = Gtk.Frame()
 		ui_frame.set_label(_T("SyncTeX"));
-		self.attach(ui_frame, 
-				0,1,1,2, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND,  # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				5,5) # horizontal and vertical paddings
-		ui_table = Gtk.Table(2, 2, False)
+		ui_frame.set_property('margin', 5)
+		self.add(ui_frame)
+		ui_table = Gtk.Grid()
+		ui_table.set_row_homogeneous(True)
+		ui_table.set_column_homogeneous(False)
+		ui_table.set_row_spacing(5)
+		ui_table.set_column_spacing(5)
+		ui_table.set_property('margin', 5)
 		ui_frame.add(ui_table)
 		ui_label = Gtk.Label(_T("Enable SyncTeX (overriding the configurations)"))
+		ui_label.set_property('hexpand', False)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
 		ui_table.attach(ui_label, 
-				0,1,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND,  # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				5,5) # horizontal and vertical paddings
+				0,0,1,1) # left, right, width, height
 		self._ui_use_synctex = Gtk.Switch()
+		self._ui_use_synctex.set_property('hexpand', False)
+		self._ui_use_synctex.set_property('vexpand', False)
+		self._ui_use_synctex.set_property('halign', Gtk.Align.END)
+		self._ui_use_synctex.set_property('valign', Gtk.Align.CENTER)
 		ui_table.attach(self._ui_use_synctex, 
-				1,2,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				5,5) # horizontal and vertical paddings
+				1,0,1,1) # left, top, width, height
 
 		# Row 3: UI parameters
 		ui_frame = Gtk.Frame()
 		ui_frame.set_label(_T("Configuration of the UI"));
-		self.attach(ui_frame, 
-				0,1,2,3, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND,  # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				5,5) # horizontal and vertical paddings
-		ui_table = Gtk.Table(2, 1, False)
+		ui_frame.set_property('margin', 5)
+		self.add(ui_frame)
+		ui_table = Gtk.Grid()
+		ui_table.set_row_homogeneous(True)
+		ui_table.set_column_homogeneous(False)
+		ui_table.set_row_spacing(5)
+		ui_table.set_column_spacing(5)
+		ui_table.set_property('margin', 5)
 		ui_frame.add(ui_table)
 		ui_label = Gtk.Label(_T("Show the progress info bar"))
+		ui_label.set_property('hexpand', False)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
 		ui_table.attach(ui_label, 
-				0,1,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND,  # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				5,5) # horizontal and vertical paddings
+				0,0,1,1) # left, right, width, height
 		self._ui_show_progress_info_bar = Gtk.Switch()
+		self._ui_show_progress_info_bar.set_property('hexpand', False)
+		self._ui_show_progress_info_bar.set_property('vexpand', False)
+		self._ui_show_progress_info_bar.set_property('halign', Gtk.Align.END)
+		self._ui_show_progress_info_bar.set_property('valign', Gtk.Align.CENTER)
 		ui_table.attach(self._ui_show_progress_info_bar, 
-				1,2,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				5,5) # horizontal and vertical paddings
+				1,0,1,1) # left, top, width, height
 
 		# Set the initial values
 		self.on_initialize_fields()

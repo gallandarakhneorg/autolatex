@@ -41,42 +41,62 @@ _T = gettext.gettext
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the figure assignments
-class Panel(Gtk.Table):
+class Panel(Gtk.Box):
 	__gtype_name__ = "AutoLaTeXFigureAssignmentPanel"
 
 	def __init__(self, directory):
-		Gtk.Table.__init__(self,
-				1, #rows
-				1, #columns
-				False) #non uniform
+		# Use an intermediate GtkBox to be sure that
+		# the child GtkGrid will not be expanded vertically
+		Gtk.Box.__init__(self)
 		self._directory = directory
-
+		#
+		# Create the grid for the panel
+		#
+		self.set_property('orientation', Gtk.Orientation.VERTICAL)
+		grid = Gtk.Grid()
+		self.pack_start(grid, False, False, 0)
+		grid.set_row_homogeneous(False)
+		grid.set_column_homogeneous(False)
+		grid.set_row_spacing(5)
+		grid.set_column_spacing(5)
+		grid.set_property('margin', 5)
+		grid.set_property('vexpand', False)
+		grid.set_property('hexpand', True)
+		#
+		# Fill the grid
+		#
+		ui_label = Gtk.Label(_T("List of the figures detected in your document's directory.\nYou can edit the second column to set the translator used for a particular figure."))
+		ui_label.set_property('hexpand', True)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(ui_label, 
+				0,0,1,1) # left, top, width, height
 		self._ui_figure_edit_store = Gtk.ListStore(str)
 		self._ui_figure_store = Gtk.ListStore(str, str)
-		self._ui_figure_widget = Gtk.TreeView()
-		self._ui_figure_widget.set_model(self._ui_figure_store)
-		self._ui_figure_widget.append_column(Gtk.TreeViewColumn(_T("Figure"), Gtk.CellRendererText(), text=0))
+		ui_figure_widget = Gtk.TreeView()
+		ui_figure_widget.set_model(self._ui_figure_store)
+		ui_figure_widget.append_column(Gtk.TreeViewColumn(_T("Figure"), Gtk.CellRendererText(), text=0))
 		renderer_combo = Gtk.CellRendererCombo()
 		renderer_combo.set_property("editable", True)
 		renderer_combo.set_property("model", self._ui_figure_edit_store)
 		renderer_combo.set_property("text-column", 0)
 		renderer_combo.set_property("has-entry", False)
 		renderer_combo.connect("edited", self.on_figure_translator_changed)
-		self._ui_figure_widget.append_column(Gtk.TreeViewColumn(_T("Translator"), renderer_combo, text=1))
-		self._ui_figure_widget.set_headers_clickable(False)
-		self._ui_figure_widget.set_headers_visible(True)
-		self._ui_figure_selection = self._ui_figure_widget.get_selection()
+		ui_figure_widget.append_column(Gtk.TreeViewColumn(_T("Translator"), renderer_combo, text=1))
+		ui_figure_widget.set_headers_clickable(False)
+		ui_figure_widget.set_headers_visible(True)
+		self._ui_figure_selection = ui_figure_widget.get_selection()
 		self._ui_figure_selection.set_mode(Gtk.SelectionMode.SINGLE)
-		self._ui_figure_scroll = Gtk.ScrolledWindow()
-		self._ui_figure_scroll.add(self._ui_figure_widget)
-		self._ui_figure_scroll.set_size_request(200,100)
-		self._ui_figure_scroll.set_policy(Gtk.PolicyType.AUTOMATIC,Gtk.PolicyType.AUTOMATIC)
-		self._ui_figure_scroll.set_shadow_type(Gtk.ShadowType.IN)
-		self.attach(	self._ui_figure_scroll, 
-				0,1,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x option
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # y options
-				5,5) # horizontal and vertical paddings
+		ui_figure_scroll = Gtk.ScrolledWindow()
+		ui_figure_scroll.add(ui_figure_widget)
+		ui_figure_scroll.set_size_request(500,400)
+		ui_figure_scroll.set_policy(Gtk.PolicyType.AUTOMATIC,Gtk.PolicyType.AUTOMATIC)
+		ui_figure_scroll.set_shadow_type(Gtk.ShadowType.IN)
+		ui_figure_scroll.set_property('hexpand', True)
+		ui_figure_scroll.set_property('vexpand', True)
+		grid.attach(	ui_figure_scroll, 
+				0,1,1,1) # left, top, width, height
 		#
 		# Initialize the content
 		#

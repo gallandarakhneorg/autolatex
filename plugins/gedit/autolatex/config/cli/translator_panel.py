@@ -57,81 +57,100 @@ class _Level:
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the translators
-class Panel(Gtk.Table):
+class Panel(Gtk.Box):
 	__gtype_name__ = "AutoLaTeXTranslatorPanel"
 
-	def __init__(self, isDocument_Level, directory):
-		Gtk.Table.__init__(self,
-				2, #rows
-				2, #columns
-				False) #non uniform
+	def __init__(self, isDocumentLevel, directory):
+		# Use an intermediate GtkBox to be sure that
+		# the child GtkGrid will not be expanded vertically
+		Gtk.Box.__init__(self)
 		self._directory = directory
-		self._is_document_level = isDocument_Level
+		self._is_document_level = isDocumentLevel
 		self._preload_icons()
+		#
+		# Create the grid for the panel
+		#
+		self.set_property('orientation', Gtk.Orientation.VERTICAL)
+		grid = Gtk.Grid()
+		self.pack_start(grid, False, False, 0)
+		grid.set_row_homogeneous(False)
+		grid.set_column_homogeneous(False)
+		grid.set_row_spacing(5)
+		grid.set_column_spacing(5)
+		grid.set_property('margin', 5)
+		grid.set_property('vexpand', False)
+		grid.set_property('hexpand', True)
+		#
+		# Fill the grid
+		#
 		# Top label
-		self._ui_label = Gtk.Label(_T("List of available translators:\n(click on the second column to change the loading state of the translators)"))
-		self._ui_label.set_alignment(0, 0.5)
-		self.attach(self._ui_label, 
-				0,1,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND, Gtk.AttachOptions.SHRINK, # x and y options
-				0,0) # horizontal and vertical paddings
+		ui_label = Gtk.Label(_T("List of available translators:\n(click on the second column to change the loading state of the translators)"))
+		ui_label.set_property('hexpand', True)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(ui_label, 
+				0,0,2,1) # left, top, width, height
 		# List of translators
 		self._ui_translator_list = Gtk.ListStore(
-						GdkPixbuf.Pixbuf.__gtype__, GdkPixbuf.Pixbuf.__gtype__,
-						str, str)
-		self._ui_translator_list_widget = Gtk.TreeView()
-		self._ui_translator_list_widget.set_model(self._ui_translator_list)
-		if isDocument_Level:
+						GdkPixbuf.Pixbuf.__gtype__,
+						GdkPixbuf.Pixbuf.__gtype__,
+						str,
+						str)
+		ui_translator_list_widget = Gtk.TreeView()
+		ui_translator_list_widget.set_model(self._ui_translator_list)
+		if self._is_document_level:
 			label1 = _T('usr')
 			self._clickable_column_label = _T('doc')
 		else:
 			label1 = 'sys'
 			self._clickable_column_label = _T('usr')
 		column = Gtk.TreeViewColumn(label1, Gtk.CellRendererPixbuf(), pixbuf=0)
-		self._ui_translator_list_widget.append_column(column)
+		ui_translator_list_widget.append_column(column)
 		column = Gtk.TreeViewColumn(self._clickable_column_label, Gtk.CellRendererPixbuf(), pixbuf=1)
-		self._ui_translator_list_widget.append_column(column)
+		ui_translator_list_widget.append_column(column)
 		column = Gtk.TreeViewColumn(_T("name"), Gtk.CellRendererText(), text=2)
-		self._ui_translator_list_widget.append_column(column)
+		ui_translator_list_widget.append_column(column)
 		column = Gtk.TreeViewColumn(_T("description"), Gtk.CellRendererText(), text=3)
-		self._ui_translator_list_widget.append_column(column)
-		self._ui_translator_list_widget.set_headers_clickable(False)
-		self._ui_translator_list_widget.set_headers_visible(True)
+		ui_translator_list_widget.append_column(column)
+		ui_translator_list_widget.set_headers_clickable(False)
+		ui_translator_list_widget.set_headers_visible(True)
 		# Scrolling pane for translator list
-		self._ui_translator_list_scroll = Gtk.ScrolledWindow()
-		self._ui_translator_list_scroll.add(self._ui_translator_list_widget)
-		self._ui_translator_list_scroll.set_size_request(500,400)
-		self._ui_translator_list_scroll.set_policy(Gtk.PolicyType.AUTOMATIC,Gtk.PolicyType.AUTOMATIC)
-		self._ui_translator_list_scroll.set_shadow_type(Gtk.ShadowType.IN)
-		self.attach (self._ui_translator_list_scroll, 
-					0,1,1,2, # left, right, top and bottom columns
-					Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x option
-					Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # y option
-					5,5) # horizontal and vertical paddings
+		ui_translator_list_scroll = Gtk.ScrolledWindow()
+		ui_translator_list_scroll.add(ui_translator_list_widget)
+		ui_translator_list_scroll.set_size_request(500,400)
+		ui_translator_list_scroll.set_policy(
+					Gtk.PolicyType.AUTOMATIC,
+					Gtk.PolicyType.AUTOMATIC)
+		ui_translator_list_scroll.set_shadow_type(Gtk.ShadowType.IN)
+		ui_translator_list_scroll.set_property('hexpand', True)
+		ui_translator_list_scroll.set_property('vexpand', True)
+		grid.attach(ui_translator_list_scroll, 
+					0,1,1,1) # left, top, width, height
 		# Management buttons
-		self._ui_left_toolbar = Gtk.VButtonBox()
-		self._ui_left_toolbar.set_layout(Gtk.ButtonBoxStyle.START)
-		self.attach(self._ui_left_toolbar, 
-					1,2,0,2, # left, right, top and bottom columns
-					Gtk.AttachOptions.SHRINK, # x option
-					Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # y option
-					5,5) # horizontal and vertical paddings
+		ui_left_toolbar = Gtk.Box(False, 5)
+		ui_left_toolbar.set_property('orientation', Gtk.Orientation.VERTICAL)
+		ui_left_toolbar.set_property('hexpand', False)
+		ui_left_toolbar.set_property('vexpand', True)
+		grid.attach(ui_left_toolbar, 
+					1,1,1,1) # left, top, width, height
 		# Help
-		#self._ui_left_toolbar.add (Gtk.HSeparator())
 		if self._is_document_level:
 			label1 = _T('Current user')
 			label2 = _T('Current document')
 		else:
 			label1 = _T('All users')
 			label2 = _T('Current user')
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(0), label1))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1), label2))
-		self._ui_left_toolbar.add(Gtk.HSeparator())
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1), _T('Loaded, no conflict')))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.CONFLICT), _T('Loaded, conflict')))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.EXCLUDED), _T('Not loaded')))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.INHERITED), _T('Unspecified, no conflict')))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.INHERITED_CONFLICT), _T('Unspecified, conflict')))
+		ui_left_toolbar.add(self._make_legend(self._get_level_icon(0), label1))
+		ui_left_toolbar.add(self._make_legend(self._get_level_icon(1), label2))
+		ui_separator = Gtk.Separator()
+		ui_separator.set_orientation(Gtk.Orientation.HORIZONTAL)
+		ui_left_toolbar.add(ui_separator)
+		ui_left_toolbar.add(self._make_legend(self._get_level_icon(1), _T('Loaded, no conflict')))
+		ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.CONFLICT), _T('Loaded, conflict')))
+		ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.EXCLUDED), _T('Not loaded')))
+		ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.INHERITED), _T('Unspecified, no conflict')))
+		ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.INHERITED_CONFLICT), _T('Unspecified, conflict')))
 		#
 		# Initialize the panel
 		#
@@ -169,7 +188,7 @@ class Panel(Gtk.Table):
 			self._translator_indexes[translator] = index
 			index = index + 1
 		# Connect the UI events
-		self._ui_translator_list_widget.connect('button-press-event', self.on_list_click_action);
+		ui_translator_list_widget.connect('button-press-event', self.on_list_click_action);
 
 	# Preloading the states' icons
 	def _preload_icons(self):
@@ -188,11 +207,11 @@ class Panel(Gtk.Table):
 	# Load the bitmap of an icon
 	def __get_level_icon(self, level, icon_type=_IconType.INCLUDED):
 		if level == _Level.SYSTEM:
-			icon_name = 'system_Level'
+			icon_name = 'systemLevel'
 		elif level == _Level.USER:
-			icon_name = 'user_Level'
+			icon_name = 'userLevel'
 		else:
-			icon_name = 'project_Level'
+			icon_name = 'projectLevel'
 		
 		if icon_type == _IconType.INHERITED_CONFLICT:
 			icon_name = icon_name + '_uc'
@@ -211,16 +230,20 @@ class Panel(Gtk.Table):
 
 	# Utility function  to create the "help" legend
 	def _make_legend(self, icon, label, top_padding=0):
-		legend_alignment = Gtk.Table(5,2)
+		legend_alignment = Gtk.Box(False, 3)
+		legend_alignment.set_property('vexpand', False)
+		legend_alignment.set_property('hexpand', False)
+		legend_alignment.set_property('orientation', Gtk.Orientation.HORIZONTAL)
 		icon_label = Gtk.Image.new_from_pixbuf(icon)
-		legend_alignment.attach(icon_label, 0, 1, 0, 1,
-					Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL,
-					0, top_padding)
+		icon_label.set_property('vexpand', False)
+		icon_label.set_property('hexpand', False)
+		legend_alignment.add(icon_label)
 		text = Gtk.Label(label)
-		text.set_alignment(0, 0.5)
-		legend_alignment.attach(text, 1, 2, 0, 1,
-					Gtk.AttachOptions.FILL, Gtk.AttachOptions.FILL,
-					5, top_padding)
+		text.set_property('vexpand', False)
+		text.set_property('hexpand', False)
+		text.set_property('valign', Gtk.Align.CENTER)
+		text.set_property('halign', Gtk.Align.START)
+		legend_alignment.add(text)
 		return legend_alignment
 
 	# Replies if the given translator, in the given state, may be assumed as included

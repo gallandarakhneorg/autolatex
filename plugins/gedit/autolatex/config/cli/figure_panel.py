@@ -39,56 +39,82 @@ _T = gettext.gettext
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the figures
-class Panel(Gtk.Table):
+class Panel(Gtk.Box):
 	__gtype_name__ = "AutoLaTeXFigurePanel"
 
 	def __init__(self, is_document_level, directory, window):
-		Gtk.Table.__init__(self,
-				3, #rows
-				2, #columns
-				False) #non uniform
+		# Use an intermediate GtkBox to be sure that
+		# the child GtkGrid will not be expanded vertically
+		Gtk.Box.__init__(self)
 		self._is_document_level = is_document_level
 		self._directory = directory
 		self.window = window
-
-		hbox = Gtk.HBox()
-		self.attach(	hbox,
-				0,2,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5); # horizontal and vertical paddings
+		#
+		# Create the grid for the panel
+		#
+		self.set_property('orientation', Gtk.Orientation.VERTICAL)
+		grid = Gtk.Grid()
+		self.pack_start(grid, False, False, 0)
+		grid.set_row_homogeneous(False)
+		grid.set_column_homogeneous(False)
+		grid.set_row_spacing(5)
+		grid.set_column_spacing(5)
+		grid.set_property('margin', 5)
+		grid.set_property('vexpand', False)
+		grid.set_property('hexpand', True)
+		#
+		# Fill the grid
+		#
+		# label
 		ui_label = Gtk.Label(_T("Automatic generation of pictures with translators"))
-		ui_label.set_alignment(0, 0.5)
-		hbox.add(ui_label)
+		ui_label.set_property('hexpand', False)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	ui_label,
+				0,0,1,1) # left, top, width, height
+		# Switch
 		self._ui_is_figure_generated_checkbox = Gtk.Switch()
-		hbox.add(self._ui_is_figure_generated_checkbox)
-
+		self._ui_is_figure_generated_checkbox.set_property('hexpand', False)
+		self._ui_is_figure_generated_checkbox.set_property('vexpand', False)
+		self._ui_is_figure_generated_checkbox.set_property('halign', Gtk.Align.END)
+		self._ui_is_figure_generated_checkbox.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	self._ui_is_figure_generated_checkbox,
+				1, 0, 1, 1) # left, top, width, height
+		# Label
 		self._ui_figure_path_label = Gtk.Label(_T("Search paths for the pictures"))
-		self._ui_figure_path_label.set_alignment(0, 0.5)
-		self.attach(	self._ui_figure_path_label,
-				0,1,1,2, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,2); # horizontal and vertical paddings
-		self._ui_figure_path_label.set_justify(Gtk.Justification.LEFT)
-		hbox = Gtk.HButtonBox()
-		self.attach(	hbox,
-				1,2,1,2, # left, right, top and bottom columns
-				Gtk.AttachOptions.SHRINK, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,2); # horizontal and vertical paddings
+		self._ui_figure_path_label.set_property('hexpand', True)
+		self._ui_figure_path_label.set_property('vexpand', False)
+		self._ui_figure_path_label.set_property('halign', Gtk.Align.START)
+		self._ui_figure_path_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	self._ui_figure_path_label,
+				0,1,1,1) # left, top, width, height
+		# Box of buttons
+		hbox = Gtk.Box()
+		hbox.set_property('orientation', Gtk.Orientation.HORIZONTAL)
+		hbox.set_property('hexpand', False)
+		hbox.set_property('vexpand', False)
+		hbox.set_property('halign', Gtk.Align.START)
+		hbox.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	hbox,
+				1,1,1,1) # left, top, width, height
+		# Button 1
 		self._ui_figure_path_add_button = Gtk.Button()
 		self._ui_figure_path_add_button.set_image(Gtk.Image.new_from_stock(Gtk.STOCK_ADD, Gtk.IconSize.BUTTON))
 		hbox.add(self._ui_figure_path_add_button)
+		# Button 2
 		self._ui_figure_path_remove_button = Gtk.Button()
 		self._ui_figure_path_remove_button.set_image(Gtk.Image.new_from_stock(Gtk.STOCK_REMOVE, Gtk.IconSize.BUTTON))
 		hbox.add(self._ui_figure_path_remove_button)
+		# Button 3
 		self._ui_figure_path_up_button = Gtk.Button()
 		self._ui_figure_path_up_button.set_image(Gtk.Image.new_from_stock(Gtk.STOCK_GO_UP, Gtk.IconSize.BUTTON))
 		hbox.add(self._ui_figure_path_up_button)
+		# Button 4
 		self._ui_figure_path_down_button = Gtk.Button()
 		self._ui_figure_path_down_button.set_image(Gtk.Image.new_from_stock(Gtk.STOCK_GO_DOWN, Gtk.IconSize.BUTTON))
 		hbox.add(self._ui_figure_path_down_button)
+		# List
 		self._ui_figure_path_store = Gtk.ListStore(str)
 		self._ui_figure_path_widget = Gtk.TreeView()
 		self._ui_figure_path_widget.set_model(self._ui_figure_path_store)
@@ -97,16 +123,18 @@ class Panel(Gtk.Table):
 		self._ui_figure_path_widget.set_headers_visible(False)
 		self._ui_figure_path_selection = self._ui_figure_path_widget.get_selection()
 		self._ui_figure_path_selection.set_mode(Gtk.SelectionMode.MULTIPLE)
-		self._ui_figure_path_scroll = Gtk.ScrolledWindow()
-		self._ui_figure_path_scroll.add(self._ui_figure_path_widget)
-		self._ui_figure_path_scroll.set_size_request(200,100)
-		self._ui_figure_path_scroll.set_policy(Gtk.PolicyType.AUTOMATIC,Gtk.PolicyType.AUTOMATIC)
-		self._ui_figure_path_scroll.set_shadow_type(Gtk.ShadowType.IN)
-		self.attach(	self._ui_figure_path_scroll, 
-				0,2,2,3, # left, right, top and bottom columns
-				Gtk.AttachOptions.FILL|Gtk.AttachOptions.EXPAND, # x option
-				Gtk.AttachOptions.SHRINK, # y options
-				5,5) # horizontal and vertical paddings
+		# Scroll
+		ui_figure_path_scroll = Gtk.ScrolledWindow()
+		ui_figure_path_scroll.add(self._ui_figure_path_widget)
+		ui_figure_path_scroll.set_size_request(500,400)
+		ui_figure_path_scroll.set_policy(
+						Gtk.PolicyType.AUTOMATIC,
+						Gtk.PolicyType.AUTOMATIC)
+		ui_figure_path_scroll.set_shadow_type(Gtk.ShadowType.IN)
+		ui_figure_path_scroll.set_property('hexpand', True)
+		ui_figure_path_scroll.set_property('vexpand', True)
+		grid.attach(	ui_figure_path_scroll, 
+				0,2,2,1) # left, top, width, height
 		#
 		# Initialize the content
 		#

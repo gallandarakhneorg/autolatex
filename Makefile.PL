@@ -521,6 +521,30 @@ sub DO_install(\%) {
 			getFiles('plugins', 'gedit','autolatex','*'));
 
 		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','config'),
+			getFiles('plugins', 'gedit','autolatex','config','*'));
+
+		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','config','cli'),
+			getFiles('plugins', 'gedit','autolatex','config','cli','*'));
+
+		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','config','plugin'),
+			getFiles('plugins', 'gedit','autolatex','config','plugin','*'));
+
+		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','ui'),
+			getFiles('plugins', 'gedit','autolatex','ui','*'));
+
+		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','utils'),
+			getFiles('plugins', 'gedit','autolatex','utils','*'));
+
+		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','widgets'),
+			getFiles('plugins', 'gedit','autolatex','widgets','*'));
+
+		installInto(
 			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','icons','24'),
 			getFiles('plugins', 'gedit','autolatex','icons','24','*'));
 

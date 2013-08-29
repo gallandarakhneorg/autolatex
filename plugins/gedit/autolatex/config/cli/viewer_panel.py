@@ -37,36 +37,44 @@ _T = gettext.gettext
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the viewer
-class Panel(Gtk.Table):
+class Panel(Gtk.Box):
 	__gtype_name__ = "AutoLaTeXViewerPanel"
 
 	def __init__(self, is_document_level, directory):
-		Gtk.Table.__init__(self,
-				2, #rows
-				2, #columns
-				False) #non uniform
+		# Use an intermediate GtkBox to be sure that
+		# the child GtkGrid will not be expanded vertically
+		Gtk.Box.__init__(self)
 		self._is_document_level = is_document_level
 		self._directory = directory
 
+		self.set_property('orientation', Gtk.Orientation.VERTICAL)
+		grid = Gtk.Grid()
+		self.pack_start(grid, False, False, 0)
+		grid.set_row_homogeneous(True)
+		grid.set_column_homogeneous(False)
+		grid.set_row_spacing(5)
+		grid.set_column_spacing(5)
+		grid.set_property('margin', 5)
+		grid.set_property('vexpand', False)
+		grid.set_property('hexpand', True)
+
 		self._ui_launch_viewer_checkbox = Gtk.CheckButton(_T("Launch a viewer after compilation"))
-		self.attach(	self._ui_launch_viewer_checkbox,
-				0,2,0,1, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5); # horizontal and vertical paddings
+		self._ui_launch_viewer_checkbox.set_property('hexpand', True)
+		self._ui_launch_viewer_checkbox.set_property('vexpand', False)
+		grid.attach(	self._ui_launch_viewer_checkbox,
+				0,0,2,1) # left, top, width, height
 		self._ui_viewer_command_label = Gtk.Label(_T("Command for launching the viewer (optional)"))
-		self._ui_viewer_command_label.set_alignment(0, 0.5)
-		self.attach(	self._ui_viewer_command_label, 
-				0,1,1,2, # left, right, top and bottom columns
-				Gtk.AttachOptions.SHRINK, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5); # horizontal and vertical paddings
+		self._ui_viewer_command_label.set_property('hexpand', False)
+		self._ui_viewer_command_label.set_property('vexpand', False)
+		self._ui_viewer_command_label.set_property('halign', Gtk.Align.START)
+		self._ui_viewer_command_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	self._ui_viewer_command_label, 
+				0,1,1,1) # left, top, width, height
 		self._ui_viewer_command_field = Gtk.Entry()
-		self.attach(	self._ui_viewer_command_field,
-				1,2,1,2, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5); # horizontal and vertical paddings
+		self._ui_viewer_command_field.set_property('hexpand', True)
+		self._ui_viewer_command_field.set_property('vexpand', False)
+		grid.attach(	self._ui_viewer_command_field,
+				1,1,1,1) # left, top, width, height
 		#
 		# Initialize the content
 		#

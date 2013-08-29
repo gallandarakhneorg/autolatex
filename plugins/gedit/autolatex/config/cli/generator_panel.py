@@ -102,89 +102,110 @@ class _IndexType:
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the generator
-class Panel(Gtk.Table):
+class Panel(Gtk.Box):
 	__gtype_name__ = "AutoLaTeXGeneratorPanel"
 
 	def __init__(self, is_document_level, directory):
-		Gtk.Table.__init__(self,
-				5, #rows
-				2, #columns
-				False) #non uniform
+		# Use an intermediate GtkBox to be sure that
+		# the child GtkGrid will not be expanded vertically
+		Gtk.Box.__init__(self)
 		self._is_document_level = is_document_level
 		self._directory = directory
-
+		#
+		# Create the grid for the panel
+		#
+		self.set_property('orientation', Gtk.Orientation.VERTICAL)
+		grid = Gtk.Grid()
+		self.pack_start(grid, False, False, 0)
+		grid.set_row_homogeneous(False)
+		grid.set_column_homogeneous(False)
+		grid.set_row_spacing(5)
+		grid.set_column_spacing(5)
+		grid.set_property('margin', 5)
+		grid.set_property('vexpand', False)
+		grid.set_property('hexpand', True)
+		#
+		# Fill the grid
+		#
 		table_row = 0
-
 		if self._is_document_level:
+			# Label
 			ui_label = Gtk.Label(_T("Main TeX file (optional)"))
-			ui_label.set_alignment(0, 0.5)
-			self.attach(	ui_label,
-					0,1,table_row,table_row+1, # left, right, top and bottom columns
-					Gtk.AttachOptions.SHRINK, # x options
-					Gtk.AttachOptions.SHRINK, # y options
-					2,5) # horizontal and vertical paddings
+			ui_label.set_property('hexpand', False)
+			ui_label.set_property('vexpand', False)
+			ui_label.set_property('halign', Gtk.Align.START)
+			ui_label.set_property('valign', Gtk.Align.CENTER)
+			grid.attach(	ui_label,
+					0,table_row,1,1) # left, top, width, height
+			# Text field
 			self._ui_main_tex_file_editor = Gtk.Entry()
-			self.attach(	self._ui_main_tex_file_editor, 
-					1,2,table_row,table_row+1, # left, right, top and bottom columns
-					Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-					Gtk.AttachOptions.SHRINK, # y options
-					2,5) # horizontal and vertical paddings
+			self._ui_main_tex_file_editor.set_property('hexpand', True)
+			self._ui_main_tex_file_editor.set_property('vexpand', False)
+			grid.attach(	self._ui_main_tex_file_editor, 
+					1,table_row,1,1) # left, top, width, height
 			table_row = table_row + 1
-
-		hbox = Gtk.HBox()
-		self.attach(	hbox, 
-				0,2,table_row,table_row+1, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5); # horizontal and vertical paddings
-		table_row = table_row + 1
+		# Label
 		ui_label = Gtk.Label(_T("Execute the bibliography tool (BibTeX, Bibber...)"))
-		ui_label.set_alignment(0, 0.5)
-		hbox.add(ui_label)
+		ui_label.set_property('hexpand', False)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	ui_label, 
+				0,table_row,1,1) # left, top, width, height
+		# Switch
 		self._ui_run_biblio_checkbox = Gtk.Switch()
-		hbox.add(self._ui_run_biblio_checkbox)
-
+		self._ui_run_biblio_checkbox.set_property('hexpand', False)
+		self._ui_run_biblio_checkbox.set_property('vexpand', False)
+		self._ui_run_biblio_checkbox.set_property('halign', Gtk.Align.END)
+		self._ui_run_biblio_checkbox.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	self._ui_run_biblio_checkbox, 
+				1,table_row,1,1) # left, top, width, height
+		table_row = table_row + 1
+		# Label
 		ui_label = Gtk.Label(_T("Type of generation"))
-		ui_label.set_alignment(0, 0.5)
-		self.attach(	ui_label, 
-				0,1,table_row,table_row+1, # left, right, top and bottom columns
-				Gtk.AttachOptions.SHRINK, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5) # horizontal and vertical paddings
-
+		ui_label.set_property('hexpand', False)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	ui_label, 
+				0,table_row,1,1) # left, top, width, height
+		# Combo box
 		self._ui_generation_type_combo = Gtk.ComboBoxText()
 		self._ui_generation_type_combo.set_name('generation_type')
 		self._ui_generation_type_combo.append_text("PDF")
 		self._ui_generation_type_combo.append_text("DVI")
 		self._ui_generation_type_combo.append_text("Postscript")
-		self.attach(	self._ui_generation_type_combo, 
-				1,2,table_row,table_row+1, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5); # horizontal and vertical paddings
+		self._ui_generation_type_combo.set_property('hexpand', True)
+		self._ui_generation_type_combo.set_property('vexpand', False)
+		grid.attach(	self._ui_generation_type_combo, 
+				1,table_row,1,1) # left, top, width, height
 		table_row = table_row + 1
-
-		hbox = Gtk.HBox()
-		self.attach(	hbox, 
-				0,2,table_row,table_row+1, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5); # horizontal and vertical paddings
-		table_row = table_row + 1
+		# Label
 		ui_label = Gtk.Label(_T("Use SyncTeX when generating the document"))
-		ui_label.set_alignment(0, 0.5)
-		hbox.add(ui_label)
+		ui_label.set_property('hexpand', False)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	ui_label, 
+				0,table_row,1,1) # left, top, width, height
+		# Switch
 		self._ui_run_synctex_checkbox = Gtk.Switch()
-		hbox.add(self._ui_run_synctex_checkbox)
-
+		self._ui_run_synctex_checkbox.set_property('hexpand', False)
+		self._ui_run_synctex_checkbox.set_property('vexpand', False)
+		self._ui_run_synctex_checkbox.set_property('halign', Gtk.Align.END)
+		self._ui_run_synctex_checkbox.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	self._ui_run_synctex_checkbox, 
+				1,table_row,1,1) # left, top, width, height
+		table_row = table_row + 1
+		# Label
 		ui_label = Gtk.Label(_T("Type of style for MakeIndex"))
-		ui_label.set_alignment(0, 0.5)
-		self.attach(	ui_label, 
-				0,1,table_row,table_row+1, # left, right, top and bottom columns
-				Gtk.AttachOptions.SHRINK, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5) # horizontal and vertical paddings
-
+		ui_label.set_property('hexpand', False)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	ui_label, 
+				0,table_row,1,1) # left, top, width, height
+		# Combo box
 		self._ui_makeindex_type_combo = Gtk.ComboBoxText()
 		self._ui_makeindex_type_combo.set_name('makeindex_style_type')
 		self._ui_makeindex_type_combo.append_text(_T("Specific '.ist' file"))
@@ -192,29 +213,28 @@ class Panel(Gtk.Table):
 		self._ui_makeindex_type_combo.append_text(_T("Use only the default AutoLaTeX style"))
 		self._ui_makeindex_type_combo.append_text(_T("No style is passed to MakeIndex"))
 		self._ui_makeindex_type_combo.append_text(_T("Custom definition by the user (do not change the original configuration)"))
-		self.attach(	self._ui_makeindex_type_combo, 
-				1,2,table_row,table_row+1, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5); # horizontal and vertical paddings
+		self._ui_makeindex_type_combo.set_property('hexpand', True)
+		self._ui_makeindex_type_combo.set_property('vexpand', False)
+		grid.attach(	self._ui_makeindex_type_combo, 
+				1,table_row,1,1) # left, top, width, height
 		table_row = table_row + 1
-
+		# Label
 		label = _T("Style file for MakeIndex")
 		self._ui_makeindex_file_label = Gtk.Label(label)
-		self._ui_makeindex_file_label.set_alignment(0, 0.5)
-		self.attach(	self._ui_makeindex_file_label, 
-				0,1,table_row,table_row+1, # left, right, top and bottom columns
-				Gtk.AttachOptions.SHRINK, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5) # horizontal and vertical paddings
+		self._ui_makeindex_file_label.set_property('hexpand', False)
+		self._ui_makeindex_file_label.set_property('vexpand', False)
+		self._ui_makeindex_file_label.set_property('halign', Gtk.Align.START)
+		self._ui_makeindex_file_label.set_property('valign', Gtk.Align.CENTER)
+		grid.attach(	self._ui_makeindex_file_label, 
+				0,table_row,1,1) # left, top, width, height
+		# File chooser button
 		self._ui_makeindex_file_field = Gtk.FileChooserButton()
 		self._ui_makeindex_file_field.set_width_chars(40)
 		self._ui_makeindex_file_field.set_title(label)
-		self.attach(	self._ui_makeindex_file_field, 
-				1,2,table_row,table_row+1, # left, right, top and bottom columns
-				Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL, # x options
-				Gtk.AttachOptions.SHRINK, # y options
-				2,5) # horizontal and vertical paddings
+		self._ui_makeindex_file_field.set_property('hexpand', True)
+		self._ui_makeindex_file_field.set_property('vexpand', False)
+		grid.attach(	self._ui_makeindex_file_field, 
+				1,table_row,1,1) # left, top, width, height
 		table_row = table_row + 1
 		#
 		# Initialize the content
