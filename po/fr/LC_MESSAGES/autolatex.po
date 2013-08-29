@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-28 18:20+0200\n"
+"POT-Creation-Date: 2013-08-29 15:22+0200\n"
 "PO-Revision-Date: 2013-05-21 21:37+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -481,8 +481,8 @@ msgstr ""
 msgid "{}: file not found or not readable."
 msgstr "{}: fichier non trouvé ou non lisible."
 
-#: pm/AutoLaTeX/Core/Translator.pm:870 pm/AutoLaTeX/Make/Make.pm:771
-#: pm/AutoLaTeX/Make/Make.pm:852
+#: pm/AutoLaTeX/Core/Translator.pm:870 pm/AutoLaTeX/Make/Make.pm:818
+#: pm/AutoLaTeX/Make/Make.pm:899
 msgid "{} is up-to-date."
 msgstr "{} est à-jour."
 
@@ -576,9 +576,9 @@ msgstr "Impossible de rediriger STDERR : {}"
 
 #: pm/AutoLaTeX/Core/Util.pm:666 pm/AutoLaTeX/Core/Util.pm:722
 #: pm/AutoLaTeX/Core/Util.pm:728 pm/AutoLaTeX/TeX/Flattener.pm:112
-#: pm/AutoLaTeX/Make/Make.pm:527 pm/AutoLaTeX/Make/Make.pm:673
-#: pm/AutoLaTeX/Make/Make.pm:1086 pm/AutoLaTeX/Make/Make.pm:1091
-#: pm/AutoLaTeX/Make/Make.pm:1111
+#: pm/AutoLaTeX/Make/Make.pm:527 pm/AutoLaTeX/Make/Make.pm:720
+#: pm/AutoLaTeX/Make/Make.pm:1133 pm/AutoLaTeX/Make/Make.pm:1138
+#: pm/AutoLaTeX/Make/Make.pm:1158
 msgid "{}: {}"
 msgstr "{} : {}"
 
@@ -699,39 +699,44 @@ msgid "Parsing auxiliary files"
 msgstr "Analyse des fichiers auxiliaires"
 
 #: pm/AutoLaTeX/Make/Make.pm:534
-msgid "{}: Error when generating {}"
+#, fuzzy
+msgid "{}: Error when processing {}"
 msgstr "{} : Erreur lors de la génération de {}"
 
-#: pm/AutoLaTeX/Make/Make.pm:536
+#: pm/AutoLaTeX/Make/Make.pm:590
 msgid "{}: The first error found in the log file is:"
 msgstr "{}: La première erreur détectée dans le journal d'erreur est :"
 
-#: pm/AutoLaTeX/Make/Make.pm:549
+#: pm/AutoLaTeX/Make/Make.pm:592
 msgid "{}: End of error log."
 msgstr "{}: Fin du journal d'erreur."
 
-#: pm/AutoLaTeX/Make/Make.pm:681
+#: pm/AutoLaTeX/Make/Make.pm:595
+msgid "{}: Unable to extract the error from the log. Please read the log file."
+msgstr "{}: Impossible d'extraire l'erreur depuis le journal. Veuillez lire le fichier journal."
+
+#: pm/AutoLaTeX/Make/Make.pm:728
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr "Avertissement LaTeX : il existe des labels définis plusieurs fois.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:684
+#: pm/AutoLaTeX/Make/Make.pm:731
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 "Avertissement LaTeX : il existe des références vers des labels non définis.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:687
+#: pm/AutoLaTeX/Make/Make.pm:734
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 "Avertissement LaTeX : il existe des références vers citations "
 "bibliographiques non définies.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:695
+#: pm/AutoLaTeX/Make/Make.pm:742
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
 msgstr ""
 "Avertissement LaTeX : Veuillez ouvrir {} pour plus de messages "
 "d'avertissement.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:1115
+#: pm/AutoLaTeX/Make/Make.pm:1162
 msgid "Style file: {}"
 msgstr "Fichier de style : {}"
