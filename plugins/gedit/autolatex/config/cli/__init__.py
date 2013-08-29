@@ -16,4 +16,4 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-__all__ = [ 'window', 'figure_assignment_panel', 'figure_panel', 'generator_panel', 'plugin_config_panel', 'translator_panel', 'viewer_panel' ]
+__all__ = [ 'window', 'abstract_panel', 'figure_assignment_panel', 'figure_panel', 'generator_panel', 'plugin_config_panel', 'translator_panel', 'viewer_panel' ]

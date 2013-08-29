@@ -24,6 +24,7 @@
 from gi.repository import GObject, Gdk, Gtk, GdkPixbuf
 # AutoLaTeX internal libs
 from ...utils import utils
+from . import abstract_panel
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -102,147 +103,56 @@ class _IndexType:
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the generator
-class Panel(Gtk.Box):
+class Panel(abstract_panel.AbstractPanel):
 	__gtype_name__ = "AutoLaTeXGeneratorPanel"
 
-	def __init__(self, is_document_level, directory):
-		# Use an intermediate GtkBox to be sure that
-		# the child GtkGrid will not be expanded vertically
-		Gtk.Box.__init__(self)
-		self._is_document_level = is_document_level
-		self._directory = directory
-		#
-		# Create the grid for the panel
-		#
-		self.set_property('orientation', Gtk.Orientation.VERTICAL)
-		grid = Gtk.Grid()
-		self.pack_start(grid, False, False, 0)
-		grid.set_row_homogeneous(False)
-		grid.set_column_homogeneous(False)
-		grid.set_row_spacing(5)
-		grid.set_column_spacing(5)
-		grid.set_property('margin', 5)
-		grid.set_property('vexpand', False)
-		grid.set_property('hexpand', True)
-		#
-		# Fill the grid
-		#
+	def __init__(self, is_document_level, directory, window):
+		abstract_panel.AbstractPanel.__init__(self, is_document_level, directory, window)
+
+	#
+	# Fill the grid
+	#
+	def _init_widgets(self):
 		table_row = 0
 		if self._is_document_level:
-			# Label
-			ui_label = Gtk.Label(_T("Main TeX file (optional)"))
-			ui_label.set_property('hexpand', False)
-			ui_label.set_property('vexpand', False)
-			ui_label.set_property('halign', Gtk.Align.START)
-			ui_label.set_property('valign', Gtk.Align.CENTER)
-			grid.attach(	ui_label,
-					0,table_row,1,1) # left, top, width, height
-			# Text field
-			self._ui_main_tex_file_editor = Gtk.Entry()
-			self._ui_main_tex_file_editor.set_property('hexpand', True)
-			self._ui_main_tex_file_editor.set_property('vexpand', False)
-			grid.attach(	self._ui_main_tex_file_editor, 
-					1,table_row,1,1) # left, top, width, height
-			table_row = table_row + 1
-		# Label
-		ui_label = Gtk.Label(_T("Execute the bibliography tool (BibTeX, Bibber...)"))
-		ui_label.set_property('hexpand', False)
-		ui_label.set_property('vexpand', False)
-		ui_label.set_property('halign', Gtk.Align.START)
-		ui_label.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	ui_label, 
-				0,table_row,1,1) # left, top, width, height
-		# Switch
-		self._ui_run_biblio_checkbox = Gtk.Switch()
-		self._ui_run_biblio_checkbox.set_property('hexpand', False)
-		self._ui_run_biblio_checkbox.set_property('vexpand', False)
-		self._ui_run_biblio_checkbox.set_property('halign', Gtk.Align.END)
-		self._ui_run_biblio_checkbox.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	self._ui_run_biblio_checkbox, 
-				1,table_row,1,1) # left, top, width, height
-		table_row = table_row + 1
-		# Label
-		ui_label = Gtk.Label(_T("Type of generation"))
-		ui_label.set_property('hexpand', False)
-		ui_label.set_property('vexpand', False)
-		ui_label.set_property('halign', Gtk.Align.START)
-		ui_label.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	ui_label, 
-				0,table_row,1,1) # left, top, width, height
-		# Combo box
-		self._ui_generation_type_combo = Gtk.ComboBoxText()
-		self._ui_generation_type_combo.set_name('generation_type')
-		self._ui_generation_type_combo.append_text("PDF")
-		self._ui_generation_type_combo.append_text("DVI")
-		self._ui_generation_type_combo.append_text("Postscript")
-		self._ui_generation_type_combo.set_property('hexpand', True)
-		self._ui_generation_type_combo.set_property('vexpand', False)
-		grid.attach(	self._ui_generation_type_combo, 
-				1,table_row,1,1) # left, top, width, height
-		table_row = table_row + 1
-		# Label
-		ui_label = Gtk.Label(_T("Use SyncTeX when generating the document"))
-		ui_label.set_property('hexpand', False)
-		ui_label.set_property('vexpand', False)
-		ui_label.set_property('halign', Gtk.Align.START)
-		ui_label.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	ui_label, 
-				0,table_row,1,1) # left, top, width, height
-		# Switch
-		self._ui_run_synctex_checkbox = Gtk.Switch()
-		self._ui_run_synctex_checkbox.set_property('hexpand', False)
-		self._ui_run_synctex_checkbox.set_property('vexpand', False)
-		self._ui_run_synctex_checkbox.set_property('halign', Gtk.Align.END)
-		self._ui_run_synctex_checkbox.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	self._ui_run_synctex_checkbox, 
-				1,table_row,1,1) # left, top, width, height
-		table_row = table_row + 1
-		# Label
-		ui_label = Gtk.Label(_T("Type of style for MakeIndex"))
-		ui_label.set_property('hexpand', False)
-		ui_label.set_property('vexpand', False)
-		ui_label.set_property('halign', Gtk.Align.START)
-		ui_label.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	ui_label, 
-				0,table_row,1,1) # left, top, width, height
-		# Combo box
-		self._ui_makeindex_type_combo = Gtk.ComboBoxText()
-		self._ui_makeindex_type_combo.set_name('makeindex_style_type')
-		self._ui_makeindex_type_combo.append_text(_T("Specific '.ist' file"))
-		self._ui_makeindex_type_combo.append_text(_T("Autodetect the style inside the project directory"))
-		self._ui_makeindex_type_combo.append_text(_T("Use only the default AutoLaTeX style"))
-		self._ui_makeindex_type_combo.append_text(_T("No style is passed to MakeIndex"))
-		self._ui_makeindex_type_combo.append_text(_T("Custom definition by the user (do not change the original configuration)"))
-		self._ui_makeindex_type_combo.set_property('hexpand', True)
-		self._ui_makeindex_type_combo.set_property('vexpand', False)
-		grid.attach(	self._ui_makeindex_type_combo, 
-				1,table_row,1,1) # left, top, width, height
-		table_row = table_row + 1
-		# Label
+			# Main TeX File
+			self._ui_main_tex_file_editor = self._create_entry(
+				_T("Main TeX file (optional)"))[1]
+		# Execute the bibtex tools
+		self._ui_run_biblio_checkbox = self._create_switch(
+				_T("Execute the bibliography tool (BibTeX, Bibber...)"))[1]
+		# Type of generation
+		self._ui_generation_type_combo = self._create_combo(
+				_T("Type of generation"),
+				[ "PDF", "DVI", "Postscript" ],
+				'generation_type')[1]
+		# SyncTeX
+		self._ui_run_synctex_checkbox = self._create_switch(
+				_T("Use SyncTeX when generating the document"))[1]
+		# Type of MakeIndex style
+		self._ui_makeindex_type_combo = self._create_combo(
+				_T("Type of style for MakeIndex"),
+				[	_T("Specific '.ist' file"),
+					_T("Autodetect the style inside the project directory"),
+					_T("Use only the default AutoLaTeX style"),
+					_T("No style is passed to MakeIndex"),
+					_T("Custom definition by the user (do not change the original configuration)") ],
+				'makeindex_style_type')[1]
+		# File of the MakeIndex style
 		label = _T("Style file for MakeIndex")
-		self._ui_makeindex_file_label = Gtk.Label(label)
-		self._ui_makeindex_file_label.set_property('hexpand', False)
-		self._ui_makeindex_file_label.set_property('vexpand', False)
-		self._ui_makeindex_file_label.set_property('halign', Gtk.Align.START)
-		self._ui_makeindex_file_label.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	self._ui_makeindex_file_label, 
-				0,table_row,1,1) # left, top, width, height
-		# File chooser button
 		self._ui_makeindex_file_field = Gtk.FileChooserButton()
 		self._ui_makeindex_file_field.set_width_chars(40)
 		self._ui_makeindex_file_field.set_title(label)
-		self._ui_makeindex_file_field.set_property('hexpand', True)
-		self._ui_makeindex_file_field.set_property('vexpand', False)
-		grid.attach(	self._ui_makeindex_file_field, 
-				1,table_row,1,1) # left, top, width, height
-		table_row = table_row + 1
-		#
-		# Initialize the content
-		#
-		self._settings = utils.backend_get_configuration(
-						self._directory,
-						'project' if self._is_document_level else 'user',
-						'generation')
+		self._ui_makeindex_file_label = self._create_row(
+				label,
+				self._ui_makeindex_file_field)[0]
+
+
+	#
+	# Initialize the content
+	#
+	def _init_content(self):
+		self._read_settings('generation')
 		if self._is_document_level:
 			self._ui_main_tex_file_editor.set_text(self._get_settings_str('main file'))
 		self._ui_run_biblio_checkbox.set_active(self._get_settings_bool('biblio', True))
@@ -253,24 +163,17 @@ class Panel(Gtk.Box):
 		makeindex_type = _IndexType.index(_IndexType.parse(self._makeindex_value))
 		self._ui_makeindex_type_combo.set_active(makeindex_type)
 		self._update_widget_states()
-		#
-		# Connect signals
-		#
+
+
+	#
+	# Connect signals
+	#
+	def _connect_signals(self):
 		self._ui_makeindex_type_combo.connect('changed',self.on_generation_type_changed)
 
-	# Utility function to extract a string value from the settings
-	def _get_settings_str(self, key, default_value=''):
-		if self._settings.has_option('generation', key):
-			return str(self._settings.get('generation', key))
-		else:
-			return str(default_value)
 
-	# Utility function to extract a boolean value from the settings
-	def _get_settings_bool(self, key, default_value=False):
-		if self._settings.has_option('generation', key):
-			return bool(self._settings.getboolean('generation', key))
-		else:
-			return bool(default_value)
+
+
 
 	# Change the state of the widgets according to the state of other widgets
 	def _update_widget_states(self):
@@ -290,15 +193,14 @@ class Panel(Gtk.Box):
 
 	# Invoked when the changes in the panel must be saved
 	def save(self):
-		self._settings.remove_section('generation')
-		self._settings.add_section('generation')
-		self._settings.set('generation', 'main file', self._ui_main_tex_file_editor.get_text())
-		self._settings.set('generation', 'biblio', 
-				'true' if self._ui_run_biblio_checkbox.get_active() else 'false')
-		self._settings.set('generation', 'synctex', 
-				'true' if self._ui_run_synctex_checkbox.get_active() else 'false')
-		self._settings.set('generation', 'generation type', 
+		self._reset_settings_section()
+		self._set_settings_str('main file', self._ui_main_tex_file_editor.get_text())
+		self._set_settings_bool('biblio',
+				self._ui_run_biblio_checkbox.get_active())
+		self._set_settings_bool('synctex', 
+				self._ui_run_synctex_checkbox.get_active())
+		self._set_settings_str('generation type', 
 				_GenerationType.label(self._ui_generation_type_combo.get_active()))
-		self._settings.set('generation', 'makeindex style', 
+		self._set_settings_str('makeindex style', 
 				_IndexType.label(self._ui_makeindex_type_combo.get_active(), self._makeindex_value))
 		return utils.backend_set_configuration(self._directory, 'project' if self._is_document_level else 'user', self._settings)

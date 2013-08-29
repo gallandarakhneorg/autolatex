@@ -28,6 +28,7 @@ import ConfigParser
 from gi.repository import Gtk
 # AutoLaTeX internal libs
 from ...utils import utils
+from . import abstract_panel
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -41,37 +42,21 @@ _T = gettext.gettext
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the figure assignments
-class Panel(Gtk.Box):
+class Panel(abstract_panel.AbstractPanel):
 	__gtype_name__ = "AutoLaTeXFigureAssignmentPanel"
 
-	def __init__(self, directory):
-		# Use an intermediate GtkBox to be sure that
-		# the child GtkGrid will not be expanded vertically
-		Gtk.Box.__init__(self)
-		self._directory = directory
-		#
-		# Create the grid for the panel
-		#
-		self.set_property('orientation', Gtk.Orientation.VERTICAL)
-		grid = Gtk.Grid()
-		self.pack_start(grid, False, False, 0)
-		grid.set_row_homogeneous(False)
-		grid.set_column_homogeneous(False)
-		grid.set_row_spacing(5)
-		grid.set_column_spacing(5)
-		grid.set_property('margin', 5)
-		grid.set_property('vexpand', False)
-		grid.set_property('hexpand', True)
-		#
-		# Fill the grid
-		#
-		ui_label = Gtk.Label(_T("List of the figures detected in your document's directory.\nYou can edit the second column to set the translator used for a particular figure."))
-		ui_label.set_property('hexpand', True)
-		ui_label.set_property('vexpand', False)
-		ui_label.set_property('halign', Gtk.Align.START)
-		ui_label.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(ui_label, 
-				0,0,1,1) # left, top, width, height
+	def __init__(self, is_document_level, directory, window):
+		abstract_panel.AbstractPanel.__init__(self, is_document_level, directory, window)
+		
+
+	#
+	# Fill the grid
+	#
+	def _init_widgets(self):
+		# Comment
+		ui_label = self._create_label(_T("List of the figures detected in your document's directory.\nYou can edit the second column to set the translator used for a particular figure."))
+		self._insert_row(ui_label)
+		# List of figures
 		self._ui_figure_edit_store = Gtk.ListStore(str)
 		self._ui_figure_store = Gtk.ListStore(str, str)
 		ui_figure_widget = Gtk.TreeView()
@@ -88,18 +73,15 @@ class Panel(Gtk.Box):
 		ui_figure_widget.set_headers_visible(True)
 		self._ui_figure_selection = ui_figure_widget.get_selection()
 		self._ui_figure_selection.set_mode(Gtk.SelectionMode.SINGLE)
-		ui_figure_scroll = Gtk.ScrolledWindow()
-		ui_figure_scroll.add(ui_figure_widget)
-		ui_figure_scroll.set_size_request(500,400)
-		ui_figure_scroll.set_policy(Gtk.PolicyType.AUTOMATIC,Gtk.PolicyType.AUTOMATIC)
-		ui_figure_scroll.set_shadow_type(Gtk.ShadowType.IN)
-		ui_figure_scroll.set_property('hexpand', True)
-		ui_figure_scroll.set_property('vexpand', True)
-		grid.attach(	ui_figure_scroll, 
-				0,1,1,1) # left, top, width, height
-		#
-		# Initialize the content
-		#
+		# Scroll
+		ui_figure_scroll = self._create_scroll_for(ui_figure_widget)
+		self._insert_row(ui_figure_scroll)
+
+
+	#
+	# Initialize the content
+	#
+	def _init_content(self):
 		self._settings = utils.backend_get_translators(self._directory)
 		self._translators = {}
 		self._regex = re.compile('^([^2]+)')
@@ -143,24 +125,13 @@ class Panel(Gtk.Box):
 		for filename in sorted(self._file_list):
 			if 'translator' in self._file_list[filename]:
 				self._ui_figure_store.append( [ filename, self._file_list[filename]['translator'] ] )
-		#
-		# Connect signals
-		#
+
+
+	#
+	# Connect signals
+	#
+	def _connect_signals(self):
 		self._ui_figure_selection.connect('changed',self.on_figure_selection_changed)
-
-	# Utility function to extract a string value from the settings
-	def _get_settings_str(self, key, default_value=''):
-		if self._settings.has_option('generation', key):
-			return str(self._settings.get('generation', key))
-		else:
-			return str(default_value)
-
-	# Utility function to extract a boolean value from the settings
-	def _get_settings_bool(self, key, default_value=False):
-		if self._settings.has_option('generation', key):
-			return bool(self._settings.getboolean('generation', key))
-		else:
-			return bool(default_value)
 
 	# Invoked when the selection in the lsit of figure paths has changed
 	def on_figure_selection_changed(self, selection, data=None):

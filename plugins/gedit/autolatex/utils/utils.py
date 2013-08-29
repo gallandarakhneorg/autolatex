@@ -30,12 +30,10 @@ import gettext
 from gi.repository import Gio
 
 #---------------------------------
-# CONSTANTS
+# UTILITY FUNCTION
 #---------------------------------
 
-# Level of verbosity of AutoLaTeX
-DEFAULT_LOG_LEVEL = '--quiet'
-
+# Search an executable in the PATH
 def which(cmd):
   # can't search the path if a directory is specified
   assert not os.path.dirname(cmd)
@@ -48,9 +46,21 @@ def which(cmd):
         return filename
   return None
 
+
+#---------------------------------
+# CONSTANTS
+#---------------------------------
+
+# Level of verbosity of AutoLaTeX
+DEFAULT_LOG_LEVEL = '--quiet'
+
+# String that is representing an empty string for the AutoLaTeX backend.
+CONFIG_EMPTY_VALUE = '<<<<empty>>>>'
+
 # Plugin path
 _p = Gio.File.new_for_path(os.getcwd())
-AUTOLATEX_PLUGIN_PATH = _p.resolve_relative_path(__file__).get_path()
+AUTOLATEX_PLUGIN_PATH = os.path.join(os.path.dirname(__file__), 'utils.py') # To support .py and .pyc
+AUTOLATEX_PLUGIN_PATH = _p.resolve_relative_path(AUTOLATEX_PLUGIN_PATH).get_path()
 while os.path.islink(AUTOLATEX_PLUGIN_PATH):
 	_p = Gio.File.new_for_path(os.path.dirname(AUTOLATEX_PLUGIN_PATH))
 	AUTOLATEX_PLUGIN_PATH = _p.resolve_relative_path(os.readlink(AUTOLATEX_PLUGIN_PATH)).get_path()
@@ -76,6 +86,7 @@ DEFAULT_AUTOLATEX_BACKEND_BINARY = AUTOLATEX_BACKEND_BINARY
 TOOLBAR_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '24')
 NOTEBOOK_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '16')
 TABLE_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '16')
+
 
 
 def init_internationalization():

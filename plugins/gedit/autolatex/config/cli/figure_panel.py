@@ -26,6 +26,7 @@ import os
 from gi.repository import Gtk, Gio
 # AutoLaTeX internal libs
 from ...utils import utils
+from . import abstract_panel
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -39,65 +40,31 @@ _T = gettext.gettext
 #---------------------------------
 
 # Gtk panel that is managing the configuration of the figures
-class Panel(Gtk.Box):
+class Panel(abstract_panel.AbstractPanel):
 	__gtype_name__ = "AutoLaTeXFigurePanel"
 
 	def __init__(self, is_document_level, directory, window):
-		# Use an intermediate GtkBox to be sure that
-		# the child GtkGrid will not be expanded vertically
-		Gtk.Box.__init__(self)
-		self._is_document_level = is_document_level
-		self._directory = directory
-		self.window = window
-		#
-		# Create the grid for the panel
-		#
-		self.set_property('orientation', Gtk.Orientation.VERTICAL)
-		grid = Gtk.Grid()
-		self.pack_start(grid, False, False, 0)
-		grid.set_row_homogeneous(False)
-		grid.set_column_homogeneous(False)
-		grid.set_row_spacing(5)
-		grid.set_column_spacing(5)
-		grid.set_property('margin', 5)
-		grid.set_property('vexpand', False)
-		grid.set_property('hexpand', True)
-		#
-		# Fill the grid
-		#
-		# label
-		ui_label = Gtk.Label(_T("Automatic generation of pictures with translators"))
-		ui_label.set_property('hexpand', False)
-		ui_label.set_property('vexpand', False)
-		ui_label.set_property('halign', Gtk.Align.START)
-		ui_label.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	ui_label,
-				0,0,1,1) # left, top, width, height
-		# Switch
-		self._ui_is_figure_generated_checkbox = Gtk.Switch()
-		self._ui_is_figure_generated_checkbox.set_property('hexpand', False)
-		self._ui_is_figure_generated_checkbox.set_property('vexpand', False)
-		self._ui_is_figure_generated_checkbox.set_property('halign', Gtk.Align.END)
-		self._ui_is_figure_generated_checkbox.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	self._ui_is_figure_generated_checkbox,
-				1, 0, 1, 1) # left, top, width, height
-		# Label
-		self._ui_figure_path_label = Gtk.Label(_T("Search paths for the pictures"))
-		self._ui_figure_path_label.set_property('hexpand', True)
-		self._ui_figure_path_label.set_property('vexpand', False)
-		self._ui_figure_path_label.set_property('halign', Gtk.Align.START)
-		self._ui_figure_path_label.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	self._ui_figure_path_label,
-				0,1,1,1) # left, top, width, height
-		# Box of buttons
+		abstract_panel.AbstractPanel.__init__(self, is_document_level, directory, window)
+		
+
+	#
+	# Fill the grid
+	#
+	def _init_widgets(self):
+		# Automatic generation of figures
+		self._ui_is_figure_generated_checkbox = self._create_switch(
+				_T("Automatic generation of pictures with translators"))[1]
+		# Toolbar for the search paths
+		self._ui_figure_path_label = self._create_label(
+					_T("Search paths for the pictures"))
 		hbox = Gtk.Box()
 		hbox.set_property('orientation', Gtk.Orientation.HORIZONTAL)
 		hbox.set_property('hexpand', False)
 		hbox.set_property('vexpand', False)
-		hbox.set_property('halign', Gtk.Align.START)
+		hbox.set_property('halign', Gtk.Align.END)
 		hbox.set_property('valign', Gtk.Align.CENTER)
-		grid.attach(	hbox,
-				1,1,1,1) # left, top, width, height
+		self._insert_row(self._ui_figure_path_label, hbox)
+
 		# Button 1
 		self._ui_figure_path_add_button = Gtk.Button()
 		self._ui_figure_path_add_button.set_image(Gtk.Image.new_from_stock(Gtk.STOCK_ADD, Gtk.IconSize.BUTTON))
@@ -124,24 +91,16 @@ class Panel(Gtk.Box):
 		self._ui_figure_path_selection = self._ui_figure_path_widget.get_selection()
 		self._ui_figure_path_selection.set_mode(Gtk.SelectionMode.MULTIPLE)
 		# Scroll
-		ui_figure_path_scroll = Gtk.ScrolledWindow()
-		ui_figure_path_scroll.add(self._ui_figure_path_widget)
-		ui_figure_path_scroll.set_size_request(500,400)
-		ui_figure_path_scroll.set_policy(
-						Gtk.PolicyType.AUTOMATIC,
-						Gtk.PolicyType.AUTOMATIC)
-		ui_figure_path_scroll.set_shadow_type(Gtk.ShadowType.IN)
-		ui_figure_path_scroll.set_property('hexpand', True)
-		ui_figure_path_scroll.set_property('vexpand', True)
-		grid.attach(	ui_figure_path_scroll, 
-				0,2,2,1) # left, top, width, height
-		#
-		# Initialize the content
-		#
-		self._settings = utils.backend_get_configuration(
-						self._directory,
-						'project' if self._is_document_level else 'user',
-						'generation')
+		ui_figure_path_scroll = self._create_scroll_for(
+						self._ui_figure_path_widget, 400, 100)
+		self._insert_row(ui_figure_path_scroll)
+
+
+	#
+	# Initialize the content
+	#
+	def _init_content(self):
+		self._read_settings('generation')
 		self._ui_is_figure_generated_checkbox.set_active(self._get_settings_bool('generate images', True))
 		full_path = self._get_settings_str('image directory', '')
 		if full_path:
@@ -151,29 +110,19 @@ class Panel(Gtk.Box):
 		self._tmp_figure_path_moveup = False
 		self._tmp_figure_path_movedown = False
 		self._update_widget_states()
-		#
-		# Connect signals
-		#
-		self._ui_is_figure_generated_checkbox.connect('button-release-event',self.on_generate_image_toggled)
+
+
+	#
+	# Connect signals
+	#
+	def _connect_signals(self):
+		self._ui_is_figure_generated_checkbox.connect('notify::active',self.on_generate_image_toggled)
 		self._ui_figure_path_selection.connect('changed',self.on_figure_path_selection_changed)
 		self._ui_figure_path_add_button.connect('clicked',self.on_figure_path_add_button_clicked)
 		self._ui_figure_path_remove_button.connect('clicked',self.on_figure_path_remove_button_clicked)
 		self._ui_figure_path_up_button.connect('clicked',self.on_figure_path_up_button_clicked)
 		self._ui_figure_path_down_button.connect('clicked',self.on_figure_path_down_button_clicked)
 
-	# Utility function to extract a string value from the settings
-	def _get_settings_str(self, key, default_value=''):
-		if self._settings.has_option('generation', key):
-			return str(self._settings.get('generation', key))
-		else:
-			return str(default_value)
-
-	# Utility function to extract a boolean value from the settings
-	def _get_settings_bool(self, key, default_value=False):
-		if self._settings.has_option('generation', key):
-			return bool(self._settings.getboolean('generation', key))
-		else:
-			return bool(default_value)
 
 	# Change the state of the widgets according to the state of other widgets
 	def _update_widget_states(self):
@@ -224,7 +173,7 @@ class Panel(Gtk.Box):
 	# Invoked when the button "Add figure figure" was clicked
 	def on_figure_path_add_button_clicked(self, button, data=None):
 		dialog = Gtk.FileChooserDialog(_T("Select a figure path"), 
-						self.window,
+						self._window,
 						Gtk.FileChooserAction.SELECT_FOLDER,
 						[ Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
 						  Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT ])
@@ -289,13 +238,12 @@ class Panel(Gtk.Box):
 
 	# Invoked when the changes in the panel must be saved
 	def save(self):
-		self._settings.remove_section('generation')
-		self._settings.add_section('generation')
-		self._settings.set('generation', 'generate images', 
-				'true' if self._ui_is_figure_generated_checkbox.get_active() else 'false')
+		self._reset_settings_section()
+		self._set_settings_bool('generate images', 
+				self._ui_is_figure_generated_checkbox.get_active())
 		path = ''
 		for row in self._ui_figure_path_store:
 			if path: path = path + os.pathsep
 			path = path + row[0].strip()
-		self._settings.set('generation', 'image directory', path)
+		self._set_settings_str('image directory', path)
 		return utils.backend_set_configuration(self._directory, 'project' if self._is_document_level else 'user', self._settings)

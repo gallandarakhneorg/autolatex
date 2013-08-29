@@ -342,7 +342,7 @@ elsif ($a1 eq 'set') {
 			}
 			while (my ($section, $v) = each(%new_config)) {
 				while (my ($key, $value) = each(%{$v})) {
-					$userConfiguration{"$section.$key"} = $value;
+					$userConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
 				}
 			}
 			my $userFile = getUserConfigFilename();
@@ -354,7 +354,7 @@ elsif ($a1 eq 'set') {
 			}
 			while (my ($section, $v) = each(%new_config)) {
 				while (my ($key, $value) = each(%{$v})) {
-					$projectConfiguration{"$section.$key"} = $value;
+					$projectConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
 				}
 			}
 			my $projectFile = getProjectConfigFilename(@projectConfigurationPath);
@@ -379,7 +379,7 @@ elsif ($a1 eq 'set') {
 		while (my ($section, $v) = each(%new_config)) {
 			while (my ($key, $value) = each(%{$v})) {
 				if ($key ne 'automatic assignment' && $key ne 'overriden assignment') {
-					$projectConfiguration{"$section.$key"} = $value;
+					$projectConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
 				}
 			}
 		}

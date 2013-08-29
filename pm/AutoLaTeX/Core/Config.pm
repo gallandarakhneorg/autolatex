@@ -37,13 +37,13 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Config;
 
-$VERSION = '9.0';
+$VERSION = '11.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getProjectConfigFilename &getUserConfigFilename &getSystemConfigFilename
               &getSystemISTFilename &readConfiguration &readConfigFile &getUserConfigDirectory
 	      &cfgBoolean &doConfigurationFileFixing &cfgToBoolean &writeConfigFile
 	      &readOnlySystemConfiguration &readOnlyUserConfiguration &readOnlyProjectConfiguration
-	      &setInclusionFlags &reinitInclusionFlags &cfgIsBoolean ) ;
+	      &setInclusionFlags &reinitInclusionFlags &cfgIsBoolean &rebuiltConfigValue ) ;
 @EXPORT_OK = qw();
 
 require 5.014;
@@ -57,6 +57,12 @@ use Config::Simple;
 use AutoLaTeX::Core::OS;
 use AutoLaTeX::Core::Util;
 use AutoLaTeX::Core::IntUtils;
+
+# Constant that is representing an empty string in the INI file.
+# This constant is mandatory because Config::Simple does not
+# support the empty values, such as "KEY =". In place,
+# the INI file must contains something like "KEY = <<<<empty>>>>".
+use constant EMPTY_INI_VALUE => '<<<<empty>>>>';
 
 #######################################################
 # Comments for the sections of the configuration file
@@ -458,7 +464,10 @@ sub readConfigFile($\%;$) {
 			$k = lc("$k");
 			if ($k !~ /^__private__/) {
 				($k,$v) = ensureAccendentCompatibility("$k",$v,"$filename",$warningDisplayed);
-				$_[0]->{"$k"} = rebuiltConfigValue("$k",$v);
+				$v = rebuiltConfigValue("$k",$v);
+				if ($v) {
+					$_[0]->{"$k"} = $v;
+				}
 			}
 		}
 		printDbg(_T("Succeed on reading"));
@@ -501,6 +510,34 @@ sub pushComment(\@$;$) {
 	}
 }
 
+# Reformat the value to be written inside a configuration file.
+# $_[0]: value name,
+# $_[1]: value to validated.
+sub serializeConfigValue($$) {
+	my $v = $_[1];
+	if (isArray($v)) {
+		$v = '';
+		foreach my $ev (@{$_[1]}) {
+			if ($v) {
+				$v .= ', ';
+			}
+			$v .= &serializeConfigValue($_[0], $ev);
+		}
+	}
+	elsif (isHash($v)) {
+		$v = '';
+		while (my ($key, $value) = each(%{$_[1]})) {
+			if ($v) {
+				$v .= ', ';
+			}
+			$v .= "$key:{";
+			$v .= &serializeConfigValue($_[0], $value);
+			$v .= "}";
+		}
+	}
+	return $v;
+}
+
 =pod
 
 =item B<writeConfigFile($\%)>
@@ -530,7 +567,10 @@ sub writeConfigFile($\%) {
 	my $cfgWriter = new Config::Simple(syntax=>'ini');
 	while (my ($attr,$value) = each (%{$_[0]})) {
 		if ($attr ne '__private__') {
-			$cfgWriter->param("$attr",$value);
+			$value = serializeConfigValue($attr, $value);
+			if ($value) {
+				$cfgWriter->param("$attr",$value);
+			}
 		}
 	}
 	$cfgWriter->write("$filename");
@@ -643,7 +683,13 @@ sub ensureAccendentCompatibility($$$$) {
 sub rebuiltConfigValue($$) {
 	my $v = $_[1];
 	if (($_[0])&&($v)) {
-		if ($_[0] eq 'generation.translator include path') {
+		my $v_str = trim($v);
+		# If the string "empty value" is detected, delete the value
+		if ($v_str eq EMPTY_INI_VALUE) {
+			$v = '';
+		}
+		# Split the include path of translators
+		elsif ($_[0] eq 'generation.translator include path') {
 			my $sep = getPathListSeparator();
 			if (isHash($v)) {
 				while (my ($key,$val) = each(%{$v})) {

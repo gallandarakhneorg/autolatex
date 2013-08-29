@@ -83,7 +83,7 @@ class _Window(Gtk.Dialog):
 		self._ui_notebook = Gtk.Notebook()
 		self.get_content_area().add(self._ui_notebook);
 		# Tab for translators
-		tab = generator_panel.Panel(is_document_level, directory)
+		tab = generator_panel.Panel(is_document_level, directory, self)
 		self._ui_notebook.append_page(
 				tab,
 				_NotebookTab(
@@ -94,17 +94,17 @@ class _Window(Gtk.Dialog):
 				_NotebookTab(
 					_T("Figures"), "autolatex-images.png"))
 		if is_document_level:
-			tab = figure_assignment_panel.Panel(directory)
+			tab = figure_assignment_panel.Panel(is_document_level, directory, self)
 			self._ui_notebook.append_page(
 					tab,
 					_NotebookTab(
 						_T("List of figures"), "autolatex-images.png"))
-		tab = translator_panel.Panel(is_document_level, directory)
+		tab = translator_panel.Panel(is_document_level, directory, self)
 		self._ui_notebook.append_page(
 				tab,
 				_NotebookTab(
 					_T("Translators"), "autolatex-images.png"))
-		tab = viewer_panel.Panel(is_document_level, directory)
+		tab = viewer_panel.Panel(is_document_level, directory, self)
 		self._ui_notebook.append_page(
 				tab,
 				_NotebookTab(
