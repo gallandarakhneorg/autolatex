@@ -131,11 +131,17 @@ if ($a1 eq 'get') {
 	if ($a2 eq 'config') {
 		my $tmpfile = tmpnam();
 		my %cfgOutput = ();
+		my %cfgInhOutput = ();
 		if ($a3 eq 'project') {
 			%cfgOutput = %projectConfiguration;
+			%cfgInhOutput = %systemConfiguration;
+			while (my ($k,$v) = each(%userConfiguration)) {
+				$cfgInhOutput{$k} = $v;
+			}
 		}
 		elsif ($a3 eq 'user') {
 			%cfgOutput = %userConfiguration;
+			%cfgInhOutput = %systemConfiguration;
 		}
 		elsif ($a3 eq 'system') {
 			%cfgOutput = %systemConfiguration;
@@ -165,6 +171,9 @@ if ($a1 eq 'get') {
 						$cfgOutput{$k} = ''
 					}
 				}
+				while (my ($k,$v) = each(%cfgInhOutput)) {
+					$cfgOutput{"$k\_INHERITED"} = $v; 
+				}
 			}
 			else {
 				foreach my $k (keys %cfgOutput) {
@@ -172,9 +181,19 @@ if ($a1 eq 'get') {
 						delete $cfgOutput{$k};
 					}
 				}
+				while (my ($k,$v) = each(%cfgInhOutput)) {
+					if ($k =~ /^\Q$a4.\E/) {
+						$cfgOutput{"$k\_INHERITED"} = $v; 
+					}
+				}
 			}
 		}
-		writeConfigFile($tmpfile, %cfgOutput);
+		else {
+			while (my ($k,$v) = each(%cfgInhOutput)) {
+				$cfgOutput{"$k\_INHERITED"} = $v; 
+			}
+		}
+		writeConfigFile($tmpfile, %cfgOutput, 0);
 		local *INFILE;
 		open(*INFILE, "<$tmpfile") or exit(255);
 		while (my $line = <INFILE>) {
@@ -342,7 +361,9 @@ elsif ($a1 eq 'set') {
 			}
 			while (my ($section, $v) = each(%new_config)) {
 				while (my ($key, $value) = each(%{$v})) {
-					$userConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
+					if ($key !~ /\_INHERITED$/i) {
+						$userConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
+					}
 				}
 			}
 			my $userFile = getUserConfigFilename();
@@ -354,7 +375,9 @@ elsif ($a1 eq 'set') {
 			}
 			while (my ($section, $v) = each(%new_config)) {
 				while (my ($key, $value) = each(%{$v})) {
-					$projectConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
+					if ($key !~ /\_INHERITED$/i) {
+						$projectConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
+					}
 				}
 			}
 			my $projectFile = getProjectConfigFilename(@projectConfigurationPath);
@@ -378,7 +401,7 @@ elsif ($a1 eq 'set') {
 		}
 		while (my ($section, $v) = each(%new_config)) {
 			while (my ($key, $value) = each(%{$v})) {
-				if ($key ne 'automatic assignment' && $key ne 'overriden assignment') {
+				if ($key ne 'automatic assignment' && $key ne 'overriden assignment' && $key !~ /\_INHERITED/i) {
 					$projectConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
 				}
 			}

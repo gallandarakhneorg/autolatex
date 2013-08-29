@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Config;
 
-$VERSION = '11.0';
+$VERSION = '12.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getProjectConfigFilename &getUserConfigFilename &getSystemConfigFilename
               &getSystemISTFilename &readConfiguration &readConfigFile &getUserConfigDirectory
@@ -458,15 +458,17 @@ sub readConfigFile($\%;$) {
 	printDbg(formatText(_T("Opening configuration file {}"),$filename));
 	if (-r "$filename") {
 		my $cfgReader = new Config::Simple("$filename");
-		my %config = $cfgReader->vars();
-		my $warningDisplayed = $_[1];
-		while (my ($k,$v) = each (%config)) {
-			$k = lc("$k");
-			if ($k !~ /^__private__/) {
-				($k,$v) = ensureAccendentCompatibility("$k",$v,"$filename",$warningDisplayed);
-				$v = rebuiltConfigValue("$k",$v);
-				if ($v) {
-					$_[0]->{"$k"} = $v;
+		if ($cfgReader) {
+			my %config = $cfgReader->vars();
+			my $warningDisplayed = $_[1];
+			while (my ($k,$v) = each (%config)) {
+				$k = lc("$k");
+				if ($k !~ /^__private__/) {
+					($k,$v) = ensureAccendentCompatibility("$k",$v,"$filename",$warningDisplayed);
+					$v = rebuiltConfigValue("$k",$v);
+					if ($v) {
+						$_[0]->{"$k"} = $v;
+					}
 				}
 			}
 		}
@@ -540,7 +542,7 @@ sub serializeConfigValue($$) {
 
 =pod
 
-=item B<writeConfigFile($\%)>
+=item B<writeConfigFile($\%;$)>
 
 Write the specified configuration into a file.
 
@@ -552,12 +554,14 @@ I<Parameters:>
 
 =item * the configuration data structure to write
 
+=item * (optional) indicates if the comments must be written
+
 =back
 
 I<Returns:> nothing
 
 =cut
-sub writeConfigFile($\%) {
+sub writeConfigFile($\%;$) {
 	my $filename = shift;
 	die('second parameter of writeConfigGile() is not a hash') unless(isHash($_[0]));
 
@@ -575,42 +579,44 @@ sub writeConfigFile($\%) {
 	}
 	$cfgWriter->write("$filename");
 
-	# Updating for comments
-	printDbg(_T("Adding configuration comments"));
-	local *CFGFILE;
-	open (*CFGFILE, "< $filename") or printErr("$filename:","$!");
-	my @lines = ();
-	my $lastsection = undef;
-	while (my $l = <CFGFILE>) {
-		if ($l =~ /^\s*\[\s*(.+?)\s*\]\s*$/) {
-			$lastsection = lc($1);
-			if ($SECTION_COMMENTS{"$lastsection"}) {
-				push @lines, "\n";
-				pushComment @lines, $SECTION_COMMENTS{"$lastsection"};
+	if ($_[1]) {
+		# Updating for comments
+		printDbg(_T("Adding configuration comments"));
+		local *CFGFILE;
+		open (*CFGFILE, "< $filename") or printErr("$filename:","$!");
+		my @lines = ();
+		my $lastsection = undef;
+		while (my $l = <CFGFILE>) {
+			if ($l =~ /^\s*\[\s*(.+?)\s*\]\s*$/) {
+				$lastsection = lc($1);
+				if ($SECTION_COMMENTS{"$lastsection"}) {
+					push @lines, "\n";
+					pushComment @lines, $SECTION_COMMENTS{"$lastsection"};
+				}
+				else {
+					push @lines, "\n";
+					pushComment @lines, _T("Configuration of the translator")." '$lastsection'";
+				}
 			}
-			else {
-				push @lines, "\n";
-				pushComment @lines, _T("Configuration of the translator")." '$lastsection'";
+			elsif (($l =~ /^\s*(.*?)\s*=/)&&($lastsection)) {
+				my $attr = lc($1);
+				if ($CONFIGURATION_COMMENTS{"$lastsection.$attr"}) {
+					push @lines, "\n";
+					pushComment @lines, $CONFIGURATION_COMMENTS{"$lastsection.$attr"};
+				}
 			}
+			push @lines, $l;
 		}
-		elsif (($l =~ /^\s*(.*?)\s*=/)&&($lastsection)) {
-			my $attr = lc($1);
-			if ($CONFIGURATION_COMMENTS{"$lastsection.$attr"}) {
-				push @lines, "\n";
-				pushComment @lines, $CONFIGURATION_COMMENTS{"$lastsection.$attr"};
-			}
-		}
-		push @lines, $l;
+		close(*CFGFILE);
+
+		printDbg(_T("Saving configuration comments"));
+		local *CFGFILE;
+		open (*CFGFILE, "> $filename") or printErr("$filename:","$!");
+		print CFGFILE (@lines);
+		close(*CFGFILE);	
+
+		printDbgUnindent();
 	}
-	close(*CFGFILE);
-
-	printDbg(_T("Saving configuration comments"));
-	local *CFGFILE;
-	open (*CFGFILE, "> $filename") or printErr("$filename:","$!");
-	print CFGFILE (@lines);
-	close(*CFGFILE);	
-
-	printDbgUnindent();
 	1;
 }
 
