@@ -171,3 +171,8 @@ def backend_set_images(directory, settings):
 	string_out.close()
 	return process.returncode == 0
 
+def first_of(*values):
+	for value in values:
+		if value is not None:
+			return value
+	return None

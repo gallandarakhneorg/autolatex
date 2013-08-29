@@ -79,7 +79,7 @@ class _AutoLaTeXExecutionThread(_threading.Thread):
 	progress_line_pattern = None
 
 	# Test if the progress info must be shown
-	activate_progress = (self._enable_info_bar and self._info_bar_label != None)
+	activate_progress = (self._enable_info_bar and self._info_bar_label is not None)
 
 	if activate_progress:
 		# Add the info bar the inside of the Gtk thread
@@ -98,7 +98,7 @@ class _AutoLaTeXExecutionThread(_threading.Thread):
 		# Use the info bar to draw the progress of the task
 		process.poll()
 		# Loop until the subprocess is dead
-		while process.returncode == None and not self._is_action_canceled:
+		while process.returncode is None and not self._is_action_canceled:
 			if not process.stdout.closed:
 				# Read a line from STDOUT and extract the progress amount
 				process.stdout.flush()
@@ -217,7 +217,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     def do_update_state(self):
 	directory = self._find_AutoLaTeX_dir()
 	hasTeXDocument = self._is_TeX_document()
-	hasAutoLaTeXDocument = (directory!=None)
+	hasAutoLaTeXDocument = (directory is not None)
 	isInTeXContext = (hasTeXDocument or hasAutoLaTeXDocument)
 	# Display or hide the menus
 	self._menu.set_visible(isInTeXContext)
@@ -251,7 +251,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     def _update_action_validity(self, valid, console_content):
 	# Display or hide the error console if an error message is given or not
 	if (console_content):
-		if (not self._error_console or self._error_console.get_parent == None):
+		if (not self._error_console or self._error_console.get_parent is None):
 			if (not self._error_console):
 				self._error_console = error_console.ErrorConsole(self.window)
 			panel = self.window.get_bottom_panel()

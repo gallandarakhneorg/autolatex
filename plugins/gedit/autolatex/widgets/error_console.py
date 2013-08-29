@@ -65,7 +65,7 @@ class ErrorConsole(Gtk.TextView):
 				y = event.y
 		elif (event.button==2):
 			y = event.y
-		if (y!=None):
+		if (y is not None):
 			line_iter = self.get_line_at_y(y)[0]
 			end_iter = line_iter.copy()
 			end_iter.forward_line()

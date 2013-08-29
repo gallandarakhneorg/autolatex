@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-29 15:22+0200\n"
+"POT-Creation-Date: 2013-08-30 00:25+0200\n"
 "PO-Revision-Date: 2013-05-21 21:37+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -56,11 +56,11 @@ msgstr "Création du fichier de style par défaut pour makeindex...\n"
 msgid "Command line action '{}' is not supported."
 msgstr "L'option de ligne de commande '{}' n'est pas reconnue."
 
-#: autolatex-backend.pl:396
+#: autolatex-backend.pl:419
 msgid "<section>"
 msgstr "<section>"
 
-#: autolatex-backend.pl:397
+#: autolatex-backend.pl:420
 msgid ""
 "Output the configuration for the given level. If the 4th param is given, "
 "output only the section with this name. If section is \"__private__\", the "
@@ -70,11 +70,11 @@ msgstr ""
 "donné, affiche seulement la section associée à ce niveau. Si la section est "
 "\"__private__\", la configuration cachée est affichée."
 
-#: autolatex-backend.pl:400
+#: autolatex-backend.pl:423
 msgid "Output the list of the installed translators."
 msgstr "Affiche la liste des convertisseurs installés."
 
-#: autolatex-backend.pl:403
+#: autolatex-backend.pl:426
 msgid ""
 "Output the translators potentially under conflicts. If 'resolved' is given, "
 "apply the resolution mechanism."
@@ -82,15 +82,15 @@ msgstr ""
 "Affiche les convertisseurs potentiellement en conflit. Si 'resolved' est "
 "donné, le mécanisme de résolution est appliqué avant l'affichage."
 
-#: autolatex-backend.pl:406
+#: autolatex-backend.pl:429
 msgid "Output the loading directives for translators."
 msgstr "Affiche les directives de chargement des convertisseurs."
 
-#: autolatex-backend.pl:409
+#: autolatex-backend.pl:432
 msgid "Output the list of figures detected by AutoLaTeX."
 msgstr "Affiche la liste des figures détectées par AutoLaTeX."
 
-#: autolatex-backend.pl:412
+#: autolatex-backend.pl:435
 msgid ""
 "Read from STDIN an ini file that is a new configuration for the given level. "
 "The boolean param indicates if the configuration keys that are not given on "
@@ -103,13 +103,13 @@ msgstr ""
 "supprimées (true), ou non changées false, par défaut) dans la configuration "
 "réellement écrite."
 
-#: autolatex-backend.pl:415
+#: autolatex-backend.pl:438
 msgid "Read from STDIN an ini file for the loading directives of translators."
 msgstr ""
 "Lit un fichier ini depuis STDIN contenant les directives de chargement des "
 "convertisseurs."
 
-#: autolatex-backend.pl:418
+#: autolatex-backend.pl:441
 msgid ""
 "Read from STDIN an ini file that is describing the attributes for the "
 "translators. The boolean param indicates if the configuration keys that are "
@@ -121,43 +121,43 @@ msgstr ""
 "présentés dans la nouvelle configuration sont supprimées (true), ou non "
 "changées false, par défaut) dans la configuration réellement écrite."
 
-#: pm/AutoLaTeX/Core/Config.pm:64
+#: pm/AutoLaTeX/Core/Config.pm:70
 msgid "Configuration of the viewing functions"
 msgstr "Configuration des fonctions d'affichage"
 
-#: pm/AutoLaTeX/Core/Config.pm:65
+#: pm/AutoLaTeX/Core/Config.pm:71
 msgid "Configuration of the generation functions"
 msgstr "Configuration des fonctions de génération"
 
-#: pm/AutoLaTeX/Core/Config.pm:66
+#: pm/AutoLaTeX/Core/Config.pm:72
 msgid "Configuration of the several cleaning functions"
 msgstr "Configuration des fonctions de nettoyage"
 
-#: pm/AutoLaTeX/Core/Config.pm:67
+#: pm/AutoLaTeX/Core/Config.pm:73
 msgid "Configuration of the SCM functions"
 msgstr "Configuration des fonctions SCM"
 
-#: pm/AutoLaTeX/Core/Config.pm:68
+#: pm/AutoLaTeX/Core/Config.pm:74
 msgid "GTK interface configuration"
 msgstr "Configuration de l'interface GTK"
 
-#: pm/AutoLaTeX/Core/Config.pm:69
+#: pm/AutoLaTeX/Core/Config.pm:75
 msgid "Qt interface configuration"
 msgstr "Configuration de l'interface Qt"
 
-#: pm/AutoLaTeX/Core/Config.pm:70
+#: pm/AutoLaTeX/Core/Config.pm:76
 msgid "Windows interface configuration"
 msgstr "Configuration de l'interface Windows"
 
-#: pm/AutoLaTeX/Core/Config.pm:71
+#: pm/AutoLaTeX/Core/Config.pm:77
 msgid "MacOS interface configuration"
 msgstr "Configuration de l'interface MacOS"
 
-#: pm/AutoLaTeX/Core/Config.pm:72
+#: pm/AutoLaTeX/Core/Config.pm:78
 msgid "wxWidgets interface configuration"
 msgstr "Configuration de l'interface wxWidgets"
 
-#: pm/AutoLaTeX/Core/Config.pm:80
+#: pm/AutoLaTeX/Core/Config.pm:86
 msgid ""
 "List of additional files to remove when cleaning (shell wild cards are "
 "allowed). This list is used when the target 'clean' is invoked."
@@ -166,7 +166,7 @@ msgstr ""
 "nettoyage simple (les meta-caractères shell sont utilisables). Cette liste "
 "est utilisée par l'action 'clean'."
 
-#: pm/AutoLaTeX/Core/Config.pm:83
+#: pm/AutoLaTeX/Core/Config.pm:89
 msgid ""
 "List of additional files to remove when all cleaning (shell wild cards are "
 "allowed). This list is used when the target 'cleanall' is invoked."
@@ -175,16 +175,16 @@ msgstr ""
 "nettoyage complet (les meta-caractères shell sont utilisables). Cette liste "
 "est utilisée par l'action 'cleanall'."
 
-#: pm/AutoLaTeX/Core/Config.pm:87
+#: pm/AutoLaTeX/Core/Config.pm:93
 msgid ""
 "Indicates if bibliography tool (bibtex,biber) should be run ('yes' or 'no')."
 msgstr "Indique si bibtex doit être executé ('yes' ou 'no')."
 
-#: pm/AutoLaTeX/Core/Config.pm:88
+#: pm/AutoLaTeX/Core/Config.pm:94
 msgid "Does the figures must be automatically generated ('yes' or 'no')?"
 msgstr "Est-ce que les figures sont automatiquement générées ('yes' or 'no') ?"
 
-#: pm/AutoLaTeX/Core/Config.pm:89
+#: pm/AutoLaTeX/Core/Config.pm:95
 msgid ""
 "Specify the directories inside which AutoLaTeX will find the pictures which "
 "must be processed by the translators. Each time this option is put on the "
@@ -198,7 +198,7 @@ msgstr ""
 "différents répertoires spécifiés sont alors séparés par le caractère "
 "séparateur standard (':' sur Unix, ';' sur Windows)"
 
-#: pm/AutoLaTeX/Core/Config.pm:97
+#: pm/AutoLaTeX/Core/Config.pm:103
 msgid ""
 "Main filename (this option is only available in project's configuration "
 "files)."
@@ -206,7 +206,7 @@ msgstr ""
 "Fichier principal (cette option est supportée uniquement dans les fichiers "
 "de configuration de documents)."
 
-#: pm/AutoLaTeX/Core/Config.pm:99
+#: pm/AutoLaTeX/Core/Config.pm:105
 msgid ""
 "Type of generation.\n"
 "   pdf   : use pdflatex to create a PDF document."
@@ -214,7 +214,7 @@ msgstr ""
 "Type de génération.\n"
 "   pdf   : utilise pdflatex pour créer le document PDF."
 
-#: pm/AutoLaTeX/Core/Config.pm:101
+#: pm/AutoLaTeX/Core/Config.pm:107
 msgid ""
 "Specify the style that must be used by makeindex.\n"
 "Valid values are:\n"
@@ -240,7 +240,7 @@ msgstr ""
 "   @none           AutoLaTeX ne passe aucun fichier a.ist à makeindex;\n"
 "   <empty>         AutoLaTeX ne passe aucun fichier a.ist à makeindex."
 
-#: pm/AutoLaTeX/Core/Config.pm:112
+#: pm/AutoLaTeX/Core/Config.pm:118
 msgid ""
 "Defines the paths from which the translators could be loaded. This is a list "
 "of paths separated by the path separator character used by your operating "
@@ -250,7 +250,7 @@ msgstr ""
 "trouvés. C'est une liste de chemins séparés par le caractère séparateur de "
 "votre système d'exploitation : ':' sous Unix ou ';' sous Windows par exemple."
 
-#: pm/AutoLaTeX/Core/Config.pm:116
+#: pm/AutoLaTeX/Core/Config.pm:122
 msgid ""
 "Indicates if the PDF document must be produced with the SyncTeX flag on or "
 "not. SyncTeX enables to link a PDF viewer (as evince) and a text editor (as "
@@ -262,7 +262,7 @@ msgstr ""
 "(comme Gedit). Lorsque vous cliquez dans l'un, l'autre logiciel affiche en "
 "surbrillance la ligne correspondante de son côté."
 
-#: pm/AutoLaTeX/Core/Config.pm:120
+#: pm/AutoLaTeX/Core/Config.pm:126
 msgid ""
 "Tool to launch when a SCM commit action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
@@ -270,7 +270,7 @@ msgstr ""
 "Outils à lancer lors d'une action d'enregistrement dans un SCM. Les outils "
 "SCM connus sont : CVS, SVN, GIT."
 
-#: pm/AutoLaTeX/Core/Config.pm:122
+#: pm/AutoLaTeX/Core/Config.pm:128
 msgid ""
 "Tool to launch when a SCM update action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
@@ -278,7 +278,7 @@ msgstr ""
 "Outils à lancer lors d'une action de raffaichissement depuis un SCM. Les "
 "outils SCM connus sont : CVS, SVN, GIT."
 
-#: pm/AutoLaTeX/Core/Config.pm:125
+#: pm/AutoLaTeX/Core/Config.pm:131
 msgid ""
 "Indicates if a viewer should be launch after the compilation. Valid values "
 "are 'yes' and 'no'."
@@ -286,43 +286,43 @@ msgstr ""
 "Indique si un visualisateur doit être lancé après la génération du "
 "document.  Valeurs autorisées : 'yes' et 'no'."
 
-#: pm/AutoLaTeX/Core/Config.pm:127
+#: pm/AutoLaTeX/Core/Config.pm:133
 msgid "Specify, if not commented,the command line of the viewer."
 msgstr "Ligne de commande du visualisateur, si non commenté."
 
-#: pm/AutoLaTeX/Core/Config.pm:128
+#: pm/AutoLaTeX/Core/Config.pm:134
 msgid "Indicates if the viewer is launched in background, or not."
 msgstr "Indique si le visualisateur est lancé en tâche de fond, ou non."
 
-#: pm/AutoLaTeX/Core/Config.pm:452
+#: pm/AutoLaTeX/Core/Config.pm:458
 msgid "Opening configuration file {}"
 msgstr "Ouverture du fichier de configuration {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:464
+#: pm/AutoLaTeX/Core/Config.pm:475
 msgid "Succeed on reading"
 msgstr "Succès de la lecture"
 
-#: pm/AutoLaTeX/Core/Config.pm:467
+#: pm/AutoLaTeX/Core/Config.pm:478
 msgid "Failed to read {}: {}"
 msgstr "Echec de lecture de {}: {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:528
+#: pm/AutoLaTeX/Core/Config.pm:569
 msgid "Writing configuration file {}"
 msgstr "Enregistrement du fichier de configuration {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:539
+#: pm/AutoLaTeX/Core/Config.pm:584
 msgid "Adding configuration comments"
 msgstr "Ajout des commentaires dans la configuration"
 
-#: pm/AutoLaTeX/Core/Config.pm:553
+#: pm/AutoLaTeX/Core/Config.pm:598
 msgid "Configuration of the translator"
 msgstr "Configuration du convertisseur"
 
-#: pm/AutoLaTeX/Core/Config.pm:567
+#: pm/AutoLaTeX/Core/Config.pm:612
 msgid "Saving configuration comments"
 msgstr "Enregistrement des commentaires dans la configuration"
 
-#: pm/AutoLaTeX/Core/Config.pm:632
+#: pm/AutoLaTeX/Core/Config.pm:678
 msgid ""
 "AutoLaTeX has detecting an old fashion syntax for the configuration file {}\n"
 "Please regenerate this file with the command line option --fixconfig."
@@ -713,7 +713,9 @@ msgstr "{}: Fin du journal d'erreur."
 
 #: pm/AutoLaTeX/Make/Make.pm:595
 msgid "{}: Unable to extract the error from the log. Please read the log file."
-msgstr "{}: Impossible d'extraire l'erreur depuis le journal. Veuillez lire le fichier journal."
+msgstr ""
+"{}: Impossible d'extraire l'erreur depuis le journal. Veuillez lire le "
+"fichier journal."
 
 #: pm/AutoLaTeX/Make/Make.pm:728
 msgid "LaTeX Warning: There were multiply-defined labels.\n"

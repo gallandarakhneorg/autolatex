@@ -87,8 +87,8 @@ class _IndexType:
 		else:
 			return _IndexType.NONE
 
-	def label(i, original_value):
-		if i == 0: return original_value
+	def label(i, file_value, original_value):
+		if i == 0: return file_value
 		elif i == 1: return '@detect, @system'
 		elif i == 2: return '@system'
 		elif i == 3: return '@none'
@@ -130,14 +130,15 @@ class Panel(abstract_panel.AbstractPanel):
 		self._ui_run_synctex_checkbox = self._create_switch(
 				_T("Use SyncTeX when generating the document"))[1]
 		# Type of MakeIndex style
-		self._ui_makeindex_type_combo = self._create_combo(
+		r = self._create_combo(
 				_T("Type of style for MakeIndex"),
 				[	_T("Specific '.ist' file"),
 					_T("Autodetect the style inside the project directory"),
 					_T("Use only the default AutoLaTeX style"),
 					_T("No style is passed to MakeIndex"),
 					_T("Custom definition by the user (do not change the original configuration)") ],
-				'makeindex_style_type')[1]
+				'makeindex_style_type')
+		self._ui_makeindex_type_combo = r[1]
 		# File of the MakeIndex style
 		label = _T("Style file for MakeIndex")
 		self._ui_makeindex_file_field = Gtk.FileChooserButton()
@@ -145,7 +146,8 @@ class Panel(abstract_panel.AbstractPanel):
 		self._ui_makeindex_file_field.set_title(label)
 		self._ui_makeindex_file_label = self._create_row(
 				label,
-				self._ui_makeindex_file_field)[0]
+				self._ui_makeindex_file_field,
+				False)[0]
 
 
 	#
@@ -153,16 +155,39 @@ class Panel(abstract_panel.AbstractPanel):
 	#
 	def _init_content(self):
 		self._read_settings('generation')
+		#
 		if self._is_document_level:
-			self._ui_main_tex_file_editor.set_text(self._get_settings_str('main file'))
-		self._ui_run_biblio_checkbox.set_active(self._get_settings_bool('biblio', True))
-		self._ui_run_synctex_checkbox.set_active(self._get_settings_bool('synctex', False))
+			inh = self._get_settings_str_inh('main file')
+			cur = self._get_settings_str('main file')
+			self._init_overriding(self._ui_main_tex_file_editor, cur is not None)
+			self._ui_main_tex_file_editor.set_text(utils.first_of(cur, inh, ''))
+		#
+		inh = self._get_settings_str_inh('biblio')
+		cur = self._get_settings_str('biblio')
+		self._init_overriding(self._ui_run_biblio_checkbox, cur is not None)
+		self._ui_run_biblio_checkbox.set_active(utils.first_of(cur, inh, True))
+		#
+		inh = self._get_settings_str_inh('synctex')
+		cur = self._get_settings_str('synctex')
+		self._init_overriding(self._ui_run_synctex_checkbox, cur is not None)
+		self._ui_run_synctex_checkbox.set_active(utils.first_of(cur, inh, False))
+		#
+		inh = self._get_settings_str_inh('generation type')
+		cur = self._get_settings_str('generation type')
+		self._init_overriding(self._ui_generation_type_combo, cur is not None)
 		self._ui_generation_type_combo.set_active(
-				_GenerationType.index(self._get_settings_str('generation type', _GenerationType.PDF)))
-		self._makeindex_value = self._get_settings_str('makeindex style', '@detect, @system')
-		makeindex_type = _IndexType.index(_IndexType.parse(self._makeindex_value))
+			_GenerationType.index(
+				utils.first_of(cur,inh,_GenerationType.PDF)))
+		#
+		inh = self._get_settings_str_inh('makeindex style')
+		cur = self._get_settings_str('makeindex style')
+		self._init_overriding(self._ui_makeindex_type_combo, cur is not None)
+		self._default_makeindex = utils.first_of(cur, inh, None)
+		makeindex_value = utils.first_of(self._default_makeindex, '@detect, @system')
+		makeindex_type = _IndexType.index(_IndexType.parse(makeindex_value))
+		if makeindex_type == _IndexType.FILE:
+			self._ui_makeindex_file_field.set_filename(self._default_makeindex)
 		self._ui_makeindex_type_combo.set_active(makeindex_type)
-		self._update_widget_states()
 
 
 	#
@@ -174,33 +199,68 @@ class Panel(abstract_panel.AbstractPanel):
 
 
 
-
 	# Change the state of the widgets according to the state of other widgets
-	def _update_widget_states(self):
+	def update_widget_states(self):
 		makeindex_type = self._ui_makeindex_type_combo.get_active()
-		if makeindex_type == _IndexType.FILE:
-			self._ui_makeindex_file_field.set_filename(self._makeindex_value)
-			self._ui_makeindex_file_label.set_sensitive(True)
+		is_over = self._get_overriding(self._ui_makeindex_type_combo)
+		if not is_over:
+			inh = self._get_settings_str_inh('makeindex style', '@detect, @system')
+			inh = _IndexType.index(_IndexType.parse(inh))
+			if inh!=makeindex_type:
+				GObject.idle_add(self._ui_makeindex_type_combo.set_active, inh)
+				makeindex_type = inh
+		if is_over and (makeindex_type == _IndexType.FILE):
 			self._ui_makeindex_file_field.set_sensitive(True)
+			self._ui_makeindex_file_label.set_sensitive(True)
 		else:
 			self._ui_makeindex_file_field.unselect_all()
-			self._ui_makeindex_file_label.set_sensitive(False)
 			self._ui_makeindex_file_field.set_sensitive(False)
+			self._ui_makeindex_file_label.set_sensitive(False)
 
 	# Invoke when the style of MakeIndex has changed
 	def on_generation_type_changed(self, widget, data=None):
-		self._update_widget_states()
+		self.update_widget_states()
 
 	# Invoked when the changes in the panel must be saved
 	def save(self):
 		self._reset_settings_section()
-		self._set_settings_str('main file', self._ui_main_tex_file_editor.get_text())
-		self._set_settings_bool('biblio',
-				self._ui_run_biblio_checkbox.get_active())
-		self._set_settings_bool('synctex', 
-				self._ui_run_synctex_checkbox.get_active())
-		self._set_settings_str('generation type', 
-				_GenerationType.label(self._ui_generation_type_combo.get_active()))
-		self._set_settings_str('makeindex style', 
-				_IndexType.label(self._ui_makeindex_type_combo.get_active(), self._makeindex_value))
-		return utils.backend_set_configuration(self._directory, 'project' if self._is_document_level else 'user', self._settings)
+		#
+		if self._get_sentitivity(self._ui_main_tex_file_editor):
+			v = self._ui_main_tex_file_editor.get_text()
+		else:
+			v = None
+		self._set_settings_str('main file', v)
+		#
+		if self._get_sentitivity(self._ui_run_biblio_checkbox):
+			v = self._ui_run_biblio_checkbox.get_active()
+		else:
+			v = None
+		self._set_settings_bool('biblio', v)
+		#
+		if self._get_sentitivity(self._ui_run_synctex_checkbox):
+			v = self._ui_run_synctex_checkbox.get_active()
+		else:
+			v = None
+		self._set_settings_bool('synctex', v)
+		#
+		if self._get_sentitivity(self._ui_generation_type_combo):
+			v = _GenerationType.label(
+					self._ui_generation_type_combo.get_active())
+		else:
+			v = None
+		self._set_settings_str('generation type', v)
+		#
+		if self._get_sentitivity(self._ui_makeindex_type_combo):
+			v = _IndexType.label(
+					self._ui_makeindex_type_combo.get_active(),
+					self._ui_makeindex_file_field.get_filename(),
+					self._default_makeindex)
+		else:
+			v = None
+		self._set_settings_str('makeindex style', v)
+		#
+		return utils.backend_set_configuration(
+			self._directory, 
+			'project' if self._is_document_level else 'user',
+			self._settings)
+

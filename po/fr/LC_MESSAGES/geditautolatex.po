@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: geditautolatex 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-29 15:22+0200\n"
+"POT-Creation-Date: 2013-08-30 00:25+0200\n"
 "PO-Revision-Date: 2013-08-22 20:41+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -222,48 +222,48 @@ msgstr ""
 msgid "Making the \"flat\" version of the document"
 msgstr "Création de la version \"plate\" du document"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:133
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:120
 msgid "Main TeX file (optional)"
 msgstr "Fichier TeX principal (optionnel)"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:148
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:123
 msgid "Execute the bibliography tool (BibTeX, Bibber...)"
 msgstr "Exécution des outils bibliographique (BibTeX, Bibber, ...)"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:165
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:126
 msgid "Type of generation"
 msgstr "Type de génération"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:184
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:131
 msgid "Use SyncTeX when generating the document"
 msgstr "Utiliser SyncTeX lors de la génération du document"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:201
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:134
 msgid "Type of style for MakeIndex"
 msgstr "Type du style pour MakeIndex"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:211
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:135
 msgid "Specific '.ist' file"
 msgstr "Fichier '.ist' spécifique"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:212
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:136
 msgid "Autodetect the style inside the project directory"
 msgstr "Autodétection du style dans le répertoire du document"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:213
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:137
 msgid "Use only the default AutoLaTeX style"
 msgstr "Utiliser seulement le style par défaut AutoLaTeX"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:214
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:138
 msgid "No style is passed to MakeIndex"
 msgstr "Pas de style pour MakeIndex"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:215
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:139
 msgid ""
 "Custom definition by the user (do not change the original configuration)"
 msgstr "Définie par l'utilisateur (aucun changement de la config. originelle)"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:222
+#: plugins/gedit/autolatex/config/cli/generator_panel.py:143
 msgid "Style file for MakeIndex"
 msgstr "Fichier de style pour MakeIndex"
 
@@ -304,7 +304,7 @@ msgstr ""
 "La page '%s' ne peut pas sauver ses champs.\n"
 "Vous allez perdre vos changements sur cette page."
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:87
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:74
 msgid ""
 "List of available translators:\n"
 "(click on the second column to change the loading state of the translators)"
@@ -313,57 +313,57 @@ msgstr ""
 "(cliquez sur la seconde colonne pour changer l'état de chargement des "
 "convertisseurs)"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:103
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:107
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:85
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:89
 msgid "usr"
 msgstr "usr"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:104
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:86
 msgid "doc"
 msgstr "doc"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:112
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:94
 msgid "name"
 msgstr "nom"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:114
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:96
 msgid "description"
 msgstr "description"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:139
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:143
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:109
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:113
 msgid "Current user"
 msgstr "Utilisateur"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:140
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:110
 msgid "Current document"
 msgstr "Document"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:142
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:112
 msgid "All users"
 msgstr "Tous le monde"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:149
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:119
 msgid "Loaded, no conflict"
 msgstr "Chargé, sans conflit"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:150
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:120
 msgid "Loaded, conflict"
 msgstr "Chargé, avec conflit"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:151
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:121
 msgid "Not loaded"
 msgstr "Non chargé"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:152
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:122
 msgid "Unspecified, no conflict"
 msgstr "Inconnu, sans conflit"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:153
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:123
 msgid "Unspecified, conflict"
 msgstr "Inconnu, avec conflit"
 
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:68
+#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:57
 msgid ""
 "List of the figures detected in your document's directory.\n"
 "You can edit the second column to set the translator used for a particular "
@@ -373,31 +373,31 @@ msgstr ""
 "Vous pouvez éditer la seconde colonne pour changer le convertisseur\n"
 "utilisé pour une figure particulière."
 
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:79
+#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:64
 msgid "Figure"
 msgstr "Image"
 
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:86
+#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:71
 msgid "Translator"
 msgstr "Convertisseur"
 
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:69
+#: plugins/gedit/autolatex/config/cli/figure_panel.py:56
 msgid "Automatic generation of pictures with translators"
 msgstr "Génération automatique d'images avec des convertisseurs"
 
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:85
+#: plugins/gedit/autolatex/config/cli/figure_panel.py:59
 msgid "Search paths for the pictures"
 msgstr "Chemins de recherche pour les images"
 
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:226
+#: plugins/gedit/autolatex/config/cli/figure_panel.py:184
 msgid "Select a figure path"
 msgstr "Sélectionner un chemin de recherche pour les images"
 
-#: plugins/gedit/autolatex/config/cli/viewer_panel.py:61
+#: plugins/gedit/autolatex/config/cli/viewer_panel.py:53
 msgid "Launch a viewer after compilation"
 msgstr "Lancer un visualisateur après la compilation"
 
-#: plugins/gedit/autolatex/config/cli/viewer_panel.py:66
+#: plugins/gedit/autolatex/config/cli/viewer_panel.py:56
 msgid "Command for launching the viewer (optional)"
 msgstr "Commande pour lancer le visualisateur (optionnel)"
 

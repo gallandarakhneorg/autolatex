@@ -23,7 +23,7 @@
 # Standard libraries
 import os
 # Include the Glib, Gtk and Gedit libraries
-from gi.repository import Gtk, Gio
+from gi.repository import GObject, Gtk, Gio
 # AutoLaTeX internal libs
 from ...utils import utils
 from . import abstract_panel
@@ -63,23 +63,28 @@ class Panel(abstract_panel.AbstractPanel):
 		hbox.set_property('vexpand', False)
 		hbox.set_property('halign', Gtk.Align.END)
 		hbox.set_property('valign', Gtk.Align.CENTER)
-		self._insert_row(self._ui_figure_path_label, hbox)
+		inherting_button = self._insert_row(self._ui_figure_path_label, hbox, 2)[2]
+		inherting_button.unbind_widget(hbox)
 
 		# Button 1
 		self._ui_figure_path_add_button = Gtk.Button()
 		self._ui_figure_path_add_button.set_image(Gtk.Image.new_from_stock(Gtk.STOCK_ADD, Gtk.IconSize.BUTTON))
+		inherting_button.bind_widget(self._ui_figure_path_add_button)
 		hbox.add(self._ui_figure_path_add_button)
 		# Button 2
 		self._ui_figure_path_remove_button = Gtk.Button()
 		self._ui_figure_path_remove_button.set_image(Gtk.Image.new_from_stock(Gtk.STOCK_REMOVE, Gtk.IconSize.BUTTON))
+		inherting_button.bind_widget(self._ui_figure_path_remove_button)
 		hbox.add(self._ui_figure_path_remove_button)
 		# Button 3
 		self._ui_figure_path_up_button = Gtk.Button()
 		self._ui_figure_path_up_button.set_image(Gtk.Image.new_from_stock(Gtk.STOCK_GO_UP, Gtk.IconSize.BUTTON))
+		inherting_button.bind_widget(self._ui_figure_path_up_button)
 		hbox.add(self._ui_figure_path_up_button)
 		# Button 4
 		self._ui_figure_path_down_button = Gtk.Button()
 		self._ui_figure_path_down_button.set_image(Gtk.Image.new_from_stock(Gtk.STOCK_GO_DOWN, Gtk.IconSize.BUTTON))
+		inherting_button.bind_widget(self._ui_figure_path_down_button)
 		hbox.add(self._ui_figure_path_down_button)
 		# List
 		self._ui_figure_path_store = Gtk.ListStore(str)
@@ -90,10 +95,11 @@ class Panel(abstract_panel.AbstractPanel):
 		self._ui_figure_path_widget.set_headers_visible(False)
 		self._ui_figure_path_selection = self._ui_figure_path_widget.get_selection()
 		self._ui_figure_path_selection.set_mode(Gtk.SelectionMode.MULTIPLE)
+		inherting_button.bind_widget(self._ui_figure_path_widget)
 		# Scroll
 		ui_figure_path_scroll = self._create_scroll_for(
 						self._ui_figure_path_widget, 400, 100)
-		self._insert_row(ui_figure_path_scroll)
+		self._insert_row(ui_figure_path_scroll, None, False)
 
 
 	#
@@ -101,15 +107,22 @@ class Panel(abstract_panel.AbstractPanel):
 	#
 	def _init_content(self):
 		self._read_settings('generation')
-		self._ui_is_figure_generated_checkbox.set_active(self._get_settings_bool('generate images', True))
-		full_path = self._get_settings_str('image directory', '')
+		#
+		inh = self._get_settings_bool_inh('generate images')
+		cur = self._get_settings_bool('generate images')
+		self._init_overriding(self._ui_is_figure_generated_checkbox, cur is not None)
+		self._ui_is_figure_generated_checkbox.set_active(utils.first_of(cur, inh, True))
+		#
+		inh = self._get_settings_str_inh('image directory')
+		cur = self._get_settings_str('image directory')
+		self._init_overriding(self._ui_figure_path_widget, cur is not None)
+		full_path = utils.first_of(cur, inh, '')
 		if full_path:
 			full_path = full_path.split(os.pathsep)
 			for path in full_path:
 				self._ui_figure_path_store.append( [ path.strip() ] )
 		self._tmp_figure_path_moveup = False
 		self._tmp_figure_path_movedown = False
-		self._update_widget_states()
 
 
 	#
@@ -125,30 +138,26 @@ class Panel(abstract_panel.AbstractPanel):
 
 
 	# Change the state of the widgets according to the state of other widgets
-	def _update_widget_states(self):
-		if self._ui_is_figure_generated_checkbox.get_active():
-			self._ui_figure_path_label.set_sensitive(True)
-			self._ui_figure_path_add_button.set_sensitive(True)
-			self._ui_figure_path_widget.set_sensitive(True)
+	def update_widget_states(self):
+		is_active = self._ui_is_figure_generated_checkbox.get_active()
+		if not self._get_overriding(self._ui_is_figure_generated_checkbox):
+			inh = self._get_settings_bool_inh('generate images', True)
+			if (inh!=is_active):
+				GObject.idle_add(self._ui_is_figure_generated_checkbox.set_active, inh)
+				is_active = inh
+		is_active = self._update_sentitivity(self._ui_figure_path_label, is_active)
+		if is_active:
 			if self._ui_figure_path_selection.count_selected_rows() > 0:
-				self._ui_figure_path_remove_button.set_sensitive(True)
 				self._ui_figure_path_up_button.set_sensitive(self._tmp_figure_path_moveup)
 				self._ui_figure_path_down_button.set_sensitive(self._tmp_figure_path_movedown)
 			else:
 				self._ui_figure_path_remove_button.set_sensitive(False)
 				self._ui_figure_path_up_button.set_sensitive(False)
 				self._ui_figure_path_down_button.set_sensitive(False)
-		else:
-			self._ui_figure_path_label.set_sensitive(False)
-			self._ui_figure_path_add_button.set_sensitive(False)
-			self._ui_figure_path_widget.set_sensitive(False)
-			self._ui_figure_path_remove_button.set_sensitive(False)
-			self._ui_figure_path_up_button.set_sensitive(False)
-			self._ui_figure_path_down_button.set_sensitive(False)
 
 	# Invoke when the flag 'generate images' has changed
 	def on_generate_image_toggled(self, widget, data=None):
-		self._update_widget_states()
+		self.update_widget_states()
 
 	def _check_figure_path_up_down(self, selection):
 		n_data = len(self._ui_figure_path_store)
@@ -168,7 +177,7 @@ class Panel(abstract_panel.AbstractPanel):
 	# Invoked when the selection in the lsit of figure paths has changed
 	def on_figure_path_selection_changed(self, selection, data=None):
 		self._check_figure_path_up_down(selection)
-		self._update_widget_states()
+		self.update_widget_states()
 
 	# Invoked when the button "Add figure figure" was clicked
 	def on_figure_path_add_button_clicked(self, button, data=None):
@@ -215,7 +224,7 @@ class Panel(abstract_panel.AbstractPanel):
 							self._ui_figure_path_store.get_iter(selected_rows[i]))
 				else: p_idx = c_idx
 		self._check_figure_path_up_down(self._ui_figure_path_selection)
-		self._update_widget_states()
+		self.update_widget_states()
 
 	# Invoked when the button "Move down the figure paths" was clicked
 	def on_figure_path_down_button_clicked(self, button, data=None):
@@ -234,16 +243,28 @@ class Panel(abstract_panel.AbstractPanel):
 							self._ui_figure_path_store.get_iter(selected_rows[i]))
 				else: p_idx = c_idx
 		self._check_figure_path_up_down(self._ui_figure_path_selection)
-		self._update_widget_states()
+		self.update_widget_states()
 
 	# Invoked when the changes in the panel must be saved
 	def save(self):
 		self._reset_settings_section()
-		self._set_settings_bool('generate images', 
-				self._ui_is_figure_generated_checkbox.get_active())
-		path = ''
-		for row in self._ui_figure_path_store:
-			if path: path = path + os.pathsep
-			path = path + row[0].strip()
+		#
+		if self._get_sentitivity(self._ui_is_figure_generated_checkbox):
+			v = self._ui_is_figure_generated_checkbox.get_active()
+		else:
+			v = None
+		self._set_settings_bool('generate images', v)
+		#
+		if self._get_sentitivity(self._ui_figure_path_label):
+			path = ''
+			for row in self._ui_figure_path_store:
+				if path: path = path + os.pathsep
+				path = path + row[0].strip()
+		else:
+			path = None
 		self._set_settings_str('image directory', path)
-		return utils.backend_set_configuration(self._directory, 'project' if self._is_document_level else 'user', self._settings)
+		#
+		return utils.backend_set_configuration(
+				self._directory,
+				'project' if self._is_document_level else 'user',
+				self._settings)

@@ -52,10 +52,8 @@ class Panel(abstract_panel.AbstractPanel):
 		self._ui_launch_viewer_checkbox = self._create_switch(
 				_T("Launch a viewer after compilation"))[1]
 		# Viewer command line
-		tab = self._create_entry(
-				_T("Command for launching the viewer (optional)"))
-		self._ui_viewer_command_label = tab[0]
-		self._ui_viewer_command_field = tab[1]
+		self._ui_viewer_command_field = self._create_entry(
+				_T("Command for launching the viewer (optional)"))[1]
 
 
 	#
@@ -63,9 +61,16 @@ class Panel(abstract_panel.AbstractPanel):
 	#
 	def _init_content(self):
 		self._read_settings('viewer')
-		self._ui_launch_viewer_checkbox.set_active(self._get_settings_bool('view', True))
-		self._ui_viewer_command_field.set_text(self._get_settings_str('viewer'))
-		self._update_widget_states()
+		#
+		inh = self._get_settings_bool_inh('view')
+		cur = self._get_settings_bool('view')
+		self._init_overriding(self._ui_launch_viewer_checkbox, cur is not None)
+		self._ui_launch_viewer_checkbox.set_active(utils.first_of(cur, inh, False))
+		#
+		inh = self._get_settings_str_inh('viewer')
+		cur = self._get_settings_str('viewer')
+		self._init_overriding(self._ui_viewer_command_field, cur is not None)
+		self._ui_viewer_command_field.set_text(utils.first_of(cur, inh, ''))
 
 
 	#
@@ -78,21 +83,35 @@ class Panel(abstract_panel.AbstractPanel):
 
 
 	# Change the state of the widgets according to the state of other widgets
-	def _update_widget_states(self):
-		if self._ui_launch_viewer_checkbox.get_active():
-			self._ui_viewer_command_label.set_sensitive(True)
-			self._ui_viewer_command_field.set_sensitive(True)
-		else:
-			self._ui_viewer_command_label.set_sensitive(False)
-			self._ui_viewer_command_field.set_sensitive(False)
+	def update_widget_states(self):
+		is_active = self._ui_launch_viewer_checkbox.get_active()
+		if not self._get_overriding(self._ui_launch_viewer_checkbox):
+			inh = self._get_settings_bool_inh('view', False)
+			if (inh!=is_active):
+				GObject.idle_add(self._ui_launch_viewer_checkbox.set_active, inh)
+				is_active = inh
+		self._update_sentitivity(self._ui_viewer_command_field, is_active)
+			
 
 	# Invoke when the flag 'launch viewer' has changed
 	def on_launch_viewer_toggled(self, widget, data=None):
-		self._update_widget_states()
+		self.update_widget_states()
 
 	# Invoked when the changes in the panel must be saved
 	def save(self):
 		self._reset_settings_section()
-		self._set_settings_bool('view', self._ui_launch_viewer_checkbox.get_active())
-		self._set_settings_str('viewer', self._ui_viewer_command_field.get_text())
-		return utils.backend_set_configuration(self._directory, 'project' if self._is_document_level else 'user', self._settings)
+		#
+		if self._get_sentitivity(self._ui_launch_viewer_checkbox):
+			v = self._ui_launch_viewer_checkbox.get_active()
+		else:
+			v = None
+		self._set_settings_bool('view', v)
+		#
+		if self._get_sentitivity(self._ui_viewer_command_field):
+			v = self._ui_viewer_command_field.get_text()
+		else:
+			v = None
+		self._set_settings_str('viewer', v)
+		#
+		return utils.backend_set_configuration(self._directory,
+			'project' if self._is_document_level else 'user', self._settings)

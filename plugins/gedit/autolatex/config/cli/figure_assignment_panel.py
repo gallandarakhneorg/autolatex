@@ -55,7 +55,7 @@ class Panel(abstract_panel.AbstractPanel):
 	def _init_widgets(self):
 		# Comment
 		ui_label = self._create_label(_T("List of the figures detected in your document's directory.\nYou can edit the second column to set the translator used for a particular figure."))
-		self._insert_row(ui_label)
+		self._insert_row(ui_label, None, False)
 		# List of figures
 		self._ui_figure_edit_store = Gtk.ListStore(str)
 		self._ui_figure_store = Gtk.ListStore(str, str)
@@ -75,7 +75,7 @@ class Panel(abstract_panel.AbstractPanel):
 		self._ui_figure_selection.set_mode(Gtk.SelectionMode.SINGLE)
 		# Scroll
 		ui_figure_scroll = self._create_scroll_for(ui_figure_widget)
-		self._insert_row(ui_figure_scroll)
+		self._insert_row(ui_figure_scroll, None, False)
 
 
 	#
@@ -132,6 +132,10 @@ class Panel(abstract_panel.AbstractPanel):
 	#
 	def _connect_signals(self):
 		self._ui_figure_selection.connect('changed',self.on_figure_selection_changed)
+
+
+	def update_widget_states(self):
+		pass
 
 	# Invoked when the selection in the lsit of figure paths has changed
 	def on_figure_selection_changed(self, selection, data=None):

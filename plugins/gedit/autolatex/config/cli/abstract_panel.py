@@ -21,9 +21,10 @@
 #---------------------------------
 
 # Include the Glib, Gtk and Gedit libraries
-from gi.repository import Gtk
+from gi.repository import GObject, Gtk
 # AutoLaTeX internal libs
 from ...utils import utils
+from ...widgets import inherit_button
 
 #---------------------------------
 # CLASS Panel
@@ -64,6 +65,10 @@ class AbstractPanel(Gtk.Box):
 		#
 		self._init_content()
 		#
+		# Update the state of the widgets
+		#
+		self.update_widget_states()
+		#
 		# Connext the signals
 		#
 		self._connect_signals()
@@ -80,9 +85,52 @@ class AbstractPanel(Gtk.Box):
 		"""Invoked to connect methods to the widgets' signals"""
 		raise NotImplementedError("Please implement this method")
 
+	def update_widget_states(self):
+		"""Invoked to change the states of the widgets"""
+		raise NotImplementedError("Please implement this method")
+
 	def save(self):
 		"""Invoked when the changes in the panel must be saved"""
 		raise NotImplementedError("Please implement this method")
+
+	# Utility function that permits to change the sensitivity
+	# of a widget according to a given flag and the "inheriting" flag
+	def _update_sentitivity(self, widget, is_sensitive):
+		inherit_flag = widget.get_data('autolatex_overriding_configuration_value')
+		if inherit_flag:
+			inherit_flag = inherit_flag()
+			if inherit_flag:
+				return inherit_flag.set_widget_sensitivity(is_sensitive)
+		widget.set_sensitive(is_sensitive)
+		return is_sensitive
+
+	# Utility function that permits to change the overriding of a widget
+	def _init_overriding(self, widget, is_overriding):
+		inherit_flag = widget.get_data('autolatex_overriding_configuration_value')
+		if inherit_flag:
+			inherit_flag = inherit_flag()
+			if inherit_flag:
+				inherit_flag.set_overriding_value(is_overriding)
+
+	# Utility function that permits to get the sensitivity
+	# of a widget according to a given flag and the "inheriting" flag
+	def _get_sentitivity(self, widget):
+		inherit_flag = widget.get_data('autolatex_overriding_configuration_value')
+		if inherit_flag:
+			inherit_flag = inherit_flag()
+			if inherit_flag:
+				return inherit_flag.get_widget_sensitivity(widget)
+		return widget.get_sensitive()
+
+	# Utility function that permits to get the overriding
+	# of a widget according to a given flag and the "inheriting" flag
+	def _get_overriding(self, widget):
+		inherit_flag = widget.get_data('autolatex_overriding_configuration_value')
+		if inherit_flag:
+			inherit_flag = inherit_flag()
+			if inherit_flag:
+				return inherit_flag.get_overriding_value()
+		return True
 
 	# Utility function that permits to read the settings.
 	def _read_settings(self, section):
@@ -93,18 +141,26 @@ class AbstractPanel(Gtk.Box):
 		self._settings_section = section
 
 	# Utility function to extract a string value from the settings
-	def _get_settings_str(self, key, default_value=''):
+	def _get_settings_str(self, key, default_value=None):
 		if self._settings and self._settings.has_option(self._settings_section, key):
 			return str(self._settings.get(self._settings_section, key))
 		else:
-			return str(default_value)
+			return default_value
 
 	# Utility function to extract a boolean value from the settings
-	def _get_settings_bool(self, key, default_value=False):
+	def _get_settings_bool(self, key, default_value=None):
 		if self._settings and self._settings.has_option(self._settings_section, key):
 			return bool(self._settings.getboolean(self._settings_section, key))
 		else:
-			return bool(default_value)
+			return default_value
+
+	# Utility function to extract an inherited string value from the settings
+	def _get_settings_str_inh(self, key, default_value=None):
+		return self._get_settings_str(key+'_INHERITED', default_value)
+
+	# Utility function to extract an inherited boolean value from the settings
+	def _get_settings_bool_inh(self, key, default_value=None):
+		return self._get_settings_bool(key+'_INHERITED', default_value)
 
 	# Utility function to set a string value from the settings
 	def _set_settings_str(self, key, value):
@@ -116,8 +172,11 @@ class AbstractPanel(Gtk.Box):
 	# Utility function to set a boolean value from the settings
 	def _set_settings_bool(self, key, value):
 		if self._settings:
-			self._settings.set(self._settings_section, key,
-					('true' if value else 'false'))	
+			if value is None:
+				value = utils.CONFIG_EMPTY_VALUE
+			else:
+				value = ('true' if value else 'false')
+			self._settings.set(self._settings_section, key, value)
 
 	# Utility function to reset a section in the settings
 	def _reset_settings_section(self, section=None):
@@ -137,7 +196,7 @@ class AbstractPanel(Gtk.Box):
 		return ui_label
 
 	# Utility function to create a row in a grid
-	def _insert_row(self, left_widget, right_widget=None):
+	def _insert_row(self, left_widget, right_widget=None, enable_inherit=True):
 		if right_widget:
 			self._grid.attach(	left_widget,
 					0,self._grid_row,1,1) # left, top, width, height
@@ -146,20 +205,31 @@ class AbstractPanel(Gtk.Box):
 		else:
 			self._grid.attach(	left_widget, 
 					0,self._grid_row,2,1) # left, top, width, height
+		inheriting_widget = None
+		if enable_inherit:
+			height = 1
+			if isinstance(enable_inherit, (int, long)) and int(enable_inherit)>1:
+				height = int(enable_inherit)
+			inheriting_widget = inherit_button.InheritButton(self, left_widget, right_widget)
+			inheriting_widget.set_property('expand', False)
+			inheriting_widget.set_property('halign', Gtk.Align.CENTER)
+			inheriting_widget.set_property('valign', Gtk.Align.CENTER)
+			self._grid.attach(	inheriting_widget, 
+					2,self._grid_row,1,height) # left, top, width, height
 		self._grid_row = self._grid_row + 1
-		return [ left_widget, right_widget ]
+		return [ left_widget, right_widget, inheriting_widget ]
 
 	# Utility function to create a row in a grid
-	def _create_row(self, label_text, right_widget):
+	def _create_row(self, label_text, right_widget, enable_inherit=True):
 		ui_label = self._create_label(label_text)
 		right_widget.set_property('hexpand', True)
 		right_widget.set_property('vexpand', False)
-		return self._insert_row(ui_label, right_widget)
+		return self._insert_row(ui_label, right_widget, enable_inherit)
 
 	# Utility function to create a row in a grid with a Switch
-	def _create_switch(self, label_text):
+	def _create_switch(self, label_text, enable_inherit=True):
 		widget = Gtk.Switch()
-		tab = self._create_row(label_text, widget)
+		tab = self._create_row(label_text, widget, enable_inherit)
 		widget.set_property('hexpand', False)
 		widget.set_property('vexpand', False)
 		widget.set_property('halign', Gtk.Align.END)
@@ -168,20 +238,20 @@ class AbstractPanel(Gtk.Box):
 
 
 	# Utility function to create a row in a grid with an Entry
-	def _create_entry(self, label_text):
+	def _create_entry(self, label_text, enable_inherit=True):
 		widget = Gtk.Entry()
-		return self._create_row(label_text, widget)
+		return self._create_row(label_text, widget, enable_inherit)
 
 
 	# Utility function to create a row in a grid with a ComboText
-	def _create_combo(self, label_text, values=None, combo_name=None):
+	def _create_combo(self, label_text, values=None, combo_name=None, enable_inherit=True):
 		widget = Gtk.ComboBoxText()
 		if combo_name:
 			widget.set_name(combo_name)
 		if values:
 			for value in values:
 				widget.append_text(value)
-		return self._create_row(label_text, widget)
+		return self._create_row(label_text, widget, enable_inherit)
 
 
 	# Utility function to create a scroll panel for the given widget

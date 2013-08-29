@@ -72,7 +72,7 @@ class Panel(abstract_panel.AbstractPanel):
 		self._preload_icons()
 		# Top label
 		ui_label = self._create_label(_T("List of available translators:\n(click on the second column to change the loading state of the translators)"))
-		self._insert_row(ui_label)
+		self._insert_row(ui_label, None, False)
 		# List of translators
 		self._ui_translator_list = Gtk.ListStore(
 						GdkPixbuf.Pixbuf.__gtype__,
@@ -122,7 +122,7 @@ class Panel(abstract_panel.AbstractPanel):
 		ui_right_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.INHERITED), _T('Unspecified, no conflict')))
 		ui_right_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.INHERITED_CONFLICT), _T('Unspecified, conflict')))
 		# Add the list and the toolbar
-		self._insert_row(ui_translator_list_scroll, ui_right_toolbar)
+		self._insert_row(ui_translator_list_scroll, ui_right_toolbar, False)
 
 
 	#
@@ -170,6 +170,8 @@ class Panel(abstract_panel.AbstractPanel):
 	def _connect_signals(self):
 		self._ui_translator_list_widget.connect('button-press-event', self.on_list_click_action);
 
+	def update_widget_states(self):
+		pass
 
 	# Preloading the states' icons
 	def _preload_icons(self):
