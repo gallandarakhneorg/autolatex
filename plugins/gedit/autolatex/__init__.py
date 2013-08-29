@@ -1,4 +1,4 @@
-# autolatex - __init__.py
+# autolatex/__init__.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -34,11 +34,10 @@ except ImportError:
 from gi.repository import GObject, Gtk, Gio, GdkPixbuf, Gedit, PeasGtk
 
 # AutoLaTeX internal libs
-import autolatex_utils as utils
-import autolatex_config_window as config_window
-import autolatex_gsettings as gsettings
-import autolatex_plugin_config as plugin_config
-import autolatex_error_console as error_console
+from .utils import utils, gsettings
+from .config.cli import window as cli_config
+from .config.plugin import main_panel as plugin_config
+from .widgets import error_console
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -49,58 +48,11 @@ _T = gettext.gettext
 utils.init_internationalization()
 
 #---------------------------------
-# DEFINITION OF THE GTK CONTRIBUTIONS
-#---------------------------------
-UI_XML = """<ui>
-<menubar name="MenuBar">
-    <menu name="ToolsMenu" action="Tools">
-      <placeholder name="ToolsOps_3">
-	<menu action="AutoLaTeXMenu">
-	  <menuitem action="AutoLaTeXGenerateImageAction"/>
-	  <menuitem action="AutoLaTeXCompileAction"/>
-	  <menuitem action="AutoLaTeXCleanAction"/>
-	  <menuitem action="AutoLaTeXCleanallAction"/>
-	  <menu action="AutoLaTeXSyncTeXMenu">
-	    <menuitem action="AutoLaTeXEnableSyncTeXAction"/>
-	    <menuitem action="AutoLaTeXUpdateForSyncTeXAction"/>
-            <placeholder name="AutoLaTeXSyncTeXOps"/>
-          </menu>
-          <placeholder name="AutoLaTeXCompileOps"/>
-	  <separator />
-	  <menuitem action="AutoLaTeXViewAction"/>
-          <placeholder name="AutoLaTeXViewOps"/>
-	  <separator />
-	  <menuitem action="AutoLaTeXMakeFlatAction"/>
-          <placeholder name="AutoLaTeXExportOps"/>
-	  <separator />
-	  <menu action="AutoLaTeXConfigMenu">
-	    <menuitem action="AutoLaTeXDocumentConfAction"/>
-	    <menuitem action="AutoLaTeXRemoveDocumentConfAction"/>
-	    <separator />
-	    <menuitem action="AutoLaTeXUserConfAction"/>
-	    <menuitem action="AutoLaTeXRemoveUserConfAction"/>
-            <placeholder name="AutoLaTeXConfigOps"/>
-          </menu>
-        </menu>
-      </placeholder>
-    </menu>
-</menubar>
-<toolbar name="ToolBar">
-    <placeholder name="AutoLaTeX_toolbar">
-        <separator/>
-        <toolitem action="AutoLaTeXCompileAction"/>
-        <toolitem action="AutoLaTeXCleanAction"/>
-        <toolitem action="AutoLaTeXViewAction"/>
-    </placeholder>
-</toolbar>
-</ui>"""
-
-#---------------------------------
-# CLASS AutoLaTeXExecutionThread
+# CLASS _AutoLaTeXExecutionThread
 #---------------------------------
 
 # Launch AutoLaTeX inside a thread, and wait for the result
-class AutoLaTeXExecutionThread(_threading.Thread):
+class _AutoLaTeXExecutionThread(_threading.Thread):
     # caller is an instance of AutoLaTeXPlugin
     # label is the text to display in the info bar. If none, there is no info bar.
     # gsettings is the object that permits to access to the Gsettings
@@ -428,7 +380,10 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		action = definition[0].get_action(definition[1])
 		action.set_gicon(self._get_icon(definition[2]))
 	# Add the Gtk contributions
-        self._ui_merge_id = manager.add_ui_from_string(UI_XML)
+	ui_path = os.path.join(utils.AUTOLATEX_PLUGIN_PATH, 'ui')
+	self._ui_merge_ids = []
+	for ui_file in [ 'menu.ui', 'toolbar.ui' ]:
+	        self._ui_merge_ids.append(manager.add_ui_from_file(os.path.join(ui_path, ui_file)))
         manager.ensure_update()
 	# Change the state of the check-boxes
 	checkbox = self._general_actions.get_action('AutoLaTeXEnableSyncTeXAction')
@@ -447,7 +402,8 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		self._error_console = None
 	# Remove the Gtk Widgets
         manager = self.window.get_ui_manager()
-        manager.remove_ui(self._ui_merge_id)
+	for merge_id in self._ui_merge_ids:
+	        manager.remove_ui(merge_id)
         manager.remove_action_group(self._document_actions)
         manager.remove_action_group(self._texsensitive_actions)
         manager.remove_action_group(self._docconfsensitive_actions)
@@ -509,7 +465,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	directory = self._find_AutoLaTeX_dir()
 	if directory:
 	    GObject.idle_add(self._update_action_validity, False, None)
-	    thread = AutoLaTeXExecutionThread(self, label, self._gsettings, directory, directive, params)
+	    thread = _AutoLaTeXExecutionThread(self, label, self._gsettings, directory, directive, params)
 	    thread.start()
 
     def _apply_general_autolatex_cli_options(self, params):
@@ -563,7 +519,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 					None,
 					'', [ '--createconfig=project', utils.DEFAULT_LOG_LEVEL ])
 		if runConfig:
-			config_window.open_configuration_dialog(self.window, True, directory)
+			cli_config.open_configuration_dialog(self.window, True, directory)
 
     def on_delete_document_configuration_action_activate(self, action, data=None):
 	directory = self._find_AutoLaTeX_dir()
@@ -592,7 +548,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 					None,
 					'', [ '--createconfig=user', utils.DEFAULT_LOG_LEVEL ])
 		if runConfig:
-				config_window.open_configuration_dialog(self.window, False, directory)
+				cli_config.open_configuration_dialog(self.window, False, directory)
 
     def on_delete_user_configuration_action_activate(self, action, data=None):
 	cfgFile = os.path.join(os.path.expanduser("~"), '.autolatex')

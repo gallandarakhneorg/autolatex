@@ -1,0 +1,41 @@
+<ui>
+<menubar name="MenuBar">
+    <menu name="ToolsMenu" action="Tools">
+      <placeholder name="ToolsOps_3">
+	<menu action="AutoLaTeXMenu">
+          <placeholder name="AutoLaTeXCompileOps">
+	    <menuitem action="AutoLaTeXGenerateImageAction"/>
+	    <menuitem action="AutoLaTeXCompileAction"/>
+	    <menuitem action="AutoLaTeXCleanAction"/>
+	    <menuitem action="AutoLaTeXCleanallAction"/>
+	    <menu action="AutoLaTeXSyncTeXMenu">
+	      <placeholder name="AutoLaTeXSyncTeXOps">
+	        <menuitem action="AutoLaTeXEnableSyncTeXAction"/>
+	        <menuitem action="AutoLaTeXUpdateForSyncTeXAction"/>
+              </placeholder>
+            </menu>
+          </placeholder>
+	  <separator />
+          <placeholder name="AutoLaTeXViewOps">
+	    <menuitem action="AutoLaTeXViewAction"/>
+          </placeholder>
+	  <separator />
+          <placeholder name="AutoLaTeXExportOps">
+	    <menuitem action="AutoLaTeXMakeFlatAction"/>
+          </placeholder>
+	  <separator />
+	  <menu action="AutoLaTeXConfigMenu">
+            <placeholder name="AutoLaTeXConfigOps">
+	      <menuitem action="AutoLaTeXDocumentConfAction"/>
+	      <menuitem action="AutoLaTeXRemoveDocumentConfAction"/>
+	      <separator />
+	      <menuitem action="AutoLaTeXUserConfAction"/>
+	      <menuitem action="AutoLaTeXRemoveUserConfAction"/>
+            </placeholder>
+          </menu>
+        </menu>
+      </placeholder>
+    </menu>
+</menubar>
+</ui>
+

@@ -1,4 +1,4 @@
-# autolatex - autolatex_generator_panel.py
+# autolatex/config/cli/generator_panel.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import GObject, Gdk, Gtk, GdkPixbuf
 # AutoLaTeX internal libs
-import autolatex_utils as utils
+from ...utils import utils
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -33,32 +33,32 @@ import gettext
 _T = gettext.gettext
 
 #---------------------------------
-# CLASS GenerationType
+# CLASS _GenerationType
 #---------------------------------
 
-class GenerationType:
+class _GenerationType:
 	PDF = 'pdf'
 	DVI = 'dvi'
 	POSTSCRIPT = 'ps'
 
 	def index(v):
-		if v == GenerationType.POSTSCRIPT: return 2
-		elif v == GenerationType.DVI: return 1
+		if v == _GenerationType.POSTSCRIPT: return 2
+		elif v == _GenerationType.DVI: return 1
 		else: return 0
 
 	def label(i):
-		if i == 2: return GenerationType.POSTSCRIPT
-		elif i == 1: return GenerationType.DVI
-		else: return GenerationType.PDF
+		if i == 2: return _GenerationType.POSTSCRIPT
+		elif i == 1: return _GenerationType.DVI
+		else: return _GenerationType.PDF
 
 	index = staticmethod(index)
 	label = staticmethod(label)
 
 #---------------------------------
-# CLASS IndexType
+# CLASS _IndexType
 #---------------------------------
 
-class IndexType:
+class _IndexType:
 	FILE = 0 # [ <str> ]
 	DETECTION = 1 # [@detect] or [@detect, @system]
 	DEFAULT = 2 # [@system]
@@ -74,17 +74,17 @@ class IndexType:
 	def index(t):
 		if t and len(t)>0:
 			if len(t) == 2:
-				if t[0] == '@detect' and t[1] == '@system': return IndexType.DETECTION
-				else: return IndexType.USER
+				if t[0] == '@detect' and t[1] == '@system': return _IndexType.DETECTION
+				else: return _IndexType.USER
 			elif len(t) == 1:
-				if t[0] == '@detect': return IndexType.DETECTION
-				elif t[0] == '@system': return IndexType.DEFAULT
-				elif not t[0] or t[0] == '@none': return IndexType.NONE
-				else: return IndexType.USER
+				if t[0] == '@detect': return _IndexType.DETECTION
+				elif t[0] == '@system': return _IndexType.DEFAULT
+				elif not t[0] or t[0] == '@none': return _IndexType.NONE
+				else: return _IndexType.USER
 			else:
-				return IndexType.USER
+				return _IndexType.USER
 		else:
-			return IndexType.NONE
+			return _IndexType.NONE
 
 	def label(i, original_value):
 		if i == 0: return original_value
@@ -228,9 +228,9 @@ class Panel(Gtk.Table):
 		self._ui_run_biblio_checkbox.set_active(self._get_settings_bool('biblio', True))
 		self._ui_run_synctex_checkbox.set_active(self._get_settings_bool('synctex', False))
 		self._ui_generation_type_combo.set_active(
-				GenerationType.index(self._get_settings_str('generation type', GenerationType.PDF)))
+				_GenerationType.index(self._get_settings_str('generation type', _GenerationType.PDF)))
 		self._makeindex_value = self._get_settings_str('makeindex style', '@detect, @system')
-		makeindex_type = IndexType.index(IndexType.parse(self._makeindex_value))
+		makeindex_type = _IndexType.index(_IndexType.parse(self._makeindex_value))
 		self._ui_makeindex_type_combo.set_active(makeindex_type)
 		self._update_widget_states()
 		#
@@ -255,7 +255,7 @@ class Panel(Gtk.Table):
 	# Change the state of the widgets according to the state of other widgets
 	def _update_widget_states(self):
 		makeindex_type = self._ui_makeindex_type_combo.get_active()
-		if makeindex_type == IndexType.FILE:
+		if makeindex_type == _IndexType.FILE:
 			self._ui_makeindex_file_field.set_filename(self._makeindex_value)
 			self._ui_makeindex_file_label.set_sensitive(True)
 			self._ui_makeindex_file_field.set_sensitive(True)
@@ -278,7 +278,7 @@ class Panel(Gtk.Table):
 		self._settings.set('generation', 'synctex', 
 				'true' if self._ui_run_synctex_checkbox.get_active() else 'false')
 		self._settings.set('generation', 'generation type', 
-				GenerationType.label(self._ui_generation_type_combo.get_active()))
+				_GenerationType.label(self._ui_generation_type_combo.get_active()))
 		self._settings.set('generation', 'makeindex style', 
-				IndexType.label(self._ui_makeindex_type_combo.get_active(), self._makeindex_value))
+				_IndexType.label(self._ui_makeindex_type_combo.get_active(), self._makeindex_value))
 		return utils.backend_set_configuration(self._directory, 'project' if self._is_document_level else 'user', self._settings)

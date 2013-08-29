@@ -1,4 +1,4 @@
-# autolatex - autolatex_error_console.py
+# autolatex/widgets/error_console.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify

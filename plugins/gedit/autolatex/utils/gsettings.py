@@ -1,4 +1,4 @@
-# autolatex - autolatex_gsettings.py
+# autolatex/utils/gsettings.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,13 +25,13 @@ import os
 # Include the Gio, Gtk and Gedit libraries
 from gi.repository import Gio, Gtk
 # AutoLaTeX internal libs
-import autolatex_utils as utils
+from . import utils
 
 #---------------------------------
 # Constants
 #---------------------------------
 
-GSETTINGS_BASE_KEY = "apps.autolatex"
+_GSETTINGS_BASE_KEY = "apps.autolatex"
 
 #---------------------------------
 # Class that is managing the settings
@@ -41,7 +41,7 @@ class Manager:
 
 	def _is_schema_installed():
 		for schema in Gio.Settings.list_schemas():
-			if schema == GSETTINGS_BASE_KEY:
+			if schema == _GSETTINGS_BASE_KEY:
 				return True
 		return False
 	_is_schema_installed = staticmethod(_is_schema_installed)
@@ -49,7 +49,7 @@ class Manager:
 	def __init__(self):
 		if Manager._is_schema_installed(): 
 			self._sig_binded_signals = {}
-		        self.settings = Gio.Settings.new(GSETTINGS_BASE_KEY)
+		        self.settings = Gio.Settings.new(_GSETTINGS_BASE_KEY)
 			# Force application of gsettings
 			self._update_autolatex_cmd(self.settings.get_string('autolatex-cmd'))
 			self._update_autolatex_backend_cmd(self.settings.get_string('autolatex-backend-cmd'))

@@ -1,4 +1,4 @@
-# autolatex - autolatex_figure_assignment_panel.py
+# autolatex/config/cli/figure_assignment_panel.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import ConfigParser
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import Gtk
 # AutoLaTeX internal libs
-import autolatex_utils as utils
+from ...utils import utils
 
 #---------------------------------
 # INTERNATIONALIZATION

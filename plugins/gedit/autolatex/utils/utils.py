@@ -1,4 +1,4 @@
-# autolatex - autolatex.py
+# autolatex/utils/utils.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -49,13 +49,12 @@ def which(cmd):
   return None
 
 # Plugin path
-AUTOLATEX_PLUGIN_PATH = os.path.join(os.path.dirname(__file__),'autolatex_utils.py')
-p = Gio.File.new_for_path(os.getcwd())
-AUTOLATEX_PLUGIN_PATH = p.resolve_relative_path(AUTOLATEX_PLUGIN_PATH).get_path()
+_p = Gio.File.new_for_path(os.getcwd())
+AUTOLATEX_PLUGIN_PATH = _p.resolve_relative_path(__file__).get_path()
 while os.path.islink(AUTOLATEX_PLUGIN_PATH):
-	p = Gio.File.new_for_path(os.path.dirname(AUTOLATEX_PLUGIN_PATH))
-	AUTOLATEX_PLUGIN_PATH = p.resolve_relative_path(os.readlink(AUTOLATEX_PLUGIN_PATH)).get_path()
-AUTOLATEX_PLUGIN_PATH = os.path.dirname(AUTOLATEX_PLUGIN_PATH)
+	_p = Gio.File.new_for_path(os.path.dirname(AUTOLATEX_PLUGIN_PATH))
+	AUTOLATEX_PLUGIN_PATH = _p.resolve_relative_path(os.readlink(AUTOLATEX_PLUGIN_PATH)).get_path()
+AUTOLATEX_PLUGIN_PATH = os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))
 
 # PO path
 AUTOLATEX_PO_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'po')

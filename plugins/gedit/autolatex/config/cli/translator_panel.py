@@ -1,4 +1,4 @@
-# autolatex - autolatex_translator_panel.py
+# autolatex/config/cli/translator_panel.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import GObject, Gdk, Gtk, GdkPixbuf
 # AutoLaTeX internal libs
-import autolatex_utils as utils
+from ...utils import utils
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -33,10 +33,10 @@ import gettext
 _T = gettext.gettext
 
 #---------------------------------
-# CLASS IconType
+# CLASS _IconType
 #---------------------------------
 
-class IconType:
+class _IconType:
     INHERITED = 0
     INCLUDED = 1
     EXCLUDED = 2
@@ -44,10 +44,10 @@ class IconType:
     CONFLICT = 4
 
 #---------------------------------
-# CLASS IconType
+# CLASS _IconType
 #---------------------------------
 
-class Level:
+class _Level:
     SYSTEM = 0
     USER = 1
     PROJECT = 2
@@ -60,13 +60,13 @@ class Level:
 class Panel(Gtk.Table):
 	__gtype_name__ = "AutoLaTeXTranslatorPanel"
 
-	def __init__(self, isDocumentLevel, directory):
+	def __init__(self, isDocument_Level, directory):
 		Gtk.Table.__init__(self,
 				2, #rows
 				2, #columns
 				False) #non uniform
 		self._directory = directory
-		self._is_document_level = isDocumentLevel
+		self._is_document_level = isDocument_Level
 		self._preload_icons()
 		# Top label
 		self._ui_label = Gtk.Label(_T("List of available translators:\n(click on the second column to change the loading state of the translators)"))
@@ -81,7 +81,7 @@ class Panel(Gtk.Table):
 						str, str)
 		self._ui_translator_list_widget = Gtk.TreeView()
 		self._ui_translator_list_widget.set_model(self._ui_translator_list)
-		if isDocumentLevel:
+		if isDocument_Level:
 			label1 = _T('usr')
 			self._clickable_column_label = _T('doc')
 		else:
@@ -128,19 +128,19 @@ class Panel(Gtk.Table):
 		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1), label2))
 		self._ui_left_toolbar.add(Gtk.HSeparator())
 		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1), _T('Loaded, no conflict')))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.CONFLICT), _T('Loaded, conflict')))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.EXCLUDED), _T('Not loaded')))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.INHERITED), _T('Unspecified, no conflict')))
-		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, IconType.INHERITED_CONFLICT), _T('Unspecified, conflict')))
+		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.CONFLICT), _T('Loaded, conflict')))
+		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.EXCLUDED), _T('Not loaded')))
+		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.INHERITED), _T('Unspecified, no conflict')))
+		self._ui_left_toolbar.add(self._make_legend(self._get_level_icon(1, _IconType.INHERITED_CONFLICT), _T('Unspecified, conflict')))
 		#
 		# Initialize the panel
 		#
 		if self._is_document_level:
-			left_level = Level.USER
-			right_level = Level.PROJECT
+			left_level = _Level.USER
+			right_level = _Level.PROJECT
 		else:
-			left_level = Level.SYSTEM
-			right_level = Level.USER
+			left_level = _Level.SYSTEM
+			right_level = _Level.USER
 		# Get the data from the backend
 		self._translator_config = utils.backend_get_translators(self._directory)
 		self._load_config = utils.backend_get_loads(self._directory)
@@ -174,11 +174,11 @@ class Panel(Gtk.Table):
 	# Preloading the states' icons
 	def _preload_icons(self):
 		if self._is_document_level:
-			left_level = Level.USER
-			right_level = Level.PROJECT
+			left_level = _Level.USER
+			right_level = _Level.PROJECT
 		else:
-			left_level = Level.SYSTEM
-			right_level = Level.USER
+			left_level = _Level.SYSTEM
+			right_level = _Level.USER
 		# Preload icons
 		self._preloaded_icons = [[None,None,None,None,None],[None,None,None,None,None]]
 		for i in range(5):
@@ -186,27 +186,27 @@ class Panel(Gtk.Table):
 			self._preloaded_icons[1][i] = self.__get_level_icon(right_level, i)
 
 	# Load the bitmap of an icon
-	def __get_level_icon(self, level, icon_type=IconType.INCLUDED):
-		if level == Level.SYSTEM:
-			icon_name = 'systemLevel'
-		elif level == Level.USER:
-			icon_name = 'userLevel'
+	def __get_level_icon(self, level, icon_type=_IconType.INCLUDED):
+		if level == _Level.SYSTEM:
+			icon_name = 'system_Level'
+		elif level == _Level.USER:
+			icon_name = 'user_Level'
 		else:
-			icon_name = 'projectLevel'
+			icon_name = 'project_Level'
 		
-		if icon_type == IconType.INHERITED_CONFLICT:
+		if icon_type == _IconType.INHERITED_CONFLICT:
 			icon_name = icon_name + '_uc'
-		elif icon_type == IconType.INHERITED:
+		elif icon_type == _IconType.INHERITED:
 			icon_name = icon_name + '_u'
-		elif icon_type == IconType.CONFLICT:
+		elif icon_type == _IconType.CONFLICT:
 			icon_name = icon_name + '_c'
-		elif icon_type == IconType.EXCLUDED:
+		elif icon_type == _IconType.EXCLUDED:
 			icon_name = icon_name + '_ko'
 		icon_name = icon_name + '.png'
 		return GdkPixbuf.Pixbuf.new_from_file(utils.make_table_icon_path(icon_name))
 
 	# Replies an icon
-	def _get_level_icon(self, column, icon_type=IconType.INCLUDED):
+	def _get_level_icon(self, column, icon_type=_IconType.INCLUDED):
 		return self._preloaded_icons[column][int(icon_type)]
 
 	# Utility function  to create the "help" legend
@@ -225,13 +225,13 @@ class Panel(Gtk.Table):
 
 	# Replies if the given translator, in the given state, may be assumed as included
 	def _is_includable_with(self, translator, state):
-		if state == IconType.INHERITED:
+		if state == _IconType.INHERITED:
 			state = self._translator_inclusions_constants[translator]
-		elif state == IconType.INHERITED_CONFLICT:
+		elif state == _IconType.INHERITED_CONFLICT:
 			state = self._add_conflict_in_state(self._translator_inclusions_constants[translator])
-		if state == IconType.INCLUDED or state == IconType.CONFLICT:
+		if state == _IconType.INCLUDED or state == _IconType.CONFLICT:
 			return 1 # Sure, it is included
-		if state == IconType.EXCLUDED:
+		if state == _IconType.EXCLUDED:
 			return 0 # Sure, it is not included
 		return -1 # Don't know
 
@@ -240,7 +240,7 @@ class Panel(Gtk.Table):
 	def _update_translator_states(self, translator):
 		translators_to_update = []
 		inclusion_state = self._translator_inclusions[translator]
-		if inclusion_state != IconType.EXCLUDED:
+		if inclusion_state != _IconType.EXCLUDED:
 			# Detect any conflict
 			is_includable = self._is_includable_with(translator, inclusion_state)
 			source = self._translator_config.get(translator, 'full-source')
@@ -251,7 +251,7 @@ class Panel(Gtk.Table):
 					if is_includable and is_other_includable:
 						inclusion_state = self._add_conflict_in_state(inclusion_state)
 			# change the state of the other translators
-			if inclusion_state == IconType.CONFLICT or inclusion_state == IconType.INHERITED_CONFLICT:
+			if inclusion_state == _IconType.CONFLICT or inclusion_state == _IconType.INHERITED_CONFLICT:
 				for candidate in self._translator_conflict_candidates[source]:
 					if translator != candidate:
 						other_state = self._translator_inclusions[candidate]
@@ -266,41 +266,41 @@ class Panel(Gtk.Table):
 
 	# Compute the state of a translator for the given level
 	def _compute_inclusion_state(self, translator, query_level, editable_level):
-		flag = IconType.INHERITED
+		flag = _IconType.INHERITED
 		if query_level < editable_level:
 			if self._load_config.has_option('system', translator):
-				flag = IconType.INCLUDED if self._load_config.getboolean('system', translator) else IconType.EXCLUDED
-			if query_level > Level.SYSTEM:
+				flag = _IconType.INCLUDED if self._load_config.getboolean('system', translator) else _IconType.EXCLUDED
+			if query_level > _Level.SYSTEM:
 				if self._load_config.has_option('user', translator):
-					flag = IconType.INCLUDED if self._load_config.getboolean('user', translator) else IconType.EXCLUDED
-				if query_level > Level.USER:
+					flag = _IconType.INCLUDED if self._load_config.getboolean('user', translator) else _IconType.EXCLUDED
+				if query_level > _Level.USER:
 					if self._load_config.has_option('project', translator):
-						flag = IconType.INCLUDED if self._load_config.getboolean('project', translator) else IconType.EXCLUDED
-		elif query_level == Level.SYSTEM:
+						flag = _IconType.INCLUDED if self._load_config.getboolean('project', translator) else _IconType.EXCLUDED
+		elif query_level == _Level.SYSTEM:
 			if self._load_config.has_option('system', translator):
-				flag = IconType.INCLUDED if self._load_config.getboolean('system', translator) else IconType.EXCLUDED
-		elif query_level == Level.USER:
+				flag = _IconType.INCLUDED if self._load_config.getboolean('system', translator) else _IconType.EXCLUDED
+		elif query_level == _Level.USER:
 			if self._load_config.has_option('user', translator):
-				flag = IconType.INCLUDED if self._load_config.getboolean('user', translator) else IconType.EXCLUDED
+				flag = _IconType.INCLUDED if self._load_config.getboolean('user', translator) else _IconType.EXCLUDED
 		else:
 			if self._load_config.has_option('project', translator):
-				flag = IconType.INCLUDED if self._load_config.getboolean('project', translator) else IconType.EXCLUDED
+				flag = _IconType.INCLUDED if self._load_config.getboolean('project', translator) else _IconType.EXCLUDED
 		return flag
 
 	# Translate the state by removing the conflict flag
 	def _remove_conflict_in_state(self, state):
-		if state == IconType.CONFLICT:
-			return IconType.INCLUDED
-		elif state == IconType.INHERITED_CONFLICT:
-			return IconType.INHERITED
+		if state == _IconType.CONFLICT:
+			return _IconType.INCLUDED
+		elif state == _IconType.INHERITED_CONFLICT:
+			return _IconType.INHERITED
 		return state
 		
 	# Translate the state by adding the conflict flag
 	def _add_conflict_in_state(self, state):
-		if state == IconType.INCLUDED:
-			return IconType.CONFLICT
-		elif state == IconType.INHERITED:
-			return IconType.INHERITED_CONFLICT
+		if state == _IconType.INCLUDED:
+			return _IconType.CONFLICT
+		elif state == _IconType.INHERITED:
+			return _IconType.INHERITED_CONFLICT
 		return state
 
 	# Callback for changing the state of a translator
@@ -345,8 +345,8 @@ class Panel(Gtk.Table):
 		self._load_config.add_section(section_name)
 		for translator in self._translator_inclusions:
 			state = self._translator_inclusions[translator]
-			if state == IconType.INCLUDED or state == IconType.CONFLICT:
+			if state == _IconType.INCLUDED or state == _IconType.CONFLICT:
 				self._load_config.set(section_name, translator, 'true')
-			elif state == IconType.EXCLUDED:
+			elif state == _IconType.EXCLUDED:
 				self._load_config.set(section_name, translator, 'false')
 		return utils.backend_set_loads(self._directory, self._load_config)

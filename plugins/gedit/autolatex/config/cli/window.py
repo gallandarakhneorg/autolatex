@@ -1,4 +1,4 @@
-# autolatex - autolatex_config_window.py
+# autolatex/config/cli/window.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,12 +23,8 @@
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import Gtk, GdkPixbuf
 # AutoLaTeX internal libs
-import autolatex_utils as utils
-import autolatex_generator_panel as generator_panel
-import autolatex_figure_panel as figure_panel
-import autolatex_figure_assignment_panel as figure_assignment_panel
-import autolatex_translator_panel as translator_panel
-import autolatex_viewer_panel as viewer_panel
+from ...utils import utils
+from . import generator_panel, figure_panel, figure_assignment_panel, translator_panel, viewer_panel
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -42,7 +38,7 @@ _T = gettext.gettext
 #---------------------------------
 
 def open_configuration_dialog(parent, is_document_level, directory):
-	dialog = Window(parent, is_document_level, directory)
+	dialog = _Window(parent, is_document_level, directory)
 	dialog.run()
 	dialog.destroy()
 
@@ -50,7 +46,7 @@ def open_configuration_dialog(parent, is_document_level, directory):
 # CLASS NotbookTab
 #---------------------------------
 
-class NotebookTab(Gtk.HBox):
+class _NotebookTab(Gtk.HBox):
 	__gtype_name__ = "AutoLaTeXConfigurationNotebookTab"
 
 	def __init__(self, label, icon):
@@ -72,7 +68,7 @@ class NotebookTab(Gtk.HBox):
 #---------------------------------
 
 # Gtk window that is displaying the configuration panels
-class Window(Gtk.Dialog):
+class _Window(Gtk.Dialog):
 	__gtype_name__ = "AutoLaTeXConfigurationWindow"
 
 	def __init__(self, parent, is_document_level, directory):
@@ -88,28 +84,28 @@ class Window(Gtk.Dialog):
 		tab = generator_panel.Panel(is_document_level, directory)
 		self._ui_notebook.append_page(
 				tab,
-				NotebookTab(
+				_NotebookTab(
 					_T("Generator"), "autolatex-compile.png"))
 		tab = figure_panel.Panel(is_document_level, directory, self)
 		self._ui_notebook.append_page(
 				tab,
-				NotebookTab(
+				_NotebookTab(
 					_T("Figures"), "autolatex-images.png"))
 		if is_document_level:
 			tab = figure_assignment_panel.Panel(directory)
 			self._ui_notebook.append_page(
 					tab,
-					NotebookTab(
+					_NotebookTab(
 						_T("List of figures"), "autolatex-images.png"))
 		tab = translator_panel.Panel(is_document_level, directory)
 		self._ui_notebook.append_page(
 				tab,
-				NotebookTab(
+				_NotebookTab(
 					_T("Translators"), "autolatex-images.png"))
 		tab = viewer_panel.Panel(is_document_level, directory)
 		self._ui_notebook.append_page(
 				tab,
-				NotebookTab(
+				_NotebookTab(
 					_T("Viewer"), "autolatex-view.png"))
 		self.show_all()
 		# Listening the response signal

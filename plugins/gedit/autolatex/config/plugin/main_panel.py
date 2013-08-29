@@ -1,4 +1,4 @@
-# autolatex - autolatex_plugin_config.py
+# autolatex/config/plugin/main_panel.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
