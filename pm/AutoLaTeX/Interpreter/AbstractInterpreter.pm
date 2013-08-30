@@ -1,4 +1,4 @@
-# Copyright (C) 2007-13  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,24 +19,24 @@
 
 =head1 NAME
 
-AutoLaTeX::GUI::AbstractToolPanel - An abstract user interface
+AutoLaTeX::Interpreter::AbstractInterpreter - An abstract script interpreter
 
 =head1 DESCRIPTION
 
-AutoLaTeX::GUI::AbstractToolPanel is a Perl module, which permits to
-display a panel that launchs AutoLaTeX tools.
+AutoLaTeX::Interpreter::AbstractInterpreter is a Perl module, which permits to
+create script interpreters
 
 =head1 METHOD DESCRIPTIONS
 
-This section contains only the methods in AbstractToolPanel.pm itself.
+This section contains only the methods in AbstractInterpreter.pm itself.
 
 =over
 
 =cut
 
-package AutoLaTeX::GUI::AbstractToolPanel;
+package AutoLaTeX::Interpreter::AbstractInterpreter;
 
-@ISA = qw( AutoLaTeX::GUI::WidgetUtil );
+@ISA = qw( Exporter );
 @EXPORT = qw();
 @EXPORT_OK = qw();
 
@@ -45,11 +45,7 @@ use strict;
 use utf8;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Exporter;
-
-use AutoLaTeX::Core::Util;
-use AutoLaTeX::Core::IntUtils;
-use AutoLaTeX::Core::Config;
-use AutoLaTeX::GUI::WidgetUtil;
+use Carp;
 
 #------------------------------------------------------
 #
@@ -58,58 +54,57 @@ use AutoLaTeX::GUI::WidgetUtil;
 #------------------------------------------------------
 
 # Version number
-my $VERSION = "8.0" ;
+my $VERSION = "1.0" ;
 
 
 =pod
 
-=item * initializeToolPanel()
+=item * new()
 
-Initializing the panel content before displaying.
+Constructor
 
 =cut
-sub initializeToolPanel() : method {
-	my $self = shift;
+sub new() : method {
+	my $proto = shift;
+	my $class = ref($proto) || $proto;
+	my $parent = ref($proto) && $proto ;
+
+	my $self ;
+	if ( $parent ) {
+		%{$self} = %{$parent} ;
+	}
+	else {
+		$self = { 'global' => {} };
+	}
+	bless( $self, $class );
+	return $self;
 }
 
 =pod
 
-=item * savePanelContent()
+=item * define_global_variable($$)
 
-Save the content of this panel.
-DO NOT OVERRIDE THIS FUNCTION. See
-saveGUIConfiguration() instead.
+Define the value of a global variable.
 
 =cut
-sub savePanelContent() {
+sub define_global_variable($$) : method {
 	my $self = shift;
-
-	printDbg(_T("Saving tool configuration"));
-	printDbgIndent ();
-
-	my %configuration = readOnlyUserConfiguration();
-	$self->saveGUIConfiguration(\%configuration);
-	writeConfigFile(getUserConfigFilename(), %configuration);
-
-	printDbgUnindent ();
+	my $name = shift || confess("no variable name");
+	my $value = shift;
+	$self->{'global'}{"$name"} = $value;
 }
 
 =pod
 
-=item * saveGUIConfiguration(\%)
+=item * run($)
 
-Save the GUI configuration inside the specified configuration.
-
-=over 4
-
-=item is the configuration to fill
-
-=back
+Run the given code.
 
 =cut
-sub saveGUIConfiguration() {
-	my $self = shift;
+sub run($) : method {
+	confess("You must implement the method run().");
 }
+
 
 1;
 __END__
@@ -118,7 +113,7 @@ __END__
 
 =head1 COPYRIGHT
 
-(c) Copyright 2007-13 Stephane Galland E<lt>galland@arakhne.orgE<gt>, under GPL.
+(c) Copyright 2013 Stephane Galland E<lt>galland@arakhne.orgE<gt>, under GPL.
 
 =head1 AUTHORS
 

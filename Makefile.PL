@@ -362,6 +362,7 @@ sub DO_compile(\%) {
 	my @direlts = File::Spec->splitdir($_[0]->{'directory'});
 	my @pmFiles = ();
 	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'Core', '*.pm'));
+	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'Interpreter', '*.pm'));
 	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'Make', '*.pm'));
 	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'TeX', '*.pm'));
 	@pmFiles = (@pmFiles, getFiles(@direlts, 'pm', 'AutoLaTeX', 'GUI', '*.pm'));
@@ -468,6 +469,10 @@ sub DO_install(\%) {
 		installInto(
 			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Core'),
 			getFiles('pm','AutoLaTeX','Core','*.pm'));
+
+		installInto(
+			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Interpreter'),
+			getFiles('pm','AutoLaTeX','Interpreter','*.pm'));
 
 		installInto(
 			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Make'),

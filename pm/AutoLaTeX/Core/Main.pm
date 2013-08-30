@@ -39,6 +39,7 @@ $COPYRIGHT_YEAR = '2013';
 
 require 5.014;
 use strict;
+use utf8;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION $COPYRIGHT_YEAR);
 
 use Getopt::Long;

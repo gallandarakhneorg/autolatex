@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-30 00:25+0200\n"
+"POT-Creation-Date: 2013-08-31 00:41+0200\n"
 "PO-Revision-Date: 2013-05-21 21:37+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -32,27 +32,27 @@ msgstr "Lancement de '{}' en tâche de fond"
 msgid "Unable to find a viewer."
 msgstr "Impossible de trouvé un visualisateur."
 
-#: autolatex.pl:493
+#: autolatex.pl:494
 msgid "Removing all the temporary files"
 msgstr "Suppression de tous les fichiers temporaires"
 
-#: autolatex.pl:500
+#: autolatex.pl:501
 msgid "Removing all the temporary and generated files"
 msgstr "Suppression des fichiers temporaires et des figures générées"
 
-#: autolatex.pl:683
+#: autolatex.pl:684
 msgid "Creating default project configuration file...\n"
 msgstr "Création du fichier de configuration du project...\n"
 
-#: autolatex.pl:687
+#: autolatex.pl:688
 msgid "Creating default user configuration file...\n"
 msgstr "Création du fichier de configuration utilisateur...\n"
 
-#: autolatex.pl:696
+#: autolatex.pl:697
 msgid "Creating default makeindex style file...\n"
 msgstr "Création du fichier de style par défaut pour makeindex...\n"
 
-#: autolatex.pl:775
+#: autolatex.pl:776
 msgid "Command line action '{}' is not supported."
 msgstr "L'option de ligne de commande '{}' n'est pas reconnue."
 
@@ -121,43 +121,43 @@ msgstr ""
 "présentés dans la nouvelle configuration sont supprimées (true), ou non "
 "changées false, par défaut) dans la configuration réellement écrite."
 
-#: pm/AutoLaTeX/Core/Config.pm:70
+#: pm/AutoLaTeX/Core/Config.pm:71
 msgid "Configuration of the viewing functions"
 msgstr "Configuration des fonctions d'affichage"
 
-#: pm/AutoLaTeX/Core/Config.pm:71
+#: pm/AutoLaTeX/Core/Config.pm:72
 msgid "Configuration of the generation functions"
 msgstr "Configuration des fonctions de génération"
 
-#: pm/AutoLaTeX/Core/Config.pm:72
+#: pm/AutoLaTeX/Core/Config.pm:73
 msgid "Configuration of the several cleaning functions"
 msgstr "Configuration des fonctions de nettoyage"
 
-#: pm/AutoLaTeX/Core/Config.pm:73
+#: pm/AutoLaTeX/Core/Config.pm:74
 msgid "Configuration of the SCM functions"
 msgstr "Configuration des fonctions SCM"
 
-#: pm/AutoLaTeX/Core/Config.pm:74
+#: pm/AutoLaTeX/Core/Config.pm:75
 msgid "GTK interface configuration"
 msgstr "Configuration de l'interface GTK"
 
-#: pm/AutoLaTeX/Core/Config.pm:75
+#: pm/AutoLaTeX/Core/Config.pm:76
 msgid "Qt interface configuration"
 msgstr "Configuration de l'interface Qt"
 
-#: pm/AutoLaTeX/Core/Config.pm:76
+#: pm/AutoLaTeX/Core/Config.pm:77
 msgid "Windows interface configuration"
 msgstr "Configuration de l'interface Windows"
 
-#: pm/AutoLaTeX/Core/Config.pm:77
+#: pm/AutoLaTeX/Core/Config.pm:78
 msgid "MacOS interface configuration"
 msgstr "Configuration de l'interface MacOS"
 
-#: pm/AutoLaTeX/Core/Config.pm:78
+#: pm/AutoLaTeX/Core/Config.pm:79
 msgid "wxWidgets interface configuration"
 msgstr "Configuration de l'interface wxWidgets"
 
-#: pm/AutoLaTeX/Core/Config.pm:86
+#: pm/AutoLaTeX/Core/Config.pm:87
 msgid ""
 "List of additional files to remove when cleaning (shell wild cards are "
 "allowed). This list is used when the target 'clean' is invoked."
@@ -166,7 +166,7 @@ msgstr ""
 "nettoyage simple (les meta-caractères shell sont utilisables). Cette liste "
 "est utilisée par l'action 'clean'."
 
-#: pm/AutoLaTeX/Core/Config.pm:89
+#: pm/AutoLaTeX/Core/Config.pm:90
 msgid ""
 "List of additional files to remove when all cleaning (shell wild cards are "
 "allowed). This list is used when the target 'cleanall' is invoked."
@@ -175,16 +175,16 @@ msgstr ""
 "nettoyage complet (les meta-caractères shell sont utilisables). Cette liste "
 "est utilisée par l'action 'cleanall'."
 
-#: pm/AutoLaTeX/Core/Config.pm:93
+#: pm/AutoLaTeX/Core/Config.pm:94
 msgid ""
 "Indicates if bibliography tool (bibtex,biber) should be run ('yes' or 'no')."
 msgstr "Indique si bibtex doit être executé ('yes' ou 'no')."
 
-#: pm/AutoLaTeX/Core/Config.pm:94
+#: pm/AutoLaTeX/Core/Config.pm:95
 msgid "Does the figures must be automatically generated ('yes' or 'no')?"
 msgstr "Est-ce que les figures sont automatiquement générées ('yes' or 'no') ?"
 
-#: pm/AutoLaTeX/Core/Config.pm:95
+#: pm/AutoLaTeX/Core/Config.pm:96
 msgid ""
 "Specify the directories inside which AutoLaTeX will find the pictures which "
 "must be processed by the translators. Each time this option is put on the "
@@ -198,7 +198,7 @@ msgstr ""
 "différents répertoires spécifiés sont alors séparés par le caractère "
 "séparateur standard (':' sur Unix, ';' sur Windows)"
 
-#: pm/AutoLaTeX/Core/Config.pm:103
+#: pm/AutoLaTeX/Core/Config.pm:104
 msgid ""
 "Main filename (this option is only available in project's configuration "
 "files)."
@@ -206,7 +206,7 @@ msgstr ""
 "Fichier principal (cette option est supportée uniquement dans les fichiers "
 "de configuration de documents)."
 
-#: pm/AutoLaTeX/Core/Config.pm:105
+#: pm/AutoLaTeX/Core/Config.pm:106
 msgid ""
 "Type of generation.\n"
 "   pdf   : use pdflatex to create a PDF document."
@@ -214,7 +214,7 @@ msgstr ""
 "Type de génération.\n"
 "   pdf   : utilise pdflatex pour créer le document PDF."
 
-#: pm/AutoLaTeX/Core/Config.pm:107
+#: pm/AutoLaTeX/Core/Config.pm:108
 msgid ""
 "Specify the style that must be used by makeindex.\n"
 "Valid values are:\n"
@@ -240,7 +240,7 @@ msgstr ""
 "   @none           AutoLaTeX ne passe aucun fichier a.ist à makeindex;\n"
 "   <empty>         AutoLaTeX ne passe aucun fichier a.ist à makeindex."
 
-#: pm/AutoLaTeX/Core/Config.pm:118
+#: pm/AutoLaTeX/Core/Config.pm:119
 msgid ""
 "Defines the paths from which the translators could be loaded. This is a list "
 "of paths separated by the path separator character used by your operating "
@@ -250,7 +250,7 @@ msgstr ""
 "trouvés. C'est une liste de chemins séparés par le caractère séparateur de "
 "votre système d'exploitation : ':' sous Unix ou ';' sous Windows par exemple."
 
-#: pm/AutoLaTeX/Core/Config.pm:122
+#: pm/AutoLaTeX/Core/Config.pm:123
 msgid ""
 "Indicates if the PDF document must be produced with the SyncTeX flag on or "
 "not. SyncTeX enables to link a PDF viewer (as evince) and a text editor (as "
@@ -262,7 +262,7 @@ msgstr ""
 "(comme Gedit). Lorsque vous cliquez dans l'un, l'autre logiciel affiche en "
 "surbrillance la ligne correspondante de son côté."
 
-#: pm/AutoLaTeX/Core/Config.pm:126
+#: pm/AutoLaTeX/Core/Config.pm:127
 msgid ""
 "Tool to launch when a SCM commit action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
@@ -270,7 +270,7 @@ msgstr ""
 "Outils à lancer lors d'une action d'enregistrement dans un SCM. Les outils "
 "SCM connus sont : CVS, SVN, GIT."
 
-#: pm/AutoLaTeX/Core/Config.pm:128
+#: pm/AutoLaTeX/Core/Config.pm:129
 msgid ""
 "Tool to launch when a SCM update action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
@@ -278,7 +278,7 @@ msgstr ""
 "Outils à lancer lors d'une action de raffaichissement depuis un SCM. Les "
 "outils SCM connus sont : CVS, SVN, GIT."
 
-#: pm/AutoLaTeX/Core/Config.pm:131
+#: pm/AutoLaTeX/Core/Config.pm:132
 msgid ""
 "Indicates if a viewer should be launch after the compilation. Valid values "
 "are 'yes' and 'no'."
@@ -286,43 +286,43 @@ msgstr ""
 "Indique si un visualisateur doit être lancé après la génération du "
 "document.  Valeurs autorisées : 'yes' et 'no'."
 
-#: pm/AutoLaTeX/Core/Config.pm:133
+#: pm/AutoLaTeX/Core/Config.pm:134
 msgid "Specify, if not commented,the command line of the viewer."
 msgstr "Ligne de commande du visualisateur, si non commenté."
 
-#: pm/AutoLaTeX/Core/Config.pm:134
+#: pm/AutoLaTeX/Core/Config.pm:135
 msgid "Indicates if the viewer is launched in background, or not."
 msgstr "Indique si le visualisateur est lancé en tâche de fond, ou non."
 
-#: pm/AutoLaTeX/Core/Config.pm:458
+#: pm/AutoLaTeX/Core/Config.pm:459
 msgid "Opening configuration file {}"
 msgstr "Ouverture du fichier de configuration {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:475
+#: pm/AutoLaTeX/Core/Config.pm:476
 msgid "Succeed on reading"
 msgstr "Succès de la lecture"
 
-#: pm/AutoLaTeX/Core/Config.pm:478
+#: pm/AutoLaTeX/Core/Config.pm:479
 msgid "Failed to read {}: {}"
 msgstr "Echec de lecture de {}: {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:569
+#: pm/AutoLaTeX/Core/Config.pm:570
 msgid "Writing configuration file {}"
 msgstr "Enregistrement du fichier de configuration {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:584
+#: pm/AutoLaTeX/Core/Config.pm:585
 msgid "Adding configuration comments"
 msgstr "Ajout des commentaires dans la configuration"
 
-#: pm/AutoLaTeX/Core/Config.pm:598
+#: pm/AutoLaTeX/Core/Config.pm:599
 msgid "Configuration of the translator"
 msgstr "Configuration du convertisseur"
 
-#: pm/AutoLaTeX/Core/Config.pm:612
+#: pm/AutoLaTeX/Core/Config.pm:613
 msgid "Saving configuration comments"
 msgstr "Enregistrement des commentaires dans la configuration"
 
-#: pm/AutoLaTeX/Core/Config.pm:678
+#: pm/AutoLaTeX/Core/Config.pm:679
 msgid ""
 "AutoLaTeX has detecting an old fashion syntax for the configuration file {}\n"
 "Please regenerate this file with the command line option --fixconfig."
@@ -332,11 +332,11 @@ msgstr ""
 "Veuillez re-générer ce fichier en utilisant l'option de la ligne de commande "
 "--fixconfig."
 
-#: pm/AutoLaTeX/Core/Main.pm:58
+#: pm/AutoLaTeX/Core/Main.pm:59
 msgid "Reading command line options"
 msgstr "Lecture des options de la ligne de commande"
 
-#: pm/AutoLaTeX/Core/Main.pm:179
+#: pm/AutoLaTeX/Core/Main.pm:180
 msgid ""
 "{} {} ({}) - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
@@ -344,7 +344,7 @@ msgstr ""
 "{} {} ({}) - plate-forme {}\n"
 "(c) 1998-{} Stéphane GALLAND <galland@arakhne.org> (sous GPL)\n"
 
-#: pm/AutoLaTeX/Core/Main.pm:187
+#: pm/AutoLaTeX/Core/Main.pm:188
 msgid ""
 "{} {} - {} platform\n"
 "(c) 1998-{} Stephane GALLAND <galland@arakhne.org> (under GPL)\n"
@@ -352,24 +352,24 @@ msgstr ""
 "{} {} - plate-forme {}\n"
 "(c) 1998-{} Stéphane GALLAND <galland@arakhne.org> (sous GPL)\n"
 
-#: pm/AutoLaTeX/Core/Main.pm:234 pm/AutoLaTeX/Core/Main.pm:251
+#: pm/AutoLaTeX/Core/Main.pm:235 pm/AutoLaTeX/Core/Main.pm:252
 msgid "Selecting TeX file '{}'"
 msgstr "Sélection du fichier TeX '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:237
+#: pm/AutoLaTeX/Core/Main.pm:238
 msgid "Detecting several TeX files: {}"
 msgstr "Détection de plusieurs fichiers TeX: {}"
 
-#: pm/AutoLaTeX/Core/Main.pm:304
+#: pm/AutoLaTeX/Core/Main.pm:305
 msgid "Detecting TeX file from project's configuration: '{}'"
 msgstr ""
 "Détection du fichier TeX à partir de la configuration du document: '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:335
+#: pm/AutoLaTeX/Core/Main.pm:336
 msgid "Using TeX file '{}'"
 msgstr "Utilisation du fichier TeX '{}'"
 
-#: pm/AutoLaTeX/Core/Main.pm:338
+#: pm/AutoLaTeX/Core/Main.pm:339
 msgid ""
 "No LaTeX file found nor specified for the directory '{}'.\n"
 " You must specify one on the command line option -f, or set the the variable "
@@ -383,15 +383,15 @@ msgstr ""
 "main file' dans l'un de vos fichiers de configuration, soit renommer l'un de "
 "vos fichiers TeX avec le nom 'Main.tex'."
 
-#: pm/AutoLaTeX/Core/Main.pm:343
+#: pm/AutoLaTeX/Core/Main.pm:344
 msgid "Applying command line options"
 msgstr "Application des options de la ligne de commande"
 
-#: pm/AutoLaTeX/Core/Main.pm:416
+#: pm/AutoLaTeX/Core/Main.pm:417
 msgid "Selecting project's style for MakeIndex: {}"
 msgstr "Sélection du style pour MakeIndex: {}"
 
-#: pm/AutoLaTeX/Core/Main.pm:420
+#: pm/AutoLaTeX/Core/Main.pm:421
 msgid ""
 "Unable to selected a project's style for MakeIndex: no file or too many .ist "
 "files in directory {}"
@@ -399,11 +399,11 @@ msgstr ""
 "Impossible de déterminer le style pour MakeIndex: pas de fichier .ist ou "
 "trop de fichiers .ist dans le répertoire {}"
 
-#: pm/AutoLaTeX/Core/Main.pm:425
+#: pm/AutoLaTeX/Core/Main.pm:426
 msgid "Selecting the system default style for MakeIndex"
 msgstr "Utilisation du style par défaut pour MakeIndex"
 
-#: pm/AutoLaTeX/Core/Main.pm:429
+#: pm/AutoLaTeX/Core/Main.pm:430
 msgid "Unselecting any style for MakeIndex"
 msgstr "Ignore les styles pour MakeIndex"
 
@@ -457,11 +457,11 @@ msgstr "Le convertisseur {} est ignoré"
 msgid "Get translators from {}"
 msgstr "Chargement des convertisseurs depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:634
+#: pm/AutoLaTeX/Core/Translator.pm:636
 msgid "Line outside a definition ({}:{})."
 msgstr "Ligne en dehors d'une définition ({}:{})"
 
-#: pm/AutoLaTeX/Core/Translator.pm:640
+#: pm/AutoLaTeX/Core/Translator.pm:642
 msgid ""
 "The block for the variable '{}' is not closed. Keyword '{}' was not found "
 "({}:{})."
@@ -469,7 +469,7 @@ msgstr ""
 "Le bloc pour la variable '{}' n'est pas fermé. Le mot-clé '{}' n'a pas été "
 "trouvé ({}:{})."
 
-#: pm/AutoLaTeX/Core/Translator.pm:798
+#: pm/AutoLaTeX/Core/Translator.pm:800
 msgid ""
 "You cannot call runTranslator() outside the call stack of runRootTranslator"
 "()."
@@ -477,20 +477,20 @@ msgstr ""
 "Vous ne pouvez pas appeller runTranslator() en dehors d'un appel à "
 "runRootTranslator()."
 
-#: pm/AutoLaTeX/Core/Translator.pm:831
+#: pm/AutoLaTeX/Core/Translator.pm:833
 msgid "{}: file not found or not readable."
 msgstr "{}: fichier non trouvé ou non lisible."
 
-#: pm/AutoLaTeX/Core/Translator.pm:870 pm/AutoLaTeX/Make/Make.pm:818
-#: pm/AutoLaTeX/Make/Make.pm:899
+#: pm/AutoLaTeX/Core/Translator.pm:872 pm/AutoLaTeX/Make/Make.pm:819
+#: pm/AutoLaTeX/Make/Make.pm:900
 msgid "{} is up-to-date."
 msgstr "{} est à-jour."
 
-#: pm/AutoLaTeX/Core/Translator.pm:876
+#: pm/AutoLaTeX/Core/Translator.pm:878
 msgid "{} -> {}"
 msgstr "{} -> {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:935
+#: pm/AutoLaTeX/Core/Translator.pm:947
 msgid ""
 "Error inthe TRANSLATOR_FUNCTION of '{}':\n"
 "{}"
@@ -498,35 +498,39 @@ msgstr ""
 "Erreur dans la définition TRANSLATOR_FUNCTION de '{}':\n"
 "{}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:939
+#: pm/AutoLaTeX/Core/Translator.pm:957
+msgid "Cannot find an interpreter wrapper for {}: {}"
+msgstr "Impossible de trouver un interpréteur pour {} : {}"
+
+#: pm/AutoLaTeX/Core/Translator.pm:974
 msgid "Unable to find the method of translation for '{}'."
 msgstr "Impossible de trouver un convertisseur pour '{}'."
 
-#: pm/AutoLaTeX/Core/Translator.pm:975
+#: pm/AutoLaTeX/Core/Translator.pm:1010
 msgid "Searching translator '{}'."
 msgstr "Chargement des convertisseurs depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:996
+#: pm/AutoLaTeX/Core/Translator.pm:1031
 msgid "The translator '{}' cannot be found."
 msgstr "Le convertisseur '{}' n'a pas été trouvé."
 
-#: pm/AutoLaTeX/Core/Translator.pm:1001
+#: pm/AutoLaTeX/Core/Translator.pm:1036
 msgid "Linking '{}' to '{}'."
 msgstr "Création d'un alias de '{}' vers '{}'."
 
-#: pm/AutoLaTeX/Core/Translator.pm:1008
+#: pm/AutoLaTeX/Core/Translator.pm:1043
 msgid "'{}' is already loaded."
 msgstr "'{}' est déjà chargé."
 
-#: pm/AutoLaTeX/Core/Translator.pm:1011
+#: pm/AutoLaTeX/Core/Translator.pm:1046
 msgid "Loading translator '{}'."
 msgstr "Calcul des convertisseurs chargeables depuis {}"
 
-#: pm/AutoLaTeX/Core/Translator.pm:1123
+#: pm/AutoLaTeX/Core/Translator.pm:1158
 msgid "Detecting images inside '{}'"
 msgstr "Détection des images dans '{}'"
 
-#: pm/AutoLaTeX/Core/Util.pm:176
+#: pm/AutoLaTeX/Core/Util.pm:177
 msgid ""
 "No read access to the VERSION file of AutoLaTeX. AutoLaTeX should not be "
 "properly installed. Assuming version: {}\n"
@@ -534,7 +538,7 @@ msgstr ""
 "Impossible de lire le fichier VERSION de AutoLaTeX. AutoLaTeX a peut être "
 "été mal installé. Version considérée : {}\n"
 
-#: pm/AutoLaTeX/Core/Util.pm:180
+#: pm/AutoLaTeX/Core/Util.pm:181
 msgid ""
 "Unable to find the VERSION file of AutoLaTeX. AutoLaTeX should not be "
 "properly installed. Assuming version: {}\n"
@@ -542,21 +546,22 @@ msgstr ""
 "Impossible de trouver le fichier VERSION de AutoLaTeX. AutoLaTeX a peut être "
 "été mal installé. Version considérée : {}\n"
 
-#: pm/AutoLaTeX/Core/Util.pm:218 pm/AutoLaTeX/Core/Util.pm:251
+#: pm/AutoLaTeX/Core/Util.pm:219 pm/AutoLaTeX/Core/Util.pm:252
 msgid "no manual page found\n"
 msgstr "pas de page de manuel trouvée\n"
 
-#: pm/AutoLaTeX/Core/Util.pm:566 pm/AutoLaTeX/Core/Util.pm:586
-#: pm/AutoLaTeX/Core/Util.pm:603 pm/AutoLaTeX/Core/Util.pm:620
+#: pm/AutoLaTeX/Core/Util.pm:567 pm/AutoLaTeX/Core/Util.pm:587
+#: pm/AutoLaTeX/Core/Util.pm:604 pm/AutoLaTeX/Core/Util.pm:621
 msgid "[AutoLaTeX]"
 msgstr "[AutoLaTeX]"
 
-#: pm/AutoLaTeX/Core/Util.pm:620
+#: pm/AutoLaTeX/Core/Util.pm:621
 msgid "Warning: {}"
 msgstr "Avertissement : {}"
 
-#: pm/AutoLaTeX/Core/Util.pm:648 pm/AutoLaTeX/Core/Util.pm:703
-#: pm/AutoLaTeX/Core/Util.pm:790 pm/AutoLaTeX/Core/Util.pm:832
+#: pm/AutoLaTeX/Core/Util.pm:649 pm/AutoLaTeX/Core/Util.pm:704
+#: pm/AutoLaTeX/Core/Util.pm:778 pm/AutoLaTeX/Core/Util.pm:871
+#: pm/AutoLaTeX/Core/Util.pm:913
 msgid ""
 "Command line is:\n"
 "{}"
@@ -564,64 +569,74 @@ msgstr ""
 "La ligne de commande :\n"
 "{}"
 
-#: pm/AutoLaTeX/Core/Util.pm:652 pm/AutoLaTeX/Core/Util.pm:708
-#: pm/AutoLaTeX/Core/Util.pm:794
+#: pm/AutoLaTeX/Core/Util.pm:653 pm/AutoLaTeX/Core/Util.pm:709
+#: pm/AutoLaTeX/Core/Util.pm:788 pm/AutoLaTeX/Core/Util.pm:875
 msgid "Can't redirect STDOUT: {}"
 msgstr "Impossible de rediriger STDOUT : {}"
 
-#: pm/AutoLaTeX/Core/Util.pm:653 pm/AutoLaTeX/Core/Util.pm:709
-#: pm/AutoLaTeX/Core/Util.pm:795
+#: pm/AutoLaTeX/Core/Util.pm:654 pm/AutoLaTeX/Core/Util.pm:710
+#: pm/AutoLaTeX/Core/Util.pm:789 pm/AutoLaTeX/Core/Util.pm:876
 msgid "Can't redirect STDERR: {}"
 msgstr "Impossible de rediriger STDERR : {}"
 
-#: pm/AutoLaTeX/Core/Util.pm:666 pm/AutoLaTeX/Core/Util.pm:722
-#: pm/AutoLaTeX/Core/Util.pm:728 pm/AutoLaTeX/TeX/Flattener.pm:112
-#: pm/AutoLaTeX/Make/Make.pm:527 pm/AutoLaTeX/Make/Make.pm:720
-#: pm/AutoLaTeX/Make/Make.pm:1133 pm/AutoLaTeX/Make/Make.pm:1138
-#: pm/AutoLaTeX/Make/Make.pm:1158
+#: pm/AutoLaTeX/Core/Util.pm:667 pm/AutoLaTeX/Core/Util.pm:723
+#: pm/AutoLaTeX/Core/Util.pm:729 pm/AutoLaTeX/Core/Util.pm:802
+#: pm/AutoLaTeX/Core/Util.pm:808 pm/AutoLaTeX/TeX/Flattener.pm:113
+#: pm/AutoLaTeX/Make/Make.pm:528 pm/AutoLaTeX/Make/Make.pm:721
+#: pm/AutoLaTeX/Make/Make.pm:1134 pm/AutoLaTeX/Make/Make.pm:1139
+#: pm/AutoLaTeX/Make/Make.pm:1159
 msgid "{}: {}"
 msgstr "{} : {}"
 
-#: pm/AutoLaTeX/Core/Util.pm:678 pm/AutoLaTeX/Core/Util.pm:748
-#: pm/AutoLaTeX/Core/Util.pm:812 pm/AutoLaTeX/Core/Util.pm:847
+#: pm/AutoLaTeX/Core/Util.pm:679 pm/AutoLaTeX/Core/Util.pm:749
+#: pm/AutoLaTeX/Core/Util.pm:829 pm/AutoLaTeX/Core/Util.pm:893
+#: pm/AutoLaTeX/Core/Util.pm:928
 msgid "Unable to fork for the system command: {}"
 msgstr "Impossible de créer un processus fils pour la commande : {}"
 
-#: pm/AutoLaTeX/Core/Util.pm:886
+#: pm/AutoLaTeX/Core/Util.pm:780
+msgid "Can't write {}: {}"
+msgstr "Impossible d'écrire {} : {}"
+
+#: pm/AutoLaTeX/Core/Util.pm:787
+msgid "Can't redirect STDIN: {}"
+msgstr "Impossible de rediriger STDIN : {}"
+
+#: pm/AutoLaTeX/Core/Util.pm:967
 msgid "Waiting for system command sub-processes"
 msgstr "En attente de la terminaison d'un sous-processus"
 
-#: pm/AutoLaTeX/TeX/Flattener.pm:114
+#: pm/AutoLaTeX/TeX/Flattener.pm:115
 msgid "Analysing {}"
 msgstr "Analyse de '{}'"
 
-#: pm/AutoLaTeX/TeX/Flattener.pm:129
+#: pm/AutoLaTeX/TeX/Flattener.pm:130
 msgid "Writing {}"
 msgstr "Ecriture de '{}'"
 
-#: pm/AutoLaTeX/TeX/Flattener.pm:136
+#: pm/AutoLaTeX/TeX/Flattener.pm:137
 msgid "Copying resource {} to {}"
 msgstr "Copie de la ressource {} dans {}"
 
-#: pm/AutoLaTeX/TeX/Flattener.pm:137
+#: pm/AutoLaTeX/TeX/Flattener.pm:138
 msgid "{} -> {}: {}"
 msgstr "{} -> {}: {}"
 
-#: pm/AutoLaTeX/TeX/Flattener.pm:241
+#: pm/AutoLaTeX/TeX/Flattener.pm:242
 msgid "Picture not found: {}"
 msgstr "Image non trouvée : {}"
 
-#: pm/AutoLaTeX/TeX/Flattener.pm:289 pm/AutoLaTeX/TeX/Flattener.pm:407
+#: pm/AutoLaTeX/TeX/Flattener.pm:290 pm/AutoLaTeX/TeX/Flattener.pm:408
 msgid "File not found: {}"
 msgstr "Echec de lecture de {}: {}"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:580
+#: pm/AutoLaTeX/TeX/TeXParser.pm:581
 msgid "you try to close with a '$' a mathematical mode opened with '\\['"
 msgstr ""
 "vous essayez de fermer avec '$' un environnement mathématique ouvert avec "
 "'\\['"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:602
+#: pm/AutoLaTeX/TeX/TeXParser.pm:603
 msgid ""
 "you cannot use in text mode the active character '{}', which is defined in "
 "math mode"
@@ -629,7 +644,7 @@ msgstr ""
 "vous ne pouvez pas utiliser le caractère actif '{}' en mode texte, car il "
 "est défini en mode mathématique."
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:618
+#: pm/AutoLaTeX/TeX/TeXParser.pm:619
 msgid ""
 "you cannot use in math mode the active character '{}', which is defined in "
 "text mode"
@@ -637,19 +652,19 @@ msgstr ""
 "vous ne pouvez pas utiliser le caractère actif '{}' en mode mathématique, "
 "car il est défini en mode texte."
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:803
+#: pm/AutoLaTeX/TeX/TeXParser.pm:804
 msgid "invalid syntax for the TeX command: {}"
 msgstr "syntaxe invalide pour la macro TeX : {}"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:845
+#: pm/AutoLaTeX/TeX/TeXParser.pm:846
 msgid "invalid syntax for the TeX active character: {}"
 msgstr "syntaxe invalide pour le caractère actif TeX : {}"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:928
+#: pm/AutoLaTeX/TeX/TeXParser.pm:929
 msgid "Found parameter definition for '{}': math={}; text={}"
 msgstr "Définition des paramètres de '{}' : math={}; text={}"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:934
+#: pm/AutoLaTeX/TeX/TeXParser.pm:935
 msgid ""
 "the command {}{} was not defined for math-mode, assumes to use the text-mode "
 "version instead"
@@ -657,7 +672,7 @@ msgstr ""
 "la macro {}{} n'est pas définie en mode mathématique, la version définie en "
 "mode texte sera utilisé à la place"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:943
+#: pm/AutoLaTeX/TeX/TeXParser.pm:944
 msgid ""
 "the command {}{}  was not defined for text-mode, assumes to use the math-"
 "mode version instead"
@@ -665,80 +680,79 @@ msgstr ""
 "la macro {}{} n'est pas définie en mode texte, la version définie en mode "
 "mathématique sera utilisé à la place"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:995 pm/AutoLaTeX/TeX/TeXParser.pm:1004
+#: pm/AutoLaTeX/TeX/TeXParser.pm:996 pm/AutoLaTeX/TeX/TeXParser.pm:1005
 msgid "Expanding '{}'"
 msgstr "Remplacement de '{}'"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:1046
+#: pm/AutoLaTeX/TeX/TeXParser.pm:1047
 msgid "Macro prototype of '{}': {}"
 msgstr "Prototype de la macro '{}' : {}"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:1117
+#: pm/AutoLaTeX/TeX/TeXParser.pm:1118
 msgid "expected a TeX macro for expanding the macro {}, here: '{}'"
 msgstr ""
 "une macro TeX est attendue pour le développement de la macro {}, ici : '{}'"
 
-#: pm/AutoLaTeX/TeX/TeXParser.pm:1133
+#: pm/AutoLaTeX/TeX/TeXParser.pm:1134
 msgid "unable to recognize the following argument specification: {}"
 msgstr "spécification d'argument de macro TeX invalide : {}"
 
-#: pm/AutoLaTeX/Make/Make.pm:339
+#: pm/AutoLaTeX/Make/Make.pm:340
 msgid "Parsing '{}'"
 msgstr "Analyse de '{}'"
 
-#: pm/AutoLaTeX/Make/Make.pm:342 pm/AutoLaTeX/Make/Make.pm:364
-#: pm/AutoLaTeX/Make/Make.pm:384 pm/AutoLaTeX/Make/Make.pm:402
-#: pm/AutoLaTeX/Make/Make.pm:420 pm/AutoLaTeX/Make/Make.pm:427
-#: pm/AutoLaTeX/Make/Make.pm:456 pm/AutoLaTeX/Make/Make.pm:467
-#: pm/AutoLaTeX/Make/Make.pm:481
+#: pm/AutoLaTeX/Make/Make.pm:343 pm/AutoLaTeX/Make/Make.pm:365
+#: pm/AutoLaTeX/Make/Make.pm:385 pm/AutoLaTeX/Make/Make.pm:403
+#: pm/AutoLaTeX/Make/Make.pm:421 pm/AutoLaTeX/Make/Make.pm:428
+#: pm/AutoLaTeX/Make/Make.pm:457 pm/AutoLaTeX/Make/Make.pm:468
+#: pm/AutoLaTeX/Make/Make.pm:482
 msgid "Adding file '{}'"
 msgstr "Ajout du fichier '{}'"
 
-#: pm/AutoLaTeX/Make/Make.pm:440
+#: pm/AutoLaTeX/Make/Make.pm:441
 msgid "Parsing auxiliary files"
 msgstr "Analyse des fichiers auxiliaires"
 
-#: pm/AutoLaTeX/Make/Make.pm:534
-#, fuzzy
+#: pm/AutoLaTeX/Make/Make.pm:535
 msgid "{}: Error when processing {}"
 msgstr "{} : Erreur lors de la génération de {}"
 
-#: pm/AutoLaTeX/Make/Make.pm:590
+#: pm/AutoLaTeX/Make/Make.pm:591
 msgid "{}: The first error found in the log file is:"
 msgstr "{}: La première erreur détectée dans le journal d'erreur est :"
 
-#: pm/AutoLaTeX/Make/Make.pm:592
+#: pm/AutoLaTeX/Make/Make.pm:593
 msgid "{}: End of error log."
 msgstr "{}: Fin du journal d'erreur."
 
-#: pm/AutoLaTeX/Make/Make.pm:595
+#: pm/AutoLaTeX/Make/Make.pm:596
 msgid "{}: Unable to extract the error from the log. Please read the log file."
 msgstr ""
 "{}: Impossible d'extraire l'erreur depuis le journal. Veuillez lire le "
 "fichier journal."
 
-#: pm/AutoLaTeX/Make/Make.pm:728
+#: pm/AutoLaTeX/Make/Make.pm:729
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr "Avertissement LaTeX : il existe des labels définis plusieurs fois.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:731
+#: pm/AutoLaTeX/Make/Make.pm:732
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 "Avertissement LaTeX : il existe des références vers des labels non définis.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:734
+#: pm/AutoLaTeX/Make/Make.pm:735
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 "Avertissement LaTeX : il existe des références vers citations "
 "bibliographiques non définies.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:742
+#: pm/AutoLaTeX/Make/Make.pm:743
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
 msgstr ""
 "Avertissement LaTeX : Veuillez ouvrir {} pour plus de messages "
 "d'avertissement.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:1162
+#: pm/AutoLaTeX/Make/Make.pm:1163
 msgid "Style file: {}"
 msgstr "Fichier de style : {}"

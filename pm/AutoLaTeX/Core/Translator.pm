@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '12.0';
+$VERSION = '13.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -48,7 +48,7 @@ $VERSION = '12.0';
 
 require 5.014;
 use strict;
-
+use utf8;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION @ALL_LEVELS);
 use Carp;
 use File::Spec;
@@ -602,8 +602,8 @@ sub readTranslatorFile($$) {
 			}
 		}
 		elsif ($line !~ /^\s*[#;]/) {
-			if ($line =~ /^\s*([azA-Z0-9_]+)(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\<\<([a-zA-Z0-9_]+)\s*(.*?)\s*$/i) {
-				($curvar, my $mode, $eol, my $value) = ($1, $2, $3, $4);
+			if ($line =~ /^\s*([azA-Z0-9_]+)(?:\s+with\s+(.*?))?(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\<\<([a-zA-Z0-9_]+)\s*(.*?)\s*$/i) {
+				($curvar, my $interpreter, my $mode, $eol, my $value) = ($1, $2, $3, $4, $5);
 				if (!$mode ||
 				    ($ispdfmode && lc($mode) eq 'pdf') ||
 				    (!$ispdfmode && lc($mode) eq 'eps')) {
@@ -611,14 +611,15 @@ sub readTranslatorFile($$) {
 					$content{"$curvar"} = {
 						'lineno' => $lineno,
 						'value' => $value,
+						'interpreter' => ($interpreter ? lc($interpreter) : undef),
 					};
 				}
 				else {
 					$curvar = '';
 				}
 			}
-			elsif ($line =~ /^\s*([azA-Z0-9_]+)(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\s*(.*?)\s*$/i) {
-				my ($var, $mode, $value) = ($1, $2, $3);
+			elsif ($line =~ /^\s*([azA-Z0-9_]+)(?:\s+with\s+(.*?))?(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\s*(.*?)\s*$/i) {
+				my ($var, $interpreter, $mode, $value) = ($1, $2, $3, $4);
 				if (!$mode ||
 				    ($ispdfmode && lc($mode) eq 'pdf') ||
 				    (!$ispdfmode && lc($mode) eq 'eps')) {
@@ -627,6 +628,7 @@ sub readTranslatorFile($$) {
 					$content{uc("$var")} = {
 						'lineno' => $lineno,
 						'value' => $value,
+						'interpreter' => ($interpreter ? lc($interpreter) : undef),
 					};
 				}
 			}
@@ -877,7 +879,9 @@ sub _runTranslator($$$$$$$) {
 	}
 
 	if ($translators->{"$transname"}{'transdef'}{'COMMAND_LINE'}{'value'}) {
-		# Run an external command line
+		################################
+		# Run an external command line #
+		################################
 		my $cli = ($translators->{"$transname"}{'transdef'}{'COMMAND_LINE'}{'value'} || '');
 		# Create the environment of variables for the CLI
 		my %environment = (%{$translators->{"$transname"}{'environment_variables'}});
@@ -905,21 +909,11 @@ sub _runTranslator($$$$$$$) {
 		runCommandOrFail(@cli);
 	}
 	elsif ($translators->{"$transname"}{'transdef'}{'TRANSLATOR_FUNCTION'}{'value'}) {
-		# Run the embedded perl code
+		#########################
+		# Run the embedded code #
+		#########################
 		my $lineno = $translators->{"$transname"}{'transdef'}{'TRANSLATOR_FUNCTION'}{'lineno'} - 1;
-		my $code;
-		{
-			my $perlDeps = $translators->{"$transname"}{'transdef'}{'TRANSLATOR_PERL_DEPENDENCIES'}{'value'} || [];
-			$code = "{\n";
-			if ($perlDeps) {
-				foreach my $dep (@{$perlDeps}) {
-					$code .= "use ".$dep.";\n";
-					$lineno++;
-				}
-			}
-			$code .= $translators->{"$transname"}{'transdef'}{'TRANSLATOR_FUNCTION'}{'value'};
-			$code .= "}\n";
-		}		
+		my $interpreter = $translators->{"$transname"}{'transdef'}{'TRANSLATOR_FUNCTION'}{'interpreter'};
 
 		my @inexts = @{$translators->{"$transname"}{'transdef'}{'INPUT_EXTENSIONS'}{'value'}};
 		my $outext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0];
@@ -927,12 +921,53 @@ sub _runTranslator($$$$$$$) {
 		my $ext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
 		my $outbasename = basename($out, $ext);
 		my $outwoext = File::Spec->catfile(dirname($out), $outbasename);
+
+		if (!$interpreter || $interpreter eq 'perl') {
+			#
+			# PERL INTERPRETER
+			#
+			my $code;
+			{
+				my $perlDeps = $translators->{"$transname"}{'transdef'}{'TRANSLATOR_PERL_DEPENDENCIES'}{'value'} || [];
+				$code = "{\n";
+				if ($perlDeps) {
+					foreach my $dep (@{$perlDeps}) {
+						$code .= "use ".$dep.";\n";
+						$lineno++;
+					}
+				}
+				$code .= $translators->{"$transname"}{'transdef'}{'TRANSLATOR_FUNCTION'}{'value'};
+				$code .= "}\n";
+			}		
 		
-		my $c = eval $code;
-		if (!defined($c) && $@) {
-			my $msg = "$@";
-			$msg =~ s/(\(eval\s+[0-9]+\)\s*line\s+)([0-9]+)/$1.($2 + $lineno)."($2)"/egsi;
-			printErr(formatText(_T("Error inthe TRANSLATOR_FUNCTION of '{}':\n{}"), $transname, $msg));
+			my $c = eval $code;
+			if (!defined($c) && $@) {
+				my $msg = "$@";
+				$msg =~ s/(\(eval\s+[0-9]+\)\s*line\s+)([0-9]+)/$1.($2 + $lineno)."($2)"/egsi;
+				printErr(formatText(_T("Error inthe TRANSLATOR_FUNCTION of '{}':\n{}"), $transname, $msg));
+			}
+		}
+		else {
+			#
+			# OTHER INTERPRETER
+			#
+			my $wrapper;
+			eval "use AutoLaTeX::Interpreter::$interpreter; \$wrapper = AutoLaTeX::Interpreter::$interpreter->new();";
+			if (!$wrapper) {
+				printErr(formatText(_T("Cannot find an interpreter wrapper for {}: {}"), $interpreter, ($@||'')));
+			}
+			
+			$wrapper->define_global_variable('_in', $in);
+			$wrapper->define_global_variable('_out', $out);
+			$wrapper->define_global_variable('_inexts', \@inexts);
+			$wrapper->define_global_variable('_outext', $outext);
+			$wrapper->define_global_variable('_outexts', \@outexts);
+			$wrapper->define_global_variable('_ext', $ext);
+			$wrapper->define_global_variable('_outbasename', $outbasename);
+			$wrapper->define_global_variable('_outwoext', $outwoext);
+
+			my $code = $translators->{"$transname"}{'transdef'}{'TRANSLATOR_FUNCTION'}{'value'} || '';
+			$wrapper->run($code);
 		}
 	}
 	else {

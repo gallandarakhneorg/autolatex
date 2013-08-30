@@ -46,6 +46,7 @@ our @EXPORT_OK = qw();
 
 require 5.014;
 use strict;
+use utf8;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 use Exporter;
 

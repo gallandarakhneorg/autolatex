@@ -38,22 +38,23 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '5.0';
+our $VERSION = '6.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
               &getAutoLaTeXName &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
               &setAutoLaTeXInfo &showManual &printDbg &printErr &printWarn &setDebugLevel 
 	      &getDebugLevel &printDbgFor &dumpDbgFor &arrayIndexOf &printDbgIndent
-	      &printDbgUnindent &runCommandOrFail &runSystemCommand
+	      &printDbgUnindent &runCommandOrFail &runSystemCommand &runCommandOrFailFromInput
               &notifySystemCommandListeners &exitDbg &addSlashes
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
 	      &runCommandSilently &removePathPrefix &trim &trim_ws &formatText
-	      &makeMessage &makeMessageLong &secure_unlink ) ;
+	      &makeMessage &makeMessageLong &secure_unlink &str2language ) ;
 @EXPORT_OK = qw( $INTERNAL_MESSAGE_PREFIX );
 
 require 5.014;
 use strict;
+use utf8;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 
 use File::Spec;
@@ -752,6 +753,86 @@ sub runCommandOrFail(@) {
 
 =pod
 
+=item B<runCommandOrFailFromInput(@)>
+
+Run a system command with the given text as the standard
+input, block and stop the program when the
+command has failed.
+
+=over 4
+
+=item the text to send to the standard input of the command.
+
+=item is the command to run.
+
+=back
+
+I<Returns:> If this function is called in an array context, an array of all
+the lines from the stdout is replied.
+If this function is not called in an array context, the exit code 0 is always
+replied.
+
+=cut
+sub runCommandOrFailFromInput($@) {
+	my $input = shift || '';
+	printDbgFor(4, formatText(_T("Command line is:\n{}"), join(' ',@_)));
+	local *INFILE;
+	open(*INFILE, '> autolatex_exec_stdin.data') or printErr(formatText(_T("Can't write {}: {}"), 'autolatex_exec_stdin.data', $!));
+	print INFILE $input;
+	close(*INFILE);
+	my $wantstdout = wantarray;
+	my $pid = fork();
+	if ($pid == 0) {
+		# Child process
+		open(STDIN, '<', "autolatex_exec_stdin.data") or printErr(formatText(_T("Can't redirect STDIN: {}"), $!));
+		open(STDOUT, '>', "autolatex_exec_stdout.log") or printErr(formatText(_T("Can't redirect STDOUT: {}"), $!));
+		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
+		select STDERR; $| = 1;  # make unbuffered
+		select STDOUT; $| = 1;  # make unbuffered
+		exec(@_);
+	}
+	elsif (defined($pid)) {
+		# Parent process
+		my $kpid = waitpid($pid, 0);
+		my $exitcode = $?;
+		my @stdout = ();
+		if ($kpid>0) {
+			local *LOGFILE;
+			if ($exitcode!=0) {
+				open(*LOGFILE, "< autolatex_exec_stdout.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stdout.log", $!));
+				while (my $line = <LOGFILE>) {
+					print STDOUT $INTERNAL_MESSAGE_PREFIX.$line;
+					$INTERNAL_MESSAGE_PREFIX = '';
+				}
+				close(*LOGFILE);
+				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
+				while (my $line = <LOGFILE>) {
+					print STDERR $INTERNAL_MESSAGE_PREFIX.$line;
+					$INTERNAL_MESSAGE_PREFIX = '';
+				}
+				close(*LOGFILE);
+				@_ = map { '\''.addSlashes($_).'\''; } @_;
+				confess("\$ ", join(' ', @_));
+			}
+			elsif ($wantstdout) {
+				@stdout = readFileLines("autolatex_exec_stdout.log");
+			}
+		}
+		unlink("autolatex_exec_stdout.log");
+		unlink("autolatex_exec_stderr.log");
+		unlink("autolatex_exec_stdin.data");
+		if ($wantstdout) {
+			return @stdout;
+		}
+	}
+	else {
+		printErr(formatText(_T("Unable to fork for the system command: {}"),join(' ',@_)));
+	}
+	return 0;
+}
+
+=pod
+
 =item B<runCommandSilently(@)>
 
 Run a system command, block and return the exit code.
@@ -913,13 +994,27 @@ sub exitDbg(@) {
 
 =item B<addSlashes($)>
 
-Protect the special characters with backslashes.
+Protect the special characters \\, ' and " with backslashes.
 
 =cut
 sub addSlashes($) {
 	my $text = shift;
 	my $term = "$text";
 	$term =~ s/([\\\'\"])/\\$1/gi;
+	return $term;
+}
+
+=pod
+
+=item B<str2language($)>
+
+Protect the characters with backslashes in the string to obtain a string that may be put in a source code.
+
+=cut
+sub str2language($) {
+	my $text = shift;
+	my $term = "$text";
+	$term =~ s/([\\\'\"\0-\31])/\\$1/gi;
 	return $term;
 }
 
