@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-30 00:25+0200\n"
+"POT-Creation-Date: 2013-08-31 00:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,270 +17,270 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: pm/AutoLaTeX/GUI/AbstractGeneralPanel.pm:86
+#: pm/AutoLaTeX/GUI/AbstractGeneralPanel.pm:87
 msgid "Saving configuration information into {}"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/AbstractGeneralPanel.pm:114
-#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:133
+#: pm/AutoLaTeX/GUI/AbstractGeneralPanel.pm:115
+#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:134
 msgid "No change detected"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:150
+#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:151
 msgid "Saving system configuration about translators"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:160
+#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:161
 msgid "Saving user configuration about translators"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:170
+#: pm/AutoLaTeX/GUI/AbstractTranslatorPanel.pm:171
 msgid "Saving project configuration about translators"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/AbstractToolPanel.pm:86
+#: pm/AutoLaTeX/GUI/AbstractToolPanel.pm:87
 msgid "Saving tool configuration"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/AbstractGUI.pm:78
+#: pm/AutoLaTeX/GUI/AbstractGUI.pm:79
 msgid "Command name not specified"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:128
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:129
 msgid "Generation"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:139
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:140
 msgid "Main TeX file (optional):"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:153
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:154
 msgid "Run bibliography tool"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:161
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:162
 msgid "Automatic generation of pictures"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:170
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:171
 msgid "Image search directory:"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:184
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:185
 msgid "Type of generation:"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:199
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:200
 msgid "Type of MakeIndex style research:"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:217
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:218
 msgid "Viewer"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:228
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:229
 msgid "Launch a viewer after compilation"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:236
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:237
 msgid "Command of the viewer (optional):"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:254
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:255
 msgid "Cleaning"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:265
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:266
 msgid "Files to clean:"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:279
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:280
 msgid "Files to desintegrate:"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:296
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:297
 msgid "SCM support"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:307
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:308
 msgid "Update command line:"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:321
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:322
 msgid "Commit command line:"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:349
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:350
 msgid "Generate PDF document"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:350
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:351
 msgid "Generate DVI document"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:351
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:352
 msgid "Generate Postscript document"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:352
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:353
 msgid "Generate PDF document via Postscript"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:356
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:357
 msgid "Use current configuration file value"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:357
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:358
 msgid "Auto-detect the style inside the project directory"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:358
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:359
 msgid "Use only the default AutoLaTeX style"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:359
+#: pm/AutoLaTeX/GUI/Gtk/GeneralPanel.pm:360
 msgid "No style is passed to MakeIndex"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/Window.pm:122
+#: pm/AutoLaTeX/GUI/Gtk/Window.pm:123
 msgid "AutoLaTeX {}"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/Window.pm:143
+#: pm/AutoLaTeX/GUI/Gtk/Window.pm:144
 msgid "*ADMINISTRATOR*"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/Window.pm:268
+#: pm/AutoLaTeX/GUI/Gtk/Window.pm:269
 msgid "Tools"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/Window.pm:278
+#: pm/AutoLaTeX/GUI/Gtk/Window.pm:279
 msgid "Project Configuration"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/Window.pm:288
+#: pm/AutoLaTeX/GUI/Gtk/Window.pm:289
 msgid "User Configuration"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/Window.pm:298
+#: pm/AutoLaTeX/GUI/Gtk/Window.pm:299
 msgid "System Configuration"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/Window.pm:365 pm/AutoLaTeX/GUI/Gtk/Window.pm:368
+#: pm/AutoLaTeX/GUI/Gtk/Window.pm:366 pm/AutoLaTeX/GUI/Gtk/Window.pm:369
 msgid "Translators"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/Window.pm:398
+#: pm/AutoLaTeX/GUI/Gtk/Window.pm:399
 msgid "Saving hidden notebook panel"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/WidgetUtil.pm:224
+#: pm/AutoLaTeX/GUI/Gtk/WidgetUtil.pm:225
 msgid "icon not found: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/WidgetUtil.pm:262
+#: pm/AutoLaTeX/GUI/Gtk/WidgetUtil.pm:263
 msgid "{}: on Gtk signal '{}', calling {}($)"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/WidgetUtil.pm:265
+#: pm/AutoLaTeX/GUI/Gtk/WidgetUtil.pm:266
 msgid "{}($):"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/WidgetUtil.pm:269
+#: pm/AutoLaTeX/GUI/Gtk/WidgetUtil.pm:270
 msgid "Ignoring Gtk signal '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:127
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:128
 msgid "Main TeX file:"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:139
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:140
 msgid "Prefered Launcher:"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:167
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:168
 msgid "Clean and Execute"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:173
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:174
 msgid "Clean"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:179
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:180
 msgid "Clean all"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:202
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:203
 msgid "No prefered launcher, use first available"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:203
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:204
 msgid "Gnome terminal"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:204
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:205
 msgid "KDE console"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:205
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:206
 msgid "No graphical terminal"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:240
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:241
 msgid "Preferred launcher: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:289
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:290
 msgid "Launching AutoLaTeX with parameters: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:302
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:303
 msgid "trying prefered launcher: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:305 pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:317
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:306 pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:318
 msgid "launch succeeded"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:314
+#: pm/AutoLaTeX/GUI/Gtk/ToolPanel.pm:315
 msgid "trying {}"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:143
+#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:144
 msgid ""
 "List of available translators:\n"
 "(click on the three left columns to change the loading state of the "
 "translators)"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:199
+#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:200
 msgid "All users"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:200
+#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:201
 msgid "Current usr"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:201
+#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:202
 msgid "Current project"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:203
+#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:204
 msgid "Loaded, no conflict"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:204
+#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:205
 msgid "Loaded, conflict"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:205
+#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:206
 msgid "Not loaded"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:206
+#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:207
 msgid "Unspecified, no conflict"
 msgstr ""
 
-#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:207
+#: pm/AutoLaTeX/GUI/Gtk/TranslatorPanel.pm:208
 msgid "Unspecified, conflict"
 msgstr ""

@@ -46,7 +46,7 @@
 # You could use environment variables by prefixing them with the character
 # "$", even on Window operating systems. We decide to use the Unix standard
 # to obtain a single configuration file for all the operating systems.
-# If the command line is empty, you must define a Perl function in
+# If the command line is empty, you must define a code function in
 # the variable TRANSLATOR_FUNCTION.
 # The space characters are used to split the command line into parameters.
 # To put a space character in a parameter, you must enclose the string with
@@ -65,7 +65,7 @@
 #     ThePackage::TheCass 'feature'
 ;TRANSLATOR_PERL_DEPENDENCIES = 
 
-# Perl code to invoke to translate the files from input to output.
+# Code to invoke to translate the files from input to output.
 # $in is the environment variable for the input filename.
 # $out is the environment variable for the output filename.
 # $outbasename is the basename without the extension and the dirname of the out file.
@@ -75,9 +75,19 @@
 # @outexts are the extensions defined in variable OUTPUT_EXTENSION.
 # $ispdfmode indicates if the translator is used in PDF mode.
 # $isepsmode indicates if the translator is used in EPS mode.
-# If the command line is empty, you must define a Perl function in 
+# If the command line is empty, you must define a code function in 
 # the variable TRANSLATOR_FUNCTION.
+#
+# LANGUAGE USED FOR THE CODE:
+# By default, the code put in TRANSLATOR_FUNCTION is written in the Perl language.
+# If you want to use another scripting language, you must specify the script
+# interpreter with the keyword "with". The first line below is the definition of
+# a function in Perl. The second line below is the definition of a function in
+# Python. Note that, "with <language>" must be put before "for <mode>".
+# Note that for other languages than Perl, the variable names explained above are
+# all prefixed by the character '_', eg. '$out' must be read '_out'.
 ;TRANSLATOR_FUNCTION =
+;TRANSLATOR_FUNCTION with python =
 
 # List of patterns that are representing the output files to remove when cleaning.
 # The syntax of the variable is a space-separated list of shell patterns.

@@ -64,6 +64,13 @@ use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::GUI::Gtk::Window;
 
+###################################################
+# Add the include path to the "user" interpreters #
+###################################################
+push @INC, File::Spec->catfile(getUserConfigDirectory(),"translators");
+
+
+
 #------------------------------------------------------
 #
 # MAIN PROGRAM: Treat main program actions

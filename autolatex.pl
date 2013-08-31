@@ -72,6 +72,11 @@ use AutoLaTeX::Core::Translator;
 use AutoLaTeX::Make::Make;
 use AutoLaTeX::TeX::Flattener;
 
+###################################################
+# Add the include path to the "user" interpreters #
+###################################################
+push @INC, File::Spec->catfile(getUserConfigDirectory(),"translators");
+
 
 my %configuration;
 my %autolatexData = ();

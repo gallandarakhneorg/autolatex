@@ -68,6 +68,12 @@ use AutoLaTeX::Core::Translator;
 use AutoLaTeX::Core::Config;
 use AutoLaTeX::Core::IntUtils;
 
+###################################################
+# Add the include path to the "user" interpreters #
+###################################################
+push @INC, File::Spec->catfile(getUserConfigDirectory(),"translators");
+
+
 sub readStdin() {
 	my $tmpfile = tmpnam();
 	local *OUTFILE;

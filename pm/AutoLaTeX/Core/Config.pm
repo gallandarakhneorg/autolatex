@@ -48,6 +48,7 @@ $VERSION = '12.0';
 
 require 5.014;
 use strict;
+use utf8;
 use warnings;
 use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
 
