@@ -20,7 +20,7 @@
 # See template.txt for details on the fields
 #--------------------------------------------
 
-INPUT_EXTENSIONS = .svg
+INPUT_EXTENSIONS = .svg .svgz
 
 OUTPUT_EXTENSIONS = .png
 
