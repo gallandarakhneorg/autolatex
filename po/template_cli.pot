@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-31 00:41+0200\n"
+"POT-Creation-Date: 2013-09-02 14:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,76 +17,76 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: autolatex.pl:208 autolatex.pl:221
+#: autolatex.pl:213 autolatex.pl:226
 msgid "The configuration entry '{}' is not defined."
 msgstr ""
 
-#: autolatex.pl:238 autolatex.pl:255
+#: autolatex.pl:243 autolatex.pl:260
 msgid "Launching '{}'"
 msgstr ""
 
-#: autolatex.pl:241 autolatex.pl:258
+#: autolatex.pl:246 autolatex.pl:263
 msgid "Launching '{}' in background"
 msgstr ""
 
-#: autolatex.pl:267
+#: autolatex.pl:272
 msgid "Unable to find a viewer."
 msgstr ""
 
-#: autolatex.pl:494
+#: autolatex.pl:499
 msgid "Removing all the temporary files"
 msgstr ""
 
-#: autolatex.pl:501
+#: autolatex.pl:506
 msgid "Removing all the temporary and generated files"
 msgstr ""
 
-#: autolatex.pl:684
+#: autolatex.pl:689
 msgid "Creating default project configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:688
+#: autolatex.pl:693
 msgid "Creating default user configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:697
+#: autolatex.pl:702
 msgid "Creating default makeindex style file...\n"
 msgstr ""
 
-#: autolatex.pl:776
+#: autolatex.pl:781
 msgid "Command line action '{}' is not supported."
 msgstr ""
 
-#: autolatex-backend.pl:419
+#: autolatex-backend.pl:425
 msgid "<section>"
 msgstr ""
 
-#: autolatex-backend.pl:420
+#: autolatex-backend.pl:426
 msgid ""
 "Output the configuration for the given level. If the 4th param is given, "
 "output only the section with this name. If section is \"__private__\", the "
 "hidden configuration is output."
 msgstr ""
 
-#: autolatex-backend.pl:423
+#: autolatex-backend.pl:429
 msgid "Output the list of the installed translators."
 msgstr ""
 
-#: autolatex-backend.pl:426
+#: autolatex-backend.pl:432
 msgid ""
 "Output the translators potentially under conflicts. If 'resolved' is given, "
 "apply the resolution mechanism."
 msgstr ""
 
-#: autolatex-backend.pl:429
+#: autolatex-backend.pl:435
 msgid "Output the loading directives for translators."
 msgstr ""
 
-#: autolatex-backend.pl:432
+#: autolatex-backend.pl:438
 msgid "Output the list of figures detected by AutoLaTeX."
 msgstr ""
 
-#: autolatex-backend.pl:435
+#: autolatex-backend.pl:441
 msgid ""
 "Read from STDIN an ini file that is a new configuration for the given level. "
 "The boolean param indicates if the configuration keys that are not given on "
@@ -94,11 +94,11 @@ msgid ""
 "the setting process."
 msgstr ""
 
-#: autolatex-backend.pl:438
+#: autolatex-backend.pl:444
 msgid "Read from STDIN an ini file for the loading directives of translators."
 msgstr ""
 
-#: autolatex-backend.pl:441
+#: autolatex-backend.pl:447
 msgid ""
 "Read from STDIN an ini file that is describing the attributes for the "
 "translators. The boolean param indicates if the configuration keys that are "

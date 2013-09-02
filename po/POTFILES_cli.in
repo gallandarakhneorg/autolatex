@@ -9,6 +9,7 @@ pm/AutoLaTeX/Core/Config.pm
 pm/AutoLaTeX/Core/IntUtils.pm
 pm/AutoLaTeX/Core/Main.pm
 pm/AutoLaTeX/Core/OS.pm
+pm/AutoLaTeX/Core/Progress.pm
 pm/AutoLaTeX/Core/Translator.pm
 pm/AutoLaTeX/Core/Util.pm
 
@@ -22,3 +23,11 @@ pm/AutoLaTeX/TeX/TeXParser.pm
 # Make-like libraries
 pm/AutoLaTeX/Make/Make.pm
 
+# Interpreters
+pm/AutoLaTeX/Interpreter/AbstractInterpreter.pm
+pm/AutoLaTeX/Interpreter/batch.pm
+pm/AutoLaTeX/Interpreter/js.pm
+pm/AutoLaTeX/Interpreter/python.pm
+pm/AutoLaTeX/Interpreter/ruby.pm
+pm/AutoLaTeX/Interpreter/sh.pm
+pm/AutoLaTeX/Interpreter/wincmd.pm

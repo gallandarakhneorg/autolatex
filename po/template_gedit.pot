@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-31 00:41+0200\n"
+"POT-Creation-Date: 2013-09-02 14:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -202,6 +202,33 @@ msgstr ""
 msgid "Making the \"flat\" version of the document"
 msgstr ""
 
+#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:57
+msgid ""
+"List of the figures detected in your document's directory.\n"
+"You can edit the second column to set the translator used for a particular "
+"figure."
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:64
+msgid "Figure"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:71
+msgid "Translator"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/figure_panel.py:56
+msgid "Automatic generation of pictures with translators"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/figure_panel.py:59
+msgid "Search paths for the pictures"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/figure_panel.py:184
+msgid "Select a figure path"
+msgstr ""
+
 #: plugins/gedit/autolatex/config/cli/generator_panel.py:120
 msgid "Main TeX file (optional)"
 msgstr ""
@@ -247,6 +274,206 @@ msgstr ""
 msgid "Style file for MakeIndex"
 msgstr ""
 
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:71
+msgid "Create a translator"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:88
+msgid "Note: read the tooltips of the fields for help."
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:91
+msgid "Input extensions"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:93
+msgid "List of filename extensions, separated by spaces. Ex: .svg .svgz"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:97
+msgid "PDF or Postscript"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:98
+msgid "TeX macros inside PDF or Postscript"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:99
+msgid "Beamer Layer"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:100
+msgid "TeX macros inside Beamer Layer"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:101
+msgid "PNG Picture"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:102
+msgid "Output"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:104
+msgid "Variante"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:108
+msgid "Shell Command line"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:119
+#, python-format
+msgid "Script in %s"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:121
+msgid "Execution mode"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:123
+msgid "Command line"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:127
+msgid ""
+"Type a command line. Type:\n"
+"$in for the input filename;\n"
+"$out for the output filename;\n"
+"$outbasename for the basename with the dirname and extension;\n"
+"$outwoext for filename without the extension;\n"
+"$NAME for any environment variable named 'NAME'."
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:144
+msgid "Script source code"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:148
+msgid "Files to clean"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:150
+msgid ""
+"Type list of patterns, separated by spaces. Type:\n"
+"$in for the input basename without the extension and without the directory;\n"
+"$out for the output basename without the extension and without the directory."
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:176
+msgid ""
+"Type a source code. Type:\n"
+"#1in for the input filename;\n"
+"#1out for the output filename;\n"
+"#1outbasename for the basename without extension and dirname;\n"
+"#1outwoext for the filename without extension;\n"
+"#2inexts is the array of the input extensions;\n"
+"#1outext is the first output extension;\n"
+"#2outexts is the array of the output extensions;\n"
+"#1ispdfmode indicates if the translator is used in PDF mode;\n"
+"#1isepsmode indicates if the translator is used in EPS mode."
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:338
+msgid ""
+"List of available translators:\n"
+"(click on the second column to change the loading state of the translators)"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:349
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:353
+msgid "usr"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:350
+msgid "doc"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:358
+msgid "name"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:360
+msgid "description"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:375
+msgid "Import"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:387
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:391
+msgid "Current user"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:388
+msgid "Current document"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:390
+msgid "All users"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:399
+msgid "Loaded, no conflict"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:400
+msgid "Loaded, conflict"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:401
+msgid "Not loaded"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:402
+msgid "Unspecified, no conflict"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:403
+msgid "Unspecified, conflict"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:660
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:708
+#, python-format
+msgid ""
+"The translator file '%s' already exists.\n"
+"Do you want to replace it with the selected file?"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:675
+msgid "Cannot compute a valid basename with the inputs."
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:683
+msgid "Select a translator definition"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:689
+msgid "AutoLaTeX Translator"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:798
+msgid ""
+"There is a problem when reading the translator's definition.\n"
+"Please close and re-open the configuration dialog\n"
+"for trying to read the configuration of the new translator."
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:811
+#, python-format
+msgid "Do you want to delete the translator '%s'?"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/viewer_panel.py:53
+msgid "Launch a viewer after compilation"
+msgstr ""
+
+#: plugins/gedit/autolatex/config/cli/viewer_panel.py:56
+msgid "Command for launching the viewer (optional)"
+msgstr ""
+
 #: plugins/gedit/autolatex/config/cli/window.py:78
 msgid "Document Configuration"
 msgstr ""
@@ -280,97 +507,6 @@ msgstr ""
 msgid ""
 "The page '%s' cannot save its fields.\n"
 " You will loose the changes on this pages."
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:74
-msgid ""
-"List of available translators:\n"
-"(click on the second column to change the loading state of the translators)"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:85
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:89
-msgid "usr"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:86
-msgid "doc"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:94
-msgid "name"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:96
-msgid "description"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:109
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:113
-msgid "Current user"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:110
-msgid "Current document"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:112
-msgid "All users"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:119
-msgid "Loaded, no conflict"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:120
-msgid "Loaded, conflict"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:121
-msgid "Not loaded"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:122
-msgid "Unspecified, no conflict"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:123
-msgid "Unspecified, conflict"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:57
-msgid ""
-"List of the figures detected in your document's directory.\n"
-"You can edit the second column to set the translator used for a particular "
-"figure."
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:64
-msgid "Figure"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:71
-msgid "Translator"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:56
-msgid "Automatic generation of pictures with translators"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:59
-msgid "Search paths for the pictures"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:184
-msgid "Select a figure path"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/viewer_panel.py:53
-msgid "Launch a viewer after compilation"
-msgstr ""
-
-#: plugins/gedit/autolatex/config/cli/viewer_panel.py:56
-msgid "Command for launching the viewer (optional)"
 msgstr ""
 
 #: plugins/gedit/autolatex/config/plugin/main_panel.py:55
@@ -422,4 +558,12 @@ msgid ""
 "The enabling flag for the progress info bar has been changed by an external "
 "software. The new flag is different from the one inside the preference "
 "dialog box. Do you want to use the new flag?"
+msgstr ""
+
+#: plugins/gedit/autolatex/widgets/inherit_button.py:92
+msgid "Overriding the value in the current configuration"
+msgstr ""
+
+#: plugins/gedit/autolatex/widgets/inherit_button.py:95
+msgid "Get the value from the inherited configuration"
 msgstr ""

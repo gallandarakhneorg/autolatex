@@ -27,7 +27,7 @@ import ConfigParser
 import StringIO
 import gettext
 # Include the Glib, Gtk and Gedit libraries
-from gi.repository import Gio
+from gi.repository import Gio, Gtk
 
 #---------------------------------
 # UTILITY FUNCTION
@@ -70,6 +70,9 @@ AUTOLATEX_PLUGIN_PATH = os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))
 AUTOLATEX_PO_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'po')
 if not os.path.exists(os.path.join(AUTOLATEX_PO_PATH, 'fr', 'LC_MESSAGES', 'geditautolatex.mo')):
 	AUTOLATEX_PO_PATH = None # Default locale path
+
+# PM path
+AUTOLATEX_PM_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'pm')
 
 # Binary file of AutoLaTeX
 # Use the development versions of the scripts
@@ -171,8 +174,45 @@ def backend_set_images(directory, settings):
 	string_out.close()
 	return process.returncode == 0
 
+
 def first_of(*values):
 	for value in values:
 		if value is not None:
 			return value
 	return None
+
+def get_autolatex_user_config_directory():
+	if os.name == 'posix':
+		return os.path.join(os.path.expanduser("~"), ".autolatex")
+	elif os.name == 'nt':
+		return  os.path.join(os.path.expanduser("~"),"Local Settings","Application Data","autolatex")
+	else:
+		return os.path.join(os.path.expanduser("~"), "autolatex")
+
+def get_autolatex_user_config_file():
+	directory = get_autolatex_user_config_directory()
+	if os.path.isdir(directory):
+		return os.path.join(directory, 'autolatex.conf')
+	if os.name == 'posix':
+		return os.path.join(os.path.expanduser("~"), ".autolatex")
+	elif os.name == 'nt':
+		return  os.path.join(os.path.expanduser("~"),"Local Settings","Application Data","autolatex.conf")
+	else:
+		return os.path.join(os.path.expanduser("~"), "autolatex.conf")
+
+def get_insert_index_dichotomic(list_store, column, data):
+	f = 0
+	l = list_store.iter_n_children(None) - 1
+	while l >= f:
+		c = (f+l) / 2
+		path = Gtk.TreePath(c)
+		d = list_store[path][column]
+		cmpt = (data > d) - (data < d)
+		if cmpt == 0:
+			return -1
+		elif cmpt < 0:
+			l = c-1
+		else:
+			f = c+1
+	return f
+

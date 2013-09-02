@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: geditautolatex 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-30 00:25+0200\n"
+"POT-Creation-Date: 2013-09-02 14:05+0200\n"
 "PO-Revision-Date: 2013-08-22 20:41+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -222,6 +222,36 @@ msgstr ""
 msgid "Making the \"flat\" version of the document"
 msgstr "Création de la version \"plate\" du document"
 
+#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:57
+msgid ""
+"List of the figures detected in your document's directory.\n"
+"You can edit the second column to set the translator used for a particular "
+"figure."
+msgstr ""
+"Liste des figures détectées dans le répertoire de votre document.\n"
+"Vous pouvez éditer la seconde colonne pour changer le convertisseur\n"
+"utilisé pour une figure particulière."
+
+#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:64
+msgid "Figure"
+msgstr "Image"
+
+#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:71
+msgid "Translator"
+msgstr "Convertisseur"
+
+#: plugins/gedit/autolatex/config/cli/figure_panel.py:56
+msgid "Automatic generation of pictures with translators"
+msgstr "Génération automatique d'images avec des convertisseurs"
+
+#: plugins/gedit/autolatex/config/cli/figure_panel.py:59
+msgid "Search paths for the pictures"
+msgstr "Chemins de recherche pour les images"
+
+#: plugins/gedit/autolatex/config/cli/figure_panel.py:184
+msgid "Select a figure path"
+msgstr "Sélectionner un chemin de recherche pour les images"
+
 #: plugins/gedit/autolatex/config/cli/generator_panel.py:120
 msgid "Main TeX file (optional)"
 msgstr "Fichier TeX principal (optionnel)"
@@ -267,6 +297,237 @@ msgstr "Définie par l'utilisateur (aucun changement de la config. originelle)"
 msgid "Style file for MakeIndex"
 msgstr "Fichier de style pour MakeIndex"
 
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:71
+msgid "Create a translator"
+msgstr "Création d'un convertisseur"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:88
+msgid "Note: read the tooltips of the fields for help."
+msgstr "Note: lisez les tooltips sur les champs pour obtenir une aide."
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:91
+msgid "Input extensions"
+msgstr "Extensions des entrées"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:93
+msgid "List of filename extensions, separated by spaces. Ex: .svg .svgz"
+msgstr ""
+"Liste des extensions de fichier, séparées par des espaces. Ex: .svg .svgz"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:97
+msgid "PDF or Postscript"
+msgstr "PDF ou Postscript"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:98
+msgid "TeX macros inside PDF or Postscript"
+msgstr "Macros TeX dans un PDF ou Postscript"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:99
+msgid "Beamer Layer"
+msgstr "Calque Beamer"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:100
+msgid "TeX macros inside Beamer Layer"
+msgstr "Macros TeX dans un calque Beamer"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:101
+msgid "PNG Picture"
+msgstr "Image PNG"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:102
+msgid "Output"
+msgstr "Sortie"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:104
+msgid "Variante"
+msgstr "Variante"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:108
+msgid "Shell Command line"
+msgstr "Ligne de commande Shell"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:119
+#, python-format
+msgid "Script in %s"
+msgstr "Script dans %s"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:121
+msgid "Execution mode"
+msgstr "Mode d'exécution"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:123
+msgid "Command line"
+msgstr "Ligne de commande"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:127
+msgid ""
+"Type a command line. Type:\n"
+"$in for the input filename;\n"
+"$out for the output filename;\n"
+"$outbasename for the basename with the dirname and extension;\n"
+"$outwoext for filename without the extension;\n"
+"$NAME for any environment variable named 'NAME'."
+msgstr ""
+"Entrez la ligne de commande. Entrez :\n"
+"$in pour le nom de fichier d'entrée;\n"
+"$out pour le nom de fichier de sortie;\n"
+"$outbasename pour le nom de fichier de sortie sans répertoire, avec "
+"extension;\n"
+"$outwoext pour le nom de fichier de sortie sans répertoire ni extension;\n"
+"$NAME pour une variable d'environnement nommée 'NAME'."
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:144
+msgid "Script source code"
+msgstr "Code source du script"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:148
+msgid "Files to clean"
+msgstr "Fichiers à nettoyer"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:150
+msgid ""
+"Type list of patterns, separated by spaces. Type:\n"
+"$in for the input basename without the extension and without the directory;\n"
+"$out for the output basename without the extension and without the directory."
+msgstr ""
+"Entrez la liste des patrons, séparés par des espaces. Entrez :\n"
+"$in pour un nom de fichier d'entrée sans répertoire ni extension;\n"
+"$in pour un nom de fichier de sortie sans répertoire ni extension."
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:176
+msgid ""
+"Type a source code. Type:\n"
+"#1in for the input filename;\n"
+"#1out for the output filename;\n"
+"#1outbasename for the basename without extension and dirname;\n"
+"#1outwoext for the filename without extension;\n"
+"#2inexts is the array of the input extensions;\n"
+"#1outext is the first output extension;\n"
+"#2outexts is the array of the output extensions;\n"
+"#1ispdfmode indicates if the translator is used in PDF mode;\n"
+"#1isepsmode indicates if the translator is used in EPS mode."
+msgstr ""
+"Entrez un code source. Entrez :\n"
+"#1in pour le nom de fichier d'entrée;\n"
+"#1out pour le nom de fichier de sortie;\n"
+"#1outbasename pour le nom de fichier de sortie avec extension, sans "
+"répertoire;\n"
+"#1outwoext pour le nom de fichier de sortie avec extension ni répertoire;\n"
+"#2inexts est le tableau des extensions d'entrée;\n"
+"#1outext est la première extension de sortie;\n"
+"#2outexts est le tableau des extensions de sortie;\n"
+"#1ispdfmode indique si le convertisseur est en mode PDF;\n"
+"#1isepsmode indique si le convertisseur est en mode Postscript."
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:338
+msgid ""
+"List of available translators:\n"
+"(click on the second column to change the loading state of the translators)"
+msgstr ""
+"Liste des convertisseurs disponibles :\n"
+"(cliquez sur la seconde colonne pour changer l'état de chargement des "
+"convertisseurs)"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:349
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:353
+msgid "usr"
+msgstr "usr"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:350
+msgid "doc"
+msgstr "doc"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:358
+msgid "name"
+msgstr "nom"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:360
+msgid "description"
+msgstr "description"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:375
+msgid "Import"
+msgstr "Importer"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:387
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:391
+msgid "Current user"
+msgstr "Utilisateur"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:388
+msgid "Current document"
+msgstr "Document"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:390
+msgid "All users"
+msgstr "Tous le monde"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:399
+msgid "Loaded, no conflict"
+msgstr "Chargé, sans conflit"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:400
+msgid "Loaded, conflict"
+msgstr "Chargé, avec conflit"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:401
+msgid "Not loaded"
+msgstr "Non chargé"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:402
+msgid "Unspecified, no conflict"
+msgstr "Inconnu, sans conflit"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:403
+msgid "Unspecified, conflict"
+msgstr "Inconnu, avec conflit"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:660
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:708
+#, python-format
+msgid ""
+"The translator file '%s' already exists.\n"
+"Do you want to replace it with the selected file?"
+msgstr ""
+"Le fichier du convertisseur '%s' existe déjà.\n"
+"Voulez-vous remplacer ce fichier par le fichier sélectionné ?"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:675
+msgid "Cannot compute a valid basename with the inputs."
+msgstr ""
+"Impossible de calculer un nom de fichier valide avec les données entrées."
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:683
+msgid "Select a translator definition"
+msgstr "Sélectionnez une définition de convertisseur"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:689
+msgid "AutoLaTeX Translator"
+msgstr "Convertisseur AutoLaTeX"
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:798
+msgid ""
+"There is a problem when reading the translator's definition.\n"
+"Please close and re-open the configuration dialog\n"
+"for trying to read the configuration of the new translator."
+msgstr ""
+"Il y a un problème de lecture de la définition du convertisseur.\n"
+"Veuillez fermer la fenêtre de configuration, et la réouvrir\n"
+"pour tenter une nouvelle lecture de la définition."
+
+#: plugins/gedit/autolatex/config/cli/translator_panel.py:811
+#, python-format
+msgid "Do you want to delete the translator '%s'?"
+msgstr "Voulez-vous supprimer le convertisseur '%s' ?"
+
+#: plugins/gedit/autolatex/config/cli/viewer_panel.py:53
+msgid "Launch a viewer after compilation"
+msgstr "Lancer un visualisateur après la compilation"
+
+#: plugins/gedit/autolatex/config/cli/viewer_panel.py:56
+msgid "Command for launching the viewer (optional)"
+msgstr "Commande pour lancer le visualisateur (optionnel)"
+
 #: plugins/gedit/autolatex/config/cli/window.py:78
 msgid "Document Configuration"
 msgstr "Configuration pour le document"
@@ -303,103 +564,6 @@ msgid ""
 msgstr ""
 "La page '%s' ne peut pas sauver ses champs.\n"
 "Vous allez perdre vos changements sur cette page."
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:74
-msgid ""
-"List of available translators:\n"
-"(click on the second column to change the loading state of the translators)"
-msgstr ""
-"Liste des convertisseurs disponibles :\n"
-"(cliquez sur la seconde colonne pour changer l'état de chargement des "
-"convertisseurs)"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:85
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:89
-msgid "usr"
-msgstr "usr"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:86
-msgid "doc"
-msgstr "doc"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:94
-msgid "name"
-msgstr "nom"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:96
-msgid "description"
-msgstr "description"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:109
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:113
-msgid "Current user"
-msgstr "Utilisateur"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:110
-msgid "Current document"
-msgstr "Document"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:112
-msgid "All users"
-msgstr "Tous le monde"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:119
-msgid "Loaded, no conflict"
-msgstr "Chargé, sans conflit"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:120
-msgid "Loaded, conflict"
-msgstr "Chargé, avec conflit"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:121
-msgid "Not loaded"
-msgstr "Non chargé"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:122
-msgid "Unspecified, no conflict"
-msgstr "Inconnu, sans conflit"
-
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:123
-msgid "Unspecified, conflict"
-msgstr "Inconnu, avec conflit"
-
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:57
-msgid ""
-"List of the figures detected in your document's directory.\n"
-"You can edit the second column to set the translator used for a particular "
-"figure."
-msgstr ""
-"Liste des figures détectées dans le répertoire de votre document.\n"
-"Vous pouvez éditer la seconde colonne pour changer le convertisseur\n"
-"utilisé pour une figure particulière."
-
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:64
-msgid "Figure"
-msgstr "Image"
-
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:71
-msgid "Translator"
-msgstr "Convertisseur"
-
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:56
-msgid "Automatic generation of pictures with translators"
-msgstr "Génération automatique d'images avec des convertisseurs"
-
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:59
-msgid "Search paths for the pictures"
-msgstr "Chemins de recherche pour les images"
-
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:184
-msgid "Select a figure path"
-msgstr "Sélectionner un chemin de recherche pour les images"
-
-#: plugins/gedit/autolatex/config/cli/viewer_panel.py:53
-msgid "Launch a viewer after compilation"
-msgstr "Lancer un visualisateur après la compilation"
-
-#: plugins/gedit/autolatex/config/cli/viewer_panel.py:56
-msgid "Command for launching the viewer (optional)"
-msgstr "Commande pour lancer le visualisateur (optionnel)"
 
 #: plugins/gedit/autolatex/config/plugin/main_panel.py:55
 msgid "Paths of the tools"
@@ -464,5 +628,10 @@ msgstr ""
 "programme externe. Sa nouvelle valeur est différente de celle présente dans "
 "la fenêtre des préférences. Voulez-vous utiliser la nouvelle valeur ?"
 
-#~ msgid "Update the TeX files with the SyncTeX flags"
-#~ msgstr "Modifier les fichiers TeX avec les indicateurs SyncTeX"
+#: plugins/gedit/autolatex/widgets/inherit_button.py:92
+msgid "Overriding the value in the current configuration"
+msgstr "Surcharger les valeurs dans la configuration courante"
+
+#: plugins/gedit/autolatex/widgets/inherit_button.py:95
+msgid "Get the value from the inherited configuration"
+msgstr "Utiliser les valeurs hérités de la configuration utilisateur"
