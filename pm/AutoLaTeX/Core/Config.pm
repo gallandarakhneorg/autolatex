@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Config;
 
-$VERSION = '12.0';
+$VERSION = '14.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getProjectConfigFilename &getUserConfigFilename &getSystemConfigFilename
               &getSystemISTFilename &readConfiguration &readConfigFile &getUserConfigDirectory

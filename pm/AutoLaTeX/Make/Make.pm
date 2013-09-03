@@ -1259,7 +1259,7 @@ I<Returns:> the generation type.
 sub generationType : method {
 	my $self = shift;
 	if (@_) {
-		my $type = $_[0];
+		my $type = $_[0] || 'pdf';
 		if ($type ne 'dvi' && $type ne 'ps' && $type ne 'pdf') {
 			$type = 'pdf';
 		}

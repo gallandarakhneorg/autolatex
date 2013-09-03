@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '13.0';
+$VERSION = '14.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -209,7 +209,7 @@ sub getTranslatorFilesFrom(\%$\%$$$;$) {
 	my $warn = shift;
 	my $onlyincluded = shift;
 	my $level = shift || 'unknown';
-	my $ispdfmode = $configuration->{'generation.generation type'} eq 'pdf';
+	my $ispdfmode = ($configuration->{'generation.generation type'} || 'pdf') eq 'pdf';
 	local *DIR;
 	if (-d "$filename") {
 		my @dirs = ( "$filename" );
