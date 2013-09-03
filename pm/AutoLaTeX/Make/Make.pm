@@ -573,16 +573,29 @@ sub runLaTeX($;$) : method {
 			# Search the fatal error inside the blocks
 			my $extracted_message = '';
 			if ($fatal_error) {
-				my $i = 0; 
-				while ($fatal_error && $i<@log_blocks) {
-					my $block = $log_blocks[$i];
-					if ($block =~ /\Q$fatal_error\E(.*)$/s) {
-						$extracted_message = $1;
-						$fatal_error =~ s/[\n\r]+//gs;
-						$extracted_message = $fatal_error.$extracted_message;
-						$fatal_error = undef;
+				# Parse the fatal error block to extract the filename
+				# where the error occured
+				$fatal_error =~ /^(.*?)(\:[0-9]+\:)$/s;
+				my ($candidate, $post) = ($1,$2);
+				my @candidates = split(/[\n\r]+/, $candidate);
+				$candidate = pop @candidates;
+				while ($candidate && @candidates && ! -f "$candidate") {
+					my $l = pop @candidates;
+					$candidate = $l.$candidate;
+				}
+				if ($candidate && -f "$candidate") {
+					# Search the error message in the log.
+					my $i = 0; 
+					while ($candidate && $i<@log_blocks) {
+						my $block = $log_blocks[$i];
+						if ($block =~ /\Q$candidate\E(.*)$/s) {
+							$extracted_message = $1;
+							$candidate =~ s/[\n\r]+//gs;
+							$extracted_message = $candidate.$extracted_message;
+							$candidate = undef;
+						}
+						$i++;
 					}
-					$i++;
 				}
 			}
 
