@@ -200,6 +200,12 @@ def get_autolatex_user_config_file():
 	else:
 		return os.path.join(os.path.expanduser("~"), "autolatex.conf")
 
+def get_autolatex_document_config_file(directory):
+	if os.name == 'posix':
+		return os.path.join(directory, ".autolatex_project.cfg")
+	else:
+		return os.path.join(directory, "autolatex_project.cfg")
+
 def get_insert_index_dichotomic(list_store, column, data):
 	f = 0
 	l = list_store.iter_n_children(None) - 1

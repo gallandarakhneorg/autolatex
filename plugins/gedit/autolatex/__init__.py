@@ -227,11 +227,11 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	# Test if the current document is inside a TeX context.
 	if isInTeXContext:
 		if directory:
-			cfgFile = os.path.join(directory, '.autolatex_project.cfg')
+			cfgFile = utils.get_autolatex_document_config_file(directory)
 			hasDocConfFile = os.path.exists(cfgFile)
 		else:
 			hasDocConfFile = False
-		hasUserConfFile = os.path.exists(os.path.join(os.path.expanduser("~"), '.autolatex'))
+		hasUserConfFile = os.path.exists(utils.get_autolatex_user_config_file())
 		# Change the sensitivity
 		if self._document_actions:
 		    self._document_actions.set_sensitive(hasAutoLaTeXDocument
@@ -446,13 +446,14 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		doc = curdir.resolve_relative_path(doc.get_path())
                 doc = doc.get_path()
 		document_dir = doc
-                cfgFile = os.path.join(doc,".autolatex_project.cfg")
-                rootFile = os.path.join('/',".autolatex_project.cfg")
-	        while rootFile != cfgFile and not os.path.exists(cfgFile):
+                cfgFile = utils.get_autolatex_document_config_file(doc)
+		previousFile = ''
+	        while previousFile != cfgFile and not os.path.exists(cfgFile):
 		    doc = os.path.dirname(doc)
-                    cfgFile = os.path.join(doc,".autolatex_project.cfg")
+		    previousFile = cfgFile
+                    cfgFile = utils.get_autolatex_document_config_file(doc)
 
-                if rootFile != cfgFile:
+                if previousFile != cfgFile:
                     adir = os.path.dirname(cfgFile)
 		else:
 		    ext = os.path.splitext(document_name)[-1]
@@ -507,7 +508,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     def on_document_configuration_action_activate(self, action, data=None):
 	directory = self._find_AutoLaTeX_dir()
 	if directory:
-		cfgFile = os.path.join(directory,".autolatex_project.cfg")
+		cfgFile = utils.get_autolatex_document_config_file(directory)
 		runConfig = True
 		if not os.path.exists(cfgFile):
 			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to create a configuration\nfile for your document?"))
@@ -524,7 +525,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     def on_delete_document_configuration_action_activate(self, action, data=None):
 	directory = self._find_AutoLaTeX_dir()
 	if directory:
-		cfgFile = os.path.join(directory, '.autolatex_project.cfg')
+		cfgFile = utils.get_autolatex_document_config_file(directory)
 		if os.path.exists(cfgFile):
 			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to delete the document configuration?"))
 			answer = dialog.run()
@@ -536,7 +537,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     def on_user_configuration_action_activate(self, action, data=None):
 	directory = self._find_AutoLaTeX_dir()
 	if directory:
-		cfgFile = os.path.join(os.path.expanduser("~"),".autolatex")
+		cfgFile = os.path.join(utils.get_autolatex_user_config_file())
 		runConfig = True
 		if not os.path.exists(cfgFile):
 			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to create a configuration\nfile at the user level?"))
@@ -551,7 +552,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 				cli_config.open_configuration_dialog(self.window, False, directory)
 
     def on_delete_user_configuration_action_activate(self, action, data=None):
-	cfgFile = os.path.join(os.path.expanduser("~"), '.autolatex')
+	cfgFile = utils.get_autolatex_user_config_file()
 	if os.path.exists(cfgFile):
 		dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to delete the user configuration?"))
 		answer = dialog.run()
