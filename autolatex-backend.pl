@@ -74,10 +74,15 @@ use AutoLaTeX::Core::IntUtils;
 push @INC, File::Spec->catfile(getUserConfigDirectory(),"translators");
 
 
+sub killMe($) {
+	print STDERR $_[0]."\n";
+	exit(255);
+}
+
 sub readStdin() {
 	my $tmpfile = tmpnam();
 	local *OUTFILE;
-	open(*OUTFILE, ">$tmpfile") or exit(255);
+	open(*OUTFILE, ">$tmpfile") or killMe("$tmpfile: $!");
 	while (my $line = <STDIN>) {
 		print OUTFILE $line;
 	}
@@ -160,7 +165,7 @@ if ($a1 eq 'get') {
 			%cfgOutput = %currentConfiguration;
 		}
 		else {
-			exit(255);
+			killMe("illegal command line");
 		}
 		if ($a4) {
 			if ($a4 eq '__private__') {
@@ -201,7 +206,7 @@ if ($a1 eq 'get') {
 		}
 		writeConfigFile($tmpfile, %cfgOutput, 0);
 		local *INFILE;
-		open(*INFILE, "<$tmpfile") or exit(255);
+		open(*INFILE, "<$tmpfile") or killMe("$tmpfile: $!");
 		while (my $line = <INFILE>) {
 			print STDOUT $line;
 		}
@@ -229,7 +234,7 @@ if ($a1 eq 'get') {
 					%projectConfiguration);
 		}
 		elsif ($a3) {
-			exit(255);
+			killMe("illegal command line");
 		}
 		my %conflicts = detectConflicts(%translators);
 		foreach my $k (keys %conflicts) {
@@ -326,7 +331,7 @@ if ($a1 eq 'get') {
 		}
 	}
 	else {
-		exit(255);
+		killMe("illegal command line");
 	}
 }
 elsif ($a1 eq 'set') {
@@ -375,13 +380,45 @@ elsif ($a1 eq 'set') {
 			my $userFile = getUserConfigFilename();
 			writeConfigFile($userFile, %userConfiguration);
 		}
-		elsif ($a3 eq 'project' && @projectConfigurationPath) {
-			if ($a4 eq 'true') {
-				%projectConfiguration = ();
+		elsif ($a3 eq 'project') {
+			if (@projectConfigurationPath) {
+				if ($a4 eq 'true') {
+					%projectConfiguration = ();
+				}
+				while (my ($section, $v) = each(%new_config)) {
+					while (my ($key, $value) = each(%{$v})) {
+						if ($key !~ /\_INHERITED$/i) {
+							$projectConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
+						}
+					}
+				}
+				my $projectFile = getProjectConfigFilename(@projectConfigurationPath);
+				writeConfigFile($projectFile, %projectConfiguration);
+			}
+			else {
+				killMe("no path to the project");
+			}
+		}
+		else {
+			killMe('illegal command line');
+		}
+	}
+	elsif ($a2 eq 'images') {
+		if (@projectConfigurationPath) {
+			my %new_config = readStdin();
+			my @keys = keys %projectConfiguration;
+			foreach my $key (@keys) {
+				if ($key =~ /^[^2]+2[^+_]+(?:\+[^+_]+)*(?:_[^.]+)?\.(.+)$/) {
+					my $param = $1;
+					if (($a3 eq 'true' && $param ne 'include module') ||
+					    ($a3 ne 'true' && $param eq 'files to convert')) {
+						delete $projectConfiguration{$key};
+					}
+				}
 			}
 			while (my ($section, $v) = each(%new_config)) {
 				while (my ($key, $value) = each(%{$v})) {
-					if ($key !~ /\_INHERITED$/i) {
+					if ($key ne 'automatic assignment' && $key ne 'overriden assignment' && $key !~ /\_INHERITED/i) {
 						$projectConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
 					}
 				}
@@ -390,33 +427,11 @@ elsif ($a1 eq 'set') {
 			writeConfigFile($projectFile, %projectConfiguration);
 		}
 		else {
-			exit(255);
+			killMe('no path to the project');
 		}
-	}
-	elsif ($a2 eq 'images' && @projectConfigurationPath) {
-		my %new_config = readStdin();
-		my @keys = keys %projectConfiguration;
-		foreach my $key (@keys) {
-			if ($key =~ /^[^2]+2[^+_]+(?:\+[^+_]+)*(?:_[^.]+)?\.(.+)$/) {
-				my $param = $1;
-				if (($a3 eq 'true' && $param ne 'include module') ||
-				    ($a3 ne 'true' && $param eq 'files to convert')) {
-					delete $projectConfiguration{$key};
-				}
-			}
-		}
-		while (my ($section, $v) = each(%new_config)) {
-			while (my ($key, $value) = each(%{$v})) {
-				if ($key ne 'automatic assignment' && $key ne 'overriden assignment' && $key !~ /\_INHERITED/i) {
-					$projectConfiguration{"$section.$key"} = rebuiltConfigValue("$section.$key",$value);
-				}
-			}
-		}
-		my $projectFile = getProjectConfigFilename(@projectConfigurationPath);
-		writeConfigFile($projectFile, %projectConfiguration);
 	}
 	else {
-		exit(255);
+		killMe('illegal command line');
 	}
 }
 elsif (!$a1) {
@@ -447,7 +462,7 @@ elsif (!$a1) {
 		_T("Read from STDIN an ini file that is describing the attributes for the translators. The boolean param indicates if the configuration keys that are not given on STDIN will be removed (if true) or skipped (if false, the default) during the setting process."));
 }
 else {
-	exit(255);
+	killMe('illegal command line');
 }
 
 exit(0);

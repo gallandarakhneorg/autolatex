@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Config;
 
-$VERSION = '14.0';
+$VERSION = '15.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getProjectConfigFilename &getUserConfigFilename &getSystemConfigFilename
               &getSystemISTFilename &readConfiguration &readConfigFile &getUserConfigDirectory
@@ -564,60 +564,68 @@ I<Returns:> nothing
 =cut
 sub writeConfigFile($\%;$) {
 	my $filename = shift;
-	die('second parameter of writeConfigGile() is not a hash') unless(isHash($_[0]));
+	die('second parameter of writeConfigFile() is not a hash') unless(isHash($_[0]));
 
 	# Write the values
 	printDbg(formatText(_T("Writing configuration file {}"),$filename));
 	printDbgIndent();
 	my $cfgWriter = new Config::Simple(syntax=>'ini');
+	my $has = 0;
 	while (my ($attr,$value) = each (%{$_[0]})) {
-		if ($attr ne '__private__') {
+		if ($value && $attr ne '__private__') {
 			$value = serializeConfigValue($attr, $value);
 			if ($value) {
 				$cfgWriter->param("$attr",$value);
+				$has = 1;
 			}
 		}
 	}
-	$cfgWriter->write("$filename");
+	if ($has) {
+		$cfgWriter->write("$filename") or printErr($cfgWriter->error());
 
-	if ($_[1]) {
-		# Updating for comments
-		printDbg(_T("Adding configuration comments"));
-		local *CFGFILE;
-		open (*CFGFILE, "< $filename") or printErr("$filename:","$!");
-		my @lines = ();
-		my $lastsection = undef;
-		while (my $l = <CFGFILE>) {
-			if ($l =~ /^\s*\[\s*(.+?)\s*\]\s*$/) {
-				$lastsection = lc($1);
-				if ($SECTION_COMMENTS{"$lastsection"}) {
-					push @lines, "\n";
-					pushComment @lines, $SECTION_COMMENTS{"$lastsection"};
+		if ($_[1]) {
+			# Updating for comments
+			printDbg(_T("Adding configuration comments"));
+			local *CFGFILE;
+			open (*CFGFILE, "< $filename") or printErr("$filename:","$!");
+			my @lines = ();
+			my $lastsection = undef;
+			while (my $l = <CFGFILE>) {
+				if ($l =~ /^\s*\[\s*(.+?)\s*\]\s*$/) {
+					$lastsection = lc($1);
+					if ($SECTION_COMMENTS{"$lastsection"}) {
+						push @lines, "\n";
+						pushComment @lines, $SECTION_COMMENTS{"$lastsection"};
+					}
+					else {
+						push @lines, "\n";
+						pushComment @lines, _T("Configuration of the translator")." '$lastsection'";
+					}
 				}
-				else {
-					push @lines, "\n";
-					pushComment @lines, _T("Configuration of the translator")." '$lastsection'";
+				elsif (($l =~ /^\s*(.*?)\s*=/)&&($lastsection)) {
+					my $attr = lc($1);
+					if ($CONFIGURATION_COMMENTS{"$lastsection.$attr"}) {
+						push @lines, "\n";
+						pushComment @lines, $CONFIGURATION_COMMENTS{"$lastsection.$attr"};
+					}
 				}
+				push @lines, $l;
 			}
-			elsif (($l =~ /^\s*(.*?)\s*=/)&&($lastsection)) {
-				my $attr = lc($1);
-				if ($CONFIGURATION_COMMENTS{"$lastsection.$attr"}) {
-					push @lines, "\n";
-					pushComment @lines, $CONFIGURATION_COMMENTS{"$lastsection.$attr"};
-				}
-			}
-			push @lines, $l;
+			close(*CFGFILE);
+
+			printDbg(_T("Saving configuration comments"));
+			local *CFGFILE;
+			open (*CFGFILE, "> $filename") or printErr("$filename:","$!");
+			print CFGFILE (@lines);
+			close(*CFGFILE);	
 		}
-		close(*CFGFILE);
-
-		printDbg(_T("Saving configuration comments"));
-		local *CFGFILE;
+	}
+	else {
+		# Create an empty file
 		open (*CFGFILE, "> $filename") or printErr("$filename:","$!");
-		print CFGFILE (@lines);
-		close(*CFGFILE);	
-
-		printDbgUnindent();
+		close(*CFGFILE);
 	}
+	printDbgUnindent();
 	1;
 }
 

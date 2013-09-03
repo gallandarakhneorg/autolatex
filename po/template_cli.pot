@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-02 14:05+0200\n"
+"POT-Creation-Date: 2013-09-03 22:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,36 +57,36 @@ msgstr ""
 msgid "Command line action '{}' is not supported."
 msgstr ""
 
-#: autolatex-backend.pl:425
+#: autolatex-backend.pl:440
 msgid "<section>"
 msgstr ""
 
-#: autolatex-backend.pl:426
+#: autolatex-backend.pl:441
 msgid ""
 "Output the configuration for the given level. If the 4th param is given, "
 "output only the section with this name. If section is \"__private__\", the "
 "hidden configuration is output."
 msgstr ""
 
-#: autolatex-backend.pl:429
+#: autolatex-backend.pl:444
 msgid "Output the list of the installed translators."
 msgstr ""
 
-#: autolatex-backend.pl:432
+#: autolatex-backend.pl:447
 msgid ""
 "Output the translators potentially under conflicts. If 'resolved' is given, "
 "apply the resolution mechanism."
 msgstr ""
 
-#: autolatex-backend.pl:435
+#: autolatex-backend.pl:450
 msgid "Output the loading directives for translators."
 msgstr ""
 
-#: autolatex-backend.pl:438
+#: autolatex-backend.pl:453
 msgid "Output the list of figures detected by AutoLaTeX."
 msgstr ""
 
-#: autolatex-backend.pl:441
+#: autolatex-backend.pl:456
 msgid ""
 "Read from STDIN an ini file that is a new configuration for the given level. "
 "The boolean param indicates if the configuration keys that are not given on "
@@ -94,11 +94,11 @@ msgid ""
 "the setting process."
 msgstr ""
 
-#: autolatex-backend.pl:444
+#: autolatex-backend.pl:459
 msgid "Read from STDIN an ini file for the loading directives of translators."
 msgstr ""
 
-#: autolatex-backend.pl:447
+#: autolatex-backend.pl:462
 msgid ""
 "Read from STDIN an ini file that is describing the attributes for the "
 "translators. The boolean param indicates if the configuration keys that are "
@@ -257,19 +257,19 @@ msgstr ""
 msgid "Writing configuration file {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:585
+#: pm/AutoLaTeX/Core/Config.pm:588
 msgid "Adding configuration comments"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:599
+#: pm/AutoLaTeX/Core/Config.pm:602
 msgid "Configuration of the translator"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:613
+#: pm/AutoLaTeX/Core/Config.pm:616
 msgid "Saving configuration comments"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:679
+#: pm/AutoLaTeX/Core/Config.pm:687
 msgid ""
 "AutoLaTeX has detecting an old fashion syntax for the configuration file {}\n"
 "Please regenerate this file with the command line option --fixconfig."
@@ -395,8 +395,8 @@ msgstr ""
 msgid "{}: file not found or not readable."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:872 pm/AutoLaTeX/Make/Make.pm:819
-#: pm/AutoLaTeX/Make/Make.pm:900
+#: pm/AutoLaTeX/Core/Translator.pm:872 pm/AutoLaTeX/Make/Make.pm:832
+#: pm/AutoLaTeX/Make/Make.pm:913
 msgid "{} is up-to-date."
 msgstr ""
 
@@ -488,9 +488,9 @@ msgstr ""
 #: pm/AutoLaTeX/Core/Util.pm:667 pm/AutoLaTeX/Core/Util.pm:723
 #: pm/AutoLaTeX/Core/Util.pm:729 pm/AutoLaTeX/Core/Util.pm:802
 #: pm/AutoLaTeX/Core/Util.pm:808 pm/AutoLaTeX/TeX/Flattener.pm:113
-#: pm/AutoLaTeX/Make/Make.pm:528 pm/AutoLaTeX/Make/Make.pm:721
-#: pm/AutoLaTeX/Make/Make.pm:1134 pm/AutoLaTeX/Make/Make.pm:1139
-#: pm/AutoLaTeX/Make/Make.pm:1159
+#: pm/AutoLaTeX/Make/Make.pm:528 pm/AutoLaTeX/Make/Make.pm:734
+#: pm/AutoLaTeX/Make/Make.pm:1147 pm/AutoLaTeX/Make/Make.pm:1152
+#: pm/AutoLaTeX/Make/Make.pm:1172
 msgid "{}: {}"
 msgstr ""
 
@@ -612,35 +612,35 @@ msgstr ""
 msgid "{}: Error when processing {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:591
+#: pm/AutoLaTeX/Make/Make.pm:604
 msgid "{}: The first error found in the log file is:"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:593
+#: pm/AutoLaTeX/Make/Make.pm:606
 msgid "{}: End of error log."
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:596
+#: pm/AutoLaTeX/Make/Make.pm:609
 msgid "{}: Unable to extract the error from the log. Please read the log file."
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:729
+#: pm/AutoLaTeX/Make/Make.pm:742
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:732
+#: pm/AutoLaTeX/Make/Make.pm:745
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:735
+#: pm/AutoLaTeX/Make/Make.pm:748
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:743
+#: pm/AutoLaTeX/Make/Make.pm:756
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1163
+#: pm/AutoLaTeX/Make/Make.pm:1176
 msgid "Style file: {}"
 msgstr ""

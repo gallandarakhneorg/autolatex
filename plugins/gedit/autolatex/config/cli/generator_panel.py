@@ -225,7 +225,7 @@ class Panel(abstract_panel.AbstractPanel):
 	def save(self):
 		self._reset_settings_section()
 		#
-		if self._get_sentitivity(self._ui_main_tex_file_editor):
+		if self._is_document_level and self._get_sentitivity(self._ui_main_tex_file_editor):
 			v = self._ui_main_tex_file_editor.get_text()
 		else:
 			v = None

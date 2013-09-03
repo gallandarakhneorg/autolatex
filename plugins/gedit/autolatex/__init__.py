@@ -508,19 +508,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     def on_document_configuration_action_activate(self, action, data=None):
 	directory = self._find_AutoLaTeX_dir()
 	if directory:
-		cfgFile = utils.get_autolatex_document_config_file(directory)
-		runConfig = True
-		if not os.path.exists(cfgFile):
-			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to create a configuration\nfile for your document?"))
-			answer = dialog.run()
-			dialog.destroy()
-			runConfig = (answer == Gtk.ResponseType.YES)
-			if runConfig:
-				self._launch_AutoLaTeX(
-					None,
-					'', [ '--createconfig=project', utils.DEFAULT_LOG_LEVEL ])
-		if runConfig:
-			cli_config.open_configuration_dialog(self.window, True, directory)
+		cli_config.open_configuration_dialog(self.window, True, directory)
 
     def on_delete_document_configuration_action_activate(self, action, data=None):
 	directory = self._find_AutoLaTeX_dir()
@@ -537,19 +525,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     def on_user_configuration_action_activate(self, action, data=None):
 	directory = self._find_AutoLaTeX_dir()
 	if directory:
-		cfgFile = os.path.join(utils.get_autolatex_user_config_file())
-		runConfig = True
-		if not os.path.exists(cfgFile):
-			dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to create a configuration\nfile at the user level?"))
-			answer = dialog.run()
-			dialog.destroy()
-			runConfig = (answer == Gtk.ResponseType.YES)
-			if runConfig:
-				self._launch_AutoLaTeX(
-					None,
-					'', [ '--createconfig=user', utils.DEFAULT_LOG_LEVEL ])
-		if runConfig:
-				cli_config.open_configuration_dialog(self.window, False, directory)
+		cli_config.open_configuration_dialog(self.window, False, directory)
 
     def on_delete_user_configuration_action_activate(self, action, data=None):
 	cfgFile = utils.get_autolatex_user_config_file()

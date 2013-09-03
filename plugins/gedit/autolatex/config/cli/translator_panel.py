@@ -30,8 +30,6 @@ from gi.repository import GObject, Gdk, Gtk, GdkPixbuf, GtkSource
 from ...utils import utils
 from . import abstract_panel
 
-from ...utils.debug import dbg
-
 #---------------------------------
 # INTERNATIONALIZATION
 #---------------------------------

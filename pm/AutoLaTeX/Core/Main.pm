@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '20.0';
+$VERSION = '21.0';
 $COPYRIGHT_YEAR = '2013';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -292,11 +292,6 @@ sub mainProgram(;$) {
 		detectMainTeXFile(%configuration);
 	}
 
-	# Set the param 'input.directory'
-	if ($configuration{'__private__'}{'input.latex file'}) {
-		$configuration{'__private__'}{'input.directory'} = dirname($configuration{'__private__'}{'input.latex file'});
-	}
-
 	# read project's configuration
 	{
 		my $projectConfigFilename = getProjectConfigFilename($configuration{'__private__'}{'output.directory'});
@@ -446,10 +441,16 @@ sub mainProgram(;$) {
 		}
 	}
 
+	# set the project's directory if never set before
+	if (!$configuration{'__private__'}{'input.project directory'} &&
+	    $configuration{'__private__'}{'input.latex file'}) {
+		$configuration{'__private__'}{'input.project directory'} = File::Spec->rel2abs(dirname($configuration{'__private__'}{'input.latex file'}));
+	}
+
 	# Set the directory of the pictures to a default value if not defined in
 	# the configuration nor given on the CLI
 	if (! defined($configuration{'generation.image directory'})) {
-		$configuration{'generation.image directory'} = $configuration{'__private__'}{'input.directory'};
+		$configuration{'generation.image directory'} = $configuration{'__private__'}{'input.project directory'};
 	}
 
 	return %configuration;
