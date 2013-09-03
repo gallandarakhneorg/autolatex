@@ -445,7 +445,7 @@ sub al_getcleanfiles() {
 				$configuration{'__private__'}{'output.latex basename'}));
 	my @filestoclean = (
 		'.autolatex_stamp', 'autolatex_stamp',
-		'autolatex_exec_stderr.log', 'autolatex_exec_stdout.log',
+		'autolatex_exec_stderr.log', 'autolatex_exec_stdout.log', 'autolatex_exec_stdin.log',
 		"$outputFile.pdf", "$outputFile.dvi", "$outputFile.xdvi", "$outputFile.xdv", "$outputFile.ps", "$outputFile.synctex.gz", "$outputFile.synctex",
 	);
 	my @filestocleanrec = (
