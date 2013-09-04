@@ -1,41 +1,41 @@
 <ui>
-<menubar name="MenuBar">
-    <menu name="ToolsMenu" action="Tools">
-      <placeholder name="ToolsOps_3">
-	<menu action="AutoLaTeXMenu">
-          <placeholder name="AutoLaTeXCompileOps">
-	    <menuitem action="AutoLaTeXGenerateImageAction"/>
-	    <menuitem action="AutoLaTeXCompileAction"/>
-	    <menuitem action="AutoLaTeXCleanAction"/>
-	    <menuitem action="AutoLaTeXCleanallAction"/>
-	    <menu action="AutoLaTeXSyncTeXMenu">
-	      <placeholder name="AutoLaTeXSyncTeXOps">
-	        <menuitem action="AutoLaTeXEnableSyncTeXAction"/>
-	        <menuitem action="AutoLaTeXUpdateForSyncTeXAction"/>
-              </placeholder>
-            </menu>
-          </placeholder>
-	  <separator />
-          <placeholder name="AutoLaTeXViewOps">
-	    <menuitem action="AutoLaTeXViewAction"/>
-          </placeholder>
-	  <separator />
-          <placeholder name="AutoLaTeXExportOps">
-	    <menuitem action="AutoLaTeXMakeFlatAction"/>
-          </placeholder>
-	  <separator />
-	  <menu action="AutoLaTeXConfigMenu">
-            <placeholder name="AutoLaTeXConfigOps">
-	      <menuitem action="AutoLaTeXDocumentConfAction"/>
-	      <menuitem action="AutoLaTeXRemoveDocumentConfAction"/>
-	      <separator />
-	      <menuitem action="AutoLaTeXUserConfAction"/>
-	      <menuitem action="AutoLaTeXRemoveUserConfAction"/>
-            </placeholder>
-          </menu>
-        </menu>
-      </placeholder>
-    </menu>
-</menubar>
+	<menubar name="MenuBar">
+		<menu name="EditMenu" action="Edit">
+			<placeholder name="EditOps_6">
+				<separator/>
+				<menuitem action="AutoLaTeXDocumentConfAction"/>
+				<menuitem action="AutoLaTeXUserConfAction"/>
+				<menuitem action="AutoLaTeXRemoveDocumentConfAction"/>
+				<menuitem action="AutoLaTeXRemoveUserConfAction"/>
+				<separator/>
+			</placeholder>
+		</menu>
+		<menu name="ViewMenu" action="View">
+			<separator/>
+			<menuitem action="AutoLaTeXViewAction"/>
+			<separator/>
+		</menu>
+		<menu name="ToolsMenu" action="Tools">
+			<placeholder name="ToolsOps_5">
+				<separator/>
+				<menuitem action="AutoLaTeXMakeFlatAction"/>
+				<separator/>
+			</placeholder>
+		</menu>
+		<placeholder name="ExtraMenu_1">
+			<menu name="AutoLaTeXMenu" action="AutoLaTeXMenu">
+				<menuitem action="AutoLaTeXGenerateImageAction"/>
+				<menuitem action="AutoLaTeXCompileAction"/>
+				<separator/>
+				<menuitem action="AutoLaTeXCleanAction"/>
+				<menuitem action="AutoLaTeXCleanallAction"/>
+				<separator/>
+				<menu action="AutoLaTeXSyncTeXMenu">
+					<menuitem action="AutoLaTeXEnableSyncTeXAction"/>
+					<menuitem action="AutoLaTeXUpdateForSyncTeXAction"/>
+				</menu>
+			</menu>
+		</placeholder>
+	</menubar>
 </ui>
 

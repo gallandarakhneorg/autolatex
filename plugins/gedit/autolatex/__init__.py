@@ -323,14 +323,6 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
                 None),
         ])
 	manager.insert_action_group(self._synctex_menu)
-	# Create the menu for Configurations
-        self._synctex_menu = Gtk.ActionGroup("AutoLaTeXConfigMenu")
-        self._synctex_menu.add_actions([
-            ('AutoLaTeXConfigMenu', None, _T("Configuration"), 
-                None, _T("Configuration of the AutoLaTeX processes"), 
-                None),
-        ])
-	manager.insert_action_group(self._synctex_menu)
 	# Create the group of actions that are needing an AutoLaTeX document
         self._document_actions = Gtk.ActionGroup("AutoLaTeXDocumentActions")
         self._document_actions.add_actions([
@@ -349,7 +341,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
             ('AutoLaTeXViewAction', None, _T("View the PDF"), 
                 None, _T("Open the PDF viewer"), 
                 self.on_view_action_activate),
-            ('AutoLaTeXMakeFlatAction', None, _T("Create flat version"), 
+            ('AutoLaTeXMakeFlatAction', None, _T("Create flat version of the TeX document"), 
                 None, _T("Create a flat version of the document, to be submitted to on-line publication systems (Elsevier...)"), 
                 self.on_makeflat_action_activate),
         ])
