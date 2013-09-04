@@ -327,16 +327,16 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         self._document_actions = Gtk.ActionGroup("AutoLaTeXDocumentActions")
         self._document_actions.add_actions([
 	    ('AutoLaTeXGenerateImageAction', None, _T("Generate images"), 
-                None, _T("Generate the images with AutoLaTeX"), 
+                '<shift>F4', _T("Generate the images with AutoLaTeX"), 
                 self.on_generateimage_action_activate),
             ('AutoLaTeXCompileAction', None, _T("Compile"), 
-                '<shift><ctrl>R', _T("Compile with AutoLaTeX"), 
+                '<shift>F5', _T("Compile with AutoLaTeX"), 
                 self.on_compile_action_activate),
             ('AutoLaTeXCleanAction', None, _T("Remove temporary files"), 
-                None, _T("Clean with AutoLaTeX"), 
+                '<shift>F6', _T("Clean with AutoLaTeX"), 
                 self.on_clean_action_activate),
             ('AutoLaTeXCleanallAction', None, _T("Clean all"), 
-                '<shift><ctrl>C', _T("Clean all with AutoLaTeX"), 
+                None, _T("Clean all with AutoLaTeX"), 
                 self.on_cleanall_action_activate),
             ('AutoLaTeXViewAction', None, _T("View the PDF"), 
                 None, _T("Open the PDF viewer"), 
@@ -420,8 +420,6 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		self._error_console = None
 	# Remove the Gtk Widgets
         manager = self.window.get_ui_manager()
-	for merge_id in self._ui_merge_ids:
-	        manager.remove_ui(merge_id)
         manager.remove_action_group(self._document_actions)
         manager.remove_action_group(self._texsensitive_actions)
         manager.remove_action_group(self._docconfsensitive_actions)
@@ -429,6 +427,8 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         manager.remove_action_group(self._general_actions)
 	manager.remove_action_group(self._synctex_menu)
         manager.remove_action_group(self._menu)
+	for merge_id in self._ui_merge_ids:
+	        manager.remove_ui(merge_id)
         manager.ensure_update()
     
     # Test if a given string is a standard extension for TeX document
