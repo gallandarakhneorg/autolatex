@@ -404,11 +404,13 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	checkbox.set_active(self._gsettings.get_force_synctex())
 	# Connect from gsettings
 	self._gsettings.connect('force-synctex', self.on_gsettings_changed)
+	self._gsettings.connect('save-before-run-autolatex', self.on_gsettings_changed)
 
     # Remove all contributions to the Gtk UI
     def _remove_ui(self):
 	# Disconnect from gsettings
 	self._gsettings.disconnect('force-synctex')
+	self._gsettings.disconnect('save-before-run-autolatex')
 	# Remove the error console
 	if self._latex_console:
 		if self._latex_console.get_parent() is not None:
@@ -477,12 +479,25 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 
 	return adir
 
-    def _launch_AutoLaTeX(self, label, directive, params):
+    def _launch_AutoLaTeX(self, label, directive, params, enable_saving):
 	directory = self._find_AutoLaTeX_dir()
 	if directory:
 	    GObject.idle_add(self._update_action_validity, False, None, None)
+
+	    # Save the documents if necessary
+	    if enable_saving and self._gsettings.get_save_before_run_autolatex():
+		self._save_documents()
+
 	    thread = _AutoLaTeXExecutionThread(self, label, self._gsettings, directory, directive, params)
 	    thread.start()
+
+    def _save_documents(self):
+	for document in self.window.get_unsaved_documents():
+		is_untitled = document.is_untitled()
+		is_deleted = document.get_deleted()
+		is_readonly = document.get_readonly()
+		if not is_untitled and not is_deleted and not is_readonly :
+			document.save(Gedit.DocumentSaveFlags.IGNORE_MTIME)
 
     def _apply_general_autolatex_cli_options(self, params):
 	if self._gsettings.get_force_synctex():
@@ -494,31 +509,36 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	self._launch_AutoLaTeX(
 			_T("Removing the generated files (except the figures)"),
 			'clean', self._apply_general_autolatex_cli_options(
-			[ '--noview' ]))
+			[ '--noview' ]),
+			False)
 
     def on_cleanall_action_activate(self, action, data=None):
 	self._launch_AutoLaTeX(
 			_T("Removing the generated files and figures"),
 			'cleanall', self._apply_general_autolatex_cli_options(
-			[ '--noview' ]))
+			[ '--noview' ]),
+			False)
 
     def on_compile_action_activate(self, action, data=None):
 	self._launch_AutoLaTeX(
 			_T("Generating the document"),
 			'all', self._apply_general_autolatex_cli_options(
-			[ '--noview' ]))
+			[ '--noview' ]),
+			True)
 
     def on_generateimage_action_activate(self, action, data=None):
 	self._launch_AutoLaTeX(
 			_T("Generating the figures with the translators"),
 			'images', self._apply_general_autolatex_cli_options(
-			[ '--noview' ]))
+			[ '--noview' ]),
+			False)
 
     def on_view_action_activate(self, action, data=None):
 	self._launch_AutoLaTeX(
 			_T("Launching the viewer"),
 			'view', self._apply_general_autolatex_cli_options(
-			[ '--asyncview' ]))
+			[ '--asyncview' ]),
+			True)
 
     def on_document_configuration_action_activate(self, action, data=None):
 	directory = self._find_AutoLaTeX_dir()
@@ -613,6 +633,8 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	if key == 'force-synctex':
 		checkbox = self._general_actions.get_action('AutoLaTeXEnableSyncTeXAction')
 		checkbox.set_active(self._gsettings.get_force_synctex())
+	elif key == 'save-before-run-autolatex':
+		pass
 
     def on_enable_synctex_action_activate(self, action, data=None):
 	checkbox = self._general_actions.get_action('AutoLaTeXEnableSyncTeXAction')
@@ -622,5 +644,6 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	self._launch_AutoLaTeX(
 			_T("Making the \"flat\" version of the document"),
 			'makeflat', self._apply_general_autolatex_cli_options(
-			[ '--noview' ]))
+			[ '--noview' ],
+			True))
 

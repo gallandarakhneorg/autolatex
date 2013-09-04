@@ -108,7 +108,7 @@ class Panel(Gtk.Grid):
 		ui_table.set_property('margin', 5)
 		ui_frame.add(ui_table)
 		ui_label = Gtk.Label(_T("Enable SyncTeX (overriding the configurations)"))
-		ui_label.set_property('hexpand', False)
+		ui_label.set_property('hexpand', True)
 		ui_label.set_property('vexpand', False)
 		ui_label.set_property('halign', Gtk.Align.START)
 		ui_label.set_property('valign', Gtk.Align.CENTER)
@@ -135,7 +135,7 @@ class Panel(Gtk.Grid):
 		ui_table.set_property('margin', 5)
 		ui_frame.add(ui_table)
 		ui_label = Gtk.Label(_T("Show the progress info bar"))
-		ui_label.set_property('hexpand', False)
+		ui_label.set_property('hexpand', True)
 		ui_label.set_property('vexpand', False)
 		ui_label.set_property('halign', Gtk.Align.START)
 		ui_label.set_property('valign', Gtk.Align.CENTER)
@@ -149,6 +149,33 @@ class Panel(Gtk.Grid):
 		ui_table.attach(self._ui_show_progress_info_bar, 
 				1,0,1,1) # left, top, width, height
 
+		# Row 4: Document parameters
+		ui_frame = Gtk.Frame()
+		ui_frame.set_label(_T("Configuration of the documents"));
+		ui_frame.set_property('margin', 5)
+		self.add(ui_frame)
+		ui_table = Gtk.Grid()
+		ui_table.set_row_homogeneous(True)
+		ui_table.set_column_homogeneous(False)
+		ui_table.set_row_spacing(5)
+		ui_table.set_column_spacing(5)
+		ui_table.set_property('margin', 5)
+		ui_frame.add(ui_table)
+		ui_label = Gtk.Label(_T("Save before running AutoLaTeX"))
+		ui_label.set_property('hexpand', True)
+		ui_label.set_property('vexpand', False)
+		ui_label.set_property('halign', Gtk.Align.START)
+		ui_label.set_property('valign', Gtk.Align.CENTER)
+		ui_table.attach(ui_label, 
+				0,0,1,1) # left, right, width, height
+		self._ui_save_before_run = Gtk.Switch()
+		self._ui_save_before_run.set_property('hexpand', False)
+		self._ui_save_before_run.set_property('vexpand', False)
+		self._ui_save_before_run.set_property('halign', Gtk.Align.END)
+		self._ui_save_before_run.set_property('valign', Gtk.Align.CENTER)
+		ui_table.attach(self._ui_save_before_run, 
+				1,0,1,1) # left, top, width, height
+
 		# Set the initial values
 		self.on_initialize_fields()
 		# Attach signals
@@ -160,6 +187,7 @@ class Panel(Gtk.Grid):
 			self._settings.disconnect('autolatex-backend-cmd')
 			self._settings.disconnect('force-synctex')
 			self._settings.disconnect('show-progress-info')
+			self._settings.disconnect('save-before-run-autolatex')
 			self.disconnect(self._ui_hierarchy_connect_id)
 			self.on_save_changes()
 		else:
@@ -167,6 +195,7 @@ class Panel(Gtk.Grid):
 			self._settings.connect('autolatex-backend-cmd', self.on_gsettings_changed)
 			self._settings.connect('force-synctex', self.on_gsettings_changed)
 			self._settings.connect('show-progress-info', self.on_gsettings_changed)
+			self._settings.connect('save-before-run-autolatex', self.on_gsettings_changed)
 
 	# Invoked when the different fields in the preference box must be initialized
 	def on_initialize_fields(self):
@@ -180,6 +209,8 @@ class Panel(Gtk.Grid):
 		self._ui_use_synctex.set_active(flag)
 		flag = self._settings.get_progress_info_visibility()
 		self._ui_show_progress_info_bar.set_active(flag)
+		flag = self._settings.get_save_before_run_autolatex()
+		self._ui_save_before_run.set_active(flag)
 
 	# Invoked when the changes in the preference dialog box should be saved
 	def on_save_changes(self):
@@ -191,6 +222,8 @@ class Panel(Gtk.Grid):
 		self._settings.set_force_synctex(force_synctex)
 		show_info_bar = self._ui_show_progress_info_bar.get_active()
 		self._settings.set_progress_info_visibility(show_info_bar)
+		save_before_run = self._ui_save_before_run.get_active()
+		self._settings.set_save_before_run_autolatex(save_before_run)
 	
 	def on_gsettings_changed(self, settings, key, data=None):
 		if key == 'autolatex-cmd':
@@ -227,6 +260,15 @@ class Panel(Gtk.Grid):
 			window_flag = self._ui_show_progress_info_bar.get_active()
 			if gsettings_flag != window_flag:
 				dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, _T("The enabling flag for the progress info bar has been changed by an external software. The new flag is different from the one inside the preference dialog box. Do you want to use the new flag?"))
+				answer = dialog.run()
+				dialog.destroy()
+				if  answer == Gtk.ResponseType.YES:
+					self._ui_show_progress_info_bar.set_active(gsettings_flag)
+		elif key == 'save-before-run-autolatex':
+			gsettings_flag = self._settings.get_save_before_run_autolatex()
+			window_flag = self._ui_save_before_run.get_active()
+			if gsettings_flag != window_flag:
+				dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, _T("The flag to save before running AutoLaTeX has been changed by an external software. The new flag is different from the one inside the preference dialog box. Do you want to use the new flag?"))
 				answer = dialog.run()
 				dialog.destroy()
 				if  answer == Gtk.ResponseType.YES:

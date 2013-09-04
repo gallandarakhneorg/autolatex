@@ -58,7 +58,11 @@ class Manager:
 			self._sig_autolatex_backend_cmd_changed = self.settings.connect("changed::autolatex-backend-cmd", self.on_autolatex_backend_cmd_changed)
 		else:
 			self.settings = None
-			self._data = { 'force-synctex': True, 'show-progress-info': True }
+			self._data = {
+				'force-synctex': True,
+				'show-progress-info': True,
+				'save-before-run-autolatex': True,
+			}
 
 	def unbind(self):
 		if self.settings:
@@ -153,4 +157,17 @@ class Manager:
 			self.settings.apply()
 		else:
 			self._data['show-progress-info'] = bool(is_shown)
+
+	def get_save_before_run_autolatex(self):
+		if self.settings:
+			return self.settings.get_boolean('save-before-run-autolatex')
+		else:
+			return self._data['save-before-run-autolatex']
+
+	def set_save_before_run_autolatex(self, is_saving):
+		if self.settings:
+			self.settings.set_boolean('save-before-run-autolatex', bool(is_saving))
+			self.settings.apply()
+		else:
+			self._data['save-before-run-autolatex'] = bool(is_saving)
 

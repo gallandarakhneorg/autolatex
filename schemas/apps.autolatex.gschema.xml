@@ -21,5 +21,10 @@
       <summary>Enable or disable the progress info</summary>
       <description>Indicates a progress info should be displayed when long-time operations are processing.</description>
     </key>
+    <key type="b" name="save-before-run-autolatex">
+      <default>true</default>
+      <summary>Save the document before running AutoLaTeX</summary>
+      <description>Indicates if the documents should be saved before launching AutoLaTeX</description>
+    </key>
   </schema>
 </schemalist>
