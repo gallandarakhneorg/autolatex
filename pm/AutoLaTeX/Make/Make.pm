@@ -614,26 +614,37 @@ sub runLaTeX($;$) : method {
 			exit(255);
 		}
 		elsif ($enableLoop) {
-			my $line;
-			open(*LOGFILE, "< $logFile") or printErr("$logFile: $!");
-			my $lastline = '';
-			while (!$continueToCompile && ($line = <LOGFILE>)) {
-				$lastline .= $line;
-				if ($lastline =~ /\.\s*$/) {
-					if ($self->_testLaTeXWarningOn($lastline)) {
-						$continueToCompile = $enableLoop;
-					}
-					$lastline = '';
-				}
-			}
-			if ($lastline =~ /\.\s*$/ && $self->_testLaTeXWarningOn($lastline)) {
-				$continueToCompile = $enableLoop;
-			}
-			close(*LOGFILE);
+			($continueToCompile,$enableLoop) = $self->_testLaTeXWarningInFile(
+				$logFile,$continueToCompile,$enableLoop);
 		}
 	}
 	while ($continueToCompile);
 	return 0;
+}
+
+sub _testLaTeXWarningInFile($$$) : method {
+	my $self = shift;
+	my $logFile = shift;
+	my $continueToCompile = shift;
+	my $enableLoop = shift;
+	my $line;
+	open(*LOGFILE, "< $logFile") or printErr("$logFile: $!");
+	my $lastline = '';
+	while (!$continueToCompile && ($line = <LOGFILE>)) {
+		$lastline .= $line;
+		if ($lastline =~ /\.\s*$/) {
+			if ($self->_testLaTeXWarningOn($lastline)) {
+				$continueToCompile = $enableLoop;
+			}
+			$lastline = '';
+		}
+	}
+	if ($lastline =~ /\.\s*$/ && $self->_testLaTeXWarningOn($lastline)) {
+		$continueToCompile = $enableLoop;
+	}
+	close(*LOGFILE);
+	$self->{'warnings'}{'done'} = 1;
+	return ($continueToCompile,$enableLoop);
 }
 
 sub _testLaTeXWarningOn($) : method {
@@ -739,15 +750,22 @@ sub build(;$) : method {
 			}
 		}
 
+		# Detect warnings if not already done
+		if (!%{$self->{'warnings'}}) {
+			my $texFile = $self->{'files'}{$rootFile}{'mainFile'};
+			my $logFile = File::Spec->catfile(dirname($texFile), basename($texFile, '.tex').'.log');
+			$self->_testLaTeXWarningInFile($logFile, 0, 0);
+		}
+
 		# Output the last LaTeX warning indicators.
 		if ($self->{'warnings'}{'multiple_definition'}) {
-			print STDERR _T("LaTeX Warning: There were multiply-defined labels.\n");
+			print STDERR "!!"._T("LaTeX Warning: There were multiply-defined labels.\n");
 		}
 		if ($self->{'warnings'}{'undefined_reference'}) {
-			print STDERR _T("LaTeX Warning: There were undefined references.\n");
+			print STDERR "!!"._T("LaTeX Warning: There were undefined references.\n");
 		}
 		if ($self->{'warnings'}{'undefined_citation'}) {
-			print STDERR _T("LaTeX Warning: There were undefined citations.\n");
+			print STDERR "!!"._T("LaTeX Warning: There were undefined citations.\n");
 		}
 		if ($self->{'warnings'}{'other_warning'}) {
 			my $texFile = $rootFile;
@@ -755,7 +773,7 @@ sub build(;$) : method {
 				$texFile = $self->{'files'}{$rootFile}{'mainFile'};
 			}
 			my $logFile = File::Spec->catfile(dirname($texFile), basename($texFile, '.tex').'.log');
-			print STDERR formatText(_T("Warning: Please look inside {} for the other the warning messages.\n"),
+			print STDERR formatText(_T("LaTeX Warning: Please look inside {} for the other the warning messages.\n"),
 					basename($logFile));
 		}
 

@@ -37,7 +37,7 @@ from gi.repository import GObject, Gtk, Gio, GdkPixbuf, Gedit, PeasGtk
 from .utils import utils, gsettings
 from .config.cli import window as cli_config
 from .config.plugin import main_panel as plugin_config
-from .widgets import error_console
+from .widgets import latex_console
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -118,6 +118,7 @@ class _AutoLaTeXExecutionThread(_threading.Thread):
 		else:
 			retcode = process.returncode
 			# Read the error output of AutoLaTeX
+			process.stderr.flush()
 			for line in process.stderr:
 				output = output + line
 		process.stdout.close()
@@ -135,7 +136,7 @@ class _AutoLaTeXExecutionThread(_threading.Thread):
 	# "warning" notifications.
 	latex_warnings = []
 	if retcode == 0:
-		regex_expr = re.compile("^LaTeX Warning:\\s*(.*?)\\s*$")
+		regex_expr = re.compile("^\\!\\![^:]+:\\s*(.+?)\\s*$")
 		for output_line in re.split("[\n\r]+", output):
 			mo = re.match(regex_expr, output_line)
 			if mo:
@@ -192,7 +193,6 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	self._status_bar_context_id = None
 	self._compilation_under_progress = False # Indicate if the compilation is under progress
 	self._console_icon = None # Icon of the error console
-	self._error_console = None # Current instance of the error console
 	self._gsettings = gsettings.Manager()
 	self._syntex_regex = re.compile('\%.*mainfile:\s*(.*)$')
 
@@ -203,10 +203,10 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     # Invoked when the plugin is activated 
     def do_activate(self):
 	self._console_icon = self._get_icon('console')
+	self._latex_console = latex_console.Console(self.window) # Current instance of the error console
 	if not self._gsettings:
 		self._gsettings = gsettings.Manager()
         self._add_ui()
-	self._status_bar_context_id = self.window.get_statusbar().get_context_id("gedit-autolatex-plugin")
 	self._check_autolatex_binaries()
 
     # Invoke when the plugin is desactivated
@@ -214,7 +214,6 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         self._remove_ui()
 	self._gsettings.unbind()
 	self._gsettings = None
-	self._status_bar_context_id = None
 
     # Check if the AutoLaTeX binaries were found
     def _check_autolatex_binaries(self):
@@ -267,33 +266,28 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     # Update the UI according to the flag "compilation under progress"
     # and to compilation outputs
     def _update_action_validity(self, valid, console_content, latex_warnings):
+	bottom_panel = self.window.get_bottom_panel()
+	statusbar = self.window.get_statusbar()
+	statusbar.remove_all(self._statusbar_id)
 	# Display or hide the error console if an error message is given or not
-	if (console_content):
-		if (not self._error_console or self._error_console.get_parent is None):
-			if (not self._error_console):
-				self._error_console = error_console.ErrorConsole(self.window)
-			panel = self.window.get_bottom_panel()
-			panel.add_item(self._error_console,
+	show_console = self._latex_console.set_log(
+				console_content,
+				latex_warnings,
+				self._find_AutoLaTeX_dir())
+	if show_console != latex_console.ConsoleMode.HIDE:
+		console_parent = self._latex_console.get_parent()
+		if (console_parent is None):
+			bottom_panel.add_item(self._latex_console,
 				"autolatex-console-panel",
 				_T("AutoLaTeX Console"),
 				Gtk.Image.new_from_pixbuf(self._console_icon))
-		self._error_console.set_log(console_content, self._find_AutoLaTeX_dir())
-	        panel.activate_item(self._error_console)
-		if panel.get_property("visible") == False:
-                        panel.set_property("visible", True)
-	else:
-		if (self._error_console):
-			panel = self.window.get_bottom_panel()
-			panel.remove_item(self._error_console)
-			self._error_console = None
+	        bottom_panel.activate_item(self._latex_console)
+		if show_console == latex_console.ConsoleMode.SHOW and bottom_panel.get_property("visible") == False:
+	                bottom_panel.set_property("visible", True)
 	# Update the status bar
-	status_bar = self.window.get_statusbar()
-	status_bar.remove_all(self._status_bar_context_id)
-	if latex_warnings:
-		message = latex_warnings[0]
-		if len(latex_warnings)>1:
-			message = "LaTeX: "+ message + "[...]"
-		status_bar.push(self._status_bar_context_id, message)
+	if show_console == latex_console.ConsoleMode.OPTIONAL and bottom_panel.get_property("visible") == False:
+		statusbar.push(self._statusbar_id,
+			_T("LaTeX warnings were found. Please open the bottom panel to see them."))
 	# Update the sensitivities of the Widgets
 	self._compilation_under_progress = not valid
 	self.do_update_state()    
@@ -305,6 +299,8 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 
     # Add any contribution to the Gtk UI
     def _add_ui(self):
+	# Get status bar id
+	self._statusbar_id = self.window.get_statusbar().get_context_id('gedit-autolatex-plugin')
 	# Get the UI manager
         manager = self.window.get_ui_manager()
 	# Create the Top menu for AutoLaTeX
@@ -414,10 +410,11 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	# Disconnect from gsettings
 	self._gsettings.disconnect('force-synctex')
 	# Remove the error console
-	if (self._error_console):
-		panel = self.window.get_bottom_panel()
-		panel.remove_item(self._error_console)
-		self._error_console = None
+	if self._latex_console:
+		if self._latex_console.get_parent() is not None:
+			panel = self.window.get_bottom_panel()
+			panel.remove_item(self._latex_console)
+		self._latex_console = None
 	# Remove the Gtk Widgets
         manager = self.window.get_ui_manager()
         manager.remove_action_group(self._document_actions)
