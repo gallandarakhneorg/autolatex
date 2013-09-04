@@ -114,23 +114,38 @@ class _AutoLaTeXExecutionThread(_threading.Thread):
 		# Kill the subprocess if 
 		if self._is_action_canceled:
 			process.kill()
-		# Finalize the execution support of the subprocess
-		elif process.returncode != 0:
+			retcode = 0
+		else:
+			retcode = process.returncode
+			# Read the error output of AutoLaTeX
 			for line in process.stderr:
 				output = output + line
 		process.stdout.close()
 		process.stderr.close()
+		
 	    else:
 		# Silent execution of the task
 	        out, err = process.communicate()
 	        retcode = process.returncode
-	        if retcode != 0:
-		    output = out + err
+	        output = err
+
+	# If AutoLaTeX had failed, the output is assumed to
+	# be the error message.
+	# If AutoLaTeX had not failed, the output may contains
+	# "warning" notifications.
+	latex_warnings = []
+	if retcode == 0:
+		regex_expr = re.compile("^LaTeX Warning:\\s*(.*?)\\s*$")
+		for output_line in re.split("[\n\r]+", output):
+			mo = re.match(regex_expr, output_line)
+			if mo:
+				latex_warnings.append(mo.group(1))
+		output = '' # Output is no more interesting
 
 	# Remove the info bar from the inside of the Gtk thread
 	GObject.idle_add(self._hide_info_bar)
 	# Update the rest of the UI from the inside of the Gtk thread
-	GObject.idle_add(self._caller._update_action_validity, True, output)
+	GObject.idle_add(self._caller._update_action_validity, True, output, latex_warnings)
 
     def _add_info_bar(self):
 	gedit_tab = self._caller.window.get_active_tab()
@@ -174,6 +189,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     #Constructor
     def __init__(self):
         GObject.Object.__init__(self)
+	self._status_bar_context_id = None
 	self._compilation_under_progress = False # Indicate if the compilation is under progress
 	self._console_icon = None # Icon of the error console
 	self._error_console = None # Current instance of the error console
@@ -190,6 +206,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	if not self._gsettings:
 		self._gsettings = gsettings.Manager()
         self._add_ui()
+	self._status_bar_context_id = self.window.get_statusbar().get_context_id("gedit-autolatex-plugin")
 	self._check_autolatex_binaries()
 
     # Invoke when the plugin is desactivated
@@ -197,6 +214,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         self._remove_ui()
 	self._gsettings.unbind()
 	self._gsettings = None
+	self._status_bar_context_id = None
 
     # Check if the AutoLaTeX binaries were found
     def _check_autolatex_binaries(self):
@@ -248,7 +266,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		
     # Update the UI according to the flag "compilation under progress"
     # and to compilation outputs
-    def _update_action_validity(self, valid, console_content):
+    def _update_action_validity(self, valid, console_content, latex_warnings):
 	# Display or hide the error console if an error message is given or not
 	if (console_content):
 		if (not self._error_console or self._error_console.get_parent is None):
@@ -268,6 +286,14 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 			panel = self.window.get_bottom_panel()
 			panel.remove_item(self._error_console)
 			self._error_console = None
+	# Update the status bar
+	status_bar = self.window.get_statusbar()
+	status_bar.remove_all(self._status_bar_context_id)
+	if latex_warnings:
+		message = latex_warnings[0]
+		if len(latex_warnings)>1:
+			message = "LaTeX: "+ message + "[...]"
+		status_bar.push(self._status_bar_context_id, message)
 	# Update the sensitivities of the Widgets
 	self._compilation_under_progress = not valid
 	self.do_update_state()    
@@ -465,7 +491,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     def _launch_AutoLaTeX(self, label, directive, params):
 	directory = self._find_AutoLaTeX_dir()
 	if directory:
-	    GObject.idle_add(self._update_action_validity, False, None)
+	    GObject.idle_add(self._update_action_validity, False, None, None)
 	    thread = _AutoLaTeXExecutionThread(self, label, self._gsettings, directory, directive, params)
 	    thread.start()
 

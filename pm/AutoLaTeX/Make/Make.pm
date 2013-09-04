@@ -587,7 +587,7 @@ sub runLaTeX($;$) : method {
 					$candidate_pattern = "\Q$l\E[\n\r]+$candidate_pattern";
 					$candidate = $l.$candidate;
 				}
-				if ($candidate) { # && -f "$candidate") {
+				if ($candidate && -f "$candidate") {
 					# Search the error message in the log.
 					$candidate_pattern .= "\Q$post\E";
 					my $i = 0; 
@@ -755,7 +755,7 @@ sub build(;$) : method {
 				$texFile = $self->{'files'}{$rootFile}{'mainFile'};
 			}
 			my $logFile = File::Spec->catfile(dirname($texFile), basename($texFile, '.tex').'.log');
-			print STDERR formatText(_T("LaTeX Warning: Please look inside {} for the other the warning messages.\n"),
+			print STDERR formatText(_T("Warning: Please look inside {} for the other the warning messages.\n"),
 					basename($logFile));
 		}
 
