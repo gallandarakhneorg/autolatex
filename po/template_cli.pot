@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-03 22:02+0200\n"
+"POT-Creation-Date: 2013-09-04 22:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -395,8 +395,8 @@ msgstr ""
 msgid "{}: file not found or not readable."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:872 pm/AutoLaTeX/Make/Make.pm:832
-#: pm/AutoLaTeX/Make/Make.pm:913
+#: pm/AutoLaTeX/Core/Translator.pm:872 pm/AutoLaTeX/Make/Make.pm:852
+#: pm/AutoLaTeX/Make/Make.pm:933
 msgid "{} is up-to-date."
 msgstr ""
 
@@ -488,9 +488,9 @@ msgstr ""
 #: pm/AutoLaTeX/Core/Util.pm:667 pm/AutoLaTeX/Core/Util.pm:723
 #: pm/AutoLaTeX/Core/Util.pm:729 pm/AutoLaTeX/Core/Util.pm:802
 #: pm/AutoLaTeX/Core/Util.pm:808 pm/AutoLaTeX/TeX/Flattener.pm:113
-#: pm/AutoLaTeX/Make/Make.pm:528 pm/AutoLaTeX/Make/Make.pm:734
-#: pm/AutoLaTeX/Make/Make.pm:1147 pm/AutoLaTeX/Make/Make.pm:1152
-#: pm/AutoLaTeX/Make/Make.pm:1172
+#: pm/AutoLaTeX/Make/Make.pm:528 pm/AutoLaTeX/Make/Make.pm:747
+#: pm/AutoLaTeX/Make/Make.pm:1167 pm/AutoLaTeX/Make/Make.pm:1172
+#: pm/AutoLaTeX/Make/Make.pm:1192
 msgid "{}: {}"
 msgstr ""
 
@@ -608,39 +608,39 @@ msgstr ""
 msgid "Parsing auxiliary files"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:535
+#: pm/AutoLaTeX/Make/Make.pm:536
 msgid "{}: Error when processing {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:604
+#: pm/AutoLaTeX/Make/Make.pm:606
 msgid "{}: The first error found in the log file is:"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:606
+#: pm/AutoLaTeX/Make/Make.pm:608
 msgid "{}: End of error log."
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:609
+#: pm/AutoLaTeX/Make/Make.pm:611
 msgid "{}: Unable to extract the error from the log. Please read the log file."
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:742
+#: pm/AutoLaTeX/Make/Make.pm:762
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:745
+#: pm/AutoLaTeX/Make/Make.pm:765
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:748
+#: pm/AutoLaTeX/Make/Make.pm:768
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:756
+#: pm/AutoLaTeX/Make/Make.pm:776
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1176
+#: pm/AutoLaTeX/Make/Make.pm:1196
 msgid "Style file: {}"
 msgstr ""
