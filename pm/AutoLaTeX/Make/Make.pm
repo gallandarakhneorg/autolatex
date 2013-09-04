@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '11.0';
+our $VERSION = '14.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -531,8 +531,10 @@ sub runLaTeX($;$) : method {
 		unlink($logFile);
 		my $exitcode = runCommandSilently(@{$self->{'latex_cmd'}}, $file);
 		local *LOGFILE;
+
 		if ($exitcode!=0) {
 			printDbg(formatText(_T("{}: Error when processing {}"), 'PDFLATEX', basename($file)));
+
 			# Parse the log to extract the blocks of messages
 			my $line;
 			my $fatal_error = undef;
@@ -579,20 +581,20 @@ sub runLaTeX($;$) : method {
 				my ($candidate, $post) = ($1,$2);
 				my @candidates = split(/[\n\r]+/, $candidate);
 				$candidate = pop @candidates;
+				my $candidate_pattern = "\Q$candidate\E";
 				while ($candidate && @candidates && ! -f "$candidate") {
 					my $l = pop @candidates;
+					$candidate_pattern = "\Q$l\E[\n\r]+$candidate_pattern";
 					$candidate = $l.$candidate;
 				}
-				if ($candidate && -f "$candidate") {
+				if ($candidate) { # && -f "$candidate") {
 					# Search the error message in the log.
+					$candidate_pattern .= "\Q$post\E";
 					my $i = 0; 
-					while ($candidate && $i<@log_blocks) {
+					while (!$extracted_message && $i<@log_blocks) {
 						my $block = $log_blocks[$i];
-						if ($block =~ /\Q$candidate\E(.*)$/s) {
-							$extracted_message = $1;
-							$candidate =~ s/[\n\r]+//gs;
-							$extracted_message = $candidate.$extracted_message;
-							$candidate = undef;
+						if ($block =~ /$candidate_pattern(.*)$/s) {
+							$extracted_message = $candidate.$post.$1;
 						}
 						$i++;
 					}
@@ -602,7 +604,7 @@ sub runLaTeX($;$) : method {
 			# Display the message
 			if ($extracted_message) {
 				printDbg(formatText(_T("{}: The first error found in the log file is:"), 'PDFLATEX'));
-				print STDERR $extracted_message;
+				print STDERR "$extracted_message\n";
 				printDbg(formatText(_T("{}: End of error log."), 'PDFLATEX'));
 			}
 			else {
