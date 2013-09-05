@@ -454,7 +454,7 @@ sub al_getcleanfiles() {
 		'*.lot', '*.los', '*.maf', '*.snm',
 		'*.nav', '*.lom', '*.tmp', '*.loa',
 		'*.idx', '*.ilg', '*.ind', '*.mtc',
-		'*.loe',
+		'*.loe', '*.fls',
 		'*.mtc[0-9]', '*.mtc[0-9][0-9]',
 		'*.mtc[0-9][0-9][0-9]', '*.mtf',
 		'*.mtf[0-9]', '*.mtf[0-9][0-9]',
