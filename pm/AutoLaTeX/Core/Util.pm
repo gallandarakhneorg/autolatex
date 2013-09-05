@@ -38,7 +38,7 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '6.0';
+our $VERSION = '7.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
@@ -47,6 +47,7 @@ our $VERSION = '6.0';
 	      &getDebugLevel &printDbgFor &dumpDbgFor &arrayIndexOf &printDbgIndent
 	      &printDbgUnindent &runCommandOrFail &runSystemCommand &runCommandOrFailFromInput
               &notifySystemCommandListeners &exitDbg &addSlashes
+	      &runCommandRedirectToInternalLogs
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
 	      &runCommandSilently &removePathPrefix &trim &trim_ws &formatText
 	      &makeMessage &makeMessageLong &secure_unlink &str2language ) ;
@@ -679,6 +680,48 @@ sub runCommandOrFailRedirectTo($@) {
 		printErr(formatText(_T("Unable to fork for the system command: {}"),join(' ',@_)));
 	}
 	return 0;
+}
+
+=pod
+
+=item B<runCommandRedirectToInternalLogs(@)>
+
+Run a system command, block. The standard and error
+outputs of the command are written (in binary mode
+when possible) into the internal log files.
+
+=over 4
+
+=item is the command to run.
+
+=back
+
+I<Returns:> The exit code of the command.
+
+=cut
+sub runCommandRedirectToInternalLogs(@) {
+	printDbgFor(4, formatText(_T("Command line is:\n{}"), join(' ',@_)));
+	my $pid = fork();
+	unlink("autolatex_exec_stdout.log");
+	unlink("autolatex_exec_stderr.log");
+	if ($pid == 0) {
+		# Child process
+		open(STDOUT, '>', "autolatex_exec_stdout.log") or printErr(formatText(_T("Can't redirect STDOUT: {}"), $!));
+		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
+		select STDERR; $| = 1;  # make unbuffered
+		select STDOUT; $| = 1;  # make unbuffered
+		exec(@_);
+	}
+	elsif (defined($pid)) {
+		# Parent process
+		waitpid($pid, 0);
+		my $exitcode = $?;
+		return $exitcode;
+	}
+	else {
+		printErr(formatText(_T("Unable to fork for the system command: {}"),join(' ',@_)));
+		return 255;
+	}
 }
 
 =pod

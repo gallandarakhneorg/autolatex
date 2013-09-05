@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '14.0';
+our $VERSION = '15.0';
 
 my %COMMAND_DEFINITIONS = (
 	'pdflatex' => {
@@ -1150,6 +1150,21 @@ sub _build($$) : method {
 	return undef;
 }
 
+sub __find_file_with_basename($) {
+	my $self = shift;
+	my $basename = shift;
+	if (%{$self->{'files'}}) {
+		foreach my $k (keys %{$self->{'files'}}) {
+			my $bn = basename($k);
+			if ($bn eq $basename) {
+				return File::Spec->abs2rel($k,
+					$self->{'configuration'}{'__private__'}{'input.project directory'});
+			}
+		}
+	}
+	return $basename;
+}
+
 # Callback to build a BBL file.
 # Parameters:
 # $_[0] = name of the root file that should be build.
@@ -1164,13 +1179,74 @@ sub __build_bbl($$$) : method {
 	if ($self->{'is_biblio_enable'}) {
 		my $basename = basename($file,'.bbl');
 		if ($filedesc->{'use_biber'}) {
+			####################################
+			# BIBER
+			####################################
 			printDbg(formatText(_T('{}: {}'), 'BIBER', basename($basename))); 
-			runCommandOrFail(@{$self->{'biber_cmd'}}, "$basename");
+			my $retcode = runCommandRedirectToInternalLogs(
+					@{$self->{'biber_cmd'}}, "$basename");
+			# Output the log from the bibliography tool
+			if ($retcode!=0) {
+				printDbg(formatText(_T("{}: Error when processing {}"), 'BIBER', $basename));
+				local *INFILE;
+				open(*INFILE, "<autolatex_exec_stdout.log") or printErr("autolatex_exec_stdout.log: $!");
+				while (my $line = <INFILE>) {
+					if ($line =~ /^\s*ERROR\s*\-\s*.*subsystem:\s*(.+?),\s*line\s+([0-9]+),\s*(.*?)\s*$/i) {
+						my ($filename, $linenumber, $message) = ($1, $2, $3);
+						if ($filename =~ /^(.+)_[0-9]+\.[a-zA-Z0-9_-]+$/) {
+							$filename = $1;
+						}
+						$filename = $self->__find_file_with_basename(basename($filename));
+						print STDERR "$filename:$linenumber: $message\n";
+					}
+					elsif ($line =~ /^\s*ERROR\s*\-\s*(.+?)\s*$/i) {
+						my $message = $1;
+						print STDERR "$message\n";
+					}
+				}
+				close(*INFILE);
+				exit(255);
+			}
+			else {
+				unlink("autolatex_exec_stdout.log");
+				unlink("autolatex_exec_stderr.log");
+			}
 		}
 		else {
+			####################################
+			# BIBTEX
+			####################################
 			my $auxFile = File::Spec->catfile(dirname($file),"$basename.aux");
 			printDbg(formatText(_T('{}: {}'), 'BIBTEX', basename($auxFile))); 
-			runCommandOrFail(@{$self->{'bibtex_cmd'}}, "$auxFile");
+			my $retcode = runCommandRedirectToInternalLogs(
+					@{$self->{'bibtex_cmd'}}, "$auxFile");
+			# Output the log from the bibliography tool
+			if ($retcode!=0) {
+				printDbg(formatText(_T("{}: Error when processing {}"), 'BIBTEX', basename($auxFile)));
+				local *INFILE;
+				open(*INFILE, "<autolatex_exec_stdout.log") or printErr("autolatex_exec_stdout.log: $!");
+				my $linenumber = 0;
+				while (my $line = <INFILE>) {
+					if ($linenumber>0) {
+						if ($line =~ /^\s*\:/) {
+							print STDERR "$line";
+						}
+						else {
+							$linenumber = 0;
+						}
+					}
+					elsif ($line =~ /^\s*(.*?)\s*\-\-\-line\s+([0-9]+)\s+of\s+file\s+(.*?)\s*$/i) {
+						(my $message, $linenumber, my $filename) = ($1, $2, $3);
+						print STDERR "$filename:$linenumber: $message\n";
+					}
+				}
+				close(*INFILE);
+				exit(255);
+			}
+			else {
+				unlink("autolatex_exec_stdout.log");
+				unlink("autolatex_exec_stderr.log");
+			}
 		}
 	}
 }
