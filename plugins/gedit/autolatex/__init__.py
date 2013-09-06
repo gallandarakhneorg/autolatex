@@ -69,7 +69,7 @@ class _AutoLaTeXExecutionThread(_threading.Thread):
 	self._info_bar = None
 	self._sig_info_bar = 0
 	self._directory = directory
-	self._cmd = [utils.AUTOLATEX_BINARY] + params
+	self._cmd = [ utils.AUTOLATEX_BINARY, '--file-line-warning' ] + params
 	if directive:
 		self._cmd.append(directive)
 
@@ -136,11 +136,11 @@ class _AutoLaTeXExecutionThread(_threading.Thread):
 	# "warning" notifications.
 	latex_warnings = []
 	if retcode == 0:
-		regex_expr = re.compile("^\\!\\![^:]+:\\s*(.+?)\\s*$")
+		regex_expr = re.compile("^\\!\\!(.+?):(W[0-9]+):[^:]+:\\s*(.+?)\\s*$")
 		for output_line in re.split("[\n\r]+", output):
 			mo = re.match(regex_expr, output_line)
 			if mo:
-				latex_warnings.append(mo.group(1))
+				latex_warnings.append([mo.group(3),mo.group(1), mo.group(2)])
 		output = '' # Output is no more interesting
 
 	# Remove the info bar from the inside of the Gtk thread

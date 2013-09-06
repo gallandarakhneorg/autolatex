@@ -15,6 +15,7 @@ plugins/gedit/autolatex/config/plugin/main_panel.py
 plugins/gedit/autolatex/utils/__init__.py
 plugins/gedit/autolatex/utils/debug.py
 plugins/gedit/autolatex/utils/gsettings.py
+plugins/gedit/autolatex/utils/latex_log_parser.py
 plugins/gedit/autolatex/utils/utils.py
 plugins/gedit/autolatex/widgets/__init__.py
 plugins/gedit/autolatex/widgets/latex_console.py

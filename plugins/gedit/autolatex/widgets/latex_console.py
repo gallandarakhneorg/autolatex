@@ -24,6 +24,8 @@
 import re
 # Include the Gtk libraries
 from gi.repository import GdkPixbuf, Gdk, Gio, Gtk
+# AutoLaTeX includes
+from ..utils import latex_log_parser as log_parser
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -53,8 +55,9 @@ class Console(Gtk.ScrolledWindow):
 		self.window = window
 		self._re_file_match = re.compile("^(.+):([0-9]+):\\s*(.*?)\\s*$", re.DOTALL)
 		self._document_directory = None
+		self._latex_parser = None
 		# Create the store
-		self._messages = Gtk.ListStore(str, str, str, long)
+		self._messages = Gtk.ListStore(str, str, str, long, str)
 		# Create the list
 		self._message_widget = Gtk.TreeView()
 		self._message_widget.set_model(self._messages)
@@ -82,6 +85,7 @@ class Console(Gtk.ScrolledWindow):
 	# Set the text of the log
 	def set_log(self, log, latex_warnings, document_directory):
 		# Reset attributes
+		self._latex_parser = None
 		self._document_directory = Gio.File.new_for_path(document_directory)
 		# Clear the list
 		self._messages.clear()
@@ -102,23 +106,68 @@ class Console(Gtk.ScrolledWindow):
 				if linenumber>0:
 					m = m + ":" + str(linenumber)
 				self._messages.append(
-					[ ui_icon, m, filename, linenumber ])
+					[ ui_icon, m, filename, linenumber, None ])
 				self._messages.append(
-					[ None, message, filename, linenumber ])
+					[ None, message, filename, linenumber, None ])
 			else:
 				self._messages.append(
-					[ ui_icon, message, filename, linenumber ])
+					[ ui_icon, message, filename, linenumber, None ])
 		elif latex_warnings:
 			# Add the warnings
-			ui_icon = Gtk.STOCK_DIALOG_WARNING
 			for latex_warning in latex_warnings:
+				ui_icon = Gtk.STOCK_JUMP_TO if latex_warning[2] else Gtk.STOCK_DIALOG_WARNING
 				self._messages.append(
-					[ ui_icon, latex_warning, None, long(0) ])
+					[ ui_icon, latex_warning[0], latex_warning[1], long(0), latex_warning[2] ])
 		if log:
 			return ConsoleMode.SHOW
 		if latex_warnings:
 			return ConsoleMode.OPTIONAL
 		return ConsoleMode.HIDE
+
+	def _replace_by_undefined_reference_warnings(self, list_iter, log_file):
+		if not self._latex_parser:
+			self._latex_parser = log_parser.Parser(log_file)
+		warnings = self._latex_parser.get_undefined_reference_warnings()
+		if warnings:
+			ui_icon = Gtk.STOCK_DIALOG_WARNING
+			for warning in reversed(warnings):
+				self._messages.insert_before(list_iter,
+					[ ui_icon,
+					  warning.get_message(),
+					  warning.get_filename(),
+					  long(warning.get_line_number()),
+					  None ])
+			self._messages.remove(list_iter)
+
+	def _replace_by_multidefined_label_warnings(self, list_iter, log_file):
+		if not self._latex_parser:
+			self._latex_parser = log_parser.Parser(log_file)
+		warnings = self._latex_parser.get_multidefined_label_warnings()
+		if warnings:
+			ui_icon = Gtk.STOCK_DIALOG_WARNING
+			for warning in reversed(warnings):
+				self._messages.insert_before(list_iter,
+					[ ui_icon,
+					  warning.get_message(),
+					  warning.get_filename(),
+					  long(warning.get_line_number()),
+					  None ])
+			self._messages.remove(list_iter)
+
+	def _replace_by_undefined_citation_warnings(self, list_iter, log_file):
+		if not self._latex_parser:
+			self._latex_parser = log_parser.Parser(log_file)
+		warnings = self._latex_parser.get_undefined_citation_warnings()
+		if warnings:
+			ui_icon = Gtk.STOCK_DIALOG_WARNING
+			for warning in reversed(warnings):
+				self._messages.insert_before(list_iter,
+					[ ui_icon,
+					  warning.get_message(),
+					  warning.get_filename(),
+					  long(warning.get_line_number()),
+					  None ])
+			self._messages.remove(list_iter)
 
 	def on_list_click_action(self, widget, event, data=None):
 		if (event.button==1 and (event.type==Gdk.EventType._2BUTTON_PRESS or event.type==Gdk.EventType._3BUTTON_PRESS)) or event.button==2:
@@ -129,7 +178,15 @@ class Console(Gtk.ScrolledWindow):
 				row = self._messages[list_iter]
 				# Get the filename and the line number
 				filename = row[2]
-				if filename:
+				wcode = row[4]
+				if wcode:
+					if wcode == 'W1':
+						self._replace_by_multidefined_label_warnings(list_iter, filename)
+					elif wcode == 'W2':
+						self._replace_by_undefined_reference_warnings(list_iter, filename)
+					elif wcode == 'W3':
+						self._replace_by_undefined_citation_warnings(list_iter, filename)
+				elif filename:
 					linenumber = row[3]
 					filename = self._document_directory.resolve_relative_path(filename)
 					linenumber = linenumber if linenumber>=1 else 1
