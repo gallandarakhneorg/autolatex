@@ -239,6 +239,13 @@ Specify the main LaTeX file to compile. If this option
 is not specified, AutoLaTeX will search for a TeX file
 in the current directory.
 
+=item B<--file-line-warning>
+
+Enable or disable the extended format for warnings.
+This format add the filename and the line number where
+the warning is occuring, before the warning message
+by itself.
+
 =item B<--fixconfig[=F<file>]>
 
 Fix the syntax of a configuration file. If the F<file>

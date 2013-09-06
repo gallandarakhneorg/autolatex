@@ -915,6 +915,10 @@ sub runCommandSilently(@) {
 	my $pid = fork();
 	if ($pid == 0) {
 		# Child process
+		if ($opts->{'stdin'}) {
+			open(STDIN, '<', $opts->{'stdin'}) or printErr(formatText(_T("Can't redirect STDIN: {}"), $!));
+			select STDIN; $| = 1;  # make unbuffered
+		}
 		open(STDOUT, '>', File::Spec->devnull()) or printErr(formatText(_T("Can't redirect STDOUT: {}"), $!));
 		open(STDERR, '>', File::Spec->devnull()) or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
 		select STDERR; $| = 1;  # make unbuffered

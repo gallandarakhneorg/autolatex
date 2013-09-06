@@ -188,6 +188,11 @@ OPTIONS
         specified, AutoLaTeX will search for a TeX file in the current
         directory.
 
+    --file-line-warning
+        Enable or disable the extended format for warnings. This format add
+        the filename and the line number where the warning is occuring,
+        before the warning message by itself.
+
     --fixconfig[=file]
         Fix the syntax of a configuration file. If the file is not specified
         on the command line, AutoLaTeX will try to fix the project

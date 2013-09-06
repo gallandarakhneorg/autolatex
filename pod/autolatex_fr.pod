@@ -240,6 +240,12 @@ Spécification du fichier LaTeX principal. Si cette option
 n'est pas spécifiéé, AutoLaTeX recherche un fichier TeX
 dans le répertoire courant.
 
+=item B<--file-line-warning>
+
+Active our désactive le format étendu des avertissements.
+Ce format ajoute le nom de fichier et le numéro de ligne 
+d'un avertissement, juste avant le message lui-même.
+
 =item B<--fixconfig[=F<fichier>]>
 
 Corriger la syntaxe d'un fichier de configuration. Si le F<fichier>
