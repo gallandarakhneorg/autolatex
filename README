@@ -329,6 +329,14 @@ AUTO GENERATION OF FIGURES
         Input format: .asta .jude .juth
         Output format: .pdf
 
+    Asymptote (asy) to Portable Document Format (pdf)
+
+        Name: asy2pdf
+        Use external converter: asy
+        Use translator: eps2pdf
+        Input format: .asy
+        Output format: .pdf
+
     Astah/Jude (asta) to Portable Network Graphic (png)
 
         Name: astah2png
@@ -451,6 +459,22 @@ AUTO GENERATION OF FIGURES
         Use translator:
         Input format: .figt .fig_tex .figtex .fig+tex .tex.fig +tex.fig
         Output format: .pdftex_t
+
+    Graph Layout Engine (gle) to Portable Document Format (pdf)
+
+        Name: gle2pdf
+        Use external converter: gle
+        Use translator:
+        Input format: .gle
+        Output format: .pdf
+
+    Graph Layout Engine (gle) to Portable Network Graphic (png)
+
+        Name: gle2png
+        Use external converter: gle
+        Use translator:
+        Input format: .gle
+        Output format: .png
 
     Graph eXchange Language (gxl) to Portable Document Format (pdf)
 

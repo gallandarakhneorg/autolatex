@@ -449,6 +449,22 @@ Les convertisseurs fournis avec AutoLaTeX sont :
 
 =back
 
+=item B<Asymptote (asy) vers Portable Document Format (pdf)>
+
+=over 12
+
+=item Nom :                              asy2pdf
+
+=item Convertisseur externe utilisé :    asy
+
+=item Use translator:                    eps2pdf
+
+=item Format d'entrée :                  .asy
+
+=item Format de sortie :                 .pdf
+
+=back
+
 =item B<Code source C/C++ (.cpp, .c, .hpp, .h) vers code source TeX (tex): variante TeXify>
 
 =over 12
@@ -665,6 +681,38 @@ TeX part:
 =item Format d'entrée :                  .figt .fig_tex .figtex .fig+tex .tex.fig +tex.fig
 
 =item Format de sortie :                 .pdftex_t
+
+=back
+
+=item B<Graph Layout Engine (gle) vers Portable Document Format (pdf)>
+
+=over 12
+
+=item Nom :                              gle2pdf
+
+=item Convertisseur externe utilisé :    gle
+
+=item Use translator:                    
+
+=item Format d'entrée :                  .gle
+
+=item Format de sortie :                 .pdf
+
+=back
+
+=item B<Graph Layout Engine (gle) vers Portable Network Graphic (png)>
+
+=over 12
+
+=item Nom :                              gle2png
+
+=item Convertisseur externe utilisé :    gle
+
+=item Convertisseur utilisé :            
+
+=item Format d'entrée :                  .gle
+
+=item Format de sortie :                 .png
 
 =back
 

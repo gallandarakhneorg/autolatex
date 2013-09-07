@@ -436,6 +436,22 @@ The provided translators are:
 
 =back
 
+=item B<Asymptote (asy) to Portable Document Format (pdf)>
+
+=over 12
+
+=item Name:                              asy2pdf
+
+=item Use external converter:            asy
+
+=item Use translator:                    eps2pdf
+
+=item Input format:                      .asy
+
+=item Output format:                     .pdf
+
+=back
+
 =item B<Astah/Jude (asta) to Portable Network Graphic (png)>
 
 =over 12
@@ -666,6 +682,38 @@ TeX part:
 =item Input format:                      .figt .fig_tex .figtex .fig+tex .tex.fig +tex.fig
 
 =item Output format:                     .pdftex_t
+
+=back
+
+=item B<Graph Layout Engine (gle) to Portable Document Format (pdf)>
+
+=over 12
+
+=item Name:                              gle2pdf
+
+=item Use external converter:            gle
+
+=item Use translator:                    
+
+=item Input format:                      .gle
+
+=item Output format:                     .pdf
+
+=back
+
+=item B<Graph Layout Engine (gle) to Portable Network Graphic (png)>
+
+=over 12
+
+=item Name:                              gle2png
+
+=item Use external converter:            gle
+
+=item Use translator:                    
+
+=item Input format:                      .gle
+
+=item Output format:                     .png
 
 =back
 
