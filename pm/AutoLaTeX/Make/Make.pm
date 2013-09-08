@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '16.0';
+our $VERSION = '16.1';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	\makeatletter
@@ -604,14 +604,20 @@ sub runLaTeX($;$) : method {
 				}
 				else {
 					# Does the block indicates a fatal error?
-					if ($line =~ /^(.+:[0-9]+:)\s*\Q==>\E\s*fatal\s+error/i) {
+					if ($line =~ /^\!\s*\Q==>\E\s*fatal\s+error/i) {
+						$fatal_error = "\Q!\E[^!]";
+						$current_log_block = '';
+						$current_matches_pattern = 0;
+					}
+					elsif ($line =~ /^(.+:[0-9]+:)\s*\Q==>\E\s*fatal\s+error/i) {
 						$fatal_error = $current_log_block.$1;
 						$current_log_block = '';
 						$current_matches_pattern = 0;
 					}
 					else {
 						if (!$current_matches_pattern
-						    && $line =~ /^(.+:[0-9]+:)/) {
+						    && ($line =~ /^.+:[0-9]+:/
+						        || $line =~ /^\!/)) {
 							$current_matches_pattern = 1;
 						}
 						$current_log_block .= $line;
@@ -622,30 +628,47 @@ sub runLaTeX($;$) : method {
 			if ($current_log_block && $current_matches_pattern) {
 				push @log_blocks, $current_log_block;
 			}
-
 			# Search the fatal error inside the blocks
 			my $extracted_message = '';
 			if ($fatal_error) {
 				# Parse the fatal error block to extract the filename
 				# where the error occured
-				$fatal_error =~ /^(.*?)(\:[0-9]+\:)$/s;
-				my ($candidate, $post) = ($1,$2);
-				my @candidates = split(/[\n\r]+/, $candidate);
-				$candidate = pop @candidates;
-				my $candidate_pattern = "\Q$candidate\E";
-				while ($candidate && @candidates && ! -f "$candidate") {
-					my $l = pop @candidates;
-					$candidate_pattern = "\Q$l\E[\n\r]+$candidate_pattern";
-					$candidate = $l.$candidate;
+				if ($fatal_error =~ /^(.*?)(\:[0-9]+\:)$/s) {
+					my ($candidate, $post) = ($1,$2);
+					my @candidates = split(/[\n\r]+/, $candidate);
+					$candidate = pop @candidates;
+					my $candidate_pattern = "\Q$candidate\E";
+					while ($candidate && @candidates && ! -f "$candidate") {
+						my $l = pop @candidates;
+						$candidate_pattern = "\Q$l\E[\n\r]+$candidate_pattern";
+						$candidate = $l.$candidate;
+					}
+					if ($candidate && -f "$candidate") {
+						# Search the error message in the log.
+						$candidate_pattern .= "\Q$post\E";
+						my $i = 0; 
+						while (!$extracted_message && $i<@log_blocks) {
+							my $block = $log_blocks[$i];
+							if ($block =~ /$candidate_pattern(.*)$/s) {
+								$extracted_message = $candidate.$post.$1;
+							}
+							$i++;
+						}
+					}
 				}
-				if ($candidate && -f "$candidate") {
+				else {
 					# Search the error message in the log.
-					$candidate_pattern .= "\Q$post\E";
+					my $candidate_pattern .= "$fatal_error";
 					my $i = 0; 
 					while (!$extracted_message && $i<@log_blocks) {
 						my $block = $log_blocks[$i];
-						if ($block =~ /$candidate_pattern(.*)$/s) {
-							$extracted_message = $candidate.$post.$1;
+						if ($block =~ /(?:^|\n|\r)$candidate_pattern\s*(.*)$/s) {
+							my $message = $1;
+							my $linenumber = 0;
+							if ($message =~ /line\s+([0-9]+)/i) {
+								$linenumber = int($1);
+							}
+							$extracted_message = "$file:$linenumber: $message";
 						}
 						$i++;
 					}
@@ -659,7 +682,7 @@ sub runLaTeX($;$) : method {
 				printDbg(formatText(_T("{}: End of error log."), 'PDFLATEX'));
 			}
 			else {
-				printDbg(formatText(_T("{}: Unable to extract the error from the log. Please read the log file."), 'PDFLATEX'));
+				print STDERR (formatText(_T("{}: Unable to extract the error from the log. Please read the log file."), 'PDFLATEX'))."\n";
 			}
 
 			exit(255);
