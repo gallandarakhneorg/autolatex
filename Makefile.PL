@@ -1,6 +1,7 @@
-#!/usr/bin/perl -W
+#!/usr/bin/perl
 
 use strict;
+use warnings;
 use Getopt::Long;
 use File::Basename;
 use File::Spec;
@@ -8,8 +9,9 @@ use File::Copy;
 use Compress::Zlib;
 use Pod::Text;
 use Pod::Man;
+use pp;
 
-my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit' => 1 );
+my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit' => 1, 'gtk' => 1 );
 
 # GENERAL INSTALLATION INFORMATIONS
 my $ALLOW_SYMBOLIC_LINK;
@@ -22,6 +24,26 @@ my $ICONDIRECTORY;
 my $STYDIRECTORY;
 my $GEDITPLUGINDIRECTORY;
 my $GSETTINGSSCHEMADIRECTORY;
+
+my $EXE_EXTENSION = '.bin';
+my %BINARY_FILES = (
+	'core' => {
+			'autolatex.pl' => {
+				'name' => 'autolatex',
+				'opts' => [],
+			},
+			'autolatex-backend.pl' => {
+				'name' => 'autolatex-backend',
+				'opts' => [],
+			},
+	},
+	'gtk' => {
+			'autolatex-gtk.pl' => {
+				'name' => 'autolatex-gtk',
+				'opts' => ['-gui'],
+			},
+	},
+);
 
 sub dbg(@) {
 	use Data::Dumper;
@@ -356,6 +378,30 @@ sub checkPMInstallation($@) {
 }
 
 #------------------------------------------------------------------------------------------
+sub runPAR($$;$\@) {
+	my $script_file = shift || die("script file not given\n");
+	my $output_file = shift || die("output file not given\n");
+	my $icon_file = shift || '';
+	my $opts = shift || [];
+	# Update the command line
+	my @OLD_ARGV = @ARGV;
+	@ARGV = ('-v', '-o', $output_file, '-I', File::Spec->rel2abs(File::Spec->catfile(dirname($0),'pm')), '-z', '9');
+	if ($icon_file) {
+		push @ARGV, '-i', "$icon_file";
+	}
+	if ($opts && @{$opts}) {
+		push @ARGV, @{$opts};
+	}
+	push @ARGV, "$script_file";
+	# Run the packager
+	my $ret = pp->go();
+	# Restore the command line
+	@ARGV = @OLD_ARGV;
+	return $ret;
+}
+
+
+#------------------------------------------------------------------------------------------
 sub DO_compile(\%) {
 	print "DO AUTOLATEX COMPILATION...\n";
 
@@ -438,16 +484,42 @@ sub DO_compile(\%) {
 sub DO_install(\%) {
 	print "DO AUTOLATEX INSTALLATION...\n";
 	my @po_directories = getDirectoryBasenames('po');
+
 	if ($MODULES{'core'}) {
+		my $need_pm_files = 0;
 		if (($_[0]->{'create-links'})&&($_[0]->{'create-bin-links'})) {
-			installLinkedBin('autolatex.pl', $INSTALLDIRECTORY,'autolatex');
-			installLinkedBin('autolatex-gtk.pl',$INSTALLDIRECTORY,'autolatex-gtk');
-			installLinkedBin('autolatex-backend.pl',$INSTALLDIRECTORY,'autolatex-backend');
+			while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{'core'}})) {
+				if (-f $binfile->{'name'}.$EXE_EXTENSION) {
+					installLinkedBin(
+						$binfile->{'name'}.$EXE_EXTENSION,
+						$INSTALLDIRECTORY,
+						$binfile->{'name'}.$EXE_EXTENSION);
+				}
+				else {
+					$need_pm_files = 1;
+					installLinkedBin(
+						$scriptfile,
+						$INSTALLDIRECTORY,
+						$binfile->{'name'}.$EXE_EXTENSION);
+				}
+			}
 		}
 		else {
-			installExec('autolatex.pl', $INSTALLDIRECTORY);
-			installExec('autolatex-gtk.pl',$INSTALLDIRECTORY);
-			installExec('autolatex-backend.pl',$INSTALLDIRECTORY);
+			while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{'core'}})) {
+				if (-f $binfile->{'name'}.$EXE_EXTENSION) {
+					installExec(
+						$binfile->{'name'}.$EXE_EXTENSION,
+						$INSTALLDIRECTORY,
+						$binfile->{'name'}.$EXE_EXTENSION);
+				}
+				else {
+					$need_pm_files = 1;
+					installExec(
+						$scriptfile,
+						$INSTALLDIRECTORY,
+						$binfile->{'name'}.$EXE_EXTENSION);
+				}
+			}
 		}
 		install('AUTHORS', $INSTALLDIRECTORY);
 		install('VERSION', $INSTALLDIRECTORY);
@@ -466,40 +538,29 @@ sub DO_install(\%) {
 			File::Spec->catfile($INSTALLDIRECTORY,'translators'),
 			getFiles('translators','*'));
 
-		installInto(
-			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Core'),
-			getFiles('pm','AutoLaTeX','Core','*.pm'));
-
-		installInto(
-			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Interpreter'),
-			getFiles('pm','AutoLaTeX','Interpreter','*.pm'));
-
-		installInto(
-			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Make'),
-			getFiles('pm','AutoLaTeX','Make','*.pm'));
-
-		installInto(
-			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'TeX'),
-			getFiles('pm','AutoLaTeX','TeX','*.pm'));
-
-		installInto(
-			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI'),
-			getFiles('pm','AutoLaTeX','GUI','*.pm'));
-
-		installInto(
-			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI'),
-			getFiles('pm','AutoLaTeX','GUI','*.png'));
-
-		installInto(
-			File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI','Gtk'),
-			getFiles('pm','AutoLaTeX','GUI','Gtk','*.pm'));
-
-		my @po_exceptions = ('geditautolatex.mo');
-		foreach my $lang (@po_directories) {
-			my @files = getFiles(\@po_exceptions, 'po',"$lang",'LC_MESSAGES','*.mo');
+		if ($need_pm_files) {
 			installInto(
-				File::Spec->catfile($INSTALLDIRECTORY,'po',"$lang",'LC_MESSAGES'),
-				@files);
+				File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Core'),
+				getFiles('pm','AutoLaTeX','Core','*.pm'));
+
+			installInto(
+				File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Interpreter'),
+				getFiles('pm','AutoLaTeX','Interpreter','*.pm'));
+
+			installInto(
+				File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'Make'),
+				getFiles('pm','AutoLaTeX','Make','*.pm'));
+
+			installInto(
+				File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX', 'TeX'),
+				getFiles('pm','AutoLaTeX','TeX','*.pm'));
+		}
+
+
+		foreach my $lang (@po_directories) {
+			install(
+				File::Spec->catfile('po',"$lang",'LC_MESSAGES','autolatex.mo'),
+				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
 		}
 
 		installInto(
@@ -508,6 +569,62 @@ sub DO_install(\%) {
 
 		installMan('pod/autolatex.1.gz');
 		installMan('pod/autolatex.fr.1.gz');
+	}
+
+	if ($MODULES{'gtk'}) {
+		my $need_pm_files = 0;
+		if (($_[0]->{'create-links'})&&($_[0]->{'create-bin-links'})) {
+			while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{'gtk'}})) {
+				if (-f $binfile->{'name'}.$EXE_EXTENSION) {
+					installLinkedBin(
+						$binfile->{'name'}.$EXE_EXTENSION,
+						$INSTALLDIRECTORY,
+						$binfile->{'name'}.$EXE_EXTENSION);
+				}
+				else {
+					$need_pm_files = 1;
+					installLinkedBin(
+						$scriptfile,
+						$INSTALLDIRECTORY,
+						$binfile->{'name'}.$EXE_EXTENSION);
+				}
+			}
+		}
+		else {
+			while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{'gtk'}})) {
+				if (-f $binfile->{'name'}.$EXE_EXTENSION) {
+					installExec(
+						$binfile->{'name'}.$EXE_EXTENSION,
+						$INSTALLDIRECTORY,
+						$binfile->{'name'}.$EXE_EXTENSION);
+				}
+				else {
+					$need_pm_files = 1;
+					installExec(
+						$scriptfile,
+						$INSTALLDIRECTORY,
+						$binfile->{'name'}.$EXE_EXTENSION);
+				}
+			}
+		}
+		if ($need_pm_files) {
+			installInto(
+				File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI'),
+				getFiles('pm','AutoLaTeX','GUI','*.pm'));
+
+			installInto(
+				File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI'),
+				getFiles('pm','AutoLaTeX','GUI','*.png'));
+
+			installInto(
+				File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI','Gtk'),
+				getFiles('pm','AutoLaTeX','GUI','Gtk','*.pm'));
+		}
+		foreach my $lang (@po_directories) {
+			install(
+				File::Spec->catfile('po',"$lang",'LC_MESSAGES','autolatexgtk.mo'),
+				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
+		}
 	}
 
 	if ($MODULES{'sty'}) {
@@ -603,7 +720,26 @@ sub DO_clean(\%) {
 	}
 	closedir(*DIR);
 
+	foreach my $module (values %BINARY_FILES) {
+		foreach my $bin_file (values %{$module}) {
+			rm(File::Spec->catfile(
+				$_[0]->{'directory'},
+				$bin_file->{'name'}.$EXE_EXTENSION));
+		}
+	}
+
 	rm(File::Spec->catfile($_[0]->{'directory'},'Makefile'));
+}
+
+#------------------------------------------------------------------------------------------
+sub DO_par(\%) {
+	print "DO AUTOLATEX PACKAGING...\n";
+	foreach my $module (values %BINARY_FILES) {
+		while (my ($script_file, $bin_file) = each(%{$module})) {
+			runPAR($script_file, $bin_file->{'name'}.$EXE_EXTENSION,
+				undef, @{$bin_file->{'opts'}});
+		}
+	}
 }
 
 #------------------------------------------------------------------------------------------
@@ -661,6 +797,8 @@ sub DO_createMakefile(\%) {
 	open(*OUT, "> $filename") or die("$filename: $!\n");
 	print OUT "all:\n";
 	print OUT "\t@ perl ".__FILE__." $options compile\n\n";
+	print OUT "par:\n";
+	print OUT "\t@ perl ".__FILE__." $options par\n\n";
 	print OUT "install:\n";
 	print OUT "\t@ perl ".__FILE__." $options install\n\n";
 	print OUT "clean:\n";
@@ -720,6 +858,9 @@ foreach my $act (@ARGV) {
 	elsif ($act eq 'clean') {
 		$options{'action'} = 'clean';
 	}
+	elsif ($act eq 'par') {
+		$options{'action'} = 'par';
+	}
 }
 
 # Set the paths
@@ -734,6 +875,7 @@ if (("$^O" eq 'MSWin32')||
 	my $MANPREFIX = substShellPatterns($options{'man-prefix'}) || File::Spec->catfile('C:','Documents and Settings','All Users','Application Data');
 	my $TEXPREFIX = substShellPatterns($options{'tex-prefix'}) || File::Spec->catfile($PREFIX,'autolatex','sty');
 
+	$EXE_EXTENSION = '.exe';
 	$INSTALLDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex');
 	$BINDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex');
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
@@ -760,6 +902,7 @@ else {
 	my $MANPREFIX = substShellPatterns($options{'man-prefix'}) || File::Spec->catfile($PREFIX,'man');
 	my $TEXPREFIX = substShellPatterns($options{'tex-prefix'}) || File::Spec->catfile($PREFIX,'share','texmf');
 
+	$EXE_EXTENSION = '';
 	$INSTALLDIRECTORY = File::Spec->catfile("$PREFIX",'lib','autolatex');
 	$BINDIRECTORY = File::Spec->catfile("$PREFIX",'bin');
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');

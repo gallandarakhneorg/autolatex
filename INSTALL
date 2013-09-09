@@ -7,7 +7,21 @@ We recommend also to have GNU Make installed. If not, you could copy/paste the
 installation commands from the inside of the generated file named 'Makefile'.
 Indeed, we provide a 'Makefile' because it is a common tool for compilation and
 installation on Unix systems. The file 'Makefile' contains all the commands that
-msut be executed to compile and install AutoLaTeX.
+must be executed to compile and install AutoLaTeX.
+
+The installation script Makefile.PL use the following Perl modules.
+They must be installed prior to any call to the installation script.
+a) Already icluded in many perl distributions:
+	Getopt::Long
+	File::Basename
+	File::Spec
+	File::Copy
+	Pod::Text
+	Pod::Man
+b) Need manual installation with several perl distributions:
+	Compress::Zlib
+	pp
+
 
 -------------------------
 2. PREPARING INSTALLATION
@@ -57,6 +71,28 @@ $ make all
 or simply:
 
 $ make
+
+-------------------------------------
+4. GENERATING BINARY EXECUTABLE FILES
+-------------------------------------
+
+Sometimes, you may want to install a standalone binary
+file of AutoLaTeX, in place of the perl scripts.
+It may be useful when there is not Perl distribution
+installed on your computer.
+
+To generate the binary exwecutable files for your
+current operating system, you must type the following
+command:
+
+$ make par
+
+CAUTION: only your current operating system/platform is
+         considered by this action. You may encounter
+         problems when you are trying to run the generated
+         files on a different platform or on different
+         a operating system than the ones you are currently
+         running.
 
 -------------
 4. INSTALLING
