@@ -560,7 +560,7 @@ sub DO_install(\%) {
 		foreach my $lang (@po_directories) {
 			install(
 				File::Spec->catfile('po',"$lang",'LC_MESSAGES','autolatex.mo'),
-				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
+				File::Spec->catfile($INSTALLDIRECTORY,'po',"$lang",'LC_MESSAGES'));
 		}
 
 		installInto(
@@ -623,7 +623,7 @@ sub DO_install(\%) {
 		foreach my $lang (@po_directories) {
 			install(
 				File::Spec->catfile('po',"$lang",'LC_MESSAGES','autolatexgtk.mo'),
-				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
+				File::Spec->catfile($INSTALLDIRECTORY,'po',"$lang",'LC_MESSAGES'));
 		}
 	}
 
