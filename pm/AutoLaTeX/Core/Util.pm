@@ -38,7 +38,7 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '7.0';
+our $VERSION = '8.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
@@ -47,7 +47,7 @@ our $VERSION = '7.0';
 	      &getDebugLevel &printDbgFor &dumpDbgFor &arrayIndexOf &printDbgIndent
 	      &printDbgUnindent &runCommandOrFail &runSystemCommand &runCommandOrFailFromInput
               &notifySystemCommandListeners &exitDbg &addSlashes
-	      &runCommandRedirectToInternalLogs
+	      &runCommandRedirectToInternalLogs &countLinesIn
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
 	      &runCommandSilently &removePathPrefix &trim &trim_ws &formatText
 	      &makeMessage &makeMessageLong &secure_unlink &str2language ) ;
@@ -1256,6 +1256,22 @@ sub secure_unlink(@) {
 	}
 }
 
+=pod
+
+=item B<countLinesIn($)>
+
+Count the lines in the given text.
+
+=cut
+sub countLinesIn($) {
+	my $c = 1;
+	if ($_[0]) {
+		while ($_[0] =~ /[\n\r]/sg) {
+			$c++;
+		}
+	}
+	return $c;
+}
 
 
 
