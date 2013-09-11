@@ -80,29 +80,51 @@ class Parser:
 		#
 		self._warnings = []
 		# Parsing the log file
-		regex_start = re.compile("^\\!\\!\\!\\!\\[BeginWarning\\](.*?):([^:]*):([0-9]+):\\s*(.*?)\\s*$")
-		regex_end = re.compile("^\\!\\!\\!\\!\\[EndWarning\\](.*?)\\s*$")
+		regex_start = re.compile("^\\!\\!\\!\\!\\[BeginWarning\\](.*)$")
+		regex_end = re.compile("^\\!\\!\\!\\!\\[EndWarning\\]")
+		regex_warn = re.compile("^(.*?):([^:]*):([0-9]+):\\s*(.*?)\\s*$")
 		f = open(log_file, 'r')
-		content = ''
+		current_log_block = ''
+		warning = False
 		line = f.readline()
-		warning = None
 		while line:
 			if warning:
 				mo = re.match(regex_end, line)
 				if mo:
-					warning = None
-				else:
-					warning.append(line)
-			else:
-				mo = re.match(regex_start, line)
-				if mo:
-					warning = TeXWarning(
+					mo = re.match(regex_warn, current_log_block)
+					if mo:
+						w = TeXWarning(
 							mo.group(1),
 							mo.group(2),
 							mo.group(3),
 							mo.group(4))
-					self._warnings.append(warning)
+						self._warnings.append(w)
+					warning = False
+					current_log_block = ''
+				else:
+					l = line
+					if not l.endswith(".\n"):
+						l = l.rstrip()
+					current_log_block = current_log_block + l
+			else:
+				mo = re.match(regex_start, line)
+				if mo:
+					l = mo.group(1)
+					if not l.endswith(".\n"):
+						l = l.rstrip()
+					current_log_block = l
+					warning = True
 			line = f.readline()
+
+		if warning and current_log_block:
+			mo = re.match(regex_warn, current_log_block)
+			if mo:
+				w = TeXWarning(
+					mo.group(1),
+					mo.group(2),
+					mo.group(3),
+					mo.group(4))
+				self._warnings.append(w)
 
 	def get_undefined_citation_warnings(self):
 		regex = re.compile(
