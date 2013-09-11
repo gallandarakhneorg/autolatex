@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '17.0';
+our $VERSION = '18.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -120,7 +120,6 @@ my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	}
 	\global\DeclareRobustCommand{\GenericWarning}[2]{%
 		\begingroup%
-		\expandafter\filename@parse\expandafter{\autolatex@@@currentfile}%
 		\autolatex@@@lineno\inputlineno\relax%
 		\ifx\autolatex@@@mainfile\autolatex@@@currentfile%
 			\edef\autolatex@@@warning@filename{\autolatex@@@mainfile@real}%
@@ -128,7 +127,8 @@ my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 		\else%
 			\edef\autolatex@@@warning@filename{\autolatex@@@currentfile}%
 		\fi%
-		\edef\autolatex@@@generic@warning@beginmessage{!!!![BeginWarning]\autolatex@@@warning@filename:\ifx\filename@ext\relax.tex\fi:\the\autolatex@@@lineno: }%
+		{\filename@parse{\autolatex@@@warning@filename}\global\let\autolatex@@@filename@ext\filename@ext}%
+		\edef\autolatex@@@generic@warning@beginmessage{!!!![BeginWarning]\autolatex@@@warning@filename:\ifx\autolatex@@@filename@ext\relax.tex\fi:\the\autolatex@@@lineno: }%
 		\edef\autolatex@@@generic@warning@endmessage{!!!![EndWarning]\autolatex@@@warning@filename}%
 		\def\MessageBreak{^^J#1}%
 		\set@display@protect%
