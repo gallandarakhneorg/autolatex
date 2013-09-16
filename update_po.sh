@@ -9,6 +9,8 @@ xgettext -L perl -k_T --from-code=UTF-8 --files-from=po/POTFILES_gtk.in -o po/te
 
 xgettext -L python -k_T --from-code=UTF-8 --files-from=po/POTFILES_gedit.in -o po/template_gedit.pot || exit 1
 
+xgettext -L python -k_T --from-code=UTF-8 --files-from=po/POTFILES_sublime_text_2.in -o po/template_sublime_text_2.pot || exit 1
+
 #############################################################
 echo "Updating the existing translations..."
 
@@ -25,4 +27,9 @@ done
 for PO_FILE in po/*/LC_MESSAGES/geditautolatex.po
 do
 	msgmerge --backup=none -U "$PO_FILE" "po/template_gedit.pot" || exit 1
+done
+
+for PO_FILE in po/*/LC_MESSAGES/sublime-text-2-autolatex.po
+do
+	msgmerge --backup=none -U "$PO_FILE" "po/template_sublime_text_2.pot" || exit 1
 done
