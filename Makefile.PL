@@ -6,7 +6,9 @@ use Getopt::Long;
 use File::Basename;
 use File::Spec;
 use File::Copy;
+use File::Path qw(remove_tree);
 use Compress::Zlib;
+use Archive::Zip;
 use Pod::Text;
 use Pod::Man;
 use pp;
@@ -508,6 +510,47 @@ sub DO_compile(\%) {
 		}
 	}
 	closedir(*DIR);
+
+	# Create the Sublime Text Package
+	{
+		my $sublime_tmp = File::Spec->catfile('build_tmp', 'autolatex');
+		my $sublime_tmp_file = 'autolatex.sublime-package';
+		mkdirrec($sublime_tmp);
+		installInto(
+			File::Spec->catfile($sublime_tmp, 'utils'),
+			getFiles('python','utils','*'));
+		installInto(
+			$sublime_tmp,
+			getFiles('plugins','sublime-text-2','autolatex','*'));		
+		installInto(
+			File::Spec->catfile($sublime_tmp, 'utils'),
+			getFiles('plugins','sublime-text-2','autolatex','utils','*'));
+		chdir('build_tmp') or die("build_tmp: $!\n");
+		my $zip = Archive::Zip->new();
+		local *DIR;
+		my @dirs = ( 'autolatex' );
+		while (@dirs) {
+			my $dir = shift @dirs;
+			print "adding $dir...\n";
+			$zip->addDirectory( $dir );
+			opendir(*DIR, "$dir") or die("$dir: $!\n");
+			while (my $f = readdir(*DIR)) {
+				if ($f ne File::Spec->curdir() &&
+				    $f ne File::Spec->updir()) {
+					my $fn = File::Spec->catfile($dir, $f);
+					if (-d "$fn") {
+						push @dirs, $fn;
+					}
+					else {
+						$zip->addFile($fn);
+					}
+				}
+			}
+			closedir(*DIR);
+		}
+		$zip->writeToFileNamed($sublime_tmp_file);
+		chdir('..') or die("..: $!\n");
+	}
 }
 
 #------------------------------------------------------------------------------------------
@@ -731,15 +774,14 @@ sub DO_install(\%) {
 		print "Sublime Text 2 module will be installed in:\n$SUBLIME2PLUGINDIRECTORY\n";
 
 		installInto(
-			File::Spec->catfile($SUBLIME2PLUGINDIRECTORY,'utils'),
-			getFiles('python','utils','*'));
-
-		installInto(
 			$SUBLIME2PLUGINDIRECTORY,
-			getFiles('plugins','sublime-text-2','autolatex','*'));		
-		installInto(
-			File::Spec->catfile($SUBLIME2PLUGINDIRECTORY,'utils'),
-			getFiles('plugins','sublime-text-2','autolatex','utils','*'));
+			File::Spec->catfile('build_tmp','autolatex.sublime-package'));
+
+		foreach my $lang (@po_directories) {
+			install(
+				File::Spec->catfile('po',"$lang",'LC_MESSAGES','sublime-text-2-autolatex.mo'),
+				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
+		}
 	}
 }
 
@@ -776,6 +818,8 @@ sub DO_clean(\%) {
 				$bin_file->{'name'}.$EXE_EXTENSION));
 		}
 	}
+
+	remove_tree('build_tmp');
 
 	rm(File::Spec->catfile($_[0]->{'directory'},'Makefile'));
 }
@@ -980,7 +1024,7 @@ if (("$^O" eq 'MSWin32')||
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
 	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
 	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
-	$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'}) || File::Spec->catfile("$PREFIX",'Sublime Text 2')), 'Packages', 'autolatex');
+	$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'}) || File::Spec->catfile("$PREFIX",'Sublime Text 2')), 'Pristine Packages');
 }
 else {
 	# Unix compatible platform
@@ -1010,10 +1054,10 @@ else {
 	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
 
 	if ("$^O" eq "rhapsody") {
-		$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'})  || File::Spec->catfile($ENV{'HOME'}, 'Library', 'Application Support', 'Sublime Text 2' )), 'Packages', 'autolatex');
+		$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'})  || File::Spec->catfile($ENV{'HOME'}, 'Library', 'Application Support', 'Sublime Text 2' )), 'Pristine Packages');
 	}
 	else {
-		$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'})  || File::Spec->catfile($ENV{'HOME'}, '.config', 'sublime-text-2')), 'Packages', 'autolatex');
+		$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'})  || File::Spec->catfile($ENV{'HOME'}, '.config', 'sublime-text-2')), 'Pristine Packages');
 	}
 }
 
