@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
 # autolatex/utils/__init__.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
@@ -16,4 +19,4 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-__all__ = [ 'gsettings', 'utils', 'latex_log_parser' ]
+__all__ = [ ]

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
 # autolatex/widgets/inherit_button.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #

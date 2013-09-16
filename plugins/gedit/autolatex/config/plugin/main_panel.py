@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
 # autolatex/config/plugin/main_panel.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #

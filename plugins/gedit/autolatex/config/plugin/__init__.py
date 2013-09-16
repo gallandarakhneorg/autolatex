@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
 # autolatex/config/plugin/__init__.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #

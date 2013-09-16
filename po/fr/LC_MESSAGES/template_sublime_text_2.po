@@ -1,0 +1,63 @@
+# French translations for the Sublime Text 2 part of AutoLaTeX
+# Copyright (C) 2013 Stephane Galland <galland@arakhne.rg>
+# This file is distributed under the same license as the AutoLaTeX package.
+# Stephane Galland <galland@arakhne.org>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: AutoLaTeX 25.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-16 13:38+0200\n"
+"PO-Revision-Date: 2013-09-16 13:38+0200\n"
+"Last-Translator: Stephane Galland <galland@arakhne.org>\n"
+"Language-Team: FR <galland@arakhne.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: python/utils/latex_log_parser.py:143
+#, python-format
+msgid "Citation '%s' undefined"
+msgstr "La citation '%s' n'est pas définie"
+
+#: python/utils/latex_log_parser.py:159
+#, python-format
+msgid "Reference '%s' undefined"
+msgstr "La référence '%s' est inconnue"
+
+#: python/utils/latex_log_parser.py:175
+#, python-format
+msgid "Label '%s' multiply defined"
+msgstr "Le label '%s' est défini plusieurs fois"
+
+#: plugins/sublime-text-2/autolatex/utils/runner_command.py:68
+#: plugins/sublime-text-2/autolatex/utils/runner_command.py:83
+#: plugins/sublime-text-2/autolatex/utils/runner_command.py:95
+#, python-format
+msgid "Building [%d%%]"
+msgstr "Construction [%d%%]"
+
+#: plugins/sublime-text-2/autolatex/utils/runner_command.py:93
+#, python-format
+msgid "Building [%d%%]: %s"
+msgstr "Construction [%d%%] : %s"
+
+#: plugins/sublime-text-2/autolatex/utils/runner_command.py:109
+#, python-format
+msgid "[Decode error - output not %s]"
+msgstr "[Erreur d'encodage - la sortie n'est pas compatible avec %s]"
+
+#: plugins/sublime-text-2/autolatex/utils/runner_command.py:128
+msgid "Build finished with an error"
+msgstr "Construction terminée avec une erreur"
+
+#: plugins/sublime-text-2/autolatex/utils/runner_command.py:130
+msgid "Build finished"
+msgstr "Construction terminée"
+
+#: plugins/sublime-text-2/autolatex/utils/runner_command.py:132
+#, python-format
+msgid "Build finished with %d warnings"
+msgstr "Construction terminée avec %d avertissement(s)"
+

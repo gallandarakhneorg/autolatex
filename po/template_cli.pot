@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-06 20:53+0200\n"
+"POT-Creation-Date: 2013-09-16 13:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,27 +33,27 @@ msgstr ""
 msgid "Unable to find a viewer."
 msgstr ""
 
-#: autolatex.pl:499
+#: autolatex.pl:500
 msgid "Removing all the temporary files"
 msgstr ""
 
-#: autolatex.pl:506
+#: autolatex.pl:507
 msgid "Removing all the temporary and generated files"
 msgstr ""
 
-#: autolatex.pl:689
+#: autolatex.pl:690
 msgid "Creating default project configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:693
+#: autolatex.pl:694
 msgid "Creating default user configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:702
+#: autolatex.pl:703
 msgid "Creating default makeindex style file...\n"
 msgstr ""
 
-#: autolatex.pl:781
+#: autolatex.pl:782
 msgid "Command line action '{}' is not supported."
 msgstr ""
 
@@ -395,8 +395,8 @@ msgstr ""
 msgid "{}: file not found or not readable."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:872 pm/AutoLaTeX/Make/Make.pm:923
-#: pm/AutoLaTeX/Make/Make.pm:1004
+#: pm/AutoLaTeX/Core/Translator.pm:872 pm/AutoLaTeX/Make/Make.pm:1019
+#: pm/AutoLaTeX/Make/Make.pm:1100
 msgid "{} is up-to-date."
 msgstr ""
 
@@ -490,9 +490,9 @@ msgstr ""
 #: pm/AutoLaTeX/Core/Util.pm:668 pm/AutoLaTeX/Core/Util.pm:766
 #: pm/AutoLaTeX/Core/Util.pm:772 pm/AutoLaTeX/Core/Util.pm:845
 #: pm/AutoLaTeX/Core/Util.pm:851 pm/AutoLaTeX/TeX/Flattener.pm:113
-#: pm/AutoLaTeX/Make/Make.pm:562 pm/AutoLaTeX/Make/Make.pm:799
-#: pm/AutoLaTeX/Make/Make.pm:1256 pm/AutoLaTeX/Make/Make.pm:1291
-#: pm/AutoLaTeX/Make/Make.pm:1339
+#: pm/AutoLaTeX/Make/Make.pm:608 pm/AutoLaTeX/Make/Make.pm:895
+#: pm/AutoLaTeX/Make/Make.pm:1352 pm/AutoLaTeX/Make/Make.pm:1387
+#: pm/AutoLaTeX/Make/Make.pm:1435
 msgid "{}: {}"
 msgstr ""
 
@@ -594,56 +594,56 @@ msgstr ""
 msgid "unable to recognize the following argument specification: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:374
+#: pm/AutoLaTeX/Make/Make.pm:420
 msgid "Parsing '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:377 pm/AutoLaTeX/Make/Make.pm:399
-#: pm/AutoLaTeX/Make/Make.pm:419 pm/AutoLaTeX/Make/Make.pm:437
-#: pm/AutoLaTeX/Make/Make.pm:455 pm/AutoLaTeX/Make/Make.pm:462
-#: pm/AutoLaTeX/Make/Make.pm:491 pm/AutoLaTeX/Make/Make.pm:502
-#: pm/AutoLaTeX/Make/Make.pm:516
+#: pm/AutoLaTeX/Make/Make.pm:423 pm/AutoLaTeX/Make/Make.pm:445
+#: pm/AutoLaTeX/Make/Make.pm:465 pm/AutoLaTeX/Make/Make.pm:483
+#: pm/AutoLaTeX/Make/Make.pm:501 pm/AutoLaTeX/Make/Make.pm:508
+#: pm/AutoLaTeX/Make/Make.pm:537 pm/AutoLaTeX/Make/Make.pm:548
+#: pm/AutoLaTeX/Make/Make.pm:562
 msgid "Adding file '{}'"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:475
+#: pm/AutoLaTeX/Make/Make.pm:521
 msgid "Parsing auxiliary files"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:587 pm/AutoLaTeX/Make/Make.pm:1261
-#: pm/AutoLaTeX/Make/Make.pm:1296
+#: pm/AutoLaTeX/Make/Make.pm:635 pm/AutoLaTeX/Make/Make.pm:1357
+#: pm/AutoLaTeX/Make/Make.pm:1392
 msgid "{}: Error when processing {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:657
+#: pm/AutoLaTeX/Make/Make.pm:753
 msgid "{}: The first error found in the log file is:"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:659
+#: pm/AutoLaTeX/Make/Make.pm:755
 msgid "{}: End of error log."
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:662
+#: pm/AutoLaTeX/Make/Make.pm:758
 msgid "{}: Unable to extract the error from the log. Please read the log file."
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:816
+#: pm/AutoLaTeX/Make/Make.pm:912
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:825
+#: pm/AutoLaTeX/Make/Make.pm:921
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:834
+#: pm/AutoLaTeX/Make/Make.pm:930
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:847
+#: pm/AutoLaTeX/Make/Make.pm:943
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1343
+#: pm/AutoLaTeX/Make/Make.pm:1439
 msgid "Style file: {}"
 msgstr ""

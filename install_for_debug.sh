@@ -2,43 +2,83 @@
 
 AUTOLATEX_DIR=`dirname "$0"`
 AUTOLATEX_DIR=`readlink -f "$AUTOLATEX_DIR"`
-SOURCE_DIR="$AUTOLATEX_DIR/plugins/gedit"
-DEST_DIR="$HOME/.local/share/gedit/plugins"
+# PYTHON GENERAL LIB
+PYTHON_SOURCE_DIR="$AUTOLATEX_DIR/python"
+# GEDIT
+GEDIT_SOURCE_DIR="$AUTOLATEX_DIR/plugins/gedit"
+GEDIT_DEST_DIR="$HOME/.local/share/gedit/plugins"
+# SUBLIME TEXT
+SUBLIME_SOURCE_DIR="$AUTOLATEX_DIR/plugins/sublime-text-2/autolatex"
+SUBLIME_DEST_DIR="$HOME/.config/sublime-text-2/Packages/autolatex"
 
 echo "AUTOLATEX_DIR=$AUTOLATEX_DIR"
-echo "SOURCE=$SOURCE_DIR"
-echo "DEST=$DEST_DIR"
+echo "GEDIT_SOURCE=$GEDIT_SOURCE_DIR"
+echo "GEDIT_DEST=$GEDIT_DEST_DIR"
+echo "SUBLIME_SOURCE=$SUBLIME_SOURCE_DIR"
+echo "SUBLIME_DEST=$SUBLIME_DEST_DIR"
 
 if [ "$1" = "install" ]
 then
 
-  rm -rfv "$DEST_DIR/autolatex"*
+  #
+  # GEDIT
+  #
+  rm -rfv "$GEDIT_DEST_DIR/autolatex"*
 
-  mkdir -pv "$DEST_DIR/autolatex/config"
-  mkdir -pv "$DEST_DIR/autolatex/config/cli"
-  mkdir -pv "$DEST_DIR/autolatex/config/plugin"
-  mkdir -pv "$DEST_DIR/autolatex/ui"
-  mkdir -pv "$DEST_DIR/autolatex/utils"
-  mkdir -pv "$DEST_DIR/autolatex/widgets"
+  mkdir -pv "$GEDIT_DEST_DIR/autolatex/config"
+  mkdir -pv "$GEDIT_DEST_DIR/autolatex/config/cli"
+  mkdir -pv "$GEDIT_DEST_DIR/autolatex/config/plugin"
+  mkdir -pv "$GEDIT_DEST_DIR/autolatex/ui"
+  mkdir -pv "$GEDIT_DEST_DIR/autolatex/utils"
+  mkdir -pv "$GEDIT_DEST_DIR/autolatex/widgets"
 
-  ln -sv "$SOURCE_DIR/"*.plugin "$DEST_DIR/"
-  ln -sv "$SOURCE_DIR/autolatex/"*.py "$DEST_DIR/autolatex/"
-  ln -sv "$SOURCE_DIR/autolatex/icons" "$DEST_DIR/autolatex/"
-  ln -sv "$SOURCE_DIR/autolatex/config/"*.py "$DEST_DIR/autolatex/config"
-  ln -sv "$SOURCE_DIR/autolatex/config/cli/"*.py "$DEST_DIR/autolatex/config/cli"
-  ln -sv "$SOURCE_DIR/autolatex/config/plugin/"*.py "$DEST_DIR/autolatex/config/plugin"
-  ln -sv "$SOURCE_DIR/autolatex/ui/"*.ui "$DEST_DIR/autolatex/ui"
-  ln -sv "$SOURCE_DIR/autolatex/utils/"*.py "$DEST_DIR/autolatex/utils"
-  ln -sv "$SOURCE_DIR/autolatex/widgets/"*.py "$DEST_DIR/autolatex/widgets"
+  ln -sv "$PYTHON_SOURCE_DIR/utils/"*.py "$GEDIT_DEST_DIR/autolatex/utils"
 
+  ln -sv "$GEDIT_SOURCE_DIR/"*.plugin "$GEDIT_DEST_DIR/"
+  ln -sv "$GEDIT_SOURCE_DIR/autolatex/"*.py "$GEDIT_DEST_DIR/autolatex/"
+  ln -sv "$GEDIT_SOURCE_DIR/autolatex/icons" "$GEDIT_DEST_DIR/autolatex/"
+  ln -sv "$GEDIT_SOURCE_DIR/autolatex/config/"*.py "$GEDIT_DEST_DIR/autolatex/config"
+  ln -sv "$GEDIT_SOURCE_DIR/autolatex/config/cli/"*.py "$GEDIT_DEST_DIR/autolatex/config/cli"
+  ln -sv "$GEDIT_SOURCE_DIR/autolatex/config/plugin/"*.py "$GEDIT_DEST_DIR/autolatex/config/plugin"
+  ln -sv "$GEDIT_SOURCE_DIR/autolatex/ui/"*.ui "$GEDIT_DEST_DIR/autolatex/ui"
+  ln -sv "$GEDIT_SOURCE_DIR/autolatex/utils/"*.py "$GEDIT_DEST_DIR/autolatex/utils"
+  ln -sv "$GEDIT_SOURCE_DIR/autolatex/widgets/"*.py "$GEDIT_DEST_DIR/autolatex/widgets"
+
+  #
+  # SUBLIME TEXT
+  #
+  rm -rfv "$SUBLIME_DEST_DIR"
+
+  mkdir -pv "$SUBLIME_DEST_DIR/utils"
+
+  ln -sv "$PYTHON_SOURCE_DIR/utils/"*.py "$SUBLIME_DEST_DIR/utils"
+
+  ln -sv "$SUBLIME_SOURCE_DIR/"*.sublime-* "$SUBLIME_DEST_DIR/"
+  ln -sv "$SUBLIME_SOURCE_DIR/"*.py "$SUBLIME_DEST_DIR/"
+  ln -sv "$SUBLIME_SOURCE_DIR/utils/"*.py "$SUBLIME_DEST_DIR/utils/"
+
+  #
+  # CONFIG
+  #
   mv -fv "$AUTOLATEX_DIR/default.cfg" "$AUTOLATEX_DIR/default.cfg.orig"
   cp -fv "$AUTOLATEX_DIR/default_debug.cfg" "$AUTOLATEX_DIR/default.cfg"
 
 elif [ "$1" = "remove" ]
 then
-  rm -rfv "$DEST_DIR/autolatex"
-  rm -fv "$DEST_DIR/autolatex.plugin"
+  #
+  # GEDIT
+  #
+  rm -rfv "$GEDIT_DEST_DIR/autolatex"
+  rm -fv "$GEDIT_DEST_DIR/autolatex.plugin"
 
+  #
+  # SUBLIME TEXT
+  #
+  rm -rfv "$SUBLIME_DEST_DIR"
+
+  #
+  # CONFIG
+  #
   cd "$AUTOLATEX_DIR"
   mv -fv default.cfg.orig default.cfg 2>/dev/null
 else

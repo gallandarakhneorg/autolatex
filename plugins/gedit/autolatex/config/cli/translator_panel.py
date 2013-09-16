@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
 # autolatex/config/cli/translator_panel.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
@@ -28,6 +31,7 @@ import re
 from gi.repository import GObject, Gdk, Gtk, GdkPixbuf, GtkSource
 # AutoLaTeX internal libs
 from ...utils import utils
+from ...utils import gtk_utils
 from . import abstract_panel
 
 #---------------------------------
@@ -760,7 +764,7 @@ class Panel(abstract_panel.AbstractPanel):
 			human_readable = self._translator_config.get(translator, 'human-readable')
 			icon1 = self._get_level_icon(0, self._translator_inclusions_constants[translator])
 			icon2 = self._get_level_icon(1, self._translator_inclusions[translator])
-			insert_index = utils.get_insert_index_dichotomic(
+			insert_index = gtk_utils.get_insert_index_dichotomic(
 						self._ui_translator_list,
 						2,
 						translator)

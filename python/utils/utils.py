@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
 # autolatex/utils/utils.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
@@ -22,12 +25,11 @@
 
 # Import standard python libs
 import os
+import sys
 import subprocess
 import ConfigParser
 import StringIO
 import gettext
-# Include the Glib, Gtk and Gedit libraries
-from gi.repository import Gio, Gtk
 
 #---------------------------------
 # UTILITY FUNCTION
@@ -46,6 +48,18 @@ def which(cmd):
         return filename
   return None
 
+# Search a module in the sys.path or in search_part
+def resolve_module_path(path, search_path=[]):
+	if not os.path.isabs(path):
+		for p in search_path:
+			full_name = os.path.join(p, path)
+			if os.path.exists(full_name):
+				return full_name
+		for p in sys.path:
+			full_name = os.path.join(p, path)
+			if os.path.exists(full_name):
+				return full_name
+	return path
 
 #---------------------------------
 # CONSTANTS
@@ -57,52 +71,113 @@ DEFAULT_LOG_LEVEL = '--quiet'
 # String that is representing an empty string for the AutoLaTeX backend.
 CONFIG_EMPTY_VALUE = '<<<<empty>>>>'
 
-# Plugin path
-_p = Gio.File.new_for_path(os.getcwd())
-AUTOLATEX_PLUGIN_PATH = os.path.join(os.path.dirname(__file__), 'utils.py') # To support .py and .pyc
-AUTOLATEX_PLUGIN_PATH = _p.resolve_relative_path(AUTOLATEX_PLUGIN_PATH).get_path()
-while os.path.islink(AUTOLATEX_PLUGIN_PATH):
-	_p = Gio.File.new_for_path(os.path.dirname(AUTOLATEX_PLUGIN_PATH))
-	AUTOLATEX_PLUGIN_PATH = _p.resolve_relative_path(os.readlink(AUTOLATEX_PLUGIN_PATH)).get_path()
-AUTOLATEX_PLUGIN_PATH = os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))
+# Paths
+AUTOLATEX_PLUGIN_PATH = None
+AUTOLATEX_DEV_PATH = None
+AUTOLATEX_INSTALL_PATH = None
+AUTOLATEX_PO_PATH = None # Default locale path
+AUTOLATEX_PM_PATH = None
+TOOLBAR_ICON_PATH = None
+NOTEBOOK_ICON_PATH = None
+TABLE_ICON_PATH = None
 
-# PO path
-AUTOLATEX_PO_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'po')
-if not os.path.exists(os.path.join(AUTOLATEX_PO_PATH, 'fr', 'LC_MESSAGES', 'geditautolatex.mo')):
-	AUTOLATEX_PO_PATH = None # Default locale path
+# Binary files
+AUTOLATEX_BINARY = None
+DEFAULT_AUTOLATEX_BINARY = None
+AUTOLATEX_BACKEND_BINARY = None
+DEFAULT_AUTOLATEX_BACKEND_BINARY = None
 
-# PM path
-AUTOLATEX_PM_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'pm')
+def init_plugin_configuration(plugin_file, po_name, search_path=[]):
+	global AUTOLATEX_PLUGIN_PATH
+	global AUTOLATEX_DEV_PATH
+	global AUTOLATEX_INSTALL_PATH
+	global AUTOLATEX_PO_PATH
+	global AUTOLATEX_PM_PATH
+	global AUTOLATEX_BINARY
+	global AUTOLATEX_BACKEND_BINARY
+	global DEFAULT_AUTOLATEX_BINARY
+	global DEFAULT_AUTOLATEX_BACKEND_BINARY
+	global TOOLBAR_ICON_PATH
+	global NOTEBOOK_ICON_PATH
+	global TABLE_ICON_PATH
 
-# Binary file of AutoLaTeX
-# Use the development versions of the scripts
-AUTOLATEX_BINARY = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'autolatex.pl')
-if not os.path.exists(AUTOLATEX_BINARY):
-	AUTOLATEX_BINARY = which('autolatex')
-DEFAULT_AUTOLATEX_BINARY = AUTOLATEX_BINARY
-AUTOLATEX_BACKEND_BINARY = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(AUTOLATEX_PLUGIN_PATH))), 'autolatex-backend.pl')
-if not os.path.exists(AUTOLATEX_BACKEND_BINARY):
+	bin_autolatex = which('autolatex')
+
+	# Build the plugin's filename
+	plugin_file = resolve_module_path(plugin_file, search_path)
+
+	# Path of the plugin
+	AUTOLATEX_PLUGIN_PATH = os.path.dirname(plugin_file)
+
+	# Path to the development directory
+	pdev_path = os.path.realpath(os.path.join(AUTOLATEX_PLUGIN_PATH, 
+			os.path.basename(os.path.splitext(plugin_file)[0])+'.py'))
+	dev_path = os.path.dirname(pdev_path)
+	while dev_path and pdev_path and pdev_path!=dev_path and not os.path.exists(
+				os.path.join(dev_path, 'autolatex.pl')):
+		pdev_path = dev_path
+		dev_path = os.path.dirname(dev_path)
+	if dev_path and os.path.isfile(os.path.join(dev_path, 'autolatex.pl')):
+		AUTOLATEX_DEV_PATH = dev_path
+	else:		
+		dev_path = os.path.realpath(bin_autolatex)
+		if dev_path:
+			AUTOLATEX_DEV_PATH = os.path.dirname(dev_path)
+		else:
+			AUTOLATEX_DEV_PATH = None
+
+
+	# Path to the install directory
+	if AUTOLATEX_DEV_PATH:
+		AUTOLATEX_INSTALL_PATH = AUTOLATEX_DEV_PATH
+	else:
+		path = os.path.realpath(bin_autolatex)
+		AUTOLATEX_INSTALL_PATH = os.path.dirname(path)
+
+	# Path to PO files
+	AUTOLATEX_PO_PATH = None
+	if AUTOLATEX_DEV_PATH:
+		path = os.path.join(AUTOLATEX_DEV_PATH, 'po')
+		if os.path.exists(os.path.join(path, 'fr', 'LC_MESSAGES', po_name+'.mo')):
+			AUTOLATEX_PO_PATH = path
+
+	# Path to PM files
+	AUTOLATEX_PM_PATH = os.path.join(AUTOLATEX_INSTALL_PATH, 'pm')
+
+	# Binary file
+	AUTOLATEX_BINARY = bin_autolatex
+	if AUTOLATEX_DEV_PATH:
+		path = os.path.join(dev_path, 'autolatex.pl')
+		if os.path.exists(path):
+			AUTOLATEX_BINARY = path
+	DEFAULT_AUTOLATEX_BINARY = AUTOLATEX_BINARY
+
 	AUTOLATEX_BACKEND_BINARY = which('autolatex-backend')
-DEFAULT_AUTOLATEX_BACKEND_BINARY = AUTOLATEX_BACKEND_BINARY
+	if AUTOLATEX_DEV_PATH:
+		path = os.path.join(dev_path, 'autolatex-backend.pl')
+		if os.path.exists(path):
+			AUTOLATEX_BACKEND_BINARY = path
+	DEFAULT_AUTOLATEX_BACKEND_BINARY = AUTOLATEX_BACKEND_BINARY
 
-# Path where the icons are installed
-TOOLBAR_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '24')
-NOTEBOOK_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '16')
-TABLE_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '16')
+	# Icons paths
+	TOOLBAR_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '24')
+	NOTEBOOK_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '16')
+	TABLE_ICON_PATH = os.path.join(AUTOLATEX_PLUGIN_PATH, 'icons', '16')
 
-
-
-def init_internationalization():
-	gettext.bindtextdomain('geditautolatex', AUTOLATEX_PO_PATH)
-	gettext.textdomain('geditautolatex')
+	# Init internationalization tools
+	gettext.bindtextdomain(po_name, AUTOLATEX_PO_PATH)
+	gettext.textdomain(po_name)
 
 def make_toolbar_icon_path(name):
+	assert TOOLBAR_ICON_PATH
 	return os.path.join(TOOLBAR_ICON_PATH, name)
 
 def make_notebook_icon_path(name):
+	assert NOTEBOOK_ICON_PATH
 	return os.path.join(NOTEBOOK_ICON_PATH, name)
 
 def make_table_icon_path(name):
+	assert TABLE_ICON_PATH
 	return os.path.join(TABLE_ICON_PATH, name)
 
 
@@ -206,19 +281,45 @@ def get_autolatex_document_config_file(directory):
 	else:
 		return os.path.join(directory, "autolatex_project.cfg")
 
-def get_insert_index_dichotomic(list_store, column, data):
-	f = 0
-	l = list_store.iter_n_children(None) - 1
-	while l >= f:
-		c = (f+l) / 2
-		path = Gtk.TreePath(c)
-		d = list_store[path][column]
-		cmpt = (data > d) - (data < d)
-		if cmpt == 0:
-			return -1
-		elif cmpt < 0:
-			l = c-1
-		else:
-			f = c+1
-	return f
+# Test if a given string is a standard extension for TeX document
+def is_TeX_extension(ext):
+	ext = ext.lower()
+	if ext == '.tex' or ext =='.latex':
+		return True
+	else:
+		return False
+
+# Replies if the active document is a TeX document
+def is_TeX_document(filename):
+	if filename:
+		ext = os.path.splitext(filename)[-1]
+		return is_TeX_extension(ext)
+	return False
+
+# Try to find the directory where an AutoLaTeX configuration file is
+# located. The search is traversing the parent directory from the current
+# document.
+def find_AutoLaTeX_directory(current_document):
+	adir = None
+	if os.path.isdir(current_document):
+		directory = current_document
+	else:
+		directory = os.path.dirname(current_document)
+	directory = os.path.abspath(directory)
+	document_dir = directory
+	cfgFile = get_autolatex_document_config_file(directory)
+	previousFile = ''
+	while previousFile != cfgFile and not os.path.exists(cfgFile):
+	    directory = os.path.dirname(directory)
+	    previousFile = cfgFile
+	    cfgFile = get_autolatex_document_config_file(directory)
+
+	if previousFile != cfgFile:
+	    adir = os.path.dirname(cfgFile)
+	else:
+	    ext = os.path.splitext(document_name)[-1]
+	    if is_TeX_extension(ext):
+		adir = document_dir
+
+	return adir
 

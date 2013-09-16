@@ -11,7 +11,7 @@ use Pod::Text;
 use Pod::Man;
 use pp;
 
-my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit' => 1, 'gtk' => 1 );
+my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit' => 1, 'gtk' => 1, 'sublime2' => 1 );
 
 # GENERAL INSTALLATION INFORMATIONS
 my $ALLOW_SYMBOLIC_LINK;
@@ -22,8 +22,9 @@ my $MANDIRECTORY;
 my $LOCALEDIRECTORY;
 my $ICONDIRECTORY;
 my $STYDIRECTORY;
-my $GEDITPLUGINDIRECTORY;
 my $GSETTINGSSCHEMADIRECTORY;
+my $GEDITPLUGINDIRECTORY;
+my $SUBLIME2PLUGINDIRECTORY;
 
 my $EXE_EXTENSION = '.bin';
 my %BINARY_FILES = (
@@ -45,9 +46,38 @@ my %BINARY_FILES = (
 	},
 );
 
+#------------------------------------------------------------------------------------------
 sub dbg(@) {
 	use Data::Dumper;
 	die(Dumper(@_));
+}
+
+#------------------------------------------------------------------------------------------
+sub printColumns($$@) {
+	my $prefix = shift || '';
+	my $sep = shift || '';
+	my $len = 0;
+	my $i;
+	$i = 0;
+	while ($i<@_) {
+		my $l = length($_[$i]);
+		if ($l>$len) {
+			$len = $l;
+		}
+		$i += 2;
+	}
+	$i = 0;
+	while ($i<@_) {
+		my $l = length($_[$i]);
+		print $prefix.$_[$i];
+		$i++;
+		while ($l<$len) {
+			print ' ';
+			$l++;
+		}
+		print $sep.$_[$i]."\n";
+		$i++;
+	}
 }
 
 #------------------------------------------------------------------------------------------
@@ -660,6 +690,9 @@ sub DO_install(\%) {
 
 		installInto(
 			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','utils'),
+			getFiles('python','utils','*'));
+		installInto(
+			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','utils'),
 			getFiles('plugins', 'gedit','autolatex','utils','*'));
 
 		installInto(
@@ -691,6 +724,22 @@ sub DO_install(\%) {
 		install(
 			'autolatex-icon.png',
 			$ICONDIRECTORY);
+	}
+
+	if ($MODULES{'sublime2'}) {
+		print "***************\n*** CAUTION ***\n***************\n";
+		print "Sublime Text 2 module will be installed in:\n$SUBLIME2PLUGINDIRECTORY\n";
+
+		installInto(
+			File::Spec->catfile($SUBLIME2PLUGINDIRECTORY,'utils'),
+			getFiles('python','utils','*'));
+
+		installInto(
+			$SUBLIME2PLUGINDIRECTORY,
+			getFiles('plugins','sublime-text-2','autolatex','*'));		
+		installInto(
+			File::Spec->catfile($SUBLIME2PLUGINDIRECTORY,'utils'),
+			getFiles('plugins','sublime-text-2','autolatex','utils','*'));
 	}
 }
 
@@ -743,6 +792,22 @@ sub DO_par(\%) {
 }
 
 #------------------------------------------------------------------------------------------
+sub DO_vars(\%) {
+	printColumns('', '  ',
+		'ALLOW_SYMBOLIC_LINK', $ALLOW_SYMBOLIC_LINK,
+		'BINDIRECTORY', $BINDIRECTORY,
+		'ETCDIRECTORY', $ETCDIRECTORY,
+		'ICONDIRECTORY', $ICONDIRECTORY,
+		'INSTALLDIRECTORY', $INSTALLDIRECTORY,
+		'GEDITPLUGINDIRECTORY', $GEDITPLUGINDIRECTORY,
+		'GSETTINGSSCHEMADIRECTORY', $GSETTINGSSCHEMADIRECTORY,
+		'LOCALEDIRECTORY', $LOCALEDIRECTORY,
+		'MANDIRECTORY', $MANDIRECTORY,
+		'STYDIRECTORY', $STYDIRECTORY,
+		'SUBLIME2PLUGINDIRECTORY', $SUBLIME2PLUGINDIRECTORY);
+}
+
+#------------------------------------------------------------------------------------------
 sub DO_createMakefile(\%) {
 	print "CREATING MAKEFILE...\n";
 	local *OUT;
@@ -762,6 +827,9 @@ sub DO_createMakefile(\%) {
 	}
 	if ($_[0]->{'tex-prefix'}) {
 		push @options, '"--texprefix='.$_[0]->{'tex-prefix'}.'"';
+	}
+	if ($_[0]->{'sublime2-prefix'}) {
+		push @options, '"--sublime2prefix='.$_[0]->{'sublime2-prefix'}.'"';
 	}
 	if ($_[0]->{'create-links'}) {
 		push @options, '"--link"';
@@ -826,6 +894,7 @@ close(*FILE);
 
 # Read command line
 if (!GetOptions(
+		'sublime2prefix=s' => \$options{'sublime2-prefix'},
 		'texprefix=s' => \$options{'tex-prefix'},
 		'etcprefix=s' => \$options{'etc-prefix'},
 		'manprefix=s' => \$options{'man-prefix'},
@@ -842,6 +911,29 @@ if (!GetOptions(
 					}
 					exit(255);
 				},
+		'help' => sub {
+				print basename($0)." <options> <action>\n";
+				print "<action> is one of:\n";
+				printColumns('   ', '  ',
+					'compile', 'compile the software',
+					'install', 'install the software',
+					'clean', 'clean the directory',
+					'par', 'create binary files');
+				print "<options> are:\n";
+				printColumns('   ', '  ',
+					'--disable', 'disable module',
+					'--[no]etclink', 'enable/disable config\'s symbolic links',
+					'--enable', 'enable module',
+					'--etcprefix=<path>', 'path to config directory',
+					'--[no]link', 'enable/disable symbolic links',
+					'--manprefix=<path>', 'path to manual directory',
+					'--modules', 'list the modules',
+					'--prefix=<path>', 'path to root installation directory',
+					'--sublime2prefix=<path>', 'path to the directory of Sublime Text 2',
+					'--texprefix=<path>', 'path to TeX directory',
+					'--version=<text>', 'set software version');
+				exit(255);
+			},
 		)) {
 	exit(1);
 }
@@ -860,6 +952,9 @@ foreach my $act (@ARGV) {
 	}
 	elsif ($act eq 'par') {
 		$options{'action'} = 'par';
+	}
+	elsif ($act eq 'vars') {
+		$options{'action'} = 'vars';
 	}
 }
 
@@ -885,6 +980,7 @@ if (("$^O" eq 'MSWin32')||
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
 	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
 	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
+	$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'}) || File::Spec->catfile("$PREFIX",'Sublime Text 2')), 'Packages', 'autolatex');
 }
 else {
 	# Unix compatible platform
@@ -912,6 +1008,13 @@ else {
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
 	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex');
 	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
+
+	if ("$^O" eq "rhapsody") {
+		$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'})  || File::Spec->catfile($ENV{'HOME'}, 'Library', 'Application Support', 'Sublime Text 2' )), 'Packages', 'autolatex');
+	}
+	else {
+		$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'})  || File::Spec->catfile($ENV{'HOME'}, '.config', 'sublime-text-2')), 'Packages', 'autolatex');
+	}
 }
 
 # Run the action

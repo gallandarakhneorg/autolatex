@@ -1,5 +1,10 @@
 # List of source files containing translatable strings.
 
+python/utils/debug.py
+python/utils/latex_log_parser.py
+python/utils/runner.py
+python/utils/utils.py
+
 plugins/gedit/autolatex/__init__.py
 plugins/gedit/autolatex/config/__init__.py
 plugins/gedit/autolatex/config/cli/__init__.py
@@ -13,10 +18,10 @@ plugins/gedit/autolatex/config/cli/window.py
 plugins/gedit/autolatex/config/plugin/__init__.py
 plugins/gedit/autolatex/config/plugin/main_panel.py
 plugins/gedit/autolatex/utils/__init__.py
-plugins/gedit/autolatex/utils/debug.py
+plugins/gedit/autolatex/utils/gedit_runner.py
 plugins/gedit/autolatex/utils/gsettings.py
-plugins/gedit/autolatex/utils/latex_log_parser.py
-plugins/gedit/autolatex/utils/utils.py
+plugins/gedit/autolatex/utils/gtk_utils.py
 plugins/gedit/autolatex/widgets/__init__.py
-plugins/gedit/autolatex/widgets/latex_console.py
 plugins/gedit/autolatex/widgets/inherit_button.py
+plugins/gedit/autolatex/widgets/latex_console.py
+

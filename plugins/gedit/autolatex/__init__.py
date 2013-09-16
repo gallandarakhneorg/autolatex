@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
 # autolatex/__init__.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
@@ -22,161 +25,29 @@
 
 # Import standard python libs
 import os
-import subprocess
 import tempfile
 import re
-# Try to use the threading library if it is available
-try:
-    import threading as _threading
-except ImportError:
-    import dummy_threading as _threading
+import gettext
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import GObject, Gtk, Gio, GdkPixbuf, Gedit, PeasGtk
 
 # AutoLaTeX internal libs
-from .utils import utils, gsettings
+from .utils import utils, gsettings, gedit_runner
 from .config.cli import window as cli_config
 from .config.plugin import main_panel as plugin_config
 from .widgets import latex_console
 
 #---------------------------------
+# PLUGIN CONFIGURATION
+#---------------------------------
+
+utils.init_plugin_configuration(__file__, 'geditautolatex')
+
+#---------------------------------
 # INTERNATIONALIZATION
 #---------------------------------
 
-import gettext
 _T = gettext.gettext
-utils.init_internationalization()
-
-#---------------------------------
-# CLASS _AutoLaTeXExecutionThread
-#---------------------------------
-
-# Launch AutoLaTeX inside a thread, and wait for the result
-class _AutoLaTeXExecutionThread(_threading.Thread):
-    # caller is an instance of AutoLaTeXPlugin
-    # label is the text to display in the info bar. If none, there is no info bar.
-    # gsettings is the object that permits to access to the Gsettings
-    # directory is the path to set as the current path
-    # directive is the AutoLaTeX command
-    # params are the CLI options for AutoLaTeX
-    def __init__(self, caller, label, gsettings, directory, directive, params):
-	_threading.Thread.__init__(self)
-	self.daemon = True
-	self._enable_info_bar = gsettings.get_progress_info_visibility()
-	self._caller = caller
-	self._is_action_canceled = False
-	self._info_bar_label = label
-	self._info_bar = None
-	self._sig_info_bar = 0
-	self._directory = directory
-	self._cmd = [ utils.AUTOLATEX_BINARY, '--file-line-warning' ] + params
-	if directive:
-		self._cmd.append(directive)
-
-    # Run the thread
-    def run(self):
-	self._is_action_canceled = False
-	progress_line_pattern = None
-
-	# Test if the progress info must be shown
-	activate_progress = (self._enable_info_bar and self._info_bar_label is not None)
-
-	if activate_progress:
-		# Add the info bar the inside of the Gtk thread
-		GObject.idle_add(self._add_info_bar)
-		# Updat the command line to obtain the progress data
-		self._cmd.append('--progress=n')
-		# Compile a regular expression to extract the progress amount
-		progress_line_pattern = re.compile("^\\[\\s*([0-9]+)\\%\\]\\s+[#.]+(.*)$")
-
-	# Launch the subprocess
-	os.chdir(self._directory)
-	process = subprocess.Popen(self._cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	output = ''
-	if process:
-	    if activate_progress:
-		# Use the info bar to draw the progress of the task
-		process.poll()
-		# Loop until the subprocess is dead
-		while process.returncode is None and not self._is_action_canceled:
-			if not process.stdout.closed:
-				# Read a line from STDOUT and extract the progress amount
-				process.stdout.flush()
-				line = process.stdout.readline()
-				if line:
-					mo = re.match(progress_line_pattern, line)
-					if mo:
-						amount = (float(mo.group(1)) / 100.)
-						comment = mo.group(2).strip()
-						GObject.idle_add(self._update_info_bar, amount, comment)
-
-			process.poll()
-		# Kill the subprocess if 
-		if self._is_action_canceled:
-			process.kill()
-			retcode = 0
-		else:
-			retcode = process.returncode
-			# Read the error output of AutoLaTeX
-			process.stderr.flush()
-			for line in process.stderr:
-				output = output + line
-		process.stdout.close()
-		process.stderr.close()
-		
-	    else:
-		# Silent execution of the task
-	        out, err = process.communicate()
-	        retcode = process.returncode
-	        output = err
-
-	# If AutoLaTeX had failed, the output is assumed to
-	# be the error message.
-	# If AutoLaTeX had not failed, the output may contains
-	# "warning" notifications.
-	latex_warnings = []
-	if retcode == 0:
-		regex_expr = re.compile("^\\!\\!(.+?):(W[0-9]+):[^:]+:\\s*(.+?)\\s*$")
-		for output_line in re.split("[\n\r]+", output):
-			mo = re.match(regex_expr, output_line)
-			if mo:
-				latex_warnings.append([mo.group(3),mo.group(1), mo.group(2)])
-		output = '' # Output is no more interesting
-
-	# Remove the info bar from the inside of the Gtk thread
-	GObject.idle_add(self._hide_info_bar)
-	# Update the rest of the UI from the inside of the Gtk thread
-	GObject.idle_add(self._caller._update_action_validity, True, output, latex_warnings)
-
-    def _add_info_bar(self):
-	gedit_tab = self._caller.window.get_active_tab()
-	self._info_bar = Gedit.ProgressInfoBar()
-	self._info_bar.set_stock_image(Gtk.STOCK_EXECUTE)
-	self._info_bar.set_text(self._info_bar_label)
-	self._sig_info_bar = self._info_bar.connect("response",
-				self._on_cancel_action);
-	self._info_bar.show()
-	gedit_tab.set_info_bar(self._info_bar)
-
-    def _hide_info_bar(self):
-	if self._info_bar:
-		self._info_bar.disconnect(self._sig_info_bar);
-		self._info_bar.destroy()
-		self._info_bar = None
-
-    def _update_info_bar(self, progressValue, comment):
-	if self._info_bar:
-		self._info_bar.set_fraction(progressValue)
-		if comment:
-			self._info_bar.set_text(comment)
-
-    def _on_cancel_action(self, widget, response, data=None):
-	if response == Gtk.ResponseType.CANCEL:
-		self._is_action_canceled = True
-		if self._info_bar:
-			self._info_bar.set_response_sensitive(
-				Gtk.ResponseType.CANCEL,
-				False)
 
 #---------------------------------
 # CLASS AutoLaTeXPlugin
@@ -323,13 +194,13 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         self._document_actions = Gtk.ActionGroup("AutoLaTeXDocumentActions")
         self._document_actions.add_actions([
 	    ('AutoLaTeXGenerateImageAction', None, _T("Generate images"), 
-                '<shift>F4', _T("Generate the images with AutoLaTeX"), 
+                None, _T("Generate the images with AutoLaTeX"), 
                 self.on_generateimage_action_activate),
             ('AutoLaTeXCompileAction', None, _T("Compile"), 
-                '<shift>F5', _T("Compile with AutoLaTeX"), 
+                '<ctrl>B', _T("Compile with AutoLaTeX"), 
                 self.on_compile_action_activate),
             ('AutoLaTeXCleanAction', None, _T("Remove temporary files"), 
-                '<shift>F6', _T("Clean with AutoLaTeX"), 
+                None, _T("Clean with AutoLaTeX"), 
                 self.on_clean_action_activate),
             ('AutoLaTeXCleanallAction', None, _T("Clean all"), 
                 None, _T("Clean all with AutoLaTeX"), 
@@ -430,22 +301,13 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	        manager.remove_ui(merge_id)
         manager.ensure_update()
     
-    # Test if a given string is a standard extension for TeX document
-    def _is_TeX_extension(self, ext):
-	ext = ext.lower()
-	if ext == '.tex' or ext =='.latex':
-	    return True
-	else:
-	    return False
-
     # Replies if the active document is a TeX document
     def _is_TeX_document(self):
         doc = self.window.get_active_document()
         if doc:
             doc = Gedit.Document.get_location(doc)
 	    if doc:
-		ext = os.path.splitext(doc.get_path())[-1]
-		return self._is_TeX_extension(ext)
+		return utils.is_TeX_document(doc.get_path())
         return False
 
     # Try to find the directory where an AutoLaTeX configuration file is
@@ -457,39 +319,8 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
         if doc:
             doc = Gedit.Document.get_location(doc)
 	    if doc:
-		document_name = doc.get_path()
-                curdir = Gio.File.new_for_path(os.getcwd())
-                doc = doc.get_parent()
-		doc = curdir.resolve_relative_path(doc.get_path())
-                doc = doc.get_path()
-		document_dir = doc
-                cfgFile = utils.get_autolatex_document_config_file(doc)
-		previousFile = ''
-	        while previousFile != cfgFile and not os.path.exists(cfgFile):
-		    doc = os.path.dirname(doc)
-		    previousFile = cfgFile
-                    cfgFile = utils.get_autolatex_document_config_file(doc)
-
-                if previousFile != cfgFile:
-                    adir = os.path.dirname(cfgFile)
-		else:
-		    ext = os.path.splitext(document_name)[-1]
-		    if self._is_TeX_extension(ext):
-		        adir = document_dir
-
+                return utils.find_AutoLaTeX_directory(doc.get_path())
 	return adir
-
-    def _launch_AutoLaTeX(self, label, directive, params, enable_saving):
-	directory = self._find_AutoLaTeX_dir()
-	if directory:
-	    GObject.idle_add(self._update_action_validity, False, None, None)
-
-	    # Save the documents if necessary
-	    if enable_saving and self._gsettings.get_save_before_run_autolatex():
-		self._save_documents()
-
-	    thread = _AutoLaTeXExecutionThread(self, label, self._gsettings, directory, directive, params)
-	    thread.start()
 
     def _save_documents(self):
 	for document in self.window.get_unsaved_documents():
@@ -646,4 +477,23 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 			'makeflat', self._apply_general_autolatex_cli_options(
 			[ '--noview' ],
 			True))
+
+    def _launch_AutoLaTeX(self, label, directive, params, enable_saving):
+	directory = self._find_AutoLaTeX_dir()
+	if directory:
+	    GObject.idle_add(self._update_action_validity, False, None, None)
+
+	    # Save the documents if necessary
+	    if enable_saving and self._gsettings.get_save_before_run_autolatex():
+		self._save_documents()
+
+	    thread = gedit_runner.Runner(
+				self,
+				label, 
+				self._gsettings.get_progress_info_visibility(),
+				directory,
+				directive,
+				params)
+	    thread.start()
+
 

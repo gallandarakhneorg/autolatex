@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
 # autolatex/utils/latex_log_parser.py
 # Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
 #
@@ -32,7 +35,6 @@ import utils
 
 import gettext
 _T = gettext.gettext
-utils.init_internationalization()
 
 
 
