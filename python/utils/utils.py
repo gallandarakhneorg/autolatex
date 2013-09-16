@@ -317,7 +317,7 @@ def find_AutoLaTeX_directory(current_document):
 	if previousFile != cfgFile:
 	    adir = os.path.dirname(cfgFile)
 	else:
-	    ext = os.path.splitext(document_name)[-1]
+	    ext = os.path.splitext(current_document)[-1]
 	    if is_TeX_extension(ext):
 		adir = document_dir
 
