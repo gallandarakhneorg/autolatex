@@ -27,6 +27,9 @@
 				<menuitem action="AutoLaTeXGenerateImageAction"/>
 				<menuitem action="AutoLaTeXCompileAction"/>
 				<separator/>
+				<menuitem action="AutoLaTeXNextError"/>
+				<menuitem action="AutoLaTeXPreviousError"/>
+				<separator/>
 				<menuitem action="AutoLaTeXCleanAction"/>
 				<menuitem action="AutoLaTeXCleanallAction"/>
 				<separator/>

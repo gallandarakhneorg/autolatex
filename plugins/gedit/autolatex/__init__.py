@@ -74,7 +74,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     # Invoked when the plugin is activated 
     def do_activate(self):
 	self._console_icon = self._get_icon('console')
-	self._latex_console = latex_console.Console(self.window) # Current instance of the error console
+	self._latex_console = latex_console.Console(self) # Current instance of the error console
 	if not self._gsettings:
 		self._gsettings = gsettings.Manager()
         self._add_ui()
@@ -133,7 +133,25 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 		if self._userconfsensitive_actions:
 		    self._userconfsensitive_actions.set_sensitive(hasUserConfFile
 				and not self._compilation_under_progress)
+		action = self._document_actions.get_action('AutoLaTeXNextError')
+		assert action is not None
+		action.set_sensitive(self._latex_console.has_next_error())
+		action = self._document_actions.get_action('AutoLaTeXPreviousError')
+		assert action is not None
+		action.set_sensitive(self._latex_console.has_previous_error())
 		
+    def _open_latex_console(self, set_visible=True):
+	bottom_panel = self.window.get_bottom_panel()
+	console_parent = self._latex_console.get_parent()
+	if (console_parent is None):
+		bottom_panel.add_item(self._latex_console,
+			"autolatex-console-panel",
+			_T("AutoLaTeX Console"),
+			Gtk.Image.new_from_pixbuf(self._console_icon))
+        bottom_panel.activate_item(self._latex_console)
+	if set_visible and bottom_panel.get_property("visible") == False:
+                bottom_panel.set_property("visible", True)
+
     # Update the UI according to the flag "compilation under progress"
     # and to compilation outputs
     def _update_action_validity(self, valid, console_content, latex_warnings):
@@ -146,15 +164,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 				latex_warnings,
 				self._find_AutoLaTeX_dir())
 	if show_console != latex_console.ConsoleMode.HIDE:
-		console_parent = self._latex_console.get_parent()
-		if (console_parent is None):
-			bottom_panel.add_item(self._latex_console,
-				"autolatex-console-panel",
-				_T("AutoLaTeX Console"),
-				Gtk.Image.new_from_pixbuf(self._console_icon))
-	        bottom_panel.activate_item(self._latex_console)
-		if show_console == latex_console.ConsoleMode.SHOW and bottom_panel.get_property("visible") == False:
-	                bottom_panel.set_property("visible", True)
+		self._open_latex_console(show_console == latex_console.ConsoleMode.SHOW)
 	# Update the status bar
 	if show_console == latex_console.ConsoleMode.OPTIONAL and bottom_panel.get_property("visible") == False:
 		statusbar.push(self._statusbar_id,
@@ -211,6 +221,12 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
             ('AutoLaTeXMakeFlatAction', None, _T("Create flat version of the TeX document"), 
                 None, _T("Create a flat version of the document, to be submitted to on-line publication systems (Elsevier...)"), 
                 self.on_makeflat_action_activate),
+            ('AutoLaTeXNextError', None, _T("Show next error/warning"), 
+                'F4', _T("Show the next error or warning from the LaTeX console"), 
+                self.on_autolatex_next_error_action),
+            ('AutoLaTeXPreviousError', None, _T("Show previous error/warning"), 
+                '<shift>F4', _T("Show the previous error or warning from the LaTeX console"), 
+                self.on_autolatex_previous_error_action),
         ])
         manager.insert_action_group(self._document_actions)
 	# Create the group of actions that are needing an TeX document
@@ -477,6 +493,18 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 			'makeflat', self._apply_general_autolatex_cli_options(
 			[ '--noview' ],
 			True))
+
+    def on_autolatex_next_error_action(self, action, data=None):
+	show_console = self._latex_console.show_next_error()
+	if show_console != latex_console.ConsoleMode.HIDE:
+		self._open_latex_console(show_console == latex_console.ConsoleMode.SHOW)
+		self.do_update_state()
+
+    def on_autolatex_previous_error_action(self, action, data=None):
+	show_console = self._latex_console.show_previous_error()
+	if show_console != latex_console.ConsoleMode.HIDE:
+		self._open_latex_console(show_console == latex_console.ConsoleMode.SHOW)
+		self.do_update_state()
 
     def _launch_AutoLaTeX(self, label, directive, params, enable_saving):
 	directory = self._find_AutoLaTeX_dir()

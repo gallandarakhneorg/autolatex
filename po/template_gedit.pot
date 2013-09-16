@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-16 16:39+0200\n"
+"POT-Creation-Date: 2013-09-16 23:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,153 +51,169 @@ msgid ""
 "Please fix the configuration of the AutoLaTeX plugin."
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:153
+#: plugins/gedit/autolatex/__init__.py:149
 msgid "AutoLaTeX Console"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:161
+#: plugins/gedit/autolatex/__init__.py:171
 msgid "LaTeX warnings were found. Please open the bottom panel to see them."
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:180
-#: plugins/gedit/autolatex/__init__.py:181
+#: plugins/gedit/autolatex/__init__.py:190
+#: plugins/gedit/autolatex/__init__.py:191
 msgid "AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:188
-#: plugins/gedit/autolatex/__init__.py:189
+#: plugins/gedit/autolatex/__init__.py:198
+#: plugins/gedit/autolatex/__init__.py:199
 #: plugins/gedit/autolatex/config/plugin/main_panel.py:103
 msgid "SyncTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:196
+#: plugins/gedit/autolatex/__init__.py:206
 msgid "Generate images"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:197
+#: plugins/gedit/autolatex/__init__.py:207
 msgid "Generate the images with AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:199
+#: plugins/gedit/autolatex/__init__.py:209
 msgid "Compile"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:200
+#: plugins/gedit/autolatex/__init__.py:210
 msgid "Compile with AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:202
+#: plugins/gedit/autolatex/__init__.py:212
 msgid "Remove temporary files"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:203
+#: plugins/gedit/autolatex/__init__.py:213
 msgid "Clean with AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:205
+#: plugins/gedit/autolatex/__init__.py:215
 msgid "Clean all"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:206
+#: plugins/gedit/autolatex/__init__.py:216
 msgid "Clean all with AutoLaTeX"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:208
+#: plugins/gedit/autolatex/__init__.py:218
 msgid "View the PDF"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:209
+#: plugins/gedit/autolatex/__init__.py:219
 msgid "Open the PDF viewer"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:211
+#: plugins/gedit/autolatex/__init__.py:221
 msgid "Create flat version of the TeX document"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:212
+#: plugins/gedit/autolatex/__init__.py:222
 msgid ""
 "Create a flat version of the document, to be submitted to on-line "
 "publication systems (Elsevier...)"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:219
-msgid "Document configuration"
+#: plugins/gedit/autolatex/__init__.py:224
+msgid "Show next error/warning"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:220
-msgid "Change the configuration for the document"
+#: plugins/gedit/autolatex/__init__.py:225
+msgid "Show the next error or warning from the LaTeX console"
 msgstr ""
 
 #: plugins/gedit/autolatex/__init__.py:227
-msgid "Delete document configuration"
+msgid "Show previous error/warning"
 msgstr ""
 
 #: plugins/gedit/autolatex/__init__.py:228
-msgid "Delete the configuration for the document"
+msgid "Show the previous error or warning from the LaTeX console"
 msgstr ""
 
 #: plugins/gedit/autolatex/__init__.py:235
-msgid "Delete user configuration"
+msgid "Document configuration"
 msgstr ""
 
 #: plugins/gedit/autolatex/__init__.py:236
-msgid "Delete the configuration for the user"
+msgid "Change the configuration for the document"
 msgstr ""
 
 #: plugins/gedit/autolatex/__init__.py:243
-msgid "Force the use of SyncTeX"
+msgid "Delete document configuration"
 msgstr ""
 
 #: plugins/gedit/autolatex/__init__.py:244
+msgid "Delete the configuration for the document"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:251
+msgid "Delete user configuration"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:252
+msgid "Delete the configuration for the user"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:259
+msgid "Force the use of SyncTeX"
+msgstr ""
+
+#: plugins/gedit/autolatex/__init__.py:260
 msgid "Use SyncTeX even if the document and user configurations say 'no'"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:248
+#: plugins/gedit/autolatex/__init__.py:264
 msgid "Update TeX file with SyncTeX reference"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:249
+#: plugins/gedit/autolatex/__init__.py:265
 msgid ""
 "Update the text of the TeX file to add the reference to the main document"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:251
+#: plugins/gedit/autolatex/__init__.py:267
 msgid "User configuration"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:252
+#: plugins/gedit/autolatex/__init__.py:268
 msgid "Change the configuration for the user"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:341
+#: plugins/gedit/autolatex/__init__.py:357
 msgid "Removing the generated files (except the figures)"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:348
+#: plugins/gedit/autolatex/__init__.py:364
 msgid "Removing the generated files and figures"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:355
+#: plugins/gedit/autolatex/__init__.py:371
 msgid "Generating the document"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:362
+#: plugins/gedit/autolatex/__init__.py:378
 msgid "Generating the figures with the translators"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:369
+#: plugins/gedit/autolatex/__init__.py:385
 msgid "Launching the viewer"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:384
+#: plugins/gedit/autolatex/__init__.py:400
 msgid "Do you want to delete the document configuration?"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:399
+#: plugins/gedit/autolatex/__init__.py:415
 msgid "Do you want to delete the user configuration?"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:476
+#: plugins/gedit/autolatex/__init__.py:492
 msgid "Making the \"flat\" version of the document"
 msgstr ""
 
