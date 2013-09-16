@@ -1319,6 +1319,8 @@ The available user interfaces are:
 
 =item B<gedit-autolatex-plugin>: This is the I<official> and up-to-date UI of AutoLaTeX. A plugin for the lightweight editor Gedit <https://projects.gnome.org/gedit> is provided. You could launch AutoLaTeX and configure it through the differents provided panels.
 
+=item B<sublime-text-autolatex-plugin>: A plugin for the editor Sublime Text 2 <http://www.sublimetext.com/2> is provided. You could launch AutoLaTeX through the building tools of Sublime Text.
+
 =item B<autolatex-gtk>: It is the first UI for AutoLaTeX written in Perl and based on Gtk. It is now considered as I<obsolete>, even still maintained. You could launch AutoLaTeX and configure it through the differents provided panels.
 
 =back

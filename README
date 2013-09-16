@@ -887,6 +887,9 @@ GRAPHIC USER INTERFACE
     AutoLaTeX. A plugin for the lightweight editor Gedit
     <https://projects.gnome.org/gedit> is provided. You could launch
     AutoLaTeX and configure it through the differents provided panels.
+    sublime-text-autolatex-plugin: A plugin for the editor Sublime Text 2
+    <http://www.sublimetext.com/2> is provided. You could launch AutoLaTeX
+    through the building tools of Sublime Text.
     autolatex-gtk: It is the first UI for AutoLaTeX written in Perl and
     based on Gtk. It is now considered as *obsolete*, even still maintained.
     You could launch AutoLaTeX and configure it through the differents

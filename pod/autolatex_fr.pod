@@ -1323,6 +1323,8 @@ The interfaces utilisateur disponibles sont :
 
 =item B<gedit-autolatex-plugin>: C'est l'interface I<officielle> et "à jour" de AutoLaTeX. Un greffon pour l'éditeur léger Gedit <https://projects.gnome.org/gedit> est fourni. Vous pouvez lancer AutoLaTeX et le configurer grâce aux differents panneaux fournis.
 
+=item B<sublime-text-autolatex-plugin>: Un greffon pour l'éditeur Sublime Text 2 <http://www.sublimetext.com/2> est fourni. Vous pouvez lancer AutoLaTeX grâce aux outils de construction/compilation de Sublime Text.
+
 =item B<autolatex-gtk>: Il s'agit de la première interface de AutoLaTeX, écrite en Perl et basée sur Gtk. Elle est maintenant considérée comme I<obsolète>, même si elle est toujours maintenue. Vous pouvez lancer AutoLaTeX et le configurer grâce aux differents panneaux fournis.
 
 =back
