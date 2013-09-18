@@ -1,0 +1,15 @@
+[40 <./imgs/HolonicOrganizationalDecomposition.pdf>] [41]
+./chapters/hmas.tex:141: Undefined control sequence.
+l.141 ...de \makename{Sebastian}{Rodriguez}~\citet
+                                                  {SebastianThesis} et de \m...
+
+Here is how much of TeX's memory you used:
+ 12870 strings out of 493857
+ 187227 string characters out of 1153306
+ 302267 words of memory out of 3000000
+ 15473 multiletter control sequences out of 15000+50000
+ 68115 words of font info for 130 fonts, out of 3000000 for 9000
+ 714 hyphenation exceptions out of 8191
+ 62i,17n,47p,1916b,579s stack positions out of 5000i,500n,10000p,200000b,50000s
+./chapters/hmas.tex:141:  ==> Fatal error occurred, no output PDF file produced
+!

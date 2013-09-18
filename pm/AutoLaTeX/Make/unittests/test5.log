@@ -1,0 +1,24 @@
+Underfull \vbox (badness 2781) has occurred while \output is active []
+
+[62]
+
+./chapters/simulation.tex:198: Package inputenc Error: Unicode char \u8:​ not
+ set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+
+l.198 ...onjointement avec un véritable état ​
+                                                  ​de l'environnement pour...
+
+Here is how much of TeX's memory you used:
+ 12962 strings out of 493857
+ 189954 string characters out of 1153306
+ 291677 words of memory out of 3000000
+ 15595 multiletter control sequences out of 15000+50000
+ 75842 words of font info for 141 fonts, out of 3000000 for 9000
+ 714 hyphenation exceptions out of 8191
+ 72i,17n,56p,1842b,500s stack positions out of 5000i,500n,10000p,200000b,50000s
+./chapters/simulation.tex:198:  ==> Fatal error occurred, no output PDF file pr
+oduced!
