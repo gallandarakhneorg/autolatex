@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-16 23:41+0200\n"
+"POT-Creation-Date: 2013-09-19 11:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -596,4 +596,21 @@ msgstr ""
 
 #: plugins/gedit/autolatex/widgets/inherit_button.py:98
 msgid "Get the value from the inherited configuration"
+msgstr ""
+
+#: plugins/gedit/autolatex/widgets/latex_console.py:187
+msgid ""
+"Internal Error: Unable to retreive the undefined references from the LaTeX "
+"log"
+msgstr ""
+
+#: plugins/gedit/autolatex/widgets/latex_console.py:210
+msgid ""
+"Internal Error: Unable to retreive the multidefined references from the "
+"LaTeX log"
+msgstr ""
+
+#: plugins/gedit/autolatex/widgets/latex_console.py:233
+msgid ""
+"Internal Error: Unable to retreive the undefined citations from the LaTeX log"
 msgstr ""

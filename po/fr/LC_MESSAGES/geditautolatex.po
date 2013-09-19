@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 25.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-16 23:41+0200\n"
+"POT-Creation-Date: 2013-09-19 11:12+0200\n"
 "PO-Revision-Date: 2013-09-16 13:38+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -665,3 +665,24 @@ msgstr "Surcharger les valeurs dans la configuration courante"
 #: plugins/gedit/autolatex/widgets/inherit_button.py:98
 msgid "Get the value from the inherited configuration"
 msgstr "Utiliser les valeurs hérités de la configuration utilisateur"
+
+#: plugins/gedit/autolatex/widgets/latex_console.py:187
+msgid ""
+"Internal Error: Unable to retreive the undefined references from the LaTeX "
+"log"
+msgstr "Erreur interne: impossible de retrouver les références non définies "
+"dans le journal LaTeX"
+
+#: plugins/gedit/autolatex/widgets/latex_console.py:210
+msgid ""
+"Internal Error: Unable to retreive the multidefined references from the "
+"LaTeX log"
+msgstr "Erreur interne: impossible de retrouver les références définies "
+"plusieurs fois dans le journal LaTeX"
+
+#: plugins/gedit/autolatex/widgets/latex_console.py:233
+msgid ""
+"Internal Error: Unable to retreive the undefined citations from the LaTeX log"
+msgstr "Erreur interne: impossible de retrouver les citations non définies "
+"dans le journal LaTeX"
+
