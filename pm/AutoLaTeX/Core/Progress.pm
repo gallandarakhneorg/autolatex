@@ -63,7 +63,7 @@ use Carp;
 use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::Util qw($INTERNAL_MESSAGE_PREFIX);
 
-our $VERSION = '2.0';
+our $VERSION = '3.0';
 
 #------------------------------------------------------
 #
@@ -90,6 +90,7 @@ sub new(;$) : method {
 			'value' => 0,
 			'bar-width' => 40,
 			'comment' => '',
+			'comment-to-display' => '',
 			'previous-message-size' => 0,
 			'carriage-return' => 1,
 		};
@@ -115,6 +116,7 @@ sub _newChild($$$) : method {
 			'min-in-parent' => $_[1],
 			'max-in-parent' => $_[2],
 			'max' => 0,
+			'comment' => '',
 		};
 	}
 	bless( $self, $class );
@@ -213,13 +215,21 @@ Set the comment associated to the progress process.
 sub setComment($) : method {
 	my $self = shift;
 	my $label = shift || '';
-	if ($self->{'parent'}) {
-		$self->{'parent'}->setComment($label);
+	$self->{'comment'} = $label || '';
+	my $c = '';
+	my $p = $self;
+	while ($p && $p->{'parent'}) {
+		if (!$c && $p->{'comment'}) {
+			$c = $p->{'comment'};
+		}
+		$p = $p->{'parent'};
 	}
-	elsif ($self->{'comment'} ne $label) {
-		$self->{'comment'} = $label;
+	if ($p && $p->{'comment-to-display'} ne $c) {
+		$self->{'comment-to-display'} = $c;
 		$self->_report();
+		return 1;
 	}
+	return 0;
 }
 
 =pod
@@ -235,7 +245,7 @@ sub getComment() : method {
 		return $self->{'parent'}->getComment();
 	}
 	else {
-		return $self->{'comment'};
+		return $self->{'comment-to-display'};
 	}
 }
 
@@ -294,9 +304,10 @@ Change the progress value and display the progress message.
 Returns a boolean value that indicates if something was setValueed.
 
 =cut
-sub setValue($) : method {
+sub setValue($;$) : method {
 	my $self = shift;
 	my $value = shift;
+	my $comment = shift;
 	my $max = $self->getMax();
 	my $currentValue = $self->getValue();
 	my $reported = undef;
@@ -316,8 +327,16 @@ sub setValue($) : method {
 			my $range = $self->{'max-in-parent'} - $self->{'min-in-parent'};
 			my $parent_value = ($value * $range) / $max;
 			$parent_value += $self->{'min-in-parent'};
-			my $reported2 = $self->{'parent'}->setValue($parent_value);
+			if (!defined($comment) && $self->{'comment'}) {
+				$comment = $self->{'comment'};
+			}
+			my $reported2 = $self->{'parent'}->setValue($parent_value, $comment);
 			$reported = $reported || $reported2;
+		}
+		# Change the comment to be displayed
+		elsif (defined($comment) && $comment ne $self->{'comment-to-display'}) {
+			$self->{'comment-to-display'} = $comment;
+			$reported = undef;
 		}
 		# Force reporting
 		if (!$reported) {
@@ -344,8 +363,8 @@ sub _report() : method {
 	my $max = $self->getMax();
 	if (!$self->{'parent'}) {
 		my $message = "[".$self->_formatPercent($value, $max)."] ".$self->_formatBar($value, $max);
-		if ($self->{'comment'}) {
-			$message .= ' '.$self->{'comment'};
+		if ($self->{'comment-to-display'}) {
+			$message .= ' '.$self->{'comment-to-display'};
 		}
 		my $l = length($message);
 		my $tmp_l = $l;

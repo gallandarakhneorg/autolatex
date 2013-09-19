@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 25.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-19 11:12+0200\n"
+"POT-Creation-Date: 2013-09-19 13:06+0200\n"
 "PO-Revision-Date: 2013-09-16 13:38+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -16,43 +16,47 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: autolatex.pl:213 autolatex.pl:226
+#: autolatex.pl:129
+msgid "Translating from {}"
+msgstr "Conversion de {}"
+
+#: autolatex.pl:216 autolatex.pl:229
 msgid "The configuration entry '{}' is not defined."
 msgstr "Le clé de configuration '{}' n'est pas définie."
 
-#: autolatex.pl:243 autolatex.pl:260
+#: autolatex.pl:246 autolatex.pl:263
 msgid "Launching '{}'"
 msgstr "Lancement de '{}'"
 
-#: autolatex.pl:246 autolatex.pl:263
+#: autolatex.pl:249 autolatex.pl:266
 msgid "Launching '{}' in background"
 msgstr "Lancement de '{}' en tâche de fond"
 
-#: autolatex.pl:272
+#: autolatex.pl:275
 msgid "Unable to find a viewer."
 msgstr "Impossible de trouvé un visualisateur."
 
-#: autolatex.pl:500
+#: autolatex.pl:503
 msgid "Removing all the temporary files"
 msgstr "Suppression de tous les fichiers temporaires"
 
-#: autolatex.pl:507
+#: autolatex.pl:510
 msgid "Removing all the temporary and generated files"
 msgstr "Suppression des fichiers temporaires et des figures générées"
 
-#: autolatex.pl:690
+#: autolatex.pl:693
 msgid "Creating default project configuration file...\n"
 msgstr "Création du fichier de configuration du project...\n"
 
-#: autolatex.pl:694
+#: autolatex.pl:697
 msgid "Creating default user configuration file...\n"
 msgstr "Création du fichier de configuration utilisateur...\n"
 
-#: autolatex.pl:703
+#: autolatex.pl:706
 msgid "Creating default makeindex style file...\n"
 msgstr "Création du fichier de style par défaut pour makeindex...\n"
 
-#: autolatex.pl:782
+#: autolatex.pl:785
 msgid "Command line action '{}' is not supported."
 msgstr "L'option de ligne de commande '{}' n'est pas reconnue."
 
@@ -481,8 +485,8 @@ msgstr ""
 msgid "{}: file not found or not readable."
 msgstr "{}: fichier non trouvé ou non lisible."
 
-#: pm/AutoLaTeX/Core/Translator.pm:872 pm/AutoLaTeX/Make/Make.pm:1069
-#: pm/AutoLaTeX/Make/Make.pm:1150
+#: pm/AutoLaTeX/Core/Translator.pm:872 pm/AutoLaTeX/Make/Make.pm:1080
+#: pm/AutoLaTeX/Make/Make.pm:1161
 msgid "{} is up-to-date."
 msgstr "{} est à-jour."
 
@@ -584,9 +588,9 @@ msgstr "Impossible de rediriger STDERR : {}"
 #: pm/AutoLaTeX/Core/Util.pm:668 pm/AutoLaTeX/Core/Util.pm:766
 #: pm/AutoLaTeX/Core/Util.pm:772 pm/AutoLaTeX/Core/Util.pm:845
 #: pm/AutoLaTeX/Core/Util.pm:851 pm/AutoLaTeX/TeX/Flattener.pm:113
-#: pm/AutoLaTeX/Make/Make.pm:609 pm/AutoLaTeX/Make/Make.pm:945
-#: pm/AutoLaTeX/Make/Make.pm:1402 pm/AutoLaTeX/Make/Make.pm:1437
-#: pm/AutoLaTeX/Make/Make.pm:1485
+#: pm/AutoLaTeX/Make/Make.pm:609 pm/AutoLaTeX/Make/Make.pm:952
+#: pm/AutoLaTeX/Make/Make.pm:1413 pm/AutoLaTeX/Make/Make.pm:1448
+#: pm/AutoLaTeX/Make/Make.pm:1496
 msgid "{}: {}"
 msgstr "{} : {}"
 
@@ -715,8 +719,8 @@ msgstr "Ajout du fichier '{}'"
 msgid "Parsing auxiliary files"
 msgstr "Analyse des fichiers auxiliaires"
 
-#: pm/AutoLaTeX/Make/Make.pm:654 pm/AutoLaTeX/Make/Make.pm:1407
-#: pm/AutoLaTeX/Make/Make.pm:1442
+#: pm/AutoLaTeX/Make/Make.pm:654 pm/AutoLaTeX/Make/Make.pm:1418
+#: pm/AutoLaTeX/Make/Make.pm:1453
 msgid "{}: Error when processing {}"
 msgstr "{} : Erreur lors de la génération de {}"
 
@@ -734,28 +738,40 @@ msgstr ""
 "{}: Impossible d'extraire l'erreur depuis le journal. Veuillez lire le "
 "fichier journal."
 
-#: pm/AutoLaTeX/Make/Make.pm:962
+#: pm/AutoLaTeX/Make/Make.pm:897 pm/AutoLaTeX/Make/Make.pm:950
+msgid "Generating {}"
+msgstr "Génération de {}"
+
+#: pm/AutoLaTeX/Make/Make.pm:927
+msgid "Compiling {}"
+msgstr "Génération de {}"
+
+#: pm/AutoLaTeX/Make/Make.pm:959
+msgid "Analyzing logs for {}"
+msgstr "Analyse du journal de {}"
+
+#: pm/AutoLaTeX/Make/Make.pm:973
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr "Avertissement LaTeX : il existe des labels définis plusieurs fois.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:971
+#: pm/AutoLaTeX/Make/Make.pm:982
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 "Avertissement LaTeX : il existe des références vers des labels non définis.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:980
+#: pm/AutoLaTeX/Make/Make.pm:991
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 "Avertissement LaTeX : il existe des références vers citations "
 "bibliographiques non définies.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:993
+#: pm/AutoLaTeX/Make/Make.pm:1004
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
 msgstr ""
 "Avertissement LaTeX : Veuillez ouvrir {} pour plus de messages "
 "d'avertissement.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:1489
+#: pm/AutoLaTeX/Make/Make.pm:1500
 msgid "Style file: {}"
 msgstr "Fichier de style : {}"

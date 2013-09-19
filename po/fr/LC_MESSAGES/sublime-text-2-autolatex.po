@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 25.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-16 13:38+0200\n"
+"POT-Creation-Date: 2013-09-19 13:06+0200\n"
 "PO-Revision-Date: 2013-09-16 13:38+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -16,17 +16,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: python/utils/latex_log_parser.py:143
+#: python/utils/latex_log_parser.py:153
 #, python-format
 msgid "Citation '%s' undefined"
 msgstr "La citation '%s' n'est pas définie"
 
-#: python/utils/latex_log_parser.py:159
+#: python/utils/latex_log_parser.py:169
 #, python-format
 msgid "Reference '%s' undefined"
 msgstr "La référence '%s' est inconnue"
 
-#: python/utils/latex_log_parser.py:175
+#: python/utils/latex_log_parser.py:185
 #, python-format
 msgid "Label '%s' multiply defined"
 msgstr "Le label '%s' est défini plusieurs fois"
@@ -60,4 +60,3 @@ msgstr "Construction terminée"
 #, python-format
 msgid "Build finished with %d warnings"
 msgstr "Construction terminée avec %d avertissement(s)"
-

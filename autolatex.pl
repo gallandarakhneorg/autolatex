@@ -125,6 +125,9 @@ sub al_generateimages($) {
 			my $fileCount = ($entry->{'files'}) ? @{$entry->{'files'}} : 0;
 			if ($fileCount>0) {
 				foreach my $file (@{$entry->{'files'}}) {
+					if ($progress) {
+						$progress->setComment(formatText(_T("Translating from {}"),basename($file)));
+					}
 					runRootTranslator(%configuration, $trans, $file, %{$autolatexData{'translators'}}, 0);
 					$progress->increment() if ($progress);
 				}

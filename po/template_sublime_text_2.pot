@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-19 11:12+0200\n"
+"POT-Creation-Date: 2013-09-19 13:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: python/utils/latex_log_parser.py:143
+#: python/utils/latex_log_parser.py:153
 #, python-format
 msgid "Citation '%s' undefined"
 msgstr ""
 
-#: python/utils/latex_log_parser.py:159
+#: python/utils/latex_log_parser.py:169
 #, python-format
 msgid "Reference '%s' undefined"
 msgstr ""
 
-#: python/utils/latex_log_parser.py:175
+#: python/utils/latex_log_parser.py:185
 #, python-format
 msgid "Label '%s' multiply defined"
 msgstr ""

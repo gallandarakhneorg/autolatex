@@ -894,6 +894,7 @@ sub build(;$) : method {
 
 		my $sprogress = undef;
 		if ($progress) {
+			$progress->setComment(formatText(_T("Generating {}"), basename($rootFile)));
 			$sprogress = $progress->subProgress(100);
 			$sprogress->setMax(1000);
 		}
@@ -922,6 +923,9 @@ sub build(;$) : method {
 		if (@builds) {
 			my $sprogStep = 600 / @builds;
 			foreach my $file (@builds) {
+				if ($sprogress) {
+					$sprogress->setComment(formatText(_T("Compiling {}"), basename($file)));
+				}
 				$self->_build($rootFile, $file);
 				$sprogress->increment($sprogStep) if ($sprogress);
 			}
@@ -942,10 +946,17 @@ sub build(;$) : method {
 				my $psFile = File::Spec->catfile($dirname, $basename.'.ps');
 				my $psDate = lastFileChange("$psFile");
 				if (!$psDate || ($dviDate>=$psDate)) {
+					if ($sprogress) {
+						$sprogress->setComment(formatText(_T("Generating {}"), basename($psFile)));
+					}
 					printDbg(formatText(_T('{}: {}'), 'DVI2PS', basename($dviFile))); 
 					runCommandOrFail(@{$self->{'dvi2ps_cmd'}}, $dviFile);
 				}
 			}
+		}
+
+		if ($sprogress) {
+			$sprogress->setComment(formatText(_T("Analyzing logs for {}"), basename($rootFile)));
 		}
 
 		# Compute the log filename
