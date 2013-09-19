@@ -65,6 +65,7 @@ class Console(Gtk.ScrolledWindow):
 		self._messages = Gtk.ListStore(str, str, str, long, str)
 		# Create the list
 		self._message_widget = Gtk.TreeView()
+		self._message_widget.set_size_request(200, 150)
 		self._message_widget.set_model(self._messages)
 		column = Gtk.TreeViewColumn("Level", Gtk.CellRendererPixbuf(), stock_id=0)
 		self._message_widget.append_column(column)
@@ -74,7 +75,7 @@ class Console(Gtk.ScrolledWindow):
 		self._message_widget.set_headers_visible(False)
 		# Init the scroll
 		self.add(self._message_widget)
-		self.set_size_request(300, 200)
+		self.set_size_request(200, 150)
 		self.set_policy(
 			Gtk.PolicyType.AUTOMATIC,
 			Gtk.PolicyType.AUTOMATIC)
@@ -179,7 +180,15 @@ class Console(Gtk.ScrolledWindow):
 					  warning.get_filename(),
 					  long(warning.get_line_number()),
 					  None ])
-			self._messages.remove(list_iter)
+		else:
+			ui_icon = Gtk.STOCK_DIALOG_ERROR
+			self._messages.insert_before(list_iter,
+				[ ui_icon,
+				  _T("Internal Error: Unable to retreive the undefined references from the LaTeX log"),
+				  None,
+				  long(0),
+				  None ])
+		self._messages.remove(list_iter)
 
 	def _replace_by_multidefined_label_warnings(self, list_iter, log_file):
 		if not self._latex_parser:
@@ -194,7 +203,15 @@ class Console(Gtk.ScrolledWindow):
 					  warning.get_filename(),
 					  long(warning.get_line_number()),
 					  None ])
-			self._messages.remove(list_iter)
+		else:
+			ui_icon = Gtk.STOCK_DIALOG_ERROR
+			self._messages.insert_before(list_iter,
+				[ ui_icon,
+				  _T("Internal Error: Unable to retreive the multidefined references from the LaTeX log"),
+				  None,
+				  long(0),
+				  None ])
+		self._messages.remove(list_iter)
 
 	def _replace_by_undefined_citation_warnings(self, list_iter, log_file):
 		if not self._latex_parser:
@@ -209,7 +226,15 @@ class Console(Gtk.ScrolledWindow):
 					  warning.get_filename(),
 					  long(warning.get_line_number()),
 					  None ])
-			self._messages.remove(list_iter)
+		else:
+			ui_icon = Gtk.STOCK_DIALOG_ERROR
+			self._messages.insert_before(list_iter,
+				[ ui_icon,
+				  _T("Internal Error: Unable to retreive the undefined citations from the LaTeX log"),
+				  None,
+				  long(0),
+				  None ])
+		self._messages.remove(list_iter)
 
 	def _do_click_on_list(self, path):
 		if path:
