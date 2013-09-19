@@ -181,13 +181,26 @@ class Console(Gtk.ScrolledWindow):
 					  long(warning.get_line_number()),
 					  None ])
 		else:
-			ui_icon = Gtk.STOCK_DIALOG_ERROR
-			self._messages.insert_before(list_iter,
-				[ ui_icon,
-				  _T("Internal Error: Unable to retreive the undefined references from the LaTeX log"),
-				  None,
-				  long(0),
-				  None ])
+			# Issue 53: sometimes the LaTeX tool is saying
+			# "There were undefined references" for a citation.
+			warnings = self._latex_parser.get_undefined_citation_warnings()
+			if warnings:
+				ui_icon = Gtk.STOCK_DIALOG_WARNING
+				for warning in reversed(warnings):
+					self._messages.insert_before(list_iter,
+						[ ui_icon,
+						  warning.get_message(),
+						  warning.get_filename(),
+						  long(warning.get_line_number()),
+						  None ])
+			else:
+				ui_icon = Gtk.STOCK_DIALOG_ERROR
+				self._messages.insert_before(list_iter,
+					[ ui_icon,
+					  _T("Internal Error: Unable to retreive the undefined references from the LaTeX log"),
+					  None,
+					  long(0),
+					  None ])
 		self._messages.remove(list_iter)
 
 	def _replace_by_multidefined_label_warnings(self, list_iter, log_file):

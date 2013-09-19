@@ -46,7 +46,8 @@ class TeXWarning:
 		else:
 			self._filename = filename.strip()
 		self._linenumber = line
-		self._message = message
+		expr = re.compile("[\n\r\f\t ]+")
+		self._message = re.sub(expr, ' ', message)
 
 	def append(self, message):
 		self._message = self._message + message
@@ -73,7 +74,10 @@ class TeXWarning:
 		self._message = message
 
 	def __str__(self):
-		return str(self._filename)+":"+str(self._linenumber)+":"+str(self._message)+"\n"+str(self._data)
+		s = str(self._filename)+":"+str(self._linenumber)+":"+str(self._message)+"\n"
+		if self._data:
+			s = s + self._data
+		return s
 
 class Parser:
 
@@ -127,6 +131,12 @@ class Parser:
 					mo.group(3),
 					mo.group(4))
 				self._warnings.append(w)
+
+	def __str__(self):
+		text = ""
+		for w in self._warnings:
+			text = text + str(w) + "\n"
+		return text
 
 	def get_undefined_citation_warnings(self):
 		regex = re.compile(
