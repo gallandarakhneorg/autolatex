@@ -1332,13 +1332,27 @@ Un greffon pour l'éditeur Sublime Text 2 <http://www.sublimetext.com/2> est fou
 =item B<TeXworks:>
 
 Il n'y a pas de greffon particulier pour TeXworks. Pour utiliser AutoLaTeX dans cet éditeur, vous devez ajouter un outil de composition dans la boîte de dialogue "Préférences", ou dans le fichier de configuration F<tools.ini> dans le dossier de TeXworks.
-Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX dans TeXworks (copie du fichier F<tools.ini>):
+Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX dans TeXworks (copie du fichier F<tools.ini>) :
 
  [012]
  name=AutoLaTeX
  program=autolatex
  arguments=-v, --synctex, --noview, --search-project-from, $fullname, all
  showPdf=true
+
+=item B<Kile:>
+
+Il n'y a pas de greffon particulier pour Kile. Pour utiliser AutoLaTeX dans cet éditeur, vous devez ajouter un outil de compilation dans la boîte de dialogue "Configure Kile", ou dans le fichier de configuration F<kilerc> dans le dossier de de configuration de KDE.
+Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX dans Kile (copie du fichier F<kilerc>) :
+
+ [Tool/AutoLaTeX/Default]
+ class=Compile
+ close=no
+ command=autolatex
+ menu=Compile
+ options=-v --synctex --noview --search-project-from '%source' all
+ state=Editor
+ type=Process
 
 =item B<Application Gtk (obsolète)>:
 
