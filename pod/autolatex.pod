@@ -350,6 +350,15 @@ when possible.
 AutoLaTeX should be not verbose (see B<-v> for
 changing the verbose level).
 
+=item B<--search-project-from=F<file>>
+
+When this option is specified, AutoLaTeX is searching a project
+configuration file (usually F<.autolatex_project.cfg> on Unix
+platforms) in the directory of the specified F<file> or in
+one of its ancestors. When the project configuration file
+was found, AutoLaTeX assumes that the building directory
+is the directory where the configuration file is located.
+
 =item B<--set [S<translator>.]S<name>=S<value>>
 
 Set the internal value of AutoLaTeX named S<name> with

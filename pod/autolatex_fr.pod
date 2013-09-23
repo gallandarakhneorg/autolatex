@@ -349,6 +349,16 @@ AutoLaTeX produit un fichier Postscript à la place d'un fichier PDF.
 AutoLaTeX ne doit pas être verbeux (voir B<-v> pour rendre
 l'outil verbeux).
 
+=item B<--search-project-from=F<fichier>>
+
+Lorsque cette option est donnée, AutoLaTex recherche un fichier
+de configuration projet (habituellement F<.autolatex_project.cfg>
+sur une plate-forme Unix) dans le dossier du F<fichier> spécifié
+ou dans l'un de ses dossiers parent. Lorsqu'un fichier de
+configuration a été trouvé, AutoLaTeX considère que le dossier
+dans lequel la construction doit avoir lieu est le dossier
+où est placé le fichier de configuration trouvé.
+
 =item B<--set [S<convertisseur>.]S<nom>=S<valeur>>
 
 Affecte la S<valeur> à une variable interne ayant un S<nom>
