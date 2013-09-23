@@ -883,17 +883,36 @@ GRAPHIC USER INTERFACE
 
     The available user interfaces are:
 
-    gedit-autolatex-plugin: This is the *official* and up-to-date UI of
-    AutoLaTeX. A plugin for the lightweight editor Gedit
-    <https://projects.gnome.org/gedit> is provided. You could launch
-    AutoLaTeX and configure it through the differents provided panels.
-    sublime-text-autolatex-plugin: A plugin for the editor Sublime Text 2
-    <http://www.sublimetext.com/2> is provided. You could launch AutoLaTeX
-    through the building tools of Sublime Text.
-    autolatex-gtk: It is the first UI for AutoLaTeX written in Perl and
-    based on Gtk. It is now considered as *obsolete*, even still maintained.
-    You could launch AutoLaTeX and configure it through the differents
-    provided panels.
+    Gedit:
+        This is the *official* and up-to-date UI of AutoLaTeX. A plugin for
+        the lightweight editor Gedit <https://projects.gnome.org/gedit> is
+        provided. You could launch AutoLaTeX and configure it through the
+        differents provided panels.
+
+    Sublime Text 2:
+        A plugin for the editor Sublime Text 2
+        <http://www.sublimetext.com/2> is provided. You could launch
+        AutoLaTeX through the building tools of Sublime Text.
+
+    TeXworks:
+        There is no specific plugin for TeXworks. To use AutoLaTeX in this
+        editor, you must add a composition tool from the "Preferences"
+        dialog box, or inside the tools.ini file in the configuration
+        directory of TeXworks. We recommend the following configuration to
+        launch AutoLaTeX in TeXworks (it is a copy of the content of the
+        file tools.ini):
+
+         [012]
+         name=AutoLaTeX
+         program=autolatex
+         arguments=-v, --synctex, --noview, --search-project-from, $fullname, all
+         showPdf=true
+
+    Standalone Gtk Frontend (deprecated):
+        It is the first UI for AutoLaTeX written in Perl and based on Gtk.
+        It is now considered as *obsolete*, even still maintained. You could
+        launch AutoLaTeX and configure it through the differents provided
+        panels.
 
 BUG REPORT AND FEEDBACK
     To report bugs, provide feedback, suggest new features, etc. (in

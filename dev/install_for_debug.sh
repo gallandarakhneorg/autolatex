@@ -1,6 +1,12 @@
 #!/bin/bash
 
-AUTOLATEX_DIR=`dirname "$0"`
+if test '!' -f "`pwd`/autolatex.pl"
+then
+  echo "You must launch this script from the AutoLaTeX root directory." >&2
+  exit 255
+fi
+
+AUTOLATEX_DIR=`pwd`
 AUTOLATEX_DIR=`readlink -f "$AUTOLATEX_DIR"`
 # PYTHON GENERAL LIB
 PYTHON_SOURCE_DIR="$AUTOLATEX_DIR/python"

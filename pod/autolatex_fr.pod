@@ -1321,11 +1321,28 @@ The interfaces utilisateur disponibles sont :
 
 =over 4
 
-=item B<gedit-autolatex-plugin>: C'est l'interface I<officielle> et "à jour" de AutoLaTeX. Un greffon pour l'éditeur léger Gedit <https://projects.gnome.org/gedit> est fourni. Vous pouvez lancer AutoLaTeX et le configurer grâce aux differents panneaux fournis.
+=item B<Gedit:>
 
-=item B<sublime-text-autolatex-plugin>: Un greffon pour l'éditeur Sublime Text 2 <http://www.sublimetext.com/2> est fourni. Vous pouvez lancer AutoLaTeX grâce aux outils de construction/compilation de Sublime Text.
+C'est l'interface I<officielle> et "à jour" de AutoLaTeX. Un greffon pour l'éditeur léger Gedit <https://projects.gnome.org/gedit> est fourni. Vous pouvez lancer AutoLaTeX et le configurer grâce aux differents panneaux fournis.
 
-=item B<autolatex-gtk>: Il s'agit de la première interface de AutoLaTeX, écrite en Perl et basée sur Gtk. Elle est maintenant considérée comme I<obsolète>, même si elle est toujours maintenue. Vous pouvez lancer AutoLaTeX et le configurer grâce aux differents panneaux fournis.
+=item B<Sublime Text 2:>
+
+Un greffon pour l'éditeur Sublime Text 2 <http://www.sublimetext.com/2> est fourni. Vous pouvez lancer AutoLaTeX grâce aux outils de construction/compilation de Sublime Text.
+
+=item B<TeXworks:>
+
+Il n'y a pas de greffon particulier pour TeXworks. Pour utiliser AutoLaTeX dans cet éditeur, vous devez ajouter un outil de composition dans la boîte de dialogue "Préférences", ou dans le fichier de configuration F<tools.ini> dans le dossier de TeXworks.
+Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX dans TeXworks (copie du fichier F<tools.ini>):
+
+ [012]
+ name=AutoLaTeX
+ program=autolatex
+ arguments=-v, --synctex, --noview, --search-project-from, $fullname, all
+ showPdf=true
+
+=item B<Application Gtk (obsolète)>:
+
+Il s'agit de la première interface de AutoLaTeX, écrite en Perl et basée sur Gtk. Elle est maintenant considérée comme I<obsolète>, même si elle est toujours maintenue. Vous pouvez lancer AutoLaTeX et le configurer grâce aux differents panneaux fournis.
 
 =back
 

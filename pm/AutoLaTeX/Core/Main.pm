@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '22.1';
+$VERSION = '23.0';
 $COPYRIGHT_YEAR = '2013';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -168,6 +168,10 @@ sub analyzeCommandLineOptions(\%) {
 
 		'quiet' => sub { $debugLevel = 0; },
 
+		'search-project-from=s' => sub { 
+					$realcfg->{'__private__'}{'action.search project from'} = $_[1];
+				},
+
 		'set=s%'  => sub { $cfg->{'generation.set'}{$_[1]} = $_[2]; },
 
 		'synctex!'  => sub { $cfg->{'generation.synctex'} = ($_[1] ? 'yes' : 'no'); },
@@ -284,6 +288,28 @@ sub mainProgram(;$) {
 	     ($configuration{'__private__'}{'action.create config file'})||
 	     ($configuration{'__private__'}{'action.create ist file'}))) {
 		$exitOnError = 0;
+	}
+
+	# Search for the root directory
+	if ($configuration{'__private__'}{'action.search project from'}) {
+		my $file = $configuration{'__private__'}{'action.search project from'};
+		if (-e "$file" && ! -d "$file") {
+			$file = dirname($file);
+		}
+		$file = File::Spec->rel2abs($file);
+		my $autolatex_dir = undef;
+		my $parent = dirname($file);
+		while (!$autolatex_dir && $parent && $file && $parent ne $file) {
+			my $cfgFile = getProjectConfigFilename($file);
+			if (-e "$cfgFile") {
+				$autolatex_dir = $file;
+			}
+			$file = $parent;
+			$parent = dirname($file);
+		}
+		if ($autolatex_dir && -d "$autolatex_dir") {
+			chdir($autolatex_dir) or printErr("$autolatex_dir: $!");
+		}
 	}
 
 	# detect main TeX file

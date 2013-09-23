@@ -1317,11 +1317,28 @@ The available user interfaces are:
 
 =over 4
 
-=item B<gedit-autolatex-plugin>: This is the I<official> and up-to-date UI of AutoLaTeX. A plugin for the lightweight editor Gedit <https://projects.gnome.org/gedit> is provided. You could launch AutoLaTeX and configure it through the differents provided panels.
+=item B<Gedit:>
 
-=item B<sublime-text-autolatex-plugin>: A plugin for the editor Sublime Text 2 <http://www.sublimetext.com/2> is provided. You could launch AutoLaTeX through the building tools of Sublime Text.
+This is the I<official> and up-to-date UI of AutoLaTeX. A plugin for the lightweight editor Gedit <https://projects.gnome.org/gedit> is provided. You could launch AutoLaTeX and configure it through the differents provided panels.
 
-=item B<autolatex-gtk>: It is the first UI for AutoLaTeX written in Perl and based on Gtk. It is now considered as I<obsolete>, even still maintained. You could launch AutoLaTeX and configure it through the differents provided panels.
+=item B<Sublime Text 2:>
+
+A plugin for the editor Sublime Text 2 <http://www.sublimetext.com/2> is provided. You could launch AutoLaTeX through the building tools of Sublime Text.
+
+=item B<TeXworks:>
+
+There is no specific plugin for TeXworks. To use AutoLaTeX in this editor, you must add a composition tool from the "Preferences" dialog box, or inside the F<tools.ini> file in the configuration directory of TeXworks.
+We recommend the following configuration to launch AutoLaTeX in TeXworks (it is a copy of the content of the file F<tools.ini>):
+
+ [012]
+ name=AutoLaTeX
+ program=autolatex
+ arguments=-v, --synctex, --noview, --search-project-from, $fullname, all
+ showPdf=true
+
+=item B<Standalone Gtk Frontend (deprecated):>
+
+It is the first UI for AutoLaTeX written in Perl and based on Gtk. It is now considered as I<obsolete>, even still maintained. You could launch AutoLaTeX and configure it through the differents provided panels.
 
 =back
 
