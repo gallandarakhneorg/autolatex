@@ -765,7 +765,7 @@ sub DO_install(\%) {
 		}
 
 		install(
-			'autolatex-icon.png',
+			File::Spec->catfile('icons','autolatex-icon.png'),
 			$ICONDIRECTORY);
 	}
 
