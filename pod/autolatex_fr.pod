@@ -1329,22 +1329,12 @@ C'est l'interface I<officielle> et "à jour" de AutoLaTeX. Un greffon pour l'éd
 
 Un greffon pour l'éditeur Sublime Text 2 <http://www.sublimetext.com/2> est fourni. Vous pouvez lancer AutoLaTeX grâce aux outils de construction/compilation de Sublime Text.
 
-=item B<TeXworks:>
-
-Il n'y a pas de greffon particulier pour TeXworks. Pour utiliser AutoLaTeX dans cet éditeur, vous devez ajouter un outil de composition dans la boîte de dialogue "Préférences", ou dans le fichier de configuration F<tools.ini> dans le dossier de TeXworks.
-Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX dans TeXworks (copie du fichier F<tools.ini>) :
-
- [012]
- name=AutoLaTeX
- program=autolatex
- arguments=-v, --synctex, --noview, --search-project-from, $fullname, all
- showPdf=true
-
 =item B<Kile:>
 
-Il n'y a pas de greffon particulier pour Kile. Pour utiliser AutoLaTeX dans cet éditeur, vous devez ajouter un outil de compilation dans la boîte de dialogue "Configure Kile", ou dans le fichier de configuration F<kilerc> dans le dossier de de configuration de KDE.
+Il n'y a pas de greffon particulier pour Kile. Pour utiliser AutoLaTeX dans cet éditeur, vous devez ajouter un outil de compilation dans la boîte de dialogue "Configure Kile", ou dans le fichier de configuration F<kilerc> dans le dossier de de configuration de KDE (habituellement : C<$HOME/.kde/share/config/kilerc>).
 Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX dans Kile (copie du fichier F<kilerc>) :
 
+ ...
  [Tool/AutoLaTeX/Default]
  class=Compile
  close=no
@@ -1353,6 +1343,31 @@ Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX d
  options=-v --synctex --noview --search-project-from '%source' all
  state=Editor
  type=Process
+ ...
+
+=item B<TeXmaker:>
+
+Il n'y a pas de greffon particulier pour TeXmaker. Pour utiliser AutoLaTeX dans cet éditeur, vous devez ajouter un outil de compilation dans la boîte de dialogue "Configure TeXmaker", ou dans le fichier de configuration F<texmaker.ini> dans le dossier de de configuration de TeXmaker (habituellement : C<$HOME/.config/xm1/texmaker.ini>).
+Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX dans TeXmaker (copie du fichier F<texmaker.ini>) :
+
+ ...
+ [texmaker]
+ ...
+ Tools\Userquick=autolatex -v --synctex --noview --search-project-from %.tex
+ ...
+
+=item B<TeXworks:>
+
+Il n'y a pas de greffon particulier pour TeXworks. Pour utiliser AutoLaTeX dans cet éditeur, vous devez ajouter un outil de composition dans la boîte de dialogue "Préférences", ou dans le fichier de configuration F<tools.ini> dans le dossier de TeXworks (habituellement : C<$HOME/.TeXworks/configuration/tools.ini>).
+Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX dans TeXworks (copie du fichier F<tools.ini>) :
+
+ ...
+ [012]
+ name=AutoLaTeX
+ program=autolatex
+ arguments=-v, --synctex, --noview, --search-project-from, $fullname, all
+ showPdf=true
+ ...
 
 =item B<Application Gtk (obsolète)>:
 

@@ -894,27 +894,15 @@ GRAPHIC USER INTERFACE
         <http://www.sublimetext.com/2> is provided. You could launch
         AutoLaTeX through the building tools of Sublime Text.
 
-    TeXworks:
-        There is no specific plugin for TeXworks. To use AutoLaTeX in this
-        editor, you must add a composition tool from the "Preferences"
-        dialog box, or inside the tools.ini file in the configuration
-        directory of TeXworks. We recommend the following configuration to
-        launch AutoLaTeX in TeXworks (it is a copy of the content of the
-        file tools.ini):
-
-         [012]
-         name=AutoLaTeX
-         program=autolatex
-         arguments=-v, --synctex, --noview, --search-project-from, $fullname, all
-         showPdf=true
-
     Kile:
         There is no specific plugin for Kile. To use AutoLaTeX in this
         editor, you must add a build tool from the "Configure Kile" dialog
-        box, or inside the kilerc file in the configuration directory of
-        KDE. We recommend the following configuration to launch AutoLaTeX in
-        Kile (it is a copy of the content of the file kilerc):
+        box, or inside the kilerc file in the configuration directory of KDE
+        (usually: "$HOME/.kde/share/config/kilerc"). We recommend the
+        following configuration to launch AutoLaTeX in Kile (it is a copy of
+        the content of the file kilerc):
 
+         ...
          [Tool/AutoLaTeX/Default]
          class=Compile
          close=no
@@ -923,6 +911,38 @@ GRAPHIC USER INTERFACE
          options=-v --synctex --noview --search-project-from '%source' all
          state=Editor
          type=Process
+         ...
+
+    TeXmaker:
+        There is no specific plugin for TeXmaker. To use AutoLaTeX in this
+        editor, you must add a build tool inside the "Configure TeXmaker"
+        dialog box, or inside the texmaker.ini file in the configuration
+        directory of TeXMaker (usually: "$HOME/.config/xm1/texmaker.ini").
+        We recommend the following configuration to launch AutoLaTeX in
+        TeXmaker (it is a copy of the content of the file texmaker.ini):
+
+         ...
+         [texmaker]
+         ...
+         Tools\Userquick=autolatex -v --synctex --noview --search-project-from %.tex
+         ...
+
+    TeXworks:
+        There is no specific plugin for TeXworks. To use AutoLaTeX in this
+        editor, you must add a composition tool from the "Preferences"
+        dialog box, or inside the tools.ini file in the configuration
+        directory of TeXworks (usually:
+        "$HOME/.TeXWorks/configuration/tools.ini"). We recommend the
+        following configuration to launch AutoLaTeX in TeXworks (it is a
+        copy of the content of the file tools.ini):
+
+         ...
+         [012]
+         name=AutoLaTeX
+         program=autolatex
+         arguments=-v, --synctex, --noview, --search-project-from, $fullname, all
+         showPdf=true
+         ...
 
     Standalone Gtk Frontend (deprecated):
         It is the first UI for AutoLaTeX written in Perl and based on Gtk.
