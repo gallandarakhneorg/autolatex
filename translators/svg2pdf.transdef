@@ -34,6 +34,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 	runCommandOrFail(
 		'inkscape',
 		'--without-gui',
+		'--export-area-page',
 		'--export-eps',
 		"$epsfile",
 		"$in");

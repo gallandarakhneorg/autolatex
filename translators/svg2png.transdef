@@ -24,5 +24,5 @@ INPUT_EXTENSIONS = .svg .svgz
 
 OUTPUT_EXTENSIONS = .png
 
-COMMAND_LINE = inkscape --without-gui --export-background-opacity=0.0 --export-dpi=160 --export-png "$out" "$in"
+COMMAND_LINE = inkscape --without-gui --export-area-page --export-background-opacity=0.0 --export-dpi=160 --export-png "$out" "$in"
 

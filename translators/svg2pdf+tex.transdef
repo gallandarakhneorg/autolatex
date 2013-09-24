@@ -49,7 +49,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 	runCommandOrFail(
 		'inkscape',
 		'--without-gui',
-		'--export-area-drawing',
+		'--export-area-page',
 		$opt,
 		"$out",
 		'--export-latex',
