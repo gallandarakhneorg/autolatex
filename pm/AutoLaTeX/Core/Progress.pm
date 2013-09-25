@@ -63,7 +63,7 @@ use Carp;
 use AutoLaTeX::Core::IntUtils;
 use AutoLaTeX::Core::Util qw($INTERNAL_MESSAGE_PREFIX);
 
-our $VERSION = '3.0';
+our $VERSION = '4.0';
 
 #------------------------------------------------------
 #
@@ -88,7 +88,8 @@ sub new(;$) : method {
 			'child' => undef,
 			'max' => $max,
 			'value' => 0,
-			'bar-width' => 40,
+			'parent' => undef,
+			'bar-width' => 30,
 			'comment' => '',
 			'comment-to-display' => '',
 			'previous-message-size' => 0,
@@ -103,24 +104,19 @@ sub new(;$) : method {
 sub _newChild($$$) : method {
 	my $proto = shift;
 	my $class = ref($proto) || $proto;
-	my $parent = ref($proto) && $proto ;
-	my $self;
-	if ( $parent ) {
-		%{$self} = %{$parent} ;
-	}
-	else {
-		$self = {
-			'child' => undef,
-			'value' => 0,
-			'parent' => $_[0],
-			'min-in-parent' => $_[1],
-			'max-in-parent' => $_[2],
-			'max' => 0,
-			'comment' => '',
-		};
-	}
+	my $parent = shift;
+	my $min = shift;
+	my $max = shift;
+	my $self = {
+		'child' => undef,
+		'value' => 0,
+		'parent' => $parent,
+		'min-in-parent' => $min,
+		'max-in-parent' => $max,
+		'max' => 0,
+		'comment' => '',
+	};
 	bless( $self, $class );
-
 	return $self;
 }
 
@@ -218,15 +214,15 @@ sub setComment($) : method {
 	$self->{'comment'} = $label || '';
 	my $c = '';
 	my $p = $self;
-	while ($p && $p->{'parent'}) {
+	while ($p->{'parent'}) {
 		if (!$c && $p->{'comment'}) {
 			$c = $p->{'comment'};
 		}
 		$p = $p->{'parent'};
 	}
 	if ($p && $p->{'comment-to-display'} ne $c) {
-		$self->{'comment-to-display'} = $c;
-		$self->_report();
+		$p->{'comment-to-display'} = $c;
+		$p->_report();
 		return 1;
 	}
 	return 0;
