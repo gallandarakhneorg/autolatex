@@ -184,6 +184,38 @@ le visualisateur pour arrêter son exécution.
 Activer ou désactiver l'appel à l'outil de création de bibliographie
 (BibTeX, Biber, ...)
 
+=item B<--continuous[=temps_attente]>
+
+=item B<--nocontinuous>
+
+Cette option permet de ne pas arrêter AutoLaTeX et de continuellement réaliser
+les actions passées en paramètres.
+Cette option provique une boucle infinie dans AutoLaTeX. Elle possède un effet
+similaire au script suivant (en bash) :
+ while 1
+ do
+   autolatex "$@"
+   sleep B<temps_attente>
+ done
+
+La valeur B<temps_attente> permet d'ajouter un temps d'attente 
+entre deux boucles de AutoLaTeX. Si elle n'est pas fournie, 0 est utilisé.
+L'option B<--continuous> force l'utilisation de l'option B<--asyncview>.
+
+Si vous posséder un bon visualisateur, l'affichage du document dans
+ce dernier sera automatiquement mis-à-jour (avec certaines versions
+de UNIX/Linux "gv -watch" réalise ce raffraichissement automatique
+pour des fichiers Postscript
+With a good viewer the display will be automatically updated.
+(Under some but not all versions of UNIX/Linux "gv -watch"  does
+this  for  postscript  files). De nombreux autres visualisateurs
+nécessitent une mise-à-jour manuelle.
+
+Note importante : le logiciel acroread sous MS-Windows pose un verrou
+sur le fichier PDF, et n'autorise pas les nouvelles versions du PDF 
+d'être écrites. Par conséquent, ce n'est pas une bonne idée d'utiliser
+acroread pour visualiser les fichiers PDF en mode continu.
+
 =item B<--createconfig[=S<type>]>
 
 Ne pas compiler le document LaTeX, mais de créer un fichier de configuration.

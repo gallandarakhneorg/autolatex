@@ -179,6 +179,34 @@ for its termination before stopping its execution.
 
 Enable or disable the call to the bibliography tool (BibTeX, Biber...)
 
+=item B<--continuous[=sleep_duration]>
+
+=item B<--nocontinuous>
+
+Do not stop AutoLaTeX, and continually do the action(s) given as parameter(s).
+This option causes AutoLaTeX to infinitely loop. It has the same effect as the
+following script (in bash):
+ while 1
+ do
+   autolatex "$@"
+   sleep B<sleep_duration>
+ done
+
+The value B<sleep_duration> permits to add some waiting time between
+two loop of AutoLaTeX. If it is not given, 0 is assumed.
+The B<--continuous> option force the option B<--asyncview> to be set.
+
+With a good viewer the display will be automatically updated.
+(Under some but not all versions of UNIX/Linux "gv -watch"  does
+this  for  Postscript  files; this can be set by a configuration
+variable.)  Many other previewers  will  need  a  manual
+update.
+
+Important note: the acroread program on MS-Windows locks the PDF
+file, and prevents new versions being written, so it  is  a  bad
+idea  to  use  acroread  to view PDF files in continuous
+mode.
+
 =item B<--createconfig[=S<type>]>
 
 Do not compile the LaTeX document, but create a

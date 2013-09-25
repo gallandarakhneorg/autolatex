@@ -656,6 +656,60 @@ sub al_run_makeflat {
 #
 #------------------------------------------------------
 
+sub _al_run_actions() {
+	# Loop on CLI actions
+	for(my $i=0; $i<@ARGV; $i++) {
+
+		if ($ARGV[$i] eq 'all' || $ARGV[$i] eq 'view') {
+			my $forceview = ($ARGV[$i] eq 'view');
+			al_run_makeandview(\$i,$forceview);
+		}
+		elsif ($ARGV[$i] eq 'clean') {
+			al_run_clean(\$i);
+		}
+		elsif ($ARGV[$i] eq 'cleanall') {
+			al_run_cleanall(\$i);
+		}
+		elsif ($ARGV[$i] eq 'gen_doc') {
+			al_run_make(\$i);
+		}
+		elsif ($ARGV[$i] eq 'bibtex') {
+			printWarn('The directive \'bibtex\' is deprecated from the command line interface.');
+			al_run_biblio(\$i);
+		}
+		elsif ($ARGV[$i] eq 'biblio') {
+			al_run_biblio(\$i);
+		}
+		elsif ($ARGV[$i] eq 'makeindex') {
+			al_run_makeindex(\$i);
+		}
+		elsif ($ARGV[$i] eq 'images') {
+			al_run_images(\$i);
+		}
+		elsif ($ARGV[$i] eq 'showimages') {
+			al_run_showimages(\$i);
+		}
+		elsif ($ARGV[$i] eq 'showimagemap') {
+			al_run_showimagemap(\$i);
+		}
+		elsif ($ARGV[$i] eq 'commit') {
+			al_run_commit(\$i);
+		}
+		elsif ($ARGV[$i] eq 'update') {
+			al_run_update(\$i);
+		}
+		elsif ($ARGV[$i] eq 'showpath') {
+			print "PATH=".$ENV{'PATH'}."\n";
+		}
+		elsif ($ARGV[$i] eq 'makeflat') {
+			al_run_makeflat(\$i);
+		}
+		else {
+			printErr(formatText(_T('Command line action \'{}\' is not supported.'),$ARGV[$i]));
+		}
+	}
+}
+
 # script parameters
 my @ORIGINAL_ARGV = @ARGV;
 
@@ -734,57 +788,17 @@ if (!@ARGV && !$optionalAction) {
 	push @ARGV, 'all' ;
 }
 
-# Loop on CLI actions
-for(my $i=0; $i<@ARGV; $i++) {
-
-	if ($ARGV[$i] eq 'all' || $ARGV[$i] eq 'view') {
-		my $forceview = ($ARGV[$i] eq 'view');
-		al_run_makeandview(\$i,$forceview);
+# Continuous loop, or not
+if (defined($configuration{'__private__'}{'action.continuous mode'})) {
+	while (1) {
+		_al_run_actions();
+		if ($configuration{'__private__'}{'action.continuous mode'}>0) {
+			sleep($configuration{'__private__'}{'action.continuous mode'});
+		}
 	}
-	elsif ($ARGV[$i] eq 'clean') {
-		al_run_clean(\$i);
-	}
-	elsif ($ARGV[$i] eq 'cleanall') {
-		al_run_cleanall(\$i);
-	}
-	elsif ($ARGV[$i] eq 'gen_doc') {
-		al_run_make(\$i);
-	}
-	elsif ($ARGV[$i] eq 'bibtex') {
-		printWarn('The directive \'bibtex\' is deprecated from the command line interface.');
-		al_run_biblio(\$i);
-	}
-	elsif ($ARGV[$i] eq 'biblio') {
-		al_run_biblio(\$i);
-	}
-	elsif ($ARGV[$i] eq 'makeindex') {
-		al_run_makeindex(\$i);
-	}
-	elsif ($ARGV[$i] eq 'images') {
-		al_run_images(\$i);
-	}
-	elsif ($ARGV[$i] eq 'showimages') {
-		al_run_showimages(\$i);
-	}
-	elsif ($ARGV[$i] eq 'showimagemap') {
-		al_run_showimagemap(\$i);
-	}
-	elsif ($ARGV[$i] eq 'commit') {
-		al_run_commit(\$i);
-	}
-	elsif ($ARGV[$i] eq 'update') {
-		al_run_update(\$i);
-	}
-	elsif ($ARGV[$i] eq 'showpath') {
-		print "PATH=".$ENV{'PATH'}."\n";
-	}
-	elsif ($ARGV[$i] eq 'makeflat') {
-		al_run_makeflat(\$i);
-	}
-	else {
-		printErr(formatText(_T('Command line action \'{}\' is not supported.'),$ARGV[$i]));
-	}
-
+}
+else {
+	_al_run_actions();
 }
 
 exit(0);
