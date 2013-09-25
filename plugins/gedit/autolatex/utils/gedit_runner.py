@@ -22,6 +22,11 @@
 from gi.repository import GObject, Gtk, Gedit
 import runner
 
+# List of all the runners
+_all_runners = []
+
+def kill_all_runners():
+	runner.kill_all_runners()
 
 class Runner(runner.Listener):
 

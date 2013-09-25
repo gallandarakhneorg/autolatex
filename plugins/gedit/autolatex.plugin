@@ -1,7 +1,7 @@
 [Plugin]
 Loader=python
 Module=autolatex
-Version=1.9.0
+Version=1.10.0
 IAge=3
 Name=AutoLaTeX
 Name[en_GB]=AutoLaTeX

@@ -77,11 +77,25 @@ use AutoLaTeX::TeX::Flattener;
 ###################################################
 push @INC, File::Spec->catfile(getUserConfigDirectory(),"translators");
 
+###################################################
+# Catching signals                                #
+###################################################
+sub safe_exit {
+	killSubProcesses();
+	exit(255);
+}
+@SIG{qw( INT TERM HUP )} = \&safe_exit;
 
+###################################################
+# Global variables                                #
+###################################################
 my %configuration;
 my %autolatexData = ();
 
-# Helping function to init the progress bar
+###################################################
+# Helping function to init the progress bar       #
+###################################################
+
 sub __initProgress($) {
 	my $max = shift;
 	my $show = $configuration{'__private__'}{'action.show progress'};

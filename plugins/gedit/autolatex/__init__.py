@@ -82,6 +82,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 
     # Invoke when the plugin is desactivated
     def do_deactivate(self):
+	gedit_runner.kill_all_runners()
         self._remove_ui()
 	self._gsettings.unbind()
 	self._gsettings = None

@@ -38,7 +38,7 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '8.0';
+our $VERSION = '9.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
@@ -50,7 +50,8 @@ our $VERSION = '8.0';
 	      &runCommandRedirectToInternalLogs &countLinesIn
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
 	      &runCommandSilently &removePathPrefix &trim &trim_ws &formatText
-	      &makeMessage &makeMessageLong &secure_unlink &str2language ) ;
+	      &makeMessage &makeMessageLong &secure_unlink &str2language
+	      &killSubProcesses ) ;
 @EXPORT_OK = qw( $INTERNAL_MESSAGE_PREFIX );
 
 require 5.014;
@@ -74,6 +75,9 @@ my $debugLevel = 0;
 my $dbgIndent = 0;
 my %runningChildren = ();
 my $lastListenerCheck = 0;
+
+# Array of launched subprocesses
+my %launchedSubProcesses = ();
 
 =pod
 
@@ -659,7 +663,9 @@ sub runCommandOrFailRedirectTo($@) {
 	}
 	elsif (defined($pid)) {
 		# Parent process
+		$launchedSubProcesses{$pid} = $pid;
 		my $kpid = waitpid($pid, 0);
+		delete $launchedSubProcesses{$pid};
 		my $exitcode = $?;
 		my @stdout = ();
 		if ($kpid>0) {
@@ -714,7 +720,9 @@ sub runCommandRedirectToInternalLogs(@) {
 	}
 	elsif (defined($pid)) {
 		# Parent process
+		$launchedSubProcesses{$pid} = $pid;
 		waitpid($pid, 0);
+		delete $launchedSubProcesses{$pid};
 		my $exitcode = $?;
 		return $exitcode;
 	}
@@ -757,7 +765,9 @@ sub runCommandOrFail(@) {
 	}
 	elsif (defined($pid)) {
 		# Parent process
+		$launchedSubProcesses{$pid} = $pid;
 		my $kpid = waitpid($pid, 0);
+		delete $launchedSubProcesses{$pid};
 		my $exitcode = $?;
 		my @stdout = ();
 		if ($kpid>0) {
@@ -836,7 +846,9 @@ sub runCommandOrFailFromInput($@) {
 	}
 	elsif (defined($pid)) {
 		# Parent process
+		$launchedSubProcesses{$pid} = $pid;
 		my $kpid = waitpid($pid, 0);
+		delete $launchedSubProcesses{$pid};
 		my $exitcode = $?;
 		my @stdout = ();
 		if ($kpid>0) {
@@ -927,8 +939,10 @@ sub runCommandSilently(@) {
 	}
 	elsif (defined($pid)) {
 		# Parent process
+		$launchedSubProcesses{$pid} = $pid;
 		if (!defined($opts->{'wait'}) || $opts->{'wait'}) {
 			waitpid($pid, 0);
+			delete $launchedSubProcesses{$pid};
 			return $?;
 		}
 		else {
@@ -966,6 +980,7 @@ sub runSystemCommand($@) {
 	}
 	elsif (defined($pid)) {
 		# Parent process
+		$launchedSubProcesses{$pid} = $pid;
 		$runningChildren{"$pid"} = { 'listener' => $listener,
 					     'command' => \@_,
 					   };
@@ -1019,6 +1034,7 @@ sub waitForSystemCommandTerminaison() {
 			}
 			my $kid = waitpid($pid, 0);
 			delete $runningChildren{"$pid"};
+			delete $launchedSubProcesses{$pid};
 		}
 		printDbgUnindent();
 	}
@@ -1271,6 +1287,20 @@ sub countLinesIn($) {
 		}
 	}
 	return $c;
+}
+
+
+=pod
+
+=item B<killSubProcesses()>
+
+Kill all the subprocesses launched by one of the running functions above.
+
+=cut
+sub killSubProcesses() {
+	my @pids = keys %launchedSubProcesses;
+	%launchedSubProcesses = ();
+	kill 9, @pids;
 }
 
 

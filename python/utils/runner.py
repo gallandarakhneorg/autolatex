@@ -31,6 +31,16 @@ except ImportError:
 
 import utils
 
+# List of all the runners
+_all_runners = []
+
+def kill_all_runners():
+	global _all_runners
+	tab = _all_runners
+	_all_runners = []
+	for r in tab:
+		r.cancel()
+
 # Launch AutoLaTeX inside a thread, and wait for the result
 class Listener(object):
 	def get_runner_progress(self):
@@ -66,7 +76,7 @@ class Runner(_threading.Thread):
 	# Cancel the execution
 	def cancel(self):
 		if self._subprocess:
-			self._subprocess.kill()
+			self._subprocess.terminate()
 			self._subprocess = None
 		if self._has_progress:
 			# Remove the info bar from the inside of the UI thread
@@ -76,6 +86,8 @@ class Runner(_threading.Thread):
 
 	# Run the thread
 	def run(self):
+		global _all_runners
+		_all_runners.append(self)
 		progress_line_pattern = None
 
 		self._has_progress = self._listener.get_runner_progress()
@@ -133,6 +145,8 @@ class Runner(_threading.Thread):
 
 			# Stop because the subprocess was cancelled
 			if not self._subprocess:
+				if self in _all_runners:
+					_all_runners.remove(self) 
 				return 0
 			self._subprocess = None
 
@@ -155,4 +169,6 @@ class Runner(_threading.Thread):
 			
 			# Update the rest of the UI from the inside of the UI  thread
 			self._listener.on_runner_finalize_execution(retcode, output, latex_warnings)
+		if self in _all_runners:
+			_all_runners.remove(self)
 
