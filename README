@@ -38,8 +38,8 @@ DESCRIPTION
     other) files becomes increasingly complicated to run manually. With
     AutoLaTeX, such operations are still very simple: you have nothing to
     do. AutoLaTeX is calling the translators for you. Each translator is
-    able to convert an picture source file (eps, svg, GNU plot...) into a
-    PDF or PNG file.
+    able to convert an picture source file (eps, svg, Gnuplot...) into a PDF
+    or PNG file.
 
     Hopefully this introduction has provided an adequate example for how
     AutoLaTeX can simplify the management of LaTeX-based documents. The
@@ -560,7 +560,7 @@ AUTO GENERATION OF FIGURES
         Input format: .perl .pl
         Output format: .tex
 
-    GNU plot (plot) to Portable Document Format (pdf)
+    Gnuplot (plot) to Portable Document Format (pdf)
 
         Name: plot2pdf
         Use external converter: gnuplot
@@ -568,7 +568,7 @@ AUTO GENERATION OF FIGURES
         Input format: .plot .gnu
         Output format: .pdf
 
-    GNU plot (plot) to TeX embedded in Portable Document Format (pdf+tex)
+    Gnuplot (plot) to TeX embedded in Portable Document Format (pdf+tex)
         PDF part:
 
         Name: plot2pdf+tex

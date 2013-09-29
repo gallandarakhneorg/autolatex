@@ -47,7 +47,7 @@ increasingly complicated to run manually. With AutoLaTeX,
 such operations are still very simple: you have nothing to
 do. AutoLaTeX is calling the translators for you. Each
 translator is able to convert an picture source file (eps,
-svg, GNU plot...) into a PDF or PNG file.
+svg, Gnuplot...) into a PDF or PNG file.
 
 Hopefully this introduction has provided an adequate
 example for how AutoLaTeX can simplify the management of
@@ -866,7 +866,7 @@ TeX part:
 
 =back
 
-=item B<GNU plot (plot) to Portable Document Format (pdf)>
+=item B<Gnuplot (plot) to Portable Document Format (pdf)>
 
 =over 12
 
@@ -882,7 +882,7 @@ TeX part:
 
 =back
 
-=item B<GNU plot (plot) to TeX embedded in Portable Document Format (pdf+tex)>
+=item B<Gnuplot (plot) to TeX embedded in Portable Document Format (pdf+tex)>
 
 PDF part:
 

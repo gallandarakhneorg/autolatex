@@ -54,7 +54,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 	close(*OUT);
 	close(*IN);
 
-	# Invoke GNU Plot
+	# Invoke Gnuplot
 	chdir($plotdir) or printErr("$plotdir: $!");
 	runCommandOrFail('gnuplot', "$plotFile");
 	chdir($curdir) or printErr("$curdir: $!");
