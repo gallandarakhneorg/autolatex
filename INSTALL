@@ -11,7 +11,7 @@ must be executed to compile and install AutoLaTeX.
 
 The installation script Makefile.PL use the following Perl modules.
 They must be installed prior to any call to the installation script.
-a) Already icluded in many perl distributions:
+a) Already included in many perl distributions:
 	Getopt::Long
 	File::Basename
 	File::Spec
