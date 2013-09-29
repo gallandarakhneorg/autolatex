@@ -21,6 +21,7 @@ my $INSTALLDIRECTORY;
 my $BINDIRECTORY;
 my $ETCDIRECTORY;
 my $MANDIRECTORY;
+my $DOCDIRECTORY;
 my $LOCALEDIRECTORY;
 my $ICONDIRECTORY;
 my $STYDIRECTORY;
@@ -451,7 +452,7 @@ sub DO_compile(\%) {
 	local *DIR;
 	local *DIR2;
 
-	my $podDirectory = File::Spec->catfile($_[0]->{'directory'},'pod');
+	my $podDirectory = File::Spec->catfile($_[0]->{'directory'},'doc');
 	my $poDirectory = File::Spec->catfile($_[0]->{'directory'},'po');
 
 	# Generate the READMEs
@@ -513,7 +514,8 @@ sub DO_compile(\%) {
 
 	# Create the Sublime Text Package
 	{
-		my $sublime_tmp = File::Spec->catfile('build_tmp', 'autolatex');
+		my $sublime_root_tmp = File::Spec->catfile('build', 'sublime2');
+		my $sublime_tmp = File::Spec->catfile($sublime_root_tmp, 'autolatex');
 		my $sublime_tmp_file = 'autolatex.sublime-package';
 		mkdirrec($sublime_tmp);
 		installInto(
@@ -525,7 +527,7 @@ sub DO_compile(\%) {
 		installInto(
 			File::Spec->catfile($sublime_tmp, 'utils'),
 			getFiles('plugins','sublime-text-2','autolatex','utils','*'));
-		chdir('build_tmp') or die("build_tmp: $!\n");
+		chdir($sublime_root_tmp) or die("$sublime_root_tmp: $!\n");
 		my $zip = Archive::Zip->new();
 		local *DIR;
 		my @dirs = ( 'autolatex' );
@@ -637,11 +639,11 @@ sub DO_install(\%) {
 		}
 
 		installInto(
-			File::Spec->catfile($INSTALLDIRECTORY,'pod'),
-			getFiles('pod','*.pod'));
+			$DOCDIRECTORY,
+			getFiles('doc','*.pod'));
 
-		installMan('pod/autolatex.1.gz');
-		installMan('pod/autolatex.fr.1.gz');
+		installMan(File::Spec->catfile('doc', 'autolatex.1.gz'));
+		installMan(File::Spec->catfile('doc', 'autolatex.fr.1.gz'));
 	}
 
 	if ($MODULES{'gtk'}) {
@@ -772,10 +774,11 @@ sub DO_install(\%) {
 	if ($MODULES{'sublime2'}) {
 		print "***************\n*** CAUTION ***\n***************\n";
 		print "Sublime Text 2 module will be installed in:\n$SUBLIME2PLUGINDIRECTORY\n";
+		print "***************\n*** CAUTION ***\n***************\n";
 
 		installInto(
 			$SUBLIME2PLUGINDIRECTORY,
-			File::Spec->catfile('build_tmp','autolatex.sublime-package'));
+			File::Spec->catfile('build','sublime2','autolatex.sublime-package'));
 
 		foreach my $lang (@po_directories) {
 			install(
@@ -790,8 +793,8 @@ sub DO_clean(\%) {
 	print "DO AUTOLATEX CLEANING...\n";
 	#rm(File::Spec->catfile($_[0]->{'directory'},'README'));
 	rm(File::Spec->catfile($_[0]->{'directory'},'README_FR'));
-	rm(File::Spec->catfile($_[0]->{'directory'},'pod','autolatex.1.gz'));
-	rm(File::Spec->catfile($_[0]->{'directory'},'pod','autolatex.fr.1.gz'));
+	rm(File::Spec->catfile($_[0]->{'directory'},'doc','autolatex.1.gz'));
+	rm(File::Spec->catfile($_[0]->{'directory'},'doc','autolatex.fr.1.gz'));
 
 	local *DIR;
 	local *DIR2;
@@ -819,7 +822,7 @@ sub DO_clean(\%) {
 		}
 	}
 
-	remove_tree('build_tmp');
+	remove_tree('build');
 
 	rm(File::Spec->catfile($_[0]->{'directory'},'Makefile'));
 }
@@ -840,6 +843,7 @@ sub DO_vars(\%) {
 	printColumns('', '  ',
 		'ALLOW_SYMBOLIC_LINK', $ALLOW_SYMBOLIC_LINK,
 		'BINDIRECTORY', $BINDIRECTORY,
+		'DOCDIRECTORY', $DOCDIRECTORY,
 		'ETCDIRECTORY', $ETCDIRECTORY,
 		'ICONDIRECTORY', $ICONDIRECTORY,
 		'INSTALLDIRECTORY', $INSTALLDIRECTORY,
@@ -865,6 +869,9 @@ sub DO_createMakefile(\%) {
 	}
 	if ($_[0]->{'man-prefix'}) {
 		push @options, '"--manprefix='.$_[0]->{'man-prefix'}.'"';
+	}
+	if ($_[0]->{'doc-prefix'}) {
+		push @options, '"--docprefix='.$_[0]->{'doc-prefix'}.'"';
 	}
 	if ($_[0]->{'etc-prefix'}) {
 		push @options, '"--etcprefix='.$_[0]->{'etc-prefix'}.'"';
@@ -942,6 +949,7 @@ if (!GetOptions(
 		'texprefix=s' => \$options{'tex-prefix'},
 		'etcprefix=s' => \$options{'etc-prefix'},
 		'manprefix=s' => \$options{'man-prefix'},
+		'docprefix=s' => \$options{'doc-prefix'},
 		'prefix=s' => \$options{'prefix'},
 		'version=s' => \$options{'version'},
 		'link!' => \$options{'create-links'},
@@ -966,6 +974,7 @@ if (!GetOptions(
 				print "<options> are:\n";
 				printColumns('   ', '  ',
 					'--disable', 'disable module',
+					'--docprefix=<path>', 'path to documentation directory',
 					'--[no]etclink', 'enable/disable config\'s symbolic links',
 					'--enable', 'enable module',
 					'--etcprefix=<path>', 'path to config directory',
@@ -1012,13 +1021,15 @@ if (("$^O" eq 'MSWin32')||
 	my $PREFIX = substShellPatterns($options{'prefix'}) || File::Spec->catfile('C:','Program Files');
 	my $ETCPREFIX = "$PREFIX";
 	my $MANPREFIX = substShellPatterns($options{'man-prefix'}) || File::Spec->catfile('C:','Documents and Settings','All Users','Application Data');
+	my $DOCPREFIX = substShellPatterns($options{'doc-prefix'}) || File::Spec->catfile('C:','Documents and Settings','All Users','Application Data');
 	my $TEXPREFIX = substShellPatterns($options{'tex-prefix'}) || File::Spec->catfile($PREFIX,'autolatex','sty');
 
 	$EXE_EXTENSION = '.exe';
 	$INSTALLDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex');
 	$BINDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex');
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
-	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'autolatex','man','english');
+	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'autolatex','doc');
+	$DOCDIRECTORY = File::Spec->catfile("$MANPREFIX",'autolatex','doc');
 	$LOCALEDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex', 'locale');
 	$ICONDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex', 'icons');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
@@ -1039,7 +1050,8 @@ else {
 		$end = File::Spec->catfile("$PREFIX",'..','etc');
 	}
 	my $ETCPREFIX = substShellPatterns($options{'etc-prefix'}) || $end;
-	my $MANPREFIX = substShellPatterns($options{'man-prefix'}) || File::Spec->catfile($PREFIX,'man');
+	my $MANPREFIX = substShellPatterns($options{'man-prefix'}) || File::Spec->catfile($PREFIX,'share','man');
+	my $DOCPREFIX = substShellPatterns($options{'doc-prefix'}) || File::Spec->catfile($PREFIX,'share','doc');
 	my $TEXPREFIX = substShellPatterns($options{'tex-prefix'}) || File::Spec->catfile($PREFIX,'share','texmf');
 
 	$EXE_EXTENSION = '';
@@ -1047,6 +1059,7 @@ else {
 	$BINDIRECTORY = File::Spec->catfile("$PREFIX",'bin');
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'man1');
+	$DOCDIRECTORY = File::Spec->catfile("$DOCPREFIX",'autolatex');
 	$LOCALEDIRECTORY = File::Spec->catfile("$PREFIX",'share', 'locale');
 	$ICONDIRECTORY = File::Spec->catfile("$PREFIX",'share', 'icons');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
