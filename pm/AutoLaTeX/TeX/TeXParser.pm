@@ -117,7 +117,7 @@ use AutoLaTeX::Core::IntUtils ;
 #------------------------------------------------------
 
 # Version number of the parser
-my $VERSION = "5.0" ;
+my $VERSION = "5.1" ;
 
 # Definition of the default text-mode macros
 my %TEX_DEFAULT_TEXT_MODE_MACROS = (
@@ -588,7 +588,8 @@ sub parse($;$) : method {
 		elsif (exists $self->{'COMMENT_CHARACTERS'}{$sep}) {
 			# Comment
 			$tex =~ s/^(.*?[\n\r])//s;
-			my $c = $self->callListener( 'filterComments', "%".$1, $1 ) ;
+			my $commentText = $1 || '';
+			my $c = $self->callListener( 'filterComments', "%".$commentText, $commentText ) ;
 			if (__isset($c)) {
 				$self->callListener( 'outputString', undef, $c ) ;
 			}
