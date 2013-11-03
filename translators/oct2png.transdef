@@ -33,6 +33,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 	close(*FILE);
 	runCommandOrFail('octave', '--no-history', "$tmpFile");
 	unlink($tmpFile);
+	1;
 }
 EOL
 

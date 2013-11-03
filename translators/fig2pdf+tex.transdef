@@ -49,6 +49,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 	runCommandOrFail( 'fig2dev', '-L', $ttexmode1, "$in", "$basename" );
 	runCommandOrFail( 'fig2dev', '-L', $ttexmode2, '-p', "$out", "$in", "$ttexFile" );
 	chdir("$currentdir") or printErr("$currentdir: $!");
+	1;
 }
 EOL
 

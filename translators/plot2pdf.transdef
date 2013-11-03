@@ -51,9 +51,10 @@ TRANSLATOR_FUNCTION =<<EOL {
 	chdir("$workingDir") or printErr("$workingDir: $!");
 	runCommandOrFailRedirectTo( "$epsFile", 'gnuplot', "$extPlotFile" );
 	chdir("$curdir") or printErr("$curdir: $!");
-	runTranslator( 'eps2pdf', "$epsFile", "$out" );
+	my $transresult = runTranslator( 'eps2pdf', "$epsFile", "$out" );
 	unlink("$extPlotFile");
 	unlink("$epsFile") unless ($isepsmode);
+	$transresult;
 }
 EOL
 

@@ -30,8 +30,9 @@ TRANSLATOR_FUNCTION =<<EOL {
 				dirname("$in"),
 				basename("$in",@inexts).'.fig');
 	runCommandOrFail( 'dia', '--nosplash', '-t', 'fig', "--export=$figFile", "$in" );
-	runTranslator( 'fig2pdf+tex', "$figFile", "$out");
+	my $transresult = runTranslator( 'fig2pdf+tex', "$figFile", "$out");
 	unlink("$figFile");
+	$transresult;
 }
 EOL
 

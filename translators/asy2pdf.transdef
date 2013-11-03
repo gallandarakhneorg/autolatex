@@ -31,8 +31,12 @@ TRANSLATOR_FUNCTION =<<EOL {
 				basename("$in",@inexts).'.eps');
 	runCommandOrFail( 'asy', '-o', "$epsFile", "$in" );
 	if ($ispdfmode) {
-		runTranslator( 'eps2pdf', "$epsFile", "$out");
+		my $transresult = runTranslator( 'eps2pdf', "$epsFile", "$out");
 		unlink("$epsFile");
+		$transresult;
+	}
+	else {
+		1;
 	}
 }
 EOL

@@ -34,6 +34,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 	chdir("$dirname") or printErr("$dirname: $!");
 	runCommandOrFail('fig2dev', '-L', ($ispdfmode ? 'pdf' : 'eps'), "$in", "$basename");
 	chdir("$currentdir") or printErr("$currentdir: $!");
+	1;
 }
 EOL
 

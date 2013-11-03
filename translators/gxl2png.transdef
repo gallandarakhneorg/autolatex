@@ -29,8 +29,9 @@ TRANSLATOR_FUNCTION =<<EOL {
 				dirname("$in"),
 				basename("$in",@inexts).'.dot');
 	runCommandOrFail( 'gxl2dot', '-d', '-o', "$dotFile", "$in" );
-	runTranslator('dot2png', "$dotFile", "$out");
+	my $transresult = runTranslator('dot2png', "$dotFile", "$out");
 	unlink("$dotFile");
+	$transresult;
 }
 EOL
 

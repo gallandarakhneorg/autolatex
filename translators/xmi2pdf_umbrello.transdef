@@ -56,6 +56,8 @@ TRANSLATOR_FUNCTION =<<EOL {
 		}
 	}
 	closedir(*INDIR);
+	
+	my $transresult = 0;
 
 	if (@generatedFiles>1) {
 		my $template = File::Spec->catfile(
@@ -64,12 +66,14 @@ TRANSLATOR_FUNCTION =<<EOL {
 		foreach my $file (@generatedFiles) {
 			my $bn = basename($file,'.eps');
 			$bn =~ s/\s+/_/sg;
-			runTranslator( 'eps2pdf', "$file", "$template$bn.pdf");
+			if (runTranslator( 'eps2pdf', "$file", "$template$bn.pdf")) {
+				$transresult = 1;
+			}
 		}
 	}
 	elsif (@generatedFiles) {
 		my $file = shift @generatedFiles;
-		runTranslator( 'eps2pdf', "$file", "$out");
+		$transresult = runTranslator( 'eps2pdf', "$file", "$out");
 	}
 	else {
 		printErr("No file generated");
@@ -78,6 +82,8 @@ TRANSLATOR_FUNCTION =<<EOL {
 	if (-d "$outdir") {
 		remove_tree("$outdir") or printErr("$outdir: $!");
 	}
+
+	$transresult;
 }
 EOL
 

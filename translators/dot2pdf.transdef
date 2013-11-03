@@ -28,14 +28,16 @@ OUTPUT_EXTENSIONs for eps = .eps
 TRANSLATOR_FUNCTION =<<EOL {
 	if ($ispdfmode) {
 		runCommandOrFail('dot', '-Tpdf', "$in", '-o', "$out");
+		1;
 	}
 	else {
 		my $svgFile = File::Spec->catfile(
 					dirname($out),
 					basename($out,@outexts).'.svg');
 		runCommandOrFail('dot', '-Tsvg', "$in", '-o', "$svgFile");
-		runTranslator('svg2pdf', "$svgFile", "$out");
+		$transresult = runTranslator('svg2pdf', "$svgFile", "$out");
 		unlink("$svgFile");
+		$transresult;
 	}
 }
 EOL

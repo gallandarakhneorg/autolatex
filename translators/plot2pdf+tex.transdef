@@ -108,8 +108,9 @@ TRANSLATOR_FUNCTION =<<EOL {
 		move("$psFile", "$out") or printErr("$psFile -> $out: $!");
 	}
 	else {
-		runTranslator('eps2pdf', "$psFile", "$out");
+		my $transresult = runTranslator('eps2pdf', "$psFile", "$out");
 		unlink($psFile);
+		$transresult;
 	}
 }
 EOL

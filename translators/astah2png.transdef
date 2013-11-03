@@ -137,6 +137,8 @@ TRANSLATOR_FUNCTION =<<EOL {
 	if ( -d "$astahOutputDir" ) {
 		remove_tree("$astahOutputDir") or printErr("$astahOutputDir: $!");
 	}
+
+	1;
 }
 EOL
 

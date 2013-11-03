@@ -55,6 +55,8 @@ TRANSLATOR_FUNCTION =<<EOL {
 	if ($defaultOutput ne $out) {
 		move("$defaultOutput", "$out") or printErr("$defaultOutput -> $out: $!");
 	}
+
+	1;
 }
 EOL
 

@@ -39,9 +39,10 @@ TRANSLATOR_FUNCTION =<<EOL {
 		"$epsfile",
 		"$in");
 	# Generation of the PDF from the EPS
-	runTranslator('eps2pdf', "$epsfile", "$out");
+	my $transresult = runTranslator('eps2pdf', "$epsfile", "$out");
 	# Remove temp file
 	unlink("$epsfile") unless ($isepsmode);
+	$transresult;
 }
 EOL
 

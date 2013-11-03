@@ -99,6 +99,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 	open(*TEXOUT, "> $out") or printErr("$out: $!");
 	print TEXOUT "\%Overlays\n\\bgroup%\n\\begin{tikzpicture}%\n$imageinclusions\\end{tikzpicture}%\n\\egroup%";
 	close(*TEXOUT);
+	1;
 }
 EOL
 

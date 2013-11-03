@@ -26,6 +26,7 @@ OUTPUT_EXTENSIONS = .tex
 
 TRANSLATOR_FUNCTION =<<EOL {
 	runCommandOrFailRedirectTo( "$out", 'dot2tex', "$in" );
+	1;
 }
 EOL
 

@@ -32,6 +32,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 	elsif ("$out" ne "$in") {
 		copy("$in", "$out") or printErr(locGet("{} -> {}: {}", $in, $out, $!));
 	}
+	1;
 }
 EOL
 

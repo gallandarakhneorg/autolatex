@@ -30,8 +30,9 @@ TRANSLATOR_FUNCTION =<<EOL {
 				dirname("$in"),
 				basename("$in",@inexts).'.dot');
 	runCommandOrFail( 'gxl2dot', '-d', '-o', "$dotFile", "$in" );
-	runTranslator('dot2pdf', "$dotFile", "$out");
+	my $transresult = runTranslator('dot2pdf', "$dotFile", "$out");
 	unlink("$dotFile");
+	$transresult;
 }
 EOL
 

@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '15.0';
+$VERSION = '16.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -760,6 +760,7 @@ sub runRootTranslator(\%$$\%$) {
 	$ROOT_TRANSLATORS{'translators'} = $translators;
 	$ROOT_TRANSLATORS{'force'} = $force;
 	$ROOT_TRANSLATORS{'loglevel'} = 1;
+	$ROOT_TRANSLATORS{'fail-on-error'} = 1;
 
 	return _runTranslator(
 		$configuration,
@@ -768,6 +769,7 @@ sub runRootTranslator(\%$$\%$) {
 		$in, 
 		$out,
 		$force,
+		1,
 		1);
 }
 
@@ -787,19 +789,27 @@ I<Parameters:>
 
 =item * C<out> is the name of the output file.
 
+=item * C<failOnError> (optional) indicates if the translator must fail on error or not.
+
 =back
 
 I<Returns:> true if a file was created; otherwise false.
 
 =cut
-sub runTranslator($$$) {
+sub runTranslator($$$;$) {
 	my $transname = shift || confess("name is mandatory");
 	my $in = shift || confess("input is mandatory");
 	my $out = shift || confess("output is mandatory");
+	my $failOnError = shift;
 	if (!$ROOT_TRANSLATORS{'translators'}) {
 		printErr(_T("You cannot call runTranslator() outside the call stack of runRootTranslator()."));
 	}
+	if (!defined($failOnError)) {
+		$failOnError = $ROOT_TRANSLATORS{'fail-on-error'};
+	}
 	printDbgIndent();
+	my $savedFailure = $ROOT_TRANSLATORS{'fail-on-error'};
+	$ROOT_TRANSLATORS{'fail-on-error'} = $failOnError;
 	$ROOT_TRANSLATORS{'loglevel'}++;
 	my $r = _runTranslator(
 			$ROOT_TRANSLATORS{'configuration'},
@@ -808,14 +818,16 @@ sub runTranslator($$$) {
 			$in,
 			$out,
 			$ROOT_TRANSLATORS{'force'},
-			$ROOT_TRANSLATORS{'loglevel'});
+			$ROOT_TRANSLATORS{'loglevel'},
+			$failOnError);
 	$ROOT_TRANSLATORS{'loglevel'}--;
+	$ROOT_TRANSLATORS{'fail-on-error'} = $savedFailure;
 	printDbgUnindent();
 	return $r;
 }
 
 # Private translator function
-sub _runTranslator($$$$$$$) {
+sub _runTranslator($$$$$$$$) {
 	my $configuration = shift || confess("configuration is mandatory");
 	my $translators = shift || confess("translators are mandatory");
 	my $transname = shift || confess("transname is mandatory");
@@ -823,6 +835,7 @@ sub _runTranslator($$$$$$$) {
 	my $out = shift || confess("output is mandatory");
 	my $force = shift;
 	my $logLevel = shift;
+	my $failOnError = shift;
 	my $ispdfmode = (($configuration->{'generation.generation type'} || 'pdf') eq 'pdf');
 	my $isepsmode = !$ispdfmode;
 
@@ -830,7 +843,14 @@ sub _runTranslator($$$$$$$) {
 	$out = File::Spec->rel2abs("$out");
 	
 	if (! -r "$in") {
-		printErr(formatText(_T("{}: file not found or not readable."), $in));
+		my $errmsg = formatText(_T("{}: file not found or not readable."), $in);
+		if ($failOnError) {
+			printErr($errmsg);
+		}
+		else {
+			print STDERR formatErr($errmsg);
+			return 0;
+		}
 	}
 
 	if (!exists $translators->{"$transname"} ||
@@ -944,8 +964,17 @@ sub _runTranslator($$$$$$$) {
 			if (!defined($c) && $@) {
 				my $msg = "$@";
 				$msg =~ s/(\(eval\s+[0-9]+\)\s*line\s+)([0-9]+)/$1.($2 + $lineno)."($2)"/egsi;
-				printErr(formatText(_T("Error inthe TRANSLATOR_FUNCTION of '{}':\n{}"), $transname, $msg));
+				$msg = formatText(_T("Error in the TRANSLATOR_FUNCTION of '{}':\n{}"), $transname, $msg);
+				if ($failOnError) {
+					printErr($msg);
+				}
+				else {
+					#print STDERR formatErr($msg);
+					return 0;
+				}
 			}
+			# Return the last value of the translator's script
+			return $c;
 		}
 		else {
 			#
@@ -954,7 +983,14 @@ sub _runTranslator($$$$$$$) {
 			my $wrapper;
 			eval "use AutoLaTeX::Interpreter::$interpreter; \$wrapper = AutoLaTeX::Interpreter::$interpreter->new();";
 			if (!$wrapper) {
-				printErr(formatText(_T("Cannot find an interpreter wrapper for {}: {}"), $interpreter, ($@||'')));
+				my $errmsg = formatText(_T("Cannot find an interpreter wrapper for {}: {}"), $interpreter, ($@||''));
+				if ($failOnError) {
+					printErr($errmsg);
+				}
+				else {
+					print STDERR formatErr($errmsg);
+					return 0;
+				}
 			}
 			
 			$wrapper->define_global_variable('_in', $in);
@@ -971,8 +1007,14 @@ sub _runTranslator($$$$$$$) {
 		}
 	}
 	else {
-		printErr(formatText(_T("Unable to find the method of translation for '{}'."),
-				$transname));
+		my $errmsg = formatText(_T("Unable to find the method of translation for '{}'."), $transname);
+		if ($failOnError) {
+			printErr($errmsg);
+		}
+		else {
+			print STDERR formatErr($errmsg);
+			return 0;
+		}
 	}
 
 	return 1;

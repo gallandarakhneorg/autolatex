@@ -30,8 +30,9 @@ TRANSLATOR_FUNCTION =<<EOL {
 				dirname("$in"),
 				basename("$in",@inexts).'.eps');
 	runCommandOrFail( 'dia', '--nosplash', '-t', 'eps', "--export=$epsFile", "$in" );
-	runTranslator( 'eps2pdf', "$epsFile", "$out");
+	my $transresult = runTranslator( 'eps2pdf', "$epsFile", "$out");
 	unlink("$epsFile") unless ($isepsmode);
+	$transresult;
 }
 EOL
 

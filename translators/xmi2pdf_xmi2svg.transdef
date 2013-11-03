@@ -33,8 +33,9 @@ TRANSLATOR_FUNCTION_PDF =<<EOL {
 		'xmi2svg',
 		'-o', "$svgFile",
 		"$in");
-	runTranslator( 'svg2pdf', "$svgFile", "$out");
+	my $transresult = runTranslator( 'svg2pdf', "$svgFile", "$out");
 	unlink("$svgFile");
+	$transresult;
 }
 EOL
 
@@ -46,8 +47,9 @@ TRANSLATOR_FUNCTION_PDF =<<EOL {
 		'xmi2svg',
 		'-o', "$svgFile",
 		"$in");
-	runTranslator( 'svg2pdf', "$svgFile", "$out");
+	my $transresult = runTranslator( 'svg2pdf', "$svgFile", "$out");
 	unlink("$svgFile");
+	$transresult;
 }
 EOL
 

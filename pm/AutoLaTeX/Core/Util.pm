@@ -38,12 +38,12 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '9.0';
+our $VERSION = '10.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
               &getAutoLaTeXName &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
-              &setAutoLaTeXInfo &showManual &printDbg &printErr &printWarn &setDebugLevel 
+              &setAutoLaTeXInfo &showManual &printDbg &printErr &formatErr &printWarn &setDebugLevel 
 	      &getDebugLevel &printDbgFor &dumpDbgFor &arrayIndexOf &printDbgIndent
 	      &printDbgUnindent &runCommandOrFail &runSystemCommand &runCommandOrFailFromInput
               &notifySystemCommandListeners &exitDbg &addSlashes
@@ -598,17 +598,30 @@ sub dumpDbgFor($@) {
 
 =pod
 
+=item B<formatErr(@)>
+
+format an error message. The parameters will be displayed separated by a space character.
+
+=cut
+sub formatErr(@) {
+	my $errorMessage = '';
+	my @text = makeMessage(55,0,@_);
+	foreach my $p (@text) {
+		$errorMessage .= $INTERNAL_MESSAGE_PREFIX._T("[AutoLaTeX]").' '.formatText("Error: {}","$p")."\n";
+		$INTERNAL_MESSAGE_PREFIX = '';
+	}
+	return $errorMessage;
+}
+
+=pod
+
 =item B<printErr(@)>
 
 display an error message and exit. The parameters will be displayed separated by a space character.
 
 =cut
 sub printErr(@) {
-	my @text = makeMessage(55,0,@_);
-	foreach my $p (@text) {
-		print STDERR ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), ' ', formatText("Error: {}","$p"), "\n");
-		$INTERNAL_MESSAGE_PREFIX = '';
-	}
+	print STDERR formatErr(@_);
 	exit(255);
 	undef;
 }

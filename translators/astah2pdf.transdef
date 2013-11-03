@@ -117,16 +117,26 @@ TRANSLATOR_FUNCTION =<<EOL {
 	}
 	closedir(*OUTDIR);
 
+	my $transresult = 0;
+
 	# Move the generated files
 	if (@generatedFiles>1) {
 		my $template = File::Spec->catfile(
 					dirname($out),
 					basename($out,$outext)).'_';
+		my $transresult = 0;
 		foreach my $file (@generatedFiles) {
 			my $bn = basename($file,'.svg');
 			$bn =~ s/\s+/_/sg;
 			$bn = "$template$bn$outext";
-			runTranslator( 'svg2pdf', "$file", "$bn");
+			my $result = runTranslator( 'svg2pdf', "$file", "$bn", 0);
+			print "RESULT=$result\n";
+			if ($result) {
+				$transresult = 1;
+			}
+		}
+		if (!$transresult) {
+			printErr("No file generated.");
 		}
 	}
 	elsif (@generatedFiles) {
@@ -140,6 +150,8 @@ TRANSLATOR_FUNCTION =<<EOL {
 	if ( -d "$astahOutputDir" ) {
 		remove_tree("$astahOutputDir") or printErr("$astahOutputDir: $!");
 	}
+
+	1;
 }
 EOL
 
