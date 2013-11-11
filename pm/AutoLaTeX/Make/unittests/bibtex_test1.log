@@ -1,0 +1,41 @@
+This is BibTeX, Version 0.99c (TeX Live 2009/Debian)
+The top-level auxiliary file: /home/gbasso/Documents/Dropbox/Smart Grids/Articles/these-gillian/Main.aux
+Case mismatch error between cite keys Busoniu2010 and busoniu2010
+---line 315 of file /home/gbasso/Documents/Dropbox/Smart Grids/Articles/these-gillian/Main.aux
+ : \citation{Busoniu2010
+ :                      }
+I'm skipping whatever remains of this command
+Case mismatch error between cite keys Busoniu2010 and busoniu2010
+---line 320 of file /home/gbasso/Documents/Dropbox/Smart Grids/Articles/these-gillian/Main.aux
+ : \citation{Busoniu2010
+ :                      }
+I'm skipping whatever remains of this command
+The style file: apalike.bst
+Database file #1: publi.bib
+Warning--entry type for "oai:CiteSeerPSU:409610" isn't style-file defined
+--line 1105 of file publi.bib
+A bad cross reference---entry "DBLP:conf/holomas/CossentinoGGHK07"
+refers to entry "DBLP:conf/holomas/2007", which doesn't exist
+A bad cross reference---entry "conf/saso/WolfH07"
+refers to entry "conf/saso/2007", which doesn't exist
+Warning--I didn't find a database entry for "DBLP:conf/holomas/2007"
+Warning--I didn't find a database entry for "conf/saso/2007"
+Warning--to sort, need author or key in APERC2000
+Warning--to sort, need author or key in ERC
+Warning--to sort, need author or key in 5154067
+Warning--to sort, need author or key in CEER2012
+Warning--empty author in APERC2000
+Warning--empty author in ERC
+Warning--empty author in 5154067
+Warning--empty author in CEER2012
+Warning--can't use both author and editor fields in NREL2006
+Warning--empty institution in fipaOnto
+Warning--empty publisher in Gellings2008
+Warning--empty journal in Ecologie2013
+Warning--there's a number but no volume in eswa12
+Warning--can't use both author and editor fields in momoh2012smart
+Warning--there's a number but no volume in unitCommitment
+Warning--empty institution in sgmm
+Warning--there's a number but no volume in Akkermans1996
+(There were 4 error messages)
+

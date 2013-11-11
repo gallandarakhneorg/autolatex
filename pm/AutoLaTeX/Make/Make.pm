@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '19.0';
+our $VERSION = '20.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -1448,27 +1448,57 @@ sub __build_bbl($$$) : method {
 			printDbg(formatText(_T('{}: {}'), 'BIBTEX', basename($auxFile))); 
 			my $retcode = runCommandRedirectToInternalLogs(
 					@{$self->{'bibtex_cmd'}}, "$auxFile");
+
+##############################################################
+# Uncomment the following lines for testing the log analyzer #
+##############################################################
+#use File::Copy;
+#my $unittest_log = File::Spec->catfile(dirname(__FILE__), "unittests", "bibtex_test1.log");
+#copy($unittest_log, 'autolatex_exec_stdout.log') or printErr("$unittest_log: $!");
+#$retcode = 255;
+##############################################################
+
 			# Output the log from the bibliography tool
 			if ($retcode!=0) {
 				printDbg(formatText(_T("{}: Error when processing {}"), 'BIBTEX', basename($auxFile)));
 				local *INFILE;
 				open(*INFILE, "<autolatex_exec_stdout.log") or printErr("autolatex_exec_stdout.log: $!");
-				my $linenumber = 0;
+				my %currentError = ();
+				my $previousline = '';
 				while (my $line = <INFILE>) {
-					if ($linenumber>0) {
-						if ($line =~ /^\s*\:/) {
-							print STDERR "$line";
+					if (%currentError) {
+						if ($line =~ /^\s*:\s*(.*?)\s*$/) {
+							$currentError{'message'} .= " $1";
 						}
 						else {
-							$linenumber = 0;
+							print STDERR $currentError{'filename'}.':'.$currentError{'lineno'}.': '.$currentError{'message'}."\n";
+							%currentError = ();
 						}
 					}
 					elsif ($line =~ /^\s*(.*?)\s*\-\-\-line\s+([0-9]+)\s+of\s+file\s+(.*?)\s*$/i) {
-						(my $message, $linenumber, my $filename) = ($1, $2, $3);
-						print STDERR "$filename:$linenumber: $message\n";
+						my ($message, $linenumber, $filename) = ($1, $2, $3);
+						if (!$message) {
+							$message = $previousline;
+							$message =~ s/^\s+//s;
+							$message =~ s/\s+$//s;
+						}
+						%currentError = (
+							'filename' => $filename,
+							'lineno' => $linenumber,
+							'message' => $message,
+						);
+						$previousline = '';
+					}
+					else {
+						$previousline = $line;
+						%currentError = ();
 					}
 				}
 				close(*INFILE);
+				if (%currentError) {
+					print STDERR $currentError{'filename'}.':'.
+						$currentError{'lineno'}.': '.$currentError{'message'}."\n";
+				}
 				exit(255);
 			}
 			else {
