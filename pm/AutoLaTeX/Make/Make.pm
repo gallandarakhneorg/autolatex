@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '20.0';
+our $VERSION = '21.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -635,7 +635,7 @@ sub runLaTeX($;$) : method {
 ##############################################################
 # Uncomment the following lines for testing the log analyzer #
 ##############################################################
-#my @unittests = ('test1','test2','test3','test4','test5','test6');
+#my @unittests = ('test1','test2','test3','test4','test5','test6','test7');
 #$exitcode = 255;
 ##############################################################
 
@@ -649,6 +649,7 @@ sub runLaTeX($;$) : method {
 #		use File::Copy;
 #		my $unittest_log = File::Spec->catfile(dirname(__FILE__), "unittests", "$unittest.log");
 #		copy($unittest_log, $logFile) or printErr("$unittest_log: $!");
+#		printDbg(formatText("**** TESTING LOG FILE FROM {}", basename($unittest_log)));
 #	}
 ##############################################################
 			printDbg(formatText(_T("{}: Error when processing {}"), 'PDFLATEX', basename($file)));
@@ -780,6 +781,17 @@ sub runLaTeX($;$) : method {
 
 			# Display the message
 			if ($extracted_message) {
+
+				# Test if the message is an emergency stop
+				if ($extracted_message =~ /^.*?:[0-9]+:\s*emergency\s+stop\./i) {
+					foreach my $block (@log_blocks) {
+						if ($block =~ /^\s*!\s*(.*?)\s*$/s) {
+							my $errmsg = "$1";
+							$extracted_message .= "\n$errmsg";
+						}
+					}
+				}
+
 				printDbg(formatText(_T("{}: The first error found in the log file is:"), 'PDFLATEX'));
 				print STDERR "$extracted_message\n";
 				printDbg(formatText(_T("{}: End of error log."), 'PDFLATEX'));
