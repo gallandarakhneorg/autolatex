@@ -130,7 +130,6 @@ TRANSLATOR_FUNCTION =<<EOL {
 			$bn =~ s/\s+/_/sg;
 			$bn = "$template$bn$outext";
 			my $result = runTranslator( 'svg2pdf', "$file", "$bn", 0);
-			print "RESULT=$result\n";
 			if ($result) {
 				$transresult = 1;
 			}
