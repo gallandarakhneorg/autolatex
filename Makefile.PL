@@ -523,14 +523,14 @@ sub DO_compile(\%) {
 			getFiles('python','utils','*'));
 		installInto(
 			$sublime_tmp,
-			getFiles('plugins','sublime-text-2','autolatex','*'));		
+			getFiles('plugins','sublime-text-2','*'));		
 		installInto(
 			File::Spec->catfile($sublime_tmp, 'utils'),
-			getFiles('plugins','sublime-text-2','autolatex','utils','*'));
+			getFiles('plugins','sublime-text-2','utils','*'));
 		chdir($sublime_root_tmp) or die("$sublime_root_tmp: $!\n");
 		my $zip = Archive::Zip->new();
 		local *DIR;
-		my @dirs = ( 'autolatex' );
+		my @dirs = ( basename($sublime_tmp) );
 		while (@dirs) {
 			my $dir = shift @dirs;
 			print "adding $dir...\n";
