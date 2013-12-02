@@ -25,24 +25,6 @@ INPUT_EXTENSIONS = .svg .svgz
 OUTPUT_EXTENSIONS for pdf = .pdf
 OUTPUT_EXTENSIONS for eps = .eps
 
-TRANSLATOR_FUNCTION =<<EOL {
-	# Compute the name of the EPS file
-	my $epsfile = File::Spec->catfile(
-			dirname("$in"),
-			basename("$in", '.svg').'.eps');
-	# Generation of the EPS from SVG
-	runCommandOrFail(
-		'inkscape',
-		'--without-gui',
-		'--export-area-page',
-		'--export-eps',
-		"$epsfile",
-		"$in");
-	# Generation of the PDF from the EPS
-	my $transresult = runTranslator('eps2pdf', "$epsfile", "$out");
-	# Remove temp file
-	unlink("$epsfile") unless ($isepsmode);
-	$transresult;
-}
-EOL
+COMMAND_LINE for pdf = inkscape --without-gui --export-area-page --export-pdf "$out" "$in"
+COMMAND_LINE for eps = inkscape --without-gui --export-area-page --export-eps "$out" "$in"
 
