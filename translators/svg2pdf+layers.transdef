@@ -50,8 +50,12 @@ TRANSLATOR_FUNCTION =<<EOL {
 	foreach my $rootElement (@$tree) {
 		if ($rootElement->{'Kids'}) {
 			my $width = $rootElement->{'width'} || 0;
+			# Clamp the value to avoid LaTex failures
 			if ($width<=0) {
 				$width = 100;
+			}
+			elsif ($width>1000) {
+				$width = 1000;
 			}
 			foreach my $kidElement (@{$rootElement->{'Kids'}}) {
 				my $className = blessed($kidElement);
@@ -59,25 +63,29 @@ TRANSLATOR_FUNCTION =<<EOL {
 				    && ($kidElement->{'style'}||'') ne "display:none") {
 					my $id = $kidElement->{'id'};
 					my $label = $kidElement->{'inkscape:label'};
+					printDbgFor(3, formatText(_T("Found layer: id={}, label={}"), @{toUTF8($id, $label)}));
 					my $overlay_spec = $layerIndex;
 					if ($label && $label =~ /<\s*(.+)\s*>/s) {
 						$overlay_spec = $1;
 					}
+					my $outputbasename = basename($out, $ext1)."_$id";
 					my $figureFile = File::Spec->catfile(
 								dirname($out),
-								basename($out, $ext1)."_$id$ext2");
+								"$outputbasename$ext2");
+					printDbgFor(4, formatText(_T("Overlay spec: <{}>"), @{toUTF8($overlay_spec)}));
+					printDbgFor(4, formatText(_T("Output: {}"), $figureFile));
 
 					runCommandOrFail(
 						'inkscape',
 						'--without-gui',
-						'--export-area-page',
 						'--export-id', "$id",
 						'--export-id-only',
+						'--export-area-page',
 						$opt,
 						"$figureFile",
 						"--file=$in");
 
-					$imageinclusions .= "\\node<$overlay_spec> (X) {\\includegraphics[width=${width}em]{$figureFile}};%\n";
+					$imageinclusions .= "\\node<$overlay_spec> (X) {\\includegraphics[width=${width}em]{$outputbasename}};%\n";
 					$layerIndex++;
 				}
 			}

@@ -51,10 +51,6 @@ TRANSLATOR_FUNCTION =<<EOL {
 
 	foreach my $rootElement (@$tree) {
 		if ($rootElement->{'Kids'}) {
-			my $width = $rootElement->{'width'} || 0;
-			if ($width<=0) {
-				$width = 100;
-			}
 			foreach my $kidElement (@{$rootElement->{'Kids'}}) {
 				my $className = blessed($kidElement);
 				if ($className eq 'autolatex::g'
@@ -65,9 +61,10 @@ TRANSLATOR_FUNCTION =<<EOL {
 					if ($label && $label =~ /<\s*(.+)\s*>/s) {
 						$overlay_spec = $1;
 					}
+					my $outputbasename = basename($out, $ext1)."_$id";
 					my $figureFile = File::Spec->catfile(
 								dirname($out),
-								basename($out, $ext1)."_$id$ext2");
+								"$outputbasename$ext2");
 
 					runCommandOrFail(
 						'inkscape',
@@ -82,7 +79,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 
 					my $texFile = File::Spec->catfile(
 								dirname($out),
-								basename($out, $ext1)."_$id$ext3");
+								"$outputbasename$ext3");
 
 					$imageinclusions .= "\\node<$overlay_spec> (X) {\\input{$texFile}};%\n";
 					$layerIndex++;
