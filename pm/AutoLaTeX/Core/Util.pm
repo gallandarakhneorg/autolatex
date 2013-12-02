@@ -38,7 +38,7 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '10.0';
+our $VERSION = '11.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
@@ -51,7 +51,7 @@ our $VERSION = '10.0';
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
 	      &runCommandSilently &removePathPrefix &trim &trim_ws &formatText
 	      &makeMessage &makeMessageLong &secure_unlink &str2language
-	      &killSubProcesses ) ;
+	      &killSubProcesses &toANSI &toUTF8 ) ;
 @EXPORT_OK = qw( $INTERNAL_MESSAGE_PREFIX );
 
 require 5.014;
@@ -78,6 +78,60 @@ my $lastListenerCheck = 0;
 
 # Array of launched subprocesses
 my %launchedSubProcesses = ();
+
+=pod
+
+=item B<toANSI(@)>
+
+Convert the given elements from UTF-8 to ANSI.
+
+I<Returns:> the array that contains the convertion result.
+
+=cut
+sub toANSI(@) {
+	my @result = ();
+	foreach my $e (@_) {
+		if (utf8::is_utf8($e)) {
+			my $ne = "$e";
+			utf8::downgrade($ne);
+			push @result, $ne;
+		}
+		else {
+			push @result, $e;
+		}
+	}
+	if (wantarray) {
+		return @result;
+	}
+	return \@result;
+}
+
+=pod
+
+=item B<toUTF8(@)>
+
+Convert the given elements from ANSI to UTF8.
+
+I<Returns:> the array that contains the convertion result.
+
+=cut
+sub toUTF8(@) {
+	my @result = ();
+	foreach my $e (@_) {
+		if (utf8::is_utf8($e)) {
+			push @result, $e;
+		}
+		else {
+			my $ne = "$e";
+			utf8::upgrade($ne);
+			push @result, $ne;
+		}
+	}
+	if (wantarray) {
+		return @result;
+	}
+	return \@result;
+}
 
 =pod
 
@@ -672,7 +726,8 @@ sub runCommandOrFailRedirectTo($@) {
 		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
 		select STDERR; $| = 1;  # make unbuffered
 		select STDOUT; $| = 1;  # make unbuffered
-		exec(@_);
+		my @t = toANSI(@_);
+		exec(@t);
 	}
 	elsif (defined($pid)) {
 		# Parent process
@@ -729,7 +784,8 @@ sub runCommandRedirectToInternalLogs(@) {
 		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
 		select STDERR; $| = 1;  # make unbuffered
 		select STDOUT; $| = 1;  # make unbuffered
-		exec(@_);
+		my @t = toANSI(@_);
+		exec(@t);
 	}
 	elsif (defined($pid)) {
 		# Parent process
@@ -774,7 +830,8 @@ sub runCommandOrFail(@) {
 		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
 		select STDERR; $| = 1;  # make unbuffered
 		select STDOUT; $| = 1;  # make unbuffered
-		exec(@_);
+		my @t = toANSI(@_);
+		exec(@t);
 	}
 	elsif (defined($pid)) {
 		# Parent process
@@ -855,7 +912,8 @@ sub runCommandOrFailFromInput($@) {
 		open(STDERR, '>', "autolatex_exec_stderr.log") or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
 		select STDERR; $| = 1;  # make unbuffered
 		select STDOUT; $| = 1;  # make unbuffered
-		exec(@_);
+		my @t = toANSI(@_);
+		exec(@t);
 	}
 	elsif (defined($pid)) {
 		# Parent process
@@ -948,7 +1006,8 @@ sub runCommandSilently(@) {
 		open(STDERR, '>', File::Spec->devnull()) or printErr(formatText(_T("Can't redirect STDERR: {}"), $!));
 		select STDERR; $| = 1;  # make unbuffered
 		select STDOUT; $| = 1;  # make unbuffered
-		exec(@_);
+		my @t = toANSI(@_);
+		exec(@t);
 	}
 	elsif (defined($pid)) {
 		# Parent process
@@ -989,7 +1048,8 @@ sub runSystemCommand($@) {
 	my $pid = fork();
 	if ($pid == 0) {
 		# Child process
-		exec(@_);
+		my @t = toANSI(@_);
+		exec(@t);
 	}
 	elsif (defined($pid)) {
 		# Parent process
