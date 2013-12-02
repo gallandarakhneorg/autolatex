@@ -1050,7 +1050,7 @@ TeX part:
 
 =back
 
-=item B<Scalable Vector Graphic avec claques (svg) vers TeX dans des calques Beamer>
+=item B<Scalable Vector Graphic avec calques (svg) vers TeX dans des calques Beamer>
 
 PDF part:
 
