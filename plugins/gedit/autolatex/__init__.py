@@ -113,33 +113,32 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 	self._document_actions.set_visible(isInTeXContext)
 	self._texsensitive_actions.set_visible(isInTeXContext)
 	self._general_actions.set_visible(isInTeXContext)
-	# Test if the current document is inside a TeX context.
-	if isInTeXContext:
-		if directory:
-			cfgFile = utils.get_autolatex_document_config_file(directory)
-			hasDocConfFile = os.path.exists(cfgFile)
-		else:
-			hasDocConfFile = False
-		hasUserConfFile = os.path.exists(utils.get_autolatex_user_config_file())
-		# Change the sensitivity
-		if self._document_actions:
-		    self._document_actions.set_sensitive(hasAutoLaTeXDocument
-				and not self._compilation_under_progress)
-		if self._texsensitive_actions:
-		    self._texsensitive_actions.set_sensitive(hasTeXDocument
-				and not self._compilation_under_progress)
-		if self._docconfsensitive_actions:
-		    self._docconfsensitive_actions.set_sensitive(hasDocConfFile
-				and not self._compilation_under_progress)
-		if self._userconfsensitive_actions:
-		    self._userconfsensitive_actions.set_sensitive(hasUserConfFile
-				and not self._compilation_under_progress)
-		action = self._document_actions.get_action('AutoLaTeXNextError')
-		assert action is not None
-		action.set_sensitive(self._latex_console.has_next_error())
-		action = self._document_actions.get_action('AutoLaTeXPreviousError')
-		assert action is not None
-		action.set_sensitive(self._latex_console.has_previous_error())
+
+	if directory:
+		cfgFile = utils.get_autolatex_document_config_file(directory)
+		hasDocConfFile = os.path.exists(cfgFile)
+	else:
+		hasDocConfFile = False
+	hasUserConfFile = os.path.exists(utils.get_autolatex_user_config_file())
+	# Change the sensitivity
+	if self._document_actions:
+	    self._document_actions.set_sensitive(hasAutoLaTeXDocument
+			and not self._compilation_under_progress)
+	if self._texsensitive_actions:
+	    self._texsensitive_actions.set_sensitive(hasTeXDocument
+			and not self._compilation_under_progress)
+	if self._docconfsensitive_actions:
+	    self._docconfsensitive_actions.set_sensitive(hasDocConfFile
+			and not self._compilation_under_progress)
+	if self._userconfsensitive_actions:
+	    self._userconfsensitive_actions.set_sensitive(hasUserConfFile
+			and not self._compilation_under_progress)
+	action = self._document_actions.get_action('AutoLaTeXNextError')
+	assert action is not None
+	action.set_sensitive(self._latex_console.has_next_error())
+	action = self._document_actions.get_action('AutoLaTeXPreviousError')
+	assert action is not None
+	action.set_sensitive(self._latex_console.has_previous_error())
 		
     def _open_latex_console(self, set_visible=True):
 	bottom_panel = self.window.get_bottom_panel()
@@ -172,7 +171,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 			_T("LaTeX warnings were found. Please open the bottom panel to see them."))
 	# Update the sensitivities of the Widgets
 	self._compilation_under_progress = not valid
-	self.do_update_state()    
+	GObject.idle_add(self.do_update_state())
 
     # Load an icon from the AutoLaTeX package
     def _get_icon(self, icon):
