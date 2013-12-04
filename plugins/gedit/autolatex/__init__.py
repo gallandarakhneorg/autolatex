@@ -171,7 +171,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 			_T("LaTeX warnings were found. Please open the bottom panel to see them."))
 	# Update the sensitivities of the Widgets
 	self._compilation_under_progress = not valid
-	GObject.idle_add(self.do_update_state())
+	GObject.idle_add(self.do_update_state)
 
     # Load an icon from the AutoLaTeX package
     def _get_icon(self, icon):
