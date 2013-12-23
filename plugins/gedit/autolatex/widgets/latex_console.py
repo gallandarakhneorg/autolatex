@@ -93,7 +93,10 @@ class Console(Gtk.ScrolledWindow):
 		# Reset attributes
 		self._latex_parser = None
 		self._current_error = -1
-		self._document_directory = Gio.File.new_for_path(document_directory)
+		if (document_directory is None):
+			self._document_directory = None;
+		else:
+			self._document_directory = Gio.File.new_for_path(document_directory)
 		# Clear the list
 		self._messages.clear()
 		# Add the errors in the log
@@ -266,7 +269,7 @@ class Console(Gtk.ScrolledWindow):
 				elif wcode == 'W3':
 					self._replace_by_undefined_citation_warnings(list_iter, filename)
 					return True
-			elif filename:
+			elif filename and self._document_directory:
 				linenumber = row[3]
 				filename = self._document_directory.resolve_relative_path(filename)
 				linenumber = linenumber if linenumber>=1 else 1
