@@ -59,6 +59,7 @@ sub analyzeCommandLineOptions(\%) {
 	printDbg(_T("Reading command line options"));
 
 	my $realcfg = $_[0];
+	$_[0]->{'__private__'}{'CLI.warning level'} = 1;
 	$_[0]->{'__private__'}{'config.command line'} = {};
 	my $cfg = \%{$_[0]->{'__private__'}{'config.command line'}};
 	my $debugLevel = getDebugLevel();
@@ -215,6 +216,16 @@ sub analyzeCommandLineOptions(\%) {
 						$cfg->{'viewer.viewer'} = $_[1];
 					}
 				},
+
+		'W' => sub {
+				$realcfg->{'__private__'}{'CLI.warning level'}++;
+			},
+		'Wall' => sub {
+				$realcfg->{'__private__'}{'CLI.warning level'} = 2;
+			},
+		'Wnone' => sub {
+				$realcfg->{'__private__'}{'CLI.warning level'} = 0;
+			},
 
 		)) {
 	  exit(255);

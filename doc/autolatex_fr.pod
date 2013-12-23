@@ -1,4 +1,5 @@
 =encoding UTF-8
+
 =head1 NAME
 
 autolatex - Compilers des documents TeX
@@ -431,6 +432,16 @@ processus de génération du document. La ligne de commande permettant
 de lancer le visualisateur peut être spécifiée par F<fichier>.
 Si cette valeur n'est pas donnée, AutoLaTeX essyera de lancer
 les outils F<acroread>, F<kpdf>, F<evince>, F<gv>, et F<xpdf>.
+
+=item B<-W>
+
+=item B<--Wall>
+
+=item B<--Wnone>
+
+Sélectionne les avertissements qui seront affichés : B<--Wall> pour tous,
+B<--Wnone> pour aucun, et B<-W> pour augmenter le niveau d'avertissement.
+B<-W> est la configuration par défaut utilisée par AutoLaTeX.
 
 =item B<--xelatex>
 

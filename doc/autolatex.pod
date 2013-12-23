@@ -1,3 +1,5 @@
+=encoding UTF-8
+
 =head1 NAME
 
 autolatex - compile TeX documents
@@ -429,6 +431,16 @@ the compilation. The path of the document viewer could
 be specify with F<file>. If not specified, AutoLaTeX
 will check for the tools F<acroread>, F<kpdf>,
 F<evince>, F<gv>, and F<xpdf>.
+
+=item B<-W>
+
+=item B<--Wall>
+
+=item B<--Wnone>
+
+Select the warnings that should be output: B<--Wall> for all,
+B<--Wnone> for none, and B<-W> to increment the output level.
+B<-W> is the default configuration used by AutoLaTeX.
 
 =item B<--xelatex>
 
