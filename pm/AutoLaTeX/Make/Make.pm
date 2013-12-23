@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '21.0';
+our $VERSION = '22.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -211,6 +211,13 @@ sub newEntry($$) {
 	return $e;
 }
 
+sub _printWarning($$$$) : method {
+	my $filename = shift;
+	my $extension = shift;
+	my $line = shift;
+	my $message = shift;
+}
+
 #------------------------------------------------------
 #
 # Constructor
@@ -234,6 +241,7 @@ sub new(\%) : method {
 			'is_extended_warning_enable' => 0,
 			'is_biblio_enable' => 1,
 			'is_makeindex_enable' => 1,
+			'warning_level' => 1,
 			'generation_type' => 'pdf',
 			'latex_cmd' => [],
 			'bibtex_cmd' => [],
@@ -283,8 +291,14 @@ sub new(\%) : method {
 		push @{$self->{'latex_flags'}}, @params;
 	}
 
+	# Change the warning level
+	if (defined($_[0]->{'__private__'}{'CLI.warning level'})) {
+		$self->{'warning_level'} = int($_[0]->{'__private__'}{'CLI.warning level'});
+	}
+
 	# Support of extended warnings
-	if ($_[0]->{'__private__'}{'CLI.is extended tex warnings'} && $def->{'ewarnings'}) {
+	if (($_[0]->{'__private__'}{'CLI.is extended tex warnings'} || ($self->{'warning_level'}>1))
+	    && $def->{'ewarnings'}) {
 		my $code = $def->{'ewarnings'} || '';
 		$code =~ s/^\s+//gm;
 		$code =~ s/\s+$//gm;
@@ -831,14 +845,24 @@ sub runLaTeX($;$) : method {
 	return 0;
 }
 
+sub _printWarning($$$$) {
+	my $filename = shift;
+	my $extension = shift;
+	my $line = shift;
+	my $message = shift;
+	print STDERR "!$filename:$line: $message\n";
+}
+
 sub _testLaTeXWarningInFile($$$) : method {
 	my $self = shift;
 	my $logFile = shift;
 	my $continueToCompile = shift;
 	my $enableLoop = shift;
 	my $line;
+	my $warning = 0;
 	open(*LOGFILE, "< $logFile") or printErr("$logFile: $!");
 	my $lastline = '';
+	my $current_log_block = '';
 	while (!$continueToCompile && ($line = <LOGFILE>)) {
 		$lastline .= $line;
 		if ($lastline =~ /\.\s*$/) {
@@ -847,11 +871,46 @@ sub _testLaTeXWarningInFile($$$) : method {
 			}
 			$lastline = '';
 		}
+		# Parse and output the detailled warning messages
+		if ($self->{'warning_level'}>1) {
+			if ($warning) {
+				if ($line =~ /^\Q!!!![EndWarning]\E/) {
+					if ($current_log_block =~ /^(.*?):([^:]*):([0-9]+):\s*(.*?)\s*$/) {
+						my ($filename, $extension, $line, $message) = ($1, $2, $3, $4);
+						_printWarning($filename, $extension, $line, $message);
+					}
+					$warning = 0;
+					$current_log_block = '';
+				}
+				else {
+					my $l = $line;
+					if ($l !~ /\.\n+$/) {
+						$l =~ s/\s+//;
+					}
+					$current_log_block .= $l;
+				}
+			}
+			elsif ($line =~ /^\Q!!!![BeginWarning]\E(.*)$/) {
+				my $l = "$1";
+				if ($l !~ /\.\n+$/) {
+					$l =~ s/\s+//;
+				}
+				$current_log_block = $l;
+				$warning = 1;
+			}
+		}
 	}
 	if ($lastline =~ /\.\s*$/ && $self->_testLaTeXWarningOn($lastline)) {
 		$continueToCompile = $enableLoop;
 	}
 	close(*LOGFILE);
+	# Output the detailled wanring message that was not already output
+	if ($warning && $current_log_block) {
+		if ($current_log_block =~ /^(.*?):([^:]*):([0-9]+):\s*(.*?)\s*$/) {
+			my ($filename, $extension, $line, $message) = ($1, $2, $3, $4);
+						_printWarning($filename, $extension, $line, $message);
+		}
+	}
 	$self->{'warnings'}{'done'} = 1;
 	return ($continueToCompile,$enableLoop);
 }
@@ -859,6 +918,7 @@ sub _testLaTeXWarningInFile($$$) : method {
 sub _testLaTeXWarningOn($) : method {
 	my $self = shift;
 	my $line = shift;
+	my $oline = "$line";
 	$line =~ s/[\n\r\t \f]+//g;
 	if ($line =~ /Warning.*re\-?run\s/i) {
 		return 1;
@@ -872,7 +932,7 @@ sub _testLaTeXWarningOn($) : method {
 	elsif ($line =~ /Warning:Thereweremultiply\-definedlabels/i) {
 		$self->{'warnings'}{'multiple_definition'} = 1;
 	}
-	elsif ($line =~ /Warning/i) {
+	elsif ($line =~ /Warning/im) {
 		$self->{'warnings'}{'other_warning'} = 1;
 	}
 	return 0;
@@ -981,40 +1041,42 @@ sub build(;$) : method {
 		}
 
 		# Output the last LaTeX warning indicators.
-		if ($self->{'warnings'}{'multiple_definition'}) {
-			my $s = _T("LaTeX Warning: There were multiply-defined labels.\n");
-			if ($self->{'is_extended_warning_enable'}) {
-				print STDERR "!!$logFile:W1: $s";
+		if ($self->{'warning_level'}>0) {
+			if ($self->{'warnings'}{'multiple_definition'}) {
+				my $s = _T("LaTeX Warning: There were multiply-defined labels.\n");
+				if ($self->{'is_extended_warning_enable'}) {
+					print STDERR "!!$logFile:W1: $s";
+				}
+				else {
+					print STDERR "$s";
+				}
 			}
-			else {
-				print STDERR "$s";
+			if ($self->{'warnings'}{'undefined_reference'}) {
+				my $s = _T("LaTeX Warning: There were undefined references.\n");
+				if ($self->{'is_extended_warning_enable'}) {
+					print STDERR "!!$logFile:W2: $s";
+				}
+				else {
+					print STDERR "$s";
+				}
 			}
-		}
-		if ($self->{'warnings'}{'undefined_reference'}) {
-			my $s = _T("LaTeX Warning: There were undefined references.\n");
-			if ($self->{'is_extended_warning_enable'}) {
-				print STDERR "!!$logFile:W2: $s";
+			if ($self->{'warnings'}{'undefined_citation'}) {
+				my $s = _T("LaTeX Warning: There were undefined citations.\n");
+				if ($self->{'is_extended_warning_enable'}) {
+					print STDERR "!!$logFile:W3: $s";
+				}
+				else {
+					print STDERR "$s";
+				}
 			}
-			else {
-				print STDERR "$s";
+			if ($self->{'warnings'}{'other_warning'}) {
+				my $texFile = $rootFile;
+				if ($self->{'files'}{$rootFile}{'mainFile'}) {
+					$texFile = $self->{'files'}{$rootFile}{'mainFile'};
+				}
+				print STDERR formatText(_T("LaTeX Warning: Please look inside {} for the other the warning messages.\n"),
+						basename($logFile));
 			}
-		}
-		if ($self->{'warnings'}{'undefined_citation'}) {
-			my $s = _T("LaTeX Warning: There were undefined citations.\n");
-			if ($self->{'is_extended_warning_enable'}) {
-				print STDERR "!!$logFile:W3: $s";
-			}
-			else {
-				print STDERR "$s";
-			}
-		}
-		if ($self->{'warnings'}{'other_warning'}) {
-			my $texFile = $rootFile;
-			if ($self->{'files'}{$rootFile}{'mainFile'}) {
-				$texFile = $self->{'files'}{$rootFile}{'mainFile'};
-			}
-			print STDERR formatText(_T("LaTeX Warning: Please look inside {} for the other the warning messages.\n"),
-					basename($logFile));
 		}
 
 		if ($progress) {
