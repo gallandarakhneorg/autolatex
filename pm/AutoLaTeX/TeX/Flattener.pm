@@ -297,11 +297,16 @@ sub _findPicture($) {
 			if (@selectedName1) {
 				($texname, $filename) = @selectedName1;
 				printDbg(formatText(_T('Embedding {}'), $filename));
+				my $filecontent = readFileLines("$filename");
+				# Replacing the filename in the TeX file
+				while (my ($localFile, $texfile) = each(%{$self->{'data'}{'figures'}})) {
+					$filecontent =~ s/\Q$localFile\E/$texfile/g;
+				}
 				$prefix .="%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
 				       "%%% BEGIN FILE: ".basename($texname)."\n".
 				       "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
 					"\\begin{filecontents*}{".basename($texname)."}\n".
-					readFileLines("$filename").
+					$filecontent.
 					"\\end{filecontents*}\n".
 					"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n\n";
 				$self->{'preamble'}{'filecontents'} = "\\usepackage{filecontents}";
