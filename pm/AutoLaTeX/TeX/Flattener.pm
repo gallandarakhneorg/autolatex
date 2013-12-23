@@ -40,7 +40,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::Flattener;
 
-$VERSION = '6.0';
+$VERSION = '7.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &flattenTeX ) ;
 @EXPORT_OK = qw();
@@ -130,6 +130,19 @@ sub flattenTeX($$\@$) {
 
 	$parser->parse( $content );
 
+	# Replace PREAMBLE content
+	if ($listener->{'data'}{'expandedContent'}) {
+		my $preamble = '';
+		foreach my $entry (values %{$listener->{'preamble'}}) {
+			if ($preamble) {
+				$preamble .= "\n";
+			}
+			$preamble .= $entry;
+		}
+		$listener->{'data'}{'expandedContent'} =~ s/\Q%%%%% AUTOLATEX PREAMBLE\E/$preamble/;
+	}
+
+	# Create the main TeX file
 	my $outputFile = File::Spec->catfile($output, basename($input));
 	printDbg(formatText(_T('Writing {}'), basename($outputFile)));
 	writeFileLines($outputFile, $listener->{'data'}{'expandedContent'});
@@ -202,14 +215,14 @@ sub _uniq($$) {
 sub _findPicture($) {
 	my $self = shift;
 	my $texname = shift;
-
+	my $prefix = '';
 	my $filename = $self->_makeFilename($texname,'');
+	my @texexts = ('.pdftex_t','.pstex_t','.pdf_tex','.ps_tex','.tex');
 	if (!-f $filename) {
-		my $ofilename = $filename;
 		my @figexts = (	'.pdf', '.eps', '.ps',
 				'.png', '.jpeg', '.jpg', '.gif', '.bmp');
-		my @priorexts = (	'.pdftex_t','.pstex_t','.pdf_tex','.ps_tex');
-		my @exts = (@figexts,@priorexts);
+		my @exts = (@figexts,@texexts);
+		my $ofilename = $filename;
 
 		# Search if the registered images
 		my $template = basename($filename, @exts);
@@ -220,8 +233,16 @@ sub _findPicture($) {
 				my $path = $self->{'includepaths'}[$k];
 				for(my $j=0; $j<@{$self->{'images'}}; $j++)  {
 					my $img = $self->{'images'}[$j];
-					for(my $i=0; $i<@exts; $i++)  {
-						$ext = $exts[$i];
+					for(my $i=0; $i<@figexts; $i++)  {
+						$ext = $figexts[$i];
+						my $fullname = File::Spec->catfile($path,"$template$ext");
+						$fullname = $self->_makeFilename($fullname,'');
+						if (-f $fullname) {
+							$filenames{$fullname} = 0;
+						}
+					}
+					for(my $i=0; $i<@texexts; $i++)  {
+						$ext = $texexts[$i];
 						my $fullname = File::Spec->catfile($path,"$template$ext");
 						$fullname = $self->_makeFilename($fullname,'');
 						if (-f $fullname) {
@@ -236,8 +257,15 @@ sub _findPicture($) {
 			# Search in the folder, from the document directory.
 			$template = File::Spec->catfile(dirname($ofilename), basename($ofilename, @exts));
 			my $ext;
-			for(my $i=0; $i<@exts; $i++)  {
-				$ext = $exts[$i];
+			for(my $i=0; $i<@figexts; $i++)  {
+				$ext = $figexts[$i];
+				my $fn = "$template$ext";
+				if (-f $fn) {
+					$filenames{$fn} = 0;
+				}
+			}
+			for(my $i=0; $i<@texexts; $i++)  {
+				$ext = $texexts[$i];
 				my $fn = "$template$ext";
 				if (-f $fn) {
 					$filenames{$fn} = 1;
@@ -250,24 +278,33 @@ sub _findPicture($) {
 		}
 		else {
 			my $ext;
-			my $selectedName1 = undef;
+			my @selectedName1 = ();
 			my $selectedName2 = undef;
 			foreach $filename (keys %filenames) {
 				$filename =~ /(\.[^.]+)$/s;
 				$ext = $1 || '';
 				$texname = $self->_uniq($filename, $ext).$ext;
-				$self->{'data'}{'figures'}{$filename} = $texname;
-				if (arrayContains(@priorexts,$ext)) {
-					if (!$selectedName1) {
-						$selectedName1 = $texname;
+				if ($filenames{$filename}) {
+					if (!@selectedName1) {
+						@selectedName1 = ($texname,$filename);
 					}
 				}
-				elsif (!$selectedName2) {
+				else {
+					$self->{'data'}{'figures'}{$filename} = $texname;
 					$selectedName2 = $texname;
 				}
 			}
-			if ($selectedName1) {
-				$texname = $selectedName1;
+			if (@selectedName1) {
+				($texname, $filename) = @selectedName1;
+				printDbg(formatText(_T('Embedding {}'), $filename));
+				$prefix .="%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
+				       "%%% BEGIN FILE: ".basename($texname)."\n".
+				       "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
+					"\\begin{filecontents*}{".basename($texname)."}\n".
+					readFileLines("$filename").
+					"\\end{filecontents*}\n".
+					"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n\n";
+				$self->{'preamble'}{'filecontents'} = "\\usepackage{filecontents}";
 			}
 			elsif ($selectedName2) {
 				$texname = $selectedName2;
@@ -278,10 +315,12 @@ sub _findPicture($) {
 		$texname =~ /(\.[^.]+)$/s;
 		my $ext = $1 || '';
 		$texname = $self->_uniq($filename, $ext).$ext;
-		$self->{'data'}{'figures'}{$filename} = $texname;
+		if (!arrayContains(@texexts, $ext)) {
+			$self->{'data'}{'figures'}{$filename} = $texname;
+		}
 	}
 
-	return $texname;
+	return ($texname,$prefix);
 }
 
 sub _expandMacro($$@) : method {
@@ -292,10 +331,6 @@ sub _expandMacro($$@) : method {
 	if (		$macro eq '\\usepackage' || $macro eq '\\RequirePackage') {
 		my $texname = $_[1]->{'text'};
 		my $filename = $self->_makeFilename("$texname", '.sty');
-		if ($self->_isDocumentFile($filename)) {
-			$texname = $self->_uniq($filename,'.sty');
-			$self->{'data'}{'sty'}{$filename} = "$texname.sty";
-		}
 
 		my $ret = '';
 
@@ -303,8 +338,9 @@ sub _expandMacro($$@) : method {
 			if (!$self->{'usebiblio'}) {
 				my $filename = $self->_makeFilename($self->{'basename'}, '.bbl', '.tex');
 				if (-f "$filename") {
-					$ret .="\\usepackage{filecontents}\n".
-					       "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
+					printDbg(formatText(_T('Embedding {}'), $filename));
+					$self->{'preamble'}{'filecontents'} = "\\usepackage{filecontents}";
+					$ret .="%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
 					       "%%% BEGIN FILE: ".basename($filename)."\n".
 					       "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
 						"\\begin{filecontents*}{".basename($filename)."}\n".
@@ -317,7 +353,17 @@ sub _expandMacro($$@) : method {
 				}
 			}
 		}
-
+		elsif ($self->_isDocumentFile($filename)) {
+			printDbg(formatText(_T('Embedding {}'), $filename));
+			$self->{'preamble'}{'filecontents'} = "\\usepackage{filecontents}";
+			$ret .="%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
+			       "%%% BEGIN FILE: ".basename($filename)."\n".
+			       "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n".
+				"\\begin{filecontents*}{".basename($filename)."}\n".
+				readFileLines("$filename").
+				"\\end{filecontents*}\n".
+				"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n\n";
+		}
 		$ret .= $macro;
 		$ret .= '['.$_[0]->{'text'}.']' if ($_[0]->{'text'});
 		$ret .= '{'.$texname.'}';
@@ -333,6 +379,7 @@ sub _expandMacro($$@) : method {
 		my $ret = $macro;
 		$ret .= '['.$_[0]->{'text'}.']' if ($_[0]->{'text'});
 		$ret .= '{'.$texname.'}';
+		$ret .= "\n\n%%%%% AUTOLATEX PREAMBLE\n\n";
 		return $ret;
 	}
 	elsif (		($macro eq '\\includegraphics')
@@ -340,8 +387,8 @@ sub _expandMacro($$@) : method {
 		||	($macro eq '\\includeanimatedfigurewtex')
 		||	($macro eq '\\includefigurewtex')
 		||	($macro eq '\\includegraphicswtex')) {
-		my $texname = $self->_findPicture($_[1]->{'text'});
-		my $ret = $macro;
+		my ($texname,$prefix) = $self->_findPicture($_[1]->{'text'});
+		my $ret = $prefix.$macro;
 		$ret .= '['.$_[0]->{'text'}.']' if ($_[0]->{'text'});
 		$ret .= '{'.$texname.'}';
 		return $ret;
@@ -359,8 +406,8 @@ sub _expandMacro($$@) : method {
 	}
 	elsif (		$macro eq '\\mfigure' || $macro eq '\\mfigure*' ||
 			$macro eq '\\mfiguretex' || $macro eq '\\mfiguretex*') {
-		my $texname = $self->_findPicture($_[2]->{'text'});
-		my $ret = $macro;
+		my ($texname,$prefix) = $self->_findPicture($_[2]->{'text'});
+		my $ret = $prefix.$macro;
 		$ret .= '['.$_[0]->{'text'}.']' if ($_[0]->{'text'});
 		$ret .= '{'.$_[1]->{'text'}.'}';
 		$ret .= '{'.$texname.'}';
@@ -369,8 +416,8 @@ sub _expandMacro($$@) : method {
 		return $ret;
 	}
 	elsif (		$macro eq '\\msubfigure' || $macro eq '\\msubfigure*') {
-		my $texname = $self->_findPicture($_[2]->{'text'});
-		my $ret = $macro;
+		my ($texname,$prefix) = $self->_findPicture($_[2]->{'text'});
+		my $ret = $prefix.$macro;
 		$ret .= '['.$_[0]->{'text'}.']' if ($_[0]->{'text'});
 		$ret .= '{'.$_[1]->{'text'}.'}';
 		$ret .= '{'.$texname.'}';
@@ -505,6 +552,7 @@ sub _new($$$$) : method {
 			'outputString' => \&_outputString,
 			'expandMacro' => \&_expandMacro,
 			'discoverMacroDefinition' => \&_discoverMacroDefinition,
+			'preamble' => {},
 			'data' => {
 				'figures' => {},
 				'cls' => {},
