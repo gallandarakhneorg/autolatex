@@ -40,7 +40,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::Flattener;
 
-$VERSION = '5.0';
+$VERSION = '6.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &flattenTeX ) ;
 @EXPORT_OK = qw();
@@ -66,7 +66,11 @@ my %MACROS = (
 	'usepackage'			=> '![]!{}',
 	'RequirePackage'		=> '![]!{}',
 	'documentclass'			=> '![]!{}',
+	'includeanimatedfigure'		=> '![]!{}',
+	'includeanimatedfigurewtex'	=> '![]!{}',
+	'includefigurewtex'		=> '![]!{}',
 	'includegraphics'		=> '![]!{}',
+	'includegraphicswtex'		=> '![]!{}',
 	'graphicspath'			=> '![]!{}',
 	'mfigure'			=> '![]!{}!{}!{}!{}',
 	'mfigure*'			=> '![]!{}!{}!{}!{}',
@@ -202,58 +206,80 @@ sub _findPicture($) {
 	my $filename = $self->_makeFilename($texname,'');
 	if (!-f $filename) {
 		my $ofilename = $filename;
-		my @exts = ('.pdf', '.eps', '.ps', '.png', '.jpeg', '.jpg', '.gif', '.bmp');
+		my @figexts = (	'.pdf', '.eps', '.ps',
+				'.png', '.jpeg', '.jpg', '.gif', '.bmp');
+		my @priorexts = (	'.pdftex_t','.pstex_t','.pdf_tex','.ps_tex');
+		my @exts = (@figexts,@priorexts);
 
 		# Search if the registered images
 		my $template = basename($filename, @exts);
-		$filename = '';
+		my %filenames = ();
 		if ($self->{'images'}) {
 			my $ext;
-			for(my $k=0; !$filename && $k<@{$self->{'includepaths'}}; $k++) {
+			for(my $k=0; $k<@{$self->{'includepaths'}}; $k++) {
 				my $path = $self->{'includepaths'}[$k];
-				for(my $j=0; !$filename && $j<@{$self->{'images'}}; $j++)  {
+				for(my $j=0; $j<@{$self->{'images'}}; $j++)  {
 					my $img = $self->{'images'}[$j];
-					for(my $i=0; !$filename && $i<@exts; $i++)  {
+					for(my $i=0; $i<@exts; $i++)  {
 						$ext = $exts[$i];
 						my $fullname = File::Spec->catfile($path,"$template$ext");
 						$fullname = $self->_makeFilename($fullname,'');
 						if (-f $fullname) {
-							$filename = $fullname;
+							$filenames{$fullname} = 1;
 						}
 					}
 				}
 			}
 		}
 		
-		if (!$filename) {
+		if (!%filenames) {
 			# Search in the folder, from the document directory.
 			$template = File::Spec->catfile(dirname($ofilename), basename($ofilename, @exts));
 			my $ext;
-			for(my $i=0; !$filename && $i<@exts; $i++)  {
+			for(my $i=0; $i<@exts; $i++)  {
 				$ext = $exts[$i];
-				$filename = "$template$ext";
-				if (!-f $filename) {
-					$filename = undef;
+				my $fn = "$template$ext";
+				if (-f $fn) {
+					$filenames{$fn} = 1;
 				}
 			}
 		}
 
-		if (!$filename) {
+		if (!%filenames) {
 			printErr(formatText(_T('Picture not found: {}'), $texname));
 		}
 		else {
 			my $ext;
-			$filename =~ /(\.[^.]+)$/s;
-			$ext = $1 || '';
-			$texname = $self->_uniq($filename, $ext).$ext;
+			my $selectedName1 = undef;
+			my $selectedName2 = undef;
+			foreach $filename (keys %filenames) {
+				$filename =~ /(\.[^.]+)$/s;
+				$ext = $1 || '';
+				$texname = $self->_uniq($filename, $ext).$ext;
+				$self->{'data'}{'figures'}{$filename} = $texname;
+				if (arrayContains(@priorexts,$ext)) {
+					if (!$selectedName1) {
+						$selectedName1 = $texname;
+					}
+				}
+				elsif (!$selectedName2) {
+					$selectedName2 = $texname;
+				}
+			}
+			if ($selectedName1) {
+				$texname = $selectedName1;
+			}
+			elsif ($selectedName2) {
+				$texname = $selectedName2;
+			}
 		}
 	}
 	else {
 		$texname =~ /(\.[^.]+)$/s;
 		my $ext = $1 || '';
 		$texname = $self->_uniq($filename, $ext).$ext;
+		$self->{'data'}{'figures'}{$filename} = $texname;
 	}
-	$self->{'data'}{'figures'}{$filename} = $texname;
 
 	return $texname;
 }
@@ -309,7 +335,11 @@ sub _expandMacro($$@) : method {
 		$ret .= '{'.$texname.'}';
 		return $ret;
 	}
-	elsif (		$macro eq '\\includegraphics') {
+	elsif (		($macro eq '\\includegraphics')
+		||	($macro eq '\\includeanimatedfigure')
+		||	($macro eq '\\includeanimatedfigurewtex')
+		||	($macro eq '\\includefigurewtex')
+		||	($macro eq '\\includegraphicswtex')) {
 		my $texname = $self->_findPicture($_[1]->{'text'});
 		my $ret = $macro;
 		$ret .= '['.$_[0]->{'text'}.']' if ($_[0]->{'text'});
