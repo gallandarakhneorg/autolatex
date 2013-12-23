@@ -20,7 +20,7 @@
 % Modifications:
 %
 
-\global\edef\autolatex@package@ver{2013/08/17}
+\global\edef\autolatex@package@ver{2013/12/23}
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{autolatex}[\autolatex@package@ver]
@@ -75,10 +75,10 @@
 	\filename@parse{#2}%
 	\ifx\filename@ext\relax%
 		\@for\@autolatex@wtfig@exttmp:=\@autolatex@wtfig@extensions\do{%
-			\@autolatex@wtfig@searchinpath{#2\@autolatex@wtfig@exttmp}%
+			\expandafter\@autolatex@wtfig@searchinpath{#2\@autolatex@wtfig@exttmp}%
 		}%
 	\else%
-		\@autolatex@wtfig@searchinpath{#2\@autolatex@wtfig@exttmp}%
+		\expandafter\@autolatex@wtfig@searchinpath{#2}%
 	\fi%
 	%
 	\ifx\@autolatex@wtfig@tmp\relax%
