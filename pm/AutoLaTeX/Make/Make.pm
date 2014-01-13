@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '22.0';
+our $VERSION = '22.1';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -209,13 +209,6 @@ sub newEntry($$) {
 	my $e = Entry->new;
 	@$e = ($_[0],0,0,$_[1]);
 	return $e;
-}
-
-sub _printWarning($$$$) : method {
-	my $filename = shift;
-	my $extension = shift;
-	my $line = shift;
-	my $message = shift;
 }
 
 #------------------------------------------------------
