@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '22.2';
+our $VERSION = '23.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -844,12 +844,16 @@ sub runLaTeX($;$) : method {
 	return 0;
 }
 
-sub _printWarning($$$$) {
+sub _printWarning($$$$) : method {
+	my $self = shift;
 	my $filename = shift;
 	my $extension = shift;
 	my $line = shift;
 	my $message = shift;
-	print STDERR "!$filename:$line: $message\n";
+	if ($message =~ /^\s*latex\s+warning\s*\:\s*(.*)$/i) {
+		$message = "$1";
+	}
+	print STDERR "$filename:$line:warning: $message\n";
 }
 
 sub _testLaTeXWarningInFile($$$) : method {
@@ -876,7 +880,7 @@ sub _testLaTeXWarningInFile($$$) : method {
 				if ($line =~ /^\Q!!!![EndWarning]\E/) {
 					if ($current_log_block =~ /^(.*?):([^:]*):([0-9]+):\s*(.*?)\s*$/) {
 						my ($filename, $extension, $line, $message) = ($1, $2, $3, $4);
-						_printWarning($filename, $extension, $line, $message);
+						$self->_printWarning($filename, $extension, $line, $message);
 					}
 					$warning = 0;
 					$current_log_block = '';
@@ -907,7 +911,7 @@ sub _testLaTeXWarningInFile($$$) : method {
 	if ($warning && $current_log_block) {
 		if ($current_log_block =~ /^(.*?):([^:]*):([0-9]+):\s*(.*?)\s*$/) {
 			my ($filename, $extension, $line, $message) = ($1, $2, $3, $4);
-						_printWarning($filename, $extension, $line, $message);
+						$self->_printWarning($filename, $extension, $line, $message);
 		}
 	}
 	$self->{'warnings'}{'done'} = 1;
