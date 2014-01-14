@@ -137,7 +137,7 @@ my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 		\global\autolatex@@@lineno\inputlineno\relax%
 		\global\advance\autolatex@@@lineno\autolatex@@@lineno@delta\relax%
 		\def\MessageBreak{^^J#1}%
-		\set@display@protect%
+		%\set@display@protect%
 		\immediate\write\@unused{^^J\autolatex@@@generic@warning@beginmessage\the\autolatex@@@lineno: #2\on@line.^^J\autolatex@@@generic@warning@endmessage^^J}%
 	}
 	\autolatex@@@update@filename
