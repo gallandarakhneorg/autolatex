@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '16.0';
+$VERSION = '17.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -1202,8 +1202,8 @@ sub loadTranslatableImageList(\%\%;$) {
 		$rawdirs =~ s/^\s+//s;
 		$rawdirs =~ s/\s+$//s;
 		if ($rawdirs) {
-			my $pattern = "[\Q".getPathListSeparator()."\E]";
-			my @dirs = split( /$pattern/is, $rawdirs);
+			my $separators = getPathListSeparator() || '';
+			my @dirs = split( /[$separators]/is, $rawdirs);
 			my @imageExtensions = keys $data->{'imageDatabase'};
 			@imageExtensions = sort {
 							my $la = length($a);
