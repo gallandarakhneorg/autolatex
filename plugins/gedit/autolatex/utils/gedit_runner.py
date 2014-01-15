@@ -35,8 +35,13 @@ class Runner(runner.Listener):
 		self._caller = caller
 		self._info_bar_label = label
 		self._show_progress = bool(show_progress)
+		self._gedit_tab = None
 		self._info_bar = None
-		self._sig_info_bar = 0
+		self._sig_info_bar_response = 0
+		self._sig_info_bar_remove = 0
+		self._automatic_bar_creation = False
+		self._last_fraction = 0
+		self._last_comment = None
 		self._thread = runner.Runner(self, directory, directive, params)
 
 	def start(self):
@@ -56,6 +61,7 @@ class Runner(runner.Listener):
 		return self._show_progress and self._info_bar_label is not None
 
 	def on_runner_add_ui(self):
+		self._gedit_tab = self._caller.window.get_active_tab()
 		GObject.idle_add(self._add_info_bar)
 
 	def on_runner_remove_ui(self):
@@ -65,34 +71,69 @@ class Runner(runner.Listener):
 		GObject.idle_add(self._update_info_bar, amount, comment)
 
 	def on_runner_finalize_execution(self, retcode, output, latex_warnings):
+		self._automatic_bar_creation = False
 		GObject.idle_add(self._caller._update_action_validity,
 			True, output, latex_warnings)
 
 	def _add_info_bar(self):
-		gedit_tab = self._caller.window.get_active_tab()
-		self._info_bar = Gedit.ProgressInfoBar()
-		self._info_bar.set_stock_image(Gtk.STOCK_EXECUTE)
-		self._info_bar.set_text(self._info_bar_label)
-		self._sig_info_bar = self._info_bar.connect(
-				"response",
-				self._on_cancel_action);
-		self._info_bar.show()
-		gedit_tab.set_info_bar(self._info_bar)
+		if self._gedit_tab:
+			self._info_bar = Gedit.ProgressInfoBar()
+			self._info_bar.set_stock_image(Gtk.STOCK_EXECUTE)
+			self._info_bar.set_text(self._info_bar_label)
+			self._sig_info_bar_response = self._info_bar.connect(
+					"response",
+					self._on_cancel_action)
+			self._sig_info_bar_remove = self._info_bar.connect(
+					"parent-set",
+					self._on_parent_remove_action)
+			self._gedit_tab.set_info_bar(self._info_bar)
+			self._info_bar.show()
+			self._gedit_tab.grab_focus();
 
 	def _hide_info_bar(self):
 		if self._info_bar:
-			self._info_bar.disconnect(self._sig_info_bar);
+			self._info_bar.hide()
+			self._info_bar.disconnect(self._sig_info_bar_response);
+			self._info_bar.disconnect(self._sig_info_bar_remove);
 			self._info_bar.destroy()
 			self._info_bar = None
+		self._gedit_tab.grab_focus();
 
 	def _on_cancel_action(self, widget, response, data=None):
 		if response == Gtk.ResponseType.CANCEL:
 			self.cancel()
 
+	def _on_parent_remove_action(self, widget, oldParent=None, data=None):
+		# The progress bar was removed by an other info bar
+		bar = self._info_bar
+		if bar and bar.get_parent() == None:
+			self._hide_info_bar()
+			self._automatic_bar_creation = True
+			GObject.idle_add(self._update_info_bar,
+				self._last_fraction, self._last_comment)
+
+	def __has_info_child(self):
+		if self._gedit_tab:
+			for child in self._gedit_tab.get_children():
+				if isinstance(child, Gtk.InfoBar):
+					return True # Search says: has info bar
+			return False # Search says: no info bar
+		return True # Assume that the panel is inside
+
 	def _update_info_bar(self, progress_value, comment):
+		print "MOVE TO "+str(progress_value)+"/"+str(comment)
+		self._last_fraction = progress_value
+		self._last_comment = comment
+		if self._automatic_bar_creation and not self._info_bar and not self.__has_info_child():
+			self._automatic_bar_creation = False
+			GObject.idle_add(self._add_info_bar)
+		GObject.idle_add(self.__set_info_bar_data, progress_value, comment)
+
+	def __set_info_bar_data(self, progress_value, comment):
+		print "MOVE TO "+str(progress_value)+"/"+str(comment)
 		if self._info_bar:
 			self._info_bar.set_fraction(progress_value)
 			if comment:
 				self._info_bar.set_text(comment)
-
+			self._info_bar.show()
 
