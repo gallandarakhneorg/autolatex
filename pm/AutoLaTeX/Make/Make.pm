@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '23.0';
+our $VERSION = '24.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -605,14 +605,17 @@ Launch pdfLaTeX once time.
 
 =item * C<enableLoop> (optional boolean) indicates if this function may loop on the LaTeX compilation when it is requested by the LaTeX tool.
 
+=item * C<buffering_warnings> (optional boolean) indicates if the warnings are buffered or not.
+
 =back
 
 =cut
-sub runLaTeX($;$) : method {
+sub runLaTeX($;$$) : method {
 	my $self = shift;
 	my $file = shift;
 	my $linenumber = 0;
 	my $enableLoop = shift;
+	my $buffering_warnings = shift;
 	if ($self->{'files'}{$file}{'mainFile'}) {
 		$file = $self->{'files'}{$file}{'mainFile'};
 	}
@@ -621,6 +624,7 @@ sub runLaTeX($;$) : method {
 	do {
 		printDbg(formatText(_T('{}: {}'), 'PDFLATEX', basename($file))); 
 		$continueToCompile = 0;
+		$self->{'buffered_warnings'} = [];
 		$self->{'warnings'} = {};
 		unlink($logFile);
 		my $exitcode;
@@ -841,6 +845,14 @@ sub runLaTeX($;$) : method {
 		}
 	}
 	while ($continueToCompile);
+
+	if (!$buffering_warnings && $self->{'buffered_warnings'}) {
+		foreach my $w (@{$self->{'buffered_warnings'}}) {
+			print STDERR "$w";
+		}
+		$self->{'buffered_warnings'} = [];
+	}
+
 	return 0;
 }
 
@@ -853,7 +865,11 @@ sub _printWarning($$$$) : method {
 	if ($message =~ /^\s*latex\s+warning\s*\:\s*(.*)$/i) {
 		$message = "$1";
 	}
-	print STDERR "$filename:$line:warning: $message\n";
+	if (!$self->{'buffered_warnings'}) {
+		$self->{'buffered_warnings'} = [];
+	}
+	push @{$self->{'buffered_warnings'}},
+		"$filename:$line:warning: $message\n";
 }
 
 sub _testLaTeXWarningInFile($$$) : method {
@@ -935,7 +951,7 @@ sub _testLaTeXWarningOn($) : method {
 	elsif ($line =~ /Warning:Thereweremultiply\-definedlabels/i) {
 		$self->{'warnings'}{'multiple_definition'} = 1;
 	}
-	elsif ($line =~ /Warning/im) {
+	elsif ($line =~ /(?:\s|^)Warning/im) {
 		$self->{'warnings'}{'other_warning'} = 1;
 	}
 	return 0;
@@ -980,7 +996,7 @@ sub build(;$) : method {
 		$sprogress->setValue(10) if ($sprogress);
 
 		# Launch at least one LaTeX compilation
-		$self->runLaTeX($rootFile);
+		$self->runLaTeX($rootFile,0,1);
 
 		$sprogress->setValue(210) if ($sprogress);
 
@@ -1004,6 +1020,14 @@ sub build(;$) : method {
 				$self->_build($rootFile, $file);
 				$sprogress->increment($sprogStep) if ($sprogress);
 			}
+		}
+
+		# Output the warnings from the last TeX builds
+		if ($self->{'buffered_warnings'}) {
+			foreach my $w (@{$self->{'buffered_warnings'}}) {
+				print STDERR "$w";
+			}
+			$self->{'buffered_warnings'} = [];
 		}
 
 		$sprogress->setValue(910) if ($sprogress);
@@ -1626,7 +1650,7 @@ sub __build_pdf($$$) : method {
 	my $majorFailure = 0;
 	do {
 		$runs--;
-		$self->runLaTeX($file,1);
+		$self->runLaTeX($file,1,1);
 		$majorFailure = (exists $self->{'warnings'}{'multiple_definition'}) ||
 				(exists $self->{'warnings'}{'undefined_reference'}) ||
 				(exists $self->{'warnings'}{'undefined_citation'});
