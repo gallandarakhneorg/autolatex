@@ -1,5 +1,5 @@
 # autolatex - TeXDependencyAnalyzer.pm
-# Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::TeXDependencyAnalyzer;
 
-$VERSION = '4.0';
+$VERSION = '5.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getDependenciesOfTeX ) ;
 @EXPORT_OK = qw();
@@ -130,7 +130,6 @@ sub _expandMacro($$@) : method {
 	my $self = shift;
 	my $parser = shift;
 	my $macro = shift;
-	my $bibdb = '';
 
 	if ( $macro eq '\\include' || $macro eq '\\input' ) {
 		foreach my $param (@_) {
@@ -165,7 +164,7 @@ sub _expandMacro($$@) : method {
 				my @params = split(/\s*\,\s*/, trim($_[0]->{'text'} || ''));
 				foreach my $p (@params) {
 					my ($k, $v);
-					if ($p =~ /^([^=]+)\s*=\s*(.*)$/) {
+					if ($p =~ /^([^=]+)\s*=\s*(.*?)\s*$/) {
 						$k = $1;
 						$v = $2 || '';
 					}
@@ -185,7 +184,7 @@ sub _expandMacro($$@) : method {
 							$bbxFile = File::Spec->catfile($self->{'dirname'}, "$bbxFile");
 						}
 						if (-f "$bbxFile") {
-							$self->{'dependencies'}{'biblio'}{$bibdb}{'bbx'}{$bbxFile} = 1;
+							$self->{'dependencies'}{'biblio'}{''}{'bbx'}{$bbxFile} = 1;
 						}
 						my $cbxFile = "$v";
 						if ($cbxFile !~ /\.cbx$/i) {
@@ -195,7 +194,7 @@ sub _expandMacro($$@) : method {
 							$cbxFile = File::Spec->catfile($self->{'dirname'}, "$cbxFile");
 						}
 						if (-f "$cbxFile") {
-							$self->{'dependencies'}{'biblio'}{$bibdb}{'cbx'}{$cbxFile} = 1;
+							$self->{'dependencies'}{'biblio'}{''}{'cbx'}{$cbxFile} = 1;
 						}
 					}
 					elsif ($k eq 'bibstyle') {
@@ -207,7 +206,7 @@ sub _expandMacro($$@) : method {
 							$bbxFile = File::Spec->catfile($self->{'dirname'}, "$bbxFile");
 						}
 						if (-f "$bbxFile") {
-							$self->{'dependencies'}{'biblio'}{$bibdb}{'bbx'}{$bbxFile} = 1;
+							$self->{'dependencies'}{'biblio'}{''}{'bbx'}{$bbxFile} = 1;
 						}
 					}
 					elsif ($k eq 'citestyle') {
@@ -219,7 +218,7 @@ sub _expandMacro($$@) : method {
 							$cbxFile = File::Spec->catfile($self->{'dirname'}, "$cbxFile");
 						}
 						if (-f "$cbxFile") {
-							$self->{'dependencies'}{'biblio'}{$bibdb}{'cbx'}{$cbxFile} = 1;
+							$self->{'dependencies'}{'biblio'}{''}{'cbx'}{$cbxFile} = 1;
 						}
 					}
 				}
@@ -246,50 +245,62 @@ sub _expandMacro($$@) : method {
 		}
 	}
 	elsif ($macro =~ /^\\bibliographystyle(.*)$/s ) {
-		$bibdb = $1;
-		$bibdb = $self->{'basename'} unless ($bibdb);
+		my $bibdb = $1;
+		$bibdb = $self->{'basename'} unless ($bibdb && $self->{'is_multibib'});
 		foreach my $param (@_) {
 			my $value = $param->{'text'};
 			if ($value) {
-				my $bstFile = "$value";
-				if ($bstFile !~ /\.bst$/i) {
-					$bstFile .= ".bst";
-				}
-				if (!File::Spec->file_name_is_absolute($bstFile)) {
-					$bstFile = File::Spec->catfile($self->{'dirname'}, "$bstFile");
-				}
-				if (-f "$bstFile") {
-					$self->{'dependencies'}{'biblio'}{$bibdb}{'bst'}{$bstFile} = 1;
+				foreach my $svalue (split(/\s*,\s*/,trim($value))) {
+					if ($svalue) {
+						my $bstFile = "$svalue";
+						if ($bstFile !~ /\.bst$/i) {
+							$bstFile .= ".bst";
+						}
+						if (!File::Spec->file_name_is_absolute($bstFile)) {
+							$bstFile = File::Spec->catfile($self->{'dirname'}, "$bstFile");
+						}
+						if (-f "$bstFile") {
+							$self->{'dependencies'}{'biblio'}{$bibdb}{'bst'}{$bstFile} = 1;
+						}
+					}
 				}
 			}
 		}
 	}
-	elsif ($macro =~ /^\\bibliography(.*)$/s) {		
-		$bibdb = $1;
+	elsif ($macro =~ /^\\bibliography(.*)$/s) {
+		my $bibdb = $1;
 		$bibdb = $self->{'basename'} unless ($bibdb && $self->{'is_multibib'});
+		$self->_addbibreference($bibdb,@_);
 	}
 	elsif ($macro eq '\\addbibresource') {		
-		$bibdb = $self->{'basename'};
+		my $bibdb = $self->{'basename'};
+		$self->_addbibreference($bibdb,@_);
 	}
+	return '';
+}
 
-	if ($bibdb) {
-		foreach my $param (@_) {
-			my $value = $param->{'text'};
-			if ($value) {
-				my $bibFile = "$value";
-				if ($bibFile !~ /\.bib$/i) {
-					$bibFile .= ".bib";
-				}
-				if (!File::Spec->file_name_is_absolute($bibFile)) {
-					$bibFile = File::Spec->catfile($self->{'dirname'}, "$bibFile");
-				}
-				if (-f "$bibFile") {
-					$self->{'dependencies'}{'biblio'}{$bibdb}{'bib'}{$bibFile} = 1;
+sub _addbibreference($@) {
+	my $self = shift;
+	my $bibdb = shift || '';
+	foreach my $param (@_) {
+		my $value = $param->{'text'};
+		if ($value) {
+			foreach my $svalue (split(/\s*,\s*/, $value)) {
+				if ($svalue) {
+					my $bibFile = "$svalue";
+					if ($bibFile !~ /\.bib$/i) {
+						$bibFile .= ".bib";
+					}
+					if (!File::Spec->file_name_is_absolute($bibFile)) {
+						$bibFile = File::Spec->catfile($self->{'dirname'}, "$bibFile");
+					}
+					if (-f "$bibFile") {
+						$self->{'dependencies'}{'biblio'}{$bibdb}{'bib'}{$bibFile} = 1;
+					}
 				}
 			}
 		}
 	}
-	return '';
 }
 
 sub _discoverMacroDefinition($$$$) : method {

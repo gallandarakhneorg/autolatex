@@ -1260,7 +1260,7 @@ sub trim($) {
 
 =pod
 
-=item B<trimws($)>
+=item B<trim_ws($)>
 
 Remove the trailing white spaces (and only the white spaces).
 

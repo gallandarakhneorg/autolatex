@@ -1,5 +1,5 @@
 # autolatex - BibCitationAnalyzer.pm
-# Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::BibCitationAnalyzer;
 
-$VERSION = '3.0';
+$VERSION = '4.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getAuxBibliographyData &getAuxBibliographyCitations &makeAuxBibliographyCitationMd5
               &getBcfBibliographyCitations &makeBcfBibliographyCitationMd5 ) ;
@@ -237,16 +237,28 @@ sub _expandMacro($$@) : method {
 	my $macro = shift;
 	if ($macro eq '\\bibdata') {
 		if ($_[1]->{'text'}) {
-			$self->{'databases'}{$_[1]->{'text'}} = 1;
+			foreach my $bibdb (split(/\s*,\s*/, $_[1]->{'text'})) {
+				if ($bibdb) {
+					$self->{'databases'}{$bibdb} = 1;
+				}
+			}
 		}
 	}
 	elsif ($macro eq '\\bibstyle') {
 		if ($_[1]->{'text'}) {
-			$self->{'styles'}{$_[1]->{'text'}} = 1;
+			foreach my $bibdb (split(/\s*,\s*/, $_[1]->{'text'})) {
+				if ($bibdb) {
+					$self->{'styles'}{$bibdb} = 1;
+				}
+			}
 		}
 	}
 	elsif ($_[1]->{'text'}) {
-		$self->{'citations'}{$_[1]->{'text'}} = 1;
+		foreach my $bibdb (split(/\s*,\s*/, $_[1]->{'text'})) {
+			if ($bibdb) {
+				$self->{'citations'}{$bibdb} = 1;
+			}
+		}
 	}
 	return '';
 }
