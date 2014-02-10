@@ -737,6 +737,22 @@ TeX part:
 
 =back
 
+=item B<Geogebra (ggb) vers Portable Document Format (pdf)>
+
+=over 12
+
+=item Nom :                              ggb2pdf
+
+=item Convertisseur externe utilisé :    geogebra
+
+=item Use translator:                    
+
+=item Format d'entrée :                  .ggb
+
+=item Format de sortie :                 .pdf
+
+=back
+
 =item B<Graph Layout Engine (gle) vers Portable Document Format (pdf)>
 
 =over 12
@@ -1476,7 +1492,7 @@ Le fichier C<INSTALL> donne plus de détails sur l'installation, et il fournit d
 
 S<GNU Public License (GPL)>
 
-Copyright (c) 1998-2013  Stephane GALLAND <galland@arakhne.org>
+Copyright (c) 1998-2014  Stephane GALLAND <galland@arakhne.org>
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU L<General Public License|http://www.gnu.org/copyleft/gpl.html> as published by the L<Free Software Foundation|http://www.fsf.org/>; either version 2 of the License, or (at your option) any later version.
 
@@ -1488,7 +1504,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 S<GNU Free Documentation License (FDL)>
 
-Copyright (c)  1998-2013  Stephane Galland E<lt>galland@arakhne.orgE<gt>.
+Copyright (c)  1998-2014  Stephane Galland E<lt>galland@arakhne.orgE<gt>.
 
 Permission is granted to copy, distribute and/or modify this document under the terms of the L<GNU Free Documentation License|http://www.gnu.org/licenses/fdl.txt>, Version 1.2 or any later version published by the L<Free Software Foundation|http://www.fsf.org/>; with the Invariant Sections being S<AUTOLATEX LICENSE> and S<MANUAL COPYRIGHT>, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included in the file name S<GNU Free Documentation License.txt>.
 
