@@ -1159,6 +1159,22 @@ TeX part:
 
 =back
 
+=item B<Visio Binary Draw (vsd) vers Portable Document Format (pdf)>
+
+=over 12
+
+=item Name:                              vsd2pdf
+
+=item Use external converter:            inkscape
+
+=item Use translator:                    
+
+=item Input format:                      .vsd .vdx .vsdx
+
+=item Output format:                     .pdf
+
+=back
+
 =back
 
 =head1 PAQUET LATEX

@@ -1000,7 +1000,7 @@ TeX part:
 
 =item Use external converter:            inkscape
 
-=item Use translator:                    eps2pdf
+=item Use translator:                    
 
 =item Input format:                      .svg
 
@@ -1018,7 +1018,7 @@ PDF part:
 
 =item Use external converter:            inkscape
 
-=item Use translator:                    eps2pdf
+=item Use translator:                    
 
 =item Input format:                      .svgt .svg_t .svgtex .svg+tex .tex.svg +tex.svg
 
@@ -1084,7 +1084,7 @@ PDF part:
 
 =item Use external converter:            inkscape
 
-=item Use translator:                    eps2pdf
+=item Use translator:                    
 
 =item Input format:                      .svglt .svg_lt .svglayerstex .svgtexlayers .svg+layers+tex .svg+tex+layers .layers.tex.svg .tex.layers.svg +layers+tex.svg +tex+layers.svg
 
@@ -1151,6 +1151,22 @@ TeX part:
 =item Use translator:                    svg2pdf
 
 =item Input format:                      .xmi
+
+=item Output format:                     .pdf
+
+=back
+
+=item B<Visio Binary Draw (vsd) to Portable Document Format (pdf)>
+
+=over 12
+
+=item Name:                              vsd2pdf
+
+=item Use external converter:            inkscape
+
+=item Use translator:                    
+
+=item Input format:                      .vsd .vdx .vsdx
 
 =item Output format:                     .pdf
 
