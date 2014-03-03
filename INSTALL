@@ -22,7 +22,6 @@ b) Need manual installation with several perl distributions:
 	Compress::Zlib
 	pp
 
-
 -------------------------
 2. PREPARING INSTALLATION
 -------------------------
@@ -81,7 +80,7 @@ file of AutoLaTeX, in place of the perl scripts.
 It may be useful when there is not Perl distribution
 installed on your computer.
 
-To generate the binary exwecutable files for your
+To generate the binary executable files for your
 current operating system, you must type the following
 command:
 
