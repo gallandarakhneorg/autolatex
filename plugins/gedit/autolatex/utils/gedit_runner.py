@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # autolatex/utils/gtk_utils.py
-# Copyright (C) 2013  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ class Runner(runner.Listener):
 		return True # Assume that the panel is inside
 
 	def _update_info_bar(self, progress_value, comment):
-		print "MOVE TO "+str(progress_value)+"/"+str(comment)
+		#print "MOVE TO "+str(progress_value)+"/"+str(comment)
 		self._last_fraction = progress_value
 		self._last_comment = comment
 		if self._automatic_bar_creation and not self._info_bar and not self.__has_info_child():
@@ -130,7 +130,7 @@ class Runner(runner.Listener):
 		GObject.idle_add(self.__set_info_bar_data, progress_value, comment)
 
 	def __set_info_bar_data(self, progress_value, comment):
-		print "MOVE TO "+str(progress_value)+"/"+str(comment)
+		#print "MOVE TO "+str(progress_value)+"/"+str(comment)
 		if self._info_bar:
 			self._info_bar.set_fraction(progress_value)
 			if comment:
