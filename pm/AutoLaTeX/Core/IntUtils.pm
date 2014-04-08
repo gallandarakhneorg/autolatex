@@ -1,5 +1,5 @@
 # autolatex - IntUtils.pm
-# Copyright (C) 2007-13  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2007-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,9 +49,8 @@ use Exporter;
 
 use Carp;
 use Locale::gettext;
-use POSIX;     # Needed for setlocale()
 
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 
 my @ACTIVE_DOMAINS = ();
 
@@ -195,7 +194,7 @@ S<GNU Public License (GPL)>
 
 =head1 COPYRIGHT
 
-S<Copyright (c) 2007-13 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
+S<Copyright (c) 2007-14 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
 
 =head1 SEE ALSO
 
