@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '24.0';
+our $VERSION = '25.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -136,9 +136,11 @@ my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	\global\DeclareRobustCommand{\GenericWarning}[2]{%
 		\global\autolatex@@@lineno\inputlineno\relax%
 		\global\advance\autolatex@@@lineno\autolatex@@@lineno@delta\relax%
+		\begingroup
 		\def\MessageBreak{^^J#1}%
-		%\set@display@protect%
+		\set@display@protect
 		\immediate\write\@unused{^^J\autolatex@@@generic@warning@beginmessage\the\autolatex@@@lineno: #2\on@line.^^J\autolatex@@@generic@warning@endmessage^^J}%
+		\endgroup
 	}
 	\autolatex@@@update@filename
 	\makeatother
