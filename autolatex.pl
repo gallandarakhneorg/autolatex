@@ -481,6 +481,8 @@ sub al_getcleanfiles() {
 		'*.mtl[0-9][0-9][0-9]', '*.bmt',
 		'*.thlodef', '*.lbl', '*.brf',
 		'*.vrb', '*.spl',
+		# GS viewer
+		'.goutputstream-*',
 		# Biber
 		'*.bcf', '*.run.xml',
 	);
