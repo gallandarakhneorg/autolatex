@@ -38,7 +38,7 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '11.0';
+our $VERSION = '12.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
@@ -51,7 +51,7 @@ our $VERSION = '11.0';
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
 	      &runCommandSilently &removePathPrefix &trim &trim_ws &formatText
 	      &makeMessage &makeMessageLong &secure_unlink &str2language
-	      &killSubProcesses &toANSI &toUTF8 ) ;
+	      &killSubProcesses &toANSI &toUTF8 &redirectToSTDOUT &redirectToSTDERR ) ;
 @EXPORT_OK = qw( $INTERNAL_MESSAGE_PREFIX );
 
 require 5.014;
@@ -67,6 +67,7 @@ use Data::Dumper;
 
 use AutoLaTeX::Core::IntUtils;
 
+local *AUTOLATEXCONSOLE = *STDERR;
 my $autoLaTeXName = undef;
 my $autoLaTeXDirectory = undef;
 my $autoLaTeXLaunchingName = undef;
@@ -78,6 +79,34 @@ my $lastListenerCheck = 0;
 
 # Array of launched subprocesses
 my %launchedSubProcesses = ();
+
+=pod
+
+=item B<redirectToSTDOUT()>
+
+Redirect the verbosing text on the STDOUT in place of STDERR.
+
+I<Returns:> None.
+
+=cut
+sub redirectToSTDOUT() {
+	*AUTOLATEXCONSOLE = *STDOUT;
+	1;
+}
+
+=pod
+
+=item B<redirectToSTDERR()>
+
+Redirect the verbosing text on the STDERR in place of STDOUT.
+
+I<Returns:> None.
+
+=cut
+sub redirectToSTDERR() {
+	*AUTOLATEXCONSOLE = *STDERR;
+	1;
+}
 
 =pod
 
@@ -233,11 +262,11 @@ sub setAutoLaTeXInfo($$$) {
 			close(*VERSIONFILE);
 		}
 		else {
-			print STDERR formatText(_T("No read access to the VERSION file of AutoLaTeX. AutoLaTeX should not be properly installed. Assuming version: {}\n"),$autoLaTeXVersion);
+			print AUTOLATEXCONSOLE formatText(_T("No read access to the VERSION file of AutoLaTeX. AutoLaTeX should not be properly installed. Assuming version: {}\n"),$autoLaTeXVersion);
 		}
 	}
 	else {
-		print STDERR formatText(_T("Unable to find the VERSION file of AutoLaTeX. AutoLaTeX should not be properly installed. Assuming version: {}\n"), $autoLaTeXVersion);
+		print AUTOLATEXCONSOLE formatText(_T("Unable to find the VERSION file of AutoLaTeX. AutoLaTeX should not be properly installed. Assuming version: {}\n"), $autoLaTeXVersion);
 	}
 }
 
@@ -308,7 +337,7 @@ sub showManual(@) {
 			exit(0);
 		}
 	}
-	print STDERR _T("no manual page found\n");
+	print AUTOLATEXCONSOLE _T("no manual page found\n");
 	exit(255);
 }
 
@@ -623,7 +652,7 @@ sub printDbgFor($@) {
 	if ($debugLevel>=$requestedLevel) {
 		my @text = makeMessage(60,$dbgIndent,@_);
 		foreach my $p (@text) {
-			print STDERR ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), " $p", "\n");
+			print AUTOLATEXCONSOLE ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), " $p", "\n");
 			$INTERNAL_MESSAGE_PREFIX = '';
 		}
 	}
@@ -643,7 +672,7 @@ sub dumpDbgFor($@) {
 		use Data::Dumper;
 		my @text = makeMessage(60,$dbgIndent,Dumper(@_));
 		foreach my $p (@text) {
-			print STDERR ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), " $p", "\n");
+			print AUTOLATEXCONSOLE ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), " $p", "\n");
 			$INTERNAL_MESSAGE_PREFIX = '';
 		}
 	}
@@ -675,7 +704,7 @@ display an error message and exit. The parameters will be displayed separated by
 
 =cut
 sub printErr(@) {
-	print STDERR formatErr(@_);
+	print AUTOLATEXCONSOLE formatErr(@_);
 	exit(255);
 	undef;
 }
@@ -690,7 +719,7 @@ display a warning message. The parameters will be displayed separated by a space
 sub printWarn(@) {
 	my @text = makeMessage(50,0,@_);
 	foreach my $p (@text) {
-		print STDERR ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), ' ', formatText(_T("Warning: {}"),"$p"), "\n");
+		print AUTOLATEXCONSOLE ($INTERNAL_MESSAGE_PREFIX, _T("[AutoLaTeX]"), ' ', formatText(_T("Warning: {}"),"$p"), "\n");
 		$INTERNAL_MESSAGE_PREFIX = '';
 	}
 	1;
@@ -741,7 +770,7 @@ sub runCommandOrFailRedirectTo($@) {
 			if ($exitcode!=0) {
 				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
 				while (my $line = <LOGFILE>) {
-					print STDERR $INTERNAL_MESSAGE_PREFIX.$line;
+					print AUTOLATEXCONSOLE $INTERNAL_MESSAGE_PREFIX.$line;
 					$INTERNAL_MESSAGE_PREFIX = '';
 				}
 				close(*LOGFILE);
@@ -851,7 +880,7 @@ sub runCommandOrFail(@) {
 				close(*LOGFILE);
 				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
 				while (my $line = <LOGFILE>) {
-					print STDERR $INTERNAL_MESSAGE_PREFIX.$line;
+					print AUTOLATEXCONSOLE $INTERNAL_MESSAGE_PREFIX.$line;
 					$INTERNAL_MESSAGE_PREFIX = '';
 				}
 				close(*LOGFILE);
@@ -933,7 +962,7 @@ sub runCommandOrFailFromInput($@) {
 				close(*LOGFILE);
 				open(*LOGFILE, "< autolatex_exec_stderr.log") or printErr(formatText(_T("{}: {}"), "autolatex_exec_stderr.log", $!));
 				while (my $line = <LOGFILE>) {
-					print STDERR $INTERNAL_MESSAGE_PREFIX.$line;
+					print AUTOLATEXCONSOLE $INTERNAL_MESSAGE_PREFIX.$line;
 					$INTERNAL_MESSAGE_PREFIX = '';
 				}
 				close(*LOGFILE);

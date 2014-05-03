@@ -31,8 +31,8 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '24.0';
-$COPYRIGHT_YEAR = '2013';
+$VERSION = '25.0';
+$COPYRIGHT_YEAR = '2014';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
 @EXPORT_OK = qw();
@@ -184,6 +184,10 @@ sub analyzeCommandLineOptions(\%) {
 				},
 
 		'set=s%'  => sub { $cfg->{'generation.set'}{$_[1]} = $_[2]; },
+
+		'stdout' => sub { redirectToSTDOUT(); },
+
+		'stderr' => sub { redirectToSTDERR(); },
 
 		'synctex!'  => sub { $cfg->{'generation.synctex'} = ($_[1] ? 'yes' : 'no'); },
 
