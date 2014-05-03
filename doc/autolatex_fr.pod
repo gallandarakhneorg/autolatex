@@ -403,6 +403,14 @@ pour lequel la valeur doit être initialisée. Si aucun
 S<convertisseur> est donné, "generation' est utilisé comme préfixe
 par défaut.
 
+=item B<--stderr>
+
+Préfère afficher les messages sur la sortie standard d'erreur.
+
+=item B<--stdout>
+
+Préfère afficher les messages sur la sortie standard.
+
 =item B<--[no]synctex>
 
 Activer ou désactiver la génération du fichier de sortie avec SyncTeX.

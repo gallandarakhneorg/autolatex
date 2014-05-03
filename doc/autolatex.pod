@@ -401,6 +401,14 @@ translator for which the value must ve overridden. If
 S<translator> is not given then "generation" is the
 default prefix.
 
+=item B<--stderr>
+
+Prefer to output the messages on the standard error output.
+
+=item B<--stdout>
+
+Prefer to output the messages on the standard output.
+
 =item B<--[no]synctex>
 
 Enable or disable the generation of the output file with SyncTeX.
