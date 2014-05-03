@@ -1108,6 +1108,38 @@ TeX part:
 
 =back
 
+=item B<Gimp (xcf) to Portable Document Format (pdf)>
+
+=over 12
+
+=item Name:                              xcf2pdf
+
+=item Use external converter:            convert
+
+=item Use translator:                    
+
+=item Input format:                      .xcf
+
+=item Output format:                     .pdf
+
+=back
+
+=item B<Gimp (xcf) to Portable Network Graphic (png)>
+
+=over 12
+
+=item Name:                              xcf2png
+
+=item Use external converter:            convert
+
+=item Use translator:                    
+
+=item Input format:                      .xcf
+
+=item Output format:                     .png
+
+=back
+
 =item B<UML Metadata Interchange (xmi) to Portable Document Format (pdf): Umbrello variante>
 
 =over 12
