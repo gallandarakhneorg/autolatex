@@ -25,6 +25,27 @@ INPUT_EXTENSIONS = .vsd .vdx .vsdx
 OUTPUT_EXTENSIONS for pdf = .pdf
 OUTPUT_EXTENSIONS for eps = .eps
 
-COMMAND_LINE for pdf = inkscape --without-gui --export-area-page --export-pdf "$out" "$in"
-COMMAND_LINE for eps = inkscape --without-gui --export-area-page --export-eps "$out" "$in"
+TRANSLATOR_PERL_DEPENDENCIES = version
 
+TRANSLATOR_FUNCTION =<<EOL {
+	# Check for the Inkscape version
+	if (lc($inext) eq '.vsdx') {
+		my @o = runCommandOrFail("inkscape", "--version");
+		my $o = join('', @o);
+		if ($o =~ /^Inkscape\s+([0-9a-zA-Z\._\-]+)\s+/i) {
+			my $mandatoryVersion = version->parse("0.49");
+			my $version = version->parse("$1");
+			if ($version < $mandatoryVersion) {
+				printErr("The convertion from $inext needs Inkscape $mandatoryVersion or higher.");
+				return;
+			}
+		}
+	}
+	if ($isepsmode) {
+		runCommandOrFail('inkscape', '--without-gui', '--export-area-page', '--export-eps', "$out", "$in");
+	}
+	else {
+		runCommandOrFail('inkscape', '--without-gui', '--export-area-page', '--export-pdf', "$out", "$in");
+	}
+}
+EOL
