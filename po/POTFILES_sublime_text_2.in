@@ -5,8 +5,8 @@ python/utils/latex_log_parser.py
 python/utils/runner.py
 python/utils/utils.py
 
-plugins/sublime-text-2/autolatex/__init__.py
-plugins/sublime-text-2/autolatex/autolatex.py
-plugins/sublime-text-2/autolatex/utils/__init__.py
-plugins/sublime-text-2/autolatex/utils/runner_command.py
+plugins/sublime-text-2/__init__.py
+plugins/sublime-text-2/autolatex.py
+plugins/sublime-text-2/utils/__init__.py
+plugins/sublime-text-2/utils/runner_command.py
 

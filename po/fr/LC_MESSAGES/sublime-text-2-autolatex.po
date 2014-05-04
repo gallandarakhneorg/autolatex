@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 25.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-19 13:06+0200\n"
+"POT-Creation-Date: 2014-05-04 14:53+0200\n"
 "PO-Revision-Date: 2013-09-16 13:38+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -31,32 +31,32 @@ msgstr "La référence '%s' est inconnue"
 msgid "Label '%s' multiply defined"
 msgstr "Le label '%s' est défini plusieurs fois"
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:68
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:83
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:95
+#: plugins/sublime-text-2/utils/runner_command.py:68
+#: plugins/sublime-text-2/utils/runner_command.py:83
+#: plugins/sublime-text-2/utils/runner_command.py:95
 #, python-format
 msgid "Building [%d%%]"
 msgstr "Construction [%d%%]"
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:93
+#: plugins/sublime-text-2/utils/runner_command.py:93
 #, python-format
 msgid "Building [%d%%]: %s"
 msgstr "Construction [%d%%] : %s"
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:109
+#: plugins/sublime-text-2/utils/runner_command.py:109
 #, python-format
 msgid "[Decode error - output not %s]"
 msgstr "[Erreur d'encodage - la sortie n'est pas compatible avec %s]"
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:128
+#: plugins/sublime-text-2/utils/runner_command.py:128
 msgid "Build finished with an error"
 msgstr "Construction terminée avec une erreur"
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:130
+#: plugins/sublime-text-2/utils/runner_command.py:130
 msgid "Build finished"
 msgstr "Construction terminée"
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:132
+#: plugins/sublime-text-2/utils/runner_command.py:132
 #, python-format
 msgid "Build finished with %d warnings"
 msgstr "Construction terminée avec %d avertissement(s)"

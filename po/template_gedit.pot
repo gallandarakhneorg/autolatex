@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-19 13:06+0200\n"
+"POT-Creation-Date: 2014-05-04 14:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,20 +32,20 @@ msgstr ""
 msgid "Label '%s' multiply defined"
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:92
+#: plugins/gedit/autolatex/__init__.py:93
 msgid ""
 "The programs 'autolatex' and 'autolatex-backend'\n"
 "were not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:96
+#: plugins/gedit/autolatex/__init__.py:97
 msgid ""
 "The program 'autolatex' was not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
 msgstr ""
 
-#: plugins/gedit/autolatex/__init__.py:100
+#: plugins/gedit/autolatex/__init__.py:101
 msgid ""
 "The program 'autolatex-backend' was not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
@@ -598,19 +598,19 @@ msgstr ""
 msgid "Get the value from the inherited configuration"
 msgstr ""
 
-#: plugins/gedit/autolatex/widgets/latex_console.py:200
+#: plugins/gedit/autolatex/widgets/latex_console.py:203
 msgid ""
 "Internal Error: Unable to retreive the undefined references from the LaTeX "
 "log"
 msgstr ""
 
-#: plugins/gedit/autolatex/widgets/latex_console.py:223
+#: plugins/gedit/autolatex/widgets/latex_console.py:226
 msgid ""
 "Internal Error: Unable to retreive the multidefined references from the "
 "LaTeX log"
 msgstr ""
 
-#: plugins/gedit/autolatex/widgets/latex_console.py:246
+#: plugins/gedit/autolatex/widgets/latex_console.py:249
 msgid ""
 "Internal Error: Unable to retreive the undefined citations from the LaTeX log"
 msgstr ""

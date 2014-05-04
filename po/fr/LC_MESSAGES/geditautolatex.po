@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 25.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-19 13:06+0200\n"
+"POT-Creation-Date: 2014-05-04 14:53+0200\n"
 "PO-Revision-Date: 2013-09-16 13:38+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -31,7 +31,7 @@ msgstr "La référence '%s' n'est pas définie"
 msgid "Label '%s' multiply defined"
 msgstr "Le label '%s' est défini plusieurs fois"
 
-#: plugins/gedit/autolatex/__init__.py:92
+#: plugins/gedit/autolatex/__init__.py:93
 msgid ""
 "The programs 'autolatex' and 'autolatex-backend'\n"
 "were not found.\n"
@@ -41,7 +41,7 @@ msgstr ""
 "n'ont pas été trouvés.\n"
 "Veuillez corriger la configuration du plugin AutoLaTeX."
 
-#: plugins/gedit/autolatex/__init__.py:96
+#: plugins/gedit/autolatex/__init__.py:97
 msgid ""
 "The program 'autolatex' was not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
@@ -49,7 +49,7 @@ msgstr ""
 "Le programme 'autolatex' n'a pas été trouvé.\n"
 "Veuillez corriger la configuration du plugin AutoLaTeX."
 
-#: plugins/gedit/autolatex/__init__.py:100
+#: plugins/gedit/autolatex/__init__.py:101
 msgid ""
 "The program 'autolatex-backend' was not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
@@ -666,7 +666,7 @@ msgstr "Surcharger les valeurs dans la configuration courante"
 msgid "Get the value from the inherited configuration"
 msgstr "Utiliser les valeurs hérités de la configuration utilisateur"
 
-#: plugins/gedit/autolatex/widgets/latex_console.py:200
+#: plugins/gedit/autolatex/widgets/latex_console.py:203
 msgid ""
 "Internal Error: Unable to retreive the undefined references from the LaTeX "
 "log"
@@ -674,7 +674,7 @@ msgstr ""
 "Erreur interne: impossible de retrouver les références non définies dans le "
 "journal LaTeX"
 
-#: plugins/gedit/autolatex/widgets/latex_console.py:223
+#: plugins/gedit/autolatex/widgets/latex_console.py:226
 msgid ""
 "Internal Error: Unable to retreive the multidefined references from the "
 "LaTeX log"
@@ -682,7 +682,7 @@ msgstr ""
 "Erreur interne: impossible de retrouver les références définies plusieurs "
 "fois dans le journal LaTeX"
 
-#: plugins/gedit/autolatex/widgets/latex_console.py:246
+#: plugins/gedit/autolatex/widgets/latex_console.py:249
 msgid ""
 "Internal Error: Unable to retreive the undefined citations from the LaTeX log"
 msgstr ""

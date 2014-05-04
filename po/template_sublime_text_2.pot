@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-19 13:06+0200\n"
+"POT-Creation-Date: 2014-05-04 14:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,32 +32,32 @@ msgstr ""
 msgid "Label '%s' multiply defined"
 msgstr ""
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:68
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:83
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:95
+#: plugins/sublime-text-2/utils/runner_command.py:68
+#: plugins/sublime-text-2/utils/runner_command.py:83
+#: plugins/sublime-text-2/utils/runner_command.py:95
 #, python-format
 msgid "Building [%d%%]"
 msgstr ""
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:93
+#: plugins/sublime-text-2/utils/runner_command.py:93
 #, python-format
 msgid "Building [%d%%]: %s"
 msgstr ""
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:109
+#: plugins/sublime-text-2/utils/runner_command.py:109
 #, python-format
 msgid "[Decode error - output not %s]"
 msgstr ""
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:128
+#: plugins/sublime-text-2/utils/runner_command.py:128
 msgid "Build finished with an error"
 msgstr ""
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:130
+#: plugins/sublime-text-2/utils/runner_command.py:130
 msgid "Build finished"
 msgstr ""
 
-#: plugins/sublime-text-2/autolatex/utils/runner_command.py:132
+#: plugins/sublime-text-2/utils/runner_command.py:132
 #, python-format
 msgid "Build finished with %d warnings"
 msgstr ""
