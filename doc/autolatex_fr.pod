@@ -1452,7 +1452,11 @@ C'est l'interface I<officielle> et "à jour" de AutoLaTeX. Un greffon pour l'éd
 
 =item B<Sublime Text 2:>
 
-Un greffon pour l'éditeur Sublime Text 2 <http://www.sublimetext.com/2> est fourni. Vous pouvez lancer AutoLaTeX grâce aux outils de construction/compilation de Sublime Text.
+Un greffon pour l'éditeur Sublime Text 2 <http://www.sublimetext.com/2> est fourni. Vous pouvez lancer AutoLaTeX grâce aux outils de construction/compilation de Sublime Text. Ce greffon est maintenant considéré comme I<obsolète>, même s'il est toujours maintenu.
+
+=item B<Sublime Text avec LaTeXTools:>
+
+Depuis 2014, AutoLaTeX est intégré comme l'un des compilateurs du greffon LaTeXTools <https://github.com/SublimeText/LaTeXTools> de Sublime Text. Vous pouvez lancer AutoLaTeX grâce aux outils de construction/compilation de Sublime Text. Jusqu'à présent, il n'est pas encore possible de configurer AutoLaTeX à travers Sublime Text.
 
 =item B<Kile:>
 

@@ -1444,7 +1444,11 @@ This is the I<official> and up-to-date UI of AutoLaTeX. A plugin for the lightwe
 
 =item B<Sublime Text 2:>
 
-A plugin for the editor Sublime Text 2 <http://www.sublimetext.com/2> is provided. You could launch AutoLaTeX through the building tools of Sublime Text.
+A plugin for the editor Sublime Text 2 <http://www.sublimetext.com/2> is provided. You could launch AutoLaTeX through the building tools of Sublime Text.  It is now considered as I<obsolete>, even still maintained. See the use of LaTeXTools in Sublime Text.
+
+=item B<Sublime Text with LaTeXTools:>
+
+Since 2014, AutoLaTeX is integrated as one of the builders of the LaTeXTools plugin <https://github.com/SublimeText/LaTeXTools> for Sublime Text. You could launch AutoLaTeX through the building tools of Sublime Text. Until now, it is not possible to configure AutoLaTeX through Sublime Text.
 
 =item B<Kile:>
 
