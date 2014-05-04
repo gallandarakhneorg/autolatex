@@ -117,7 +117,7 @@ sub analyzeCommandLineOptions(\%) {
 				$realcfg->{'__private__'}{'action.fix config file'} = File::Spec->rel2abs($realcfg->{'__private__'}{'action.fix config file'}) if ($realcfg->{'__private__'}{'action.fix config file'});
 			},
 
-		'help|?' => sub { showManual(getAutoLaTeXDir(),"pod","autolatex.pod"); },
+		'help|?' => sub { showManual(getAutoLaTeXDocDir(),"autolatex.pod"); },
 
 		'I=s@' => sub	{
 					if (!$cfg->{'generation.translator include path'}) {

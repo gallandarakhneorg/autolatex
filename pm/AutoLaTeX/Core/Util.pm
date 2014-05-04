@@ -42,7 +42,7 @@ our $VERSION = '14.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
-              &getAutoLaTeXName &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
+              &getAutoLaTeXName &getAutoLaTeXDocDir &getAutoLaTeXLaunchingName &getAutoLaTeXVersion
               &setAutoLaTeXInfo &showManual &printDbg &printErr &formatErr &printWarn &setDebugLevel 
 	      &getDebugLevel &printDbgFor &dumpDbgFor &arrayIndexOf &printDbgIndent
 	      &printDbgUnindent &runCommandOrFail &runSystemCommand &runCommandOrFailFromInput
@@ -182,6 +182,19 @@ I<Returns:> the AutoLaTeX main directory.
 =cut
 sub getAutoLaTeXDir() {
 	return $autoLaTeXDirectory;
+}
+
+=pod
+
+=item B<getAutoLaTeXDocDir()>
+
+Replies the location of the documentation of AutoLaTeX.
+
+I<Returns:> the AutoLaTeX documentation directory.
+
+=cut
+sub getAutoLaTeXDocDir() {
+	return File::Spec->catfile(getAutoLaTeXDir(), "doc");
 }
 
 =pod
@@ -335,7 +348,7 @@ sub showManual(@) {
 		}
 	}
 
-	# Display the
+	# Display the POD
 	if ($pod) {
 		my $pod = File::Spec->catfile(@_, $pod);
 		if ( -r "$pod" ) {
