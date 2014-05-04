@@ -10,7 +10,7 @@ use File::Path qw(remove_tree);
 use Compress::Zlib;
 use Archive::Zip;
 use Pod::Text;
-use Pod::Man;
+use Pod::Man ();
 use pp;
 
 my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit' => 1, 'gtk' => 1, 'sublime2' => 1 );
@@ -473,7 +473,15 @@ sub DO_compile(\%) {
 	closedir(*DIR);
 
 	# Generate the manuals
-	my $man_parser = Pod::Man->new('release'=>$_[0]->{'version'}, section => 1, 'utf8'=>1);
+	my $man_parser = Pod::Man->new(
+			'errors' => 'pod',
+			'center' => "AutoLaTeX",
+			'name' => "AUTOLATEX",
+			'utf8' => 1,
+			'release' => $_[0]->{'version'},
+			'section' => 1,
+			'stderr' => 1,
+			);
 
 	opendir(*DIR, "$podDirectory") or die("$podDirectory: $!\n");
 	while (my $file = readdir(*DIR)) {
@@ -483,7 +491,7 @@ sub DO_compile(\%) {
 			$targetFile .= '.'.lc($loc) if ($loc);
 			$targetFile .= '.1';
 			print "Generating $targetFile...\n";
-			$text_parser->parse_from_file(
+			$man_parser->parse_from_file(
 				File::Spec->catfile("$podDirectory","$file"),
 				File::Spec->catfile("$podDirectory","$targetFile"));
 			gzipfct(File::Spec->catfile("$podDirectory","$targetFile"));
