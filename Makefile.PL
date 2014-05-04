@@ -1067,7 +1067,7 @@ else {
 	$BINDIRECTORY = File::Spec->catfile("$PREFIX",'bin');
 	$ETCDIRECTORY = File::Spec->catfile("$ETCPREFIX",'autolatex');
 	$MANDIRECTORY = File::Spec->catfile("$MANPREFIX",'man1');
-	$DOCDIRECTORY = File::Spec->catfile("$DOCPREFIX",'autolatex');
+	$DOCDIRECTORY = File::Spec->catfile("$INSTALLDIRECTORY",'doc');
 	$LOCALEDIRECTORY = File::Spec->catfile("$PREFIX",'share', 'locale');
 	$ICONDIRECTORY = File::Spec->catfile("$PREFIX",'share', 'icons');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
