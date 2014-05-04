@@ -40,6 +40,7 @@
 
 # Command line to invoke to translate the files from input to output.
 # $in is the environment variable for the input filename.
+# $inext is the environment variable for the extension of the input filename.
 # $out is the environment variable for the output filename.
 # $outbasename is the basename without the extension and the dirname of the output file.
 # $outwoext is the basename without the extension but with the dirname of the out file.
@@ -67,8 +68,9 @@
 
 # Code to invoke to translate the files from input to output.
 # $in is the environment variable for the input filename.
+# $inext is the current extension of the input filename.
 # $out is the environment variable for the output filename.
-# $outbasename is the basename without the extension and the dirname of the out file.
+# $outbasename is the basename without the extension and without the dirname of the out file.
 # $outwoext is the basename without the extension but with the dirname of the out file.
 # @inexts is the array of the extensions defined in variable INPUT_EXTENSIONS.
 # $outext is the first extension defined in variable OUTPUT_EXTENSION.

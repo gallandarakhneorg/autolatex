@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '17.0';
+$VERSION = '18.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -912,6 +912,16 @@ sub _runTranslator($$$$$$$$) {
 		}
 		$environment{'in'} = $in;
 		$environment{'out'} = $out;
+		my $inext;
+		while ((!$inext)&& ((undef,my $e) = each @{$translators->{"$transname"}{'transdef'}{'INPUT_EXTENSIONS'}{'value'}})) {
+			if ($in =~ /\Q$e\E$/i) {
+				$inext = $e;
+			}
+		}
+		if (!$inext) {
+			$inext = $translators->{"$transname"}{'transdef'}{'INPUT_EXTENSIONS'}{'value'}[0];
+		}
+		$environment{'inext'} = $inext;
 		my $ext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
 		$environment{'outbasename'} = basename($out, $ext);
 		$environment{'outwoext'} = File::Spec->catfile(dirname($out), $environment{'outbasename'});
@@ -936,6 +946,15 @@ sub _runTranslator($$$$$$$$) {
 		my $interpreter = $translators->{"$transname"}{'transdef'}{'TRANSLATOR_FUNCTION'}{'interpreter'};
 
 		my @inexts = @{$translators->{"$transname"}{'transdef'}{'INPUT_EXTENSIONS'}{'value'}};
+		my $inext;
+		while ((!$inext)&& ((undef,my $e) = each @inexts)) {
+			if ($in =~ /\Q$e\E$/i) {
+				$inext = $e;
+			}
+		}
+		if (!$inext) {
+			$inext = $inexts[0];
+		}
 		my $outext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0];
 		my @outexts = @{$translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}};
 		my $ext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
@@ -996,6 +1015,7 @@ sub _runTranslator($$$$$$$$) {
 			$wrapper->define_global_variable('_in', $in);
 			$wrapper->define_global_variable('_out', $out);
 			$wrapper->define_global_variable('_inexts', \@inexts);
+			$wrapper->define_global_variable('_inext', $inext);
 			$wrapper->define_global_variable('_outext', $outext);
 			$wrapper->define_global_variable('_outexts', \@outexts);
 			$wrapper->define_global_variable('_ext', $ext);
@@ -1279,7 +1299,7 @@ S<GNU Public License (GPL)>
 
 =head1 COPYRIGHT
 
-S<Copyright (c) 1998-13 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
+S<Copyright (c) 1998-14 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
 
 =head1 SEE ALSO
 
