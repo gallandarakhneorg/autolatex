@@ -309,6 +309,12 @@ OPTIONS
         the value must ve overridden. If translator is not given then
         "generation" is the default prefix.
 
+    --stderr
+        Prefer to output the messages on the standard error output.
+
+    --stdout
+        Prefer to output the messages on the standard output.
+
     --[no]synctex
         Enable or disable the generation of the output file with SyncTeX.
         SyncTeX is a system that is permitting to link a viewer and the TeX
@@ -330,6 +336,13 @@ OPTIONS
         The path of the document viewer could be specify with file. If not
         specified, AutoLaTeX will check for the tools acroread, kpdf,
         evince, gv, and xpdf.
+
+    -W
+    --Wall
+    --Wnone
+        Select the warnings that should be output: --Wall for all, --Wnone
+        for none, and -W to increment the output level. -W is the default
+        configuration used by AutoLaTeX.
 
     --xelatex
         Use the LaTeX command: xelatex.
@@ -488,6 +501,14 @@ AUTO GENERATION OF FIGURES
         Input format: .figt .fig_tex .figtex .fig+tex .tex.fig +tex.fig
         Output format: .pdftex_t
 
+    GeoGebra (ggb) to Portable Document Format (pdf)
+
+        Name: ggb2pdf
+        Use external converter: geogebra
+        Use translator:
+        Input format: .ggb
+        Output format: .pdf
+
     Graph Layout Engine (gle) to Portable Document Format (pdf)
 
         Name: gle2pdf
@@ -615,7 +636,7 @@ AUTO GENERATION OF FIGURES
 
         Name: svg2pdf
         Use external converter: inkscape
-        Use translator: eps2pdf
+        Use translator:
         Input format: .svg
         Output format: .pdf
 
@@ -625,7 +646,7 @@ AUTO GENERATION OF FIGURES
 
         Name: svg2pdf+tex
         Use external converter: inkscape
-        Use translator: eps2pdf
+        Use translator:
         Input format: .svgt .svg_t .svgtex .svg+tex .tex.svg +tex.svg
         Output format: .pdf
 
@@ -660,7 +681,7 @@ AUTO GENERATION OF FIGURES
 
         Name: svg2pdf+layers+tex
         Use external converter: inkscape
-        Use translator: eps2pdf
+        Use translator:
         Input format: .svglt .svg_lt .svglayerstex .svgtexlayers
         .svg+layers+tex .svg+tex+layers .layers.tex.svg .tex.layers.svg
         +layers+tex.svg +tex+layers.svg
@@ -675,6 +696,22 @@ AUTO GENERATION OF FIGURES
         .svg+layers+tex .svg+tex+layers .layers.tex.svg .tex.layers.svg
         +layers+tex.svg +tex+layers.svg
         Output format: .pdftex_t
+
+    Gimp (xcf) to Portable Document Format (pdf)
+
+        Name: xcf2pdf
+        Use external converter: convert
+        Use translator:
+        Input format: .xcf
+        Output format: .pdf
+
+    Gimp (xcf) to Portable Network Graphic (png)
+
+        Name: xcf2png
+        Use external converter: convert
+        Use translator:
+        Input format: .xcf
+        Output format: .png
 
     UML Metadata Interchange (xmi) to Portable Document Format (pdf):
     Umbrello variante
@@ -701,6 +738,14 @@ AUTO GENERATION OF FIGURES
         Use external converter: xmi2svg
         Use translator: svg2pdf
         Input format: .xmi
+        Output format: .pdf
+
+    Visio Binary Draw (vsd) to Portable Document Format (pdf)
+
+        Name: vsd2pdf
+        Use external converter: inkscape
+        Use translator:
+        Input format: .vsd .vdx .vsdx
         Output format: .pdf
 
 LATEX STYLE PACKAGE
@@ -920,7 +965,16 @@ GRAPHIC USER INTERFACE
     Sublime Text 2:
         A plugin for the editor Sublime Text 2
         <http://www.sublimetext.com/2> is provided. You could launch
-        AutoLaTeX through the building tools of Sublime Text.
+        AutoLaTeX through the building tools of Sublime Text. It is now
+        considered as *obsolete*, even still maintained. See the use of
+        LaTeXTools in Sublime Text.
+
+    Sublime Text with LaTeXTools:
+        Since 2014, AutoLaTeX is integrated as one of the builders of the
+        LaTeXTools plugin <https://github.com/SublimeText/LaTeXTools> for
+        Sublime Text. You could launch AutoLaTeX through the building tools
+        of Sublime Text. Until now, it is not possible to configure
+        AutoLaTeX through Sublime Text.
 
     Kile:
         There is no specific plugin for Kile. To use AutoLaTeX in this
@@ -1026,7 +1080,7 @@ INSTALLATION
 AUTOLATEX LICENSE
     GNU Public License (GPL)
 
-    Copyright (c) 1998-2013 Stephane GALLAND <galland@arakhne.org>
+    Copyright (c) 1998-2014 Stephane GALLAND <galland@arakhne.org>
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public License
@@ -1047,7 +1101,7 @@ AUTOLATEX LICENSE
 MANUAL COPYRIGHT
     GNU Free Documentation License (FDL)
 
-    Copyright (c) 1998-2013 Stephane Galland <galland@arakhne.org>.
+    Copyright (c) 1998-2014 Stephane Galland <galland@arakhne.org>.
 
     Permission is granted to copy, distribute and/or modify this document
     under the terms of the GNU Free Documentation License

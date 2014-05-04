@@ -10,20 +10,9 @@ autolatex [options] F<target> [F<target> ...]
 
 =head1 DESCRIPTION
 
-AutoLaTeX is a tool for managing small to large sized LaTeX
-documents. The user can easily perform all required steps
-to do such tasks as: preview the document, or produce a PDF
-file. AutoLaTeX will keep track of files that have changed
-and how to run the various programs that are needed to
-produce the output. One of the best feature of AutoLaTeX is
-to provide translator rules (aka. translators) to
-automatically generate the figures which will be included
-into the PDF.
+AutoLaTeX is a tool for managing small to large sized LaTeX documents. The user can easily perform all required steps to do such tasks as: preview the document, or produce a PDF file. AutoLaTeX will keep track of files that have changed and how to run the various programs that are needed to produce the output. One of the best feature of AutoLaTeX is to provide translator rules (aka. translators) to automatically generate the figures which will be included into the PDF.
 
-As a quick example, consider a project, which has a single
-LaTeX file F<mydoc.tex>, as its input. Without AutoLaTeX,
-to produce a F<.pdf> file you might use the following
-sequence of commands:
+As a quick example, consider a project, which has a single LaTeX file F<mydoc.tex>, as its input. Without AutoLaTeX, to produce a F<.pdf> file you might use the following sequence of commands:
 
      F<pdflatex mydoc.tex>
      F<bibtex mydoc.tex>
@@ -31,36 +20,16 @@ sequence of commands:
      F<pdflatex mydoc.tex>
      F<pdflatex mydoc.tex>
      
-The triple invocation of LaTeX is to ensure that all
-references have been properly resolved and any page layout
-changes due to inserting the references have been accounted
-for. The sequence of commands isn't horrible, but it still
-is several commands. To use AutoLaTeX for this project, you
-would use one of the following the command lines:
+The triple invocation of LaTeX is to ensure that all references have been properly resolved and any page layout changes due to inserting the references have been accounted for. The sequence of commands isn't horrible, but it still is several commands. To use AutoLaTeX for this project, you would use one of the following the command lines:
 
      F<autolatex -f mydoc.tex>
      F<autolatex>
      
-For documents, which may need to run programs to create the
-PDF versions of the drawings, which are included into the
-PDF document, or run BibTeX/Biber to generate bibliographies, the
-generation of the F<.pdf> (or other) files becomes
-increasingly complicated to run manually. With AutoLaTeX,
-such operations are still very simple: you have nothing to
-do. AutoLaTeX is calling the translators for you. Each
-translator is able to convert an picture source file (eps,
-svg, Gnuplot...) into a PDF or PNG file.
+For documents, which may need to run programs to create the PDF versions of the drawings, which are included into the PDF document, or run BibTeX/Biber to generate bibliographies, the generation of the F<.pdf> (or other) files becomes increasingly complicated to run manually. With AutoLaTeX, such operations are still very simple: you have nothing to do. AutoLaTeX is calling the translators for you. Each translator is able to convert an picture source file (eps, svg, Gnuplot...) into a PDF or PNG file.
 
-Hopefully this introduction has provided an adequate
-example for how AutoLaTeX can simplify the management of
-LaTeX-based documents. The AutoLaTeX system is simple enough
-for small projects and powerful enough for large projects.
-The remainder of this manual will provide complete
-documentation on the use of AutoLaTeX as well as
-configuration and installation instructions.
+Hopefully this introduction has provided an adequate example for how AutoLaTeX can simplify the management of LaTeX-based documents. The AutoLaTeX system is simple enough for small projects and powerful enough for large projects. The remainder of this manual will provide complete documentation on the use of AutoLaTeX as well as configuration and installation instructions.
 
-AutoLaTeX provides several graphical user interfaces.
-See the section below for details.
+AutoLaTeX provides several graphical user interfaces. See the section below for details.
 
 =head1 TARGETS
 
