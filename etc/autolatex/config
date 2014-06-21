@@ -1,0 +1,128 @@
+; Config::Simple 4.59
+; Fri Aug 23 20:48:19 2013
+
+
+# Configuration of the translator 'oct2png'
+[oct2png]
+include module=false
+
+
+# Configuration of the translator 'svg2png'
+[svg2png]
+include module=false
+
+
+# Configuration of the translator 'astah2png'
+[astah2png]
+include module=false
+
+
+# Configuration of the translator 'gxl2png'
+[gxl2png]
+include module=false
+
+
+# Configuration of the translator 'eps2pdf_epstopdf'
+[eps2pdf_epstopdf]
+include module=true
+
+
+# Configuration of the translator 'eps2pdf_ps2pdf'
+[eps2pdf_ps2pdf]
+include module=false
+
+
+# Configuration of the translator 'dot2pdf'
+[dot2pdf]
+include module=true
+
+
+# Configuration of the translator 'gxl2pdf'
+[gxl2pdf]
+include module=true
+
+
+# Configuration of the generation functions
+[generation]
+
+# Does the figures must be automatically generated ('yes' or
+# 'no')?
+generate images=true
+
+# Specify the style that must be used by makeindex.
+# Valid values are:
+#     <filename> if a filename was specified, AutoLaTeX
+# assumes that it is the .ist file;
+#     @system AutoLaTeX uses the system default .ist file (in
+# AutoLaTeX distribution);
+#     @detect AutoLaTeX will tries to find a .ist file in the
+# project's directory. If none was found, AutoLaTeX will not
+# pass a style to makeindex;
+#     @none AutoLaTeX assumes that no .ist file must be
+# passed to makeindex;
+#     <empty> AutoLaTeX assumes that no .ist file must be
+# passed to makeindex.
+makeindex style=@detect, @system
+
+
+# Configuration of the viewing functions
+[viewer]
+
+# Indicates if a viewer should be launch after the
+# compilation. Valid values are 'yes' and 'no'.
+view=true
+
+
+# Configuration of the translator 'dot2tex'
+[dot2tex]
+include module=false
+
+
+# Configuration of the translator 'astah2pdf'
+[astah2pdf]
+include module=true
+
+
+# Configuration of the translator 'dot2png'
+[dot2png]
+include module=false
+
+
+# Configuration of the translator 'svg2pdf'
+[svg2pdf]
+include module=true
+
+
+# Configuration of the translator 'oct2pdf'
+[oct2pdf]
+include module=true
+
+# Configuration of the translator 'xmi2pdf_umbrello'
+[xmi2pdf_umbrello]
+include module=true
+
+# Configuration of the translator 'xmi2pdf_xmi2svg'
+[xmi2pdf_xmi2svg]
+include module=false
+
+# Configuration of the translator 'xmi2pdf_uml2svg'
+[xmi2pdf_uml2svg]
+include module=false
+
+# Configuration of the translator 'gle2pdf'
+[gle2pdf]
+include module=true
+
+# Configuration of the translator 'gle2png'
+[gle2png]
+include module=false
+
+
+# Configuration of the translator 'xcf2pdf'
+[xcf2pdf]
+include module=true
+
+# Configuration of the translator 'xcf2png'
+[xcf2png]
+include module=false
+

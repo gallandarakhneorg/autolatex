@@ -1,12 +1,11 @@
 # List of source files containing translatable strings.
 
-python/utils/debug.py
-python/utils/latex_log_parser.py
-python/utils/runner.py
-python/utils/utils.py
-
 plugins/sublime-text-2/__init__.py
 plugins/sublime-text-2/autolatex.py
 plugins/sublime-text-2/utils/__init__.py
 plugins/sublime-text-2/utils/runner_command.py
+plugins/sublime-text-2/utils/debug.py
+plugins/sublime-text-2/utils/latex_log_parser.py
+plugins/sublime-text-2/utils/runner.py
+plugins/sublime-text-2/utils/utils.py
 

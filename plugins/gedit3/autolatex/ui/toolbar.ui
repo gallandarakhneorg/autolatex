@@ -1,0 +1,11 @@
+<ui>
+<toolbar name="ToolBar">
+    <placeholder name="AutoLaTeX_toolbar">
+        <separator/>
+        <toolitem action="AutoLaTeXCompileAction"/>
+        <toolitem action="AutoLaTeXCleanAction"/>
+        <toolitem action="AutoLaTeXViewAction"/>
+    </placeholder>
+</toolbar>
+</ui>
+

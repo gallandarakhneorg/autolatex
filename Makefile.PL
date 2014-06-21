@@ -13,7 +13,7 @@ use Pod::Text;
 use Pod::Man ();
 use pp;
 
-my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit' => 1, 'gtk' => 1, 'sublime2' => 1 );
+my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit2' => 0, 'gedit3' => 1, 'gtk' => 0, 'sublime2' => 0 );
 
 # GENERAL INSTALLATION INFORMATIONS
 my $ALLOW_SYMBOLIC_LINK;
@@ -25,8 +25,10 @@ my $DOCDIRECTORY;
 my $LOCALEDIRECTORY;
 my $ICONDIRECTORY;
 my $STYDIRECTORY;
-my $GSETTINGSSCHEMADIRECTORY;
-my $GEDITPLUGINDIRECTORY;
+my $GSETTINGS2SCHEMADIRECTORY;
+my $GSETTINGS3SCHEMADIRECTORY;
+my $GEDIT2PLUGINDIRECTORY;
+my $GEDIT3PLUGINDIRECTORY;
 my $SUBLIME2PLUGINDIRECTORY;
 
 my $EXE_EXTENSION = '.bin';
@@ -520,6 +522,7 @@ sub DO_compile(\%) {
 	}
 	closedir(*DIR);
 
+
 	# Create the Sublime Text Package
 	{
 		my $sublime_root_tmp = File::Spec->catfile('build', 'sublime2');
@@ -716,57 +719,100 @@ sub DO_install(\%) {
 			getFiles('sty','*'));
 	}
 	
-	if ($MODULES{'gedit'}) {
+	if ($MODULES{'gedit3'}) {
 		installInto(
-			$GEDITPLUGINDIRECTORY,
-			getFiles('plugins', 'gedit','*'));
+			$GEDIT3PLUGINDIRECTORY,
+			getFiles('plugins', 'gedit3','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex'),
-			getFiles('plugins', 'gedit','autolatex','*'));
+			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex'),
+			getFiles('plugins', 'gedit3','autolatex','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','config'),
-			getFiles('plugins', 'gedit','autolatex','config','*'));
+			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex','config'),
+			getFiles('plugins', 'gedit3','autolatex','config','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','config','cli'),
-			getFiles('plugins', 'gedit','autolatex','config','cli','*'));
+			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex','config','cli'),
+			getFiles('plugins', 'gedit3','autolatex','config','cli','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','config','plugin'),
-			getFiles('plugins', 'gedit','autolatex','config','plugin','*'));
+			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex','config','plugin'),
+			getFiles('plugins', 'gedit3','autolatex','config','plugin','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','ui'),
-			getFiles('plugins', 'gedit','autolatex','ui','*'));
+			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex','ui'),
+			getFiles('plugins', 'gedit3','autolatex','ui','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','utils'),
-			getFiles('python','utils','*'));
-		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','utils'),
-			getFiles('plugins', 'gedit','autolatex','utils','*'));
+			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex','utils'),
+			getFiles('plugins', 'gedit3','autolatex','utils','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','widgets'),
-			getFiles('plugins', 'gedit','autolatex','widgets','*'));
+			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex','widgets'),
+			getFiles('plugins', 'gedit3','autolatex','widgets','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','icons','24'),
-			getFiles('plugins', 'gedit','autolatex','icons','24','*'));
+			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex','icons','24'),
+			getFiles('plugins', 'gedit3','autolatex','icons','24','*'));
 
 		installInto(
-			File::Spec->catfile($GEDITPLUGINDIRECTORY,'autolatex','icons','16'),
-			getFiles('plugins', 'gedit','autolatex','icons','16','*'));
+			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex','icons','16'),
+			getFiles('plugins', 'gedit3','autolatex','icons','16','*'));
 
 		installInto(
-			$GSETTINGSSCHEMADIRECTORY,
+			$GSETTINGS3SCHEMADIRECTORY,
+			getFiles('schemas', '*.gschema.xml'));
+	}
+	
+	if ($MODULES{'gedit2'}) {
+		installInto(
+			$GEDIT2PLUGINDIRECTORY,
+			getFiles('plugins', 'gedit2','*'));
+
+		installInto(
+			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex'),
+			getFiles('plugins', 'gedit2','autolatex','*'));
+
+		installInto(
+			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex','config'),
+			getFiles('plugins', 'gedit2','autolatex','config','*'));
+
+		installInto(
+			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex','config','cli'),
+			getFiles('plugins', 'gedit2','autolatex','config','cli','*'));
+
+		installInto(
+			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex','config','plugin'),
+			getFiles('plugins', 'gedit2','autolatex','config','plugin','*'));
+
+		installInto(
+			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex','ui'),
+			getFiles('plugins', 'gedit2','autolatex','ui','*'));
+
+		installInto(
+			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex','utils'),
+			getFiles('plugins', 'gedit2','autolatex','utils','*'));
+
+		installInto(
+			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex','widgets'),
+			getFiles('plugins', 'gedit2','autolatex','widgets','*'));
+
+		installInto(
+			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex','icons','24'),
+			getFiles('plugins', 'gedit2','autolatex','icons','24','*'));
+
+		installInto(
+			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex','icons','16'),
+			getFiles('plugins', 'gedit2','autolatex','icons','16','*'));
+
+		installInto(
+			$GSETTINGS2SCHEMADIRECTORY,
 			getFiles('schemas', '*.gschema.xml'));
 
-		installInto(
-			$GSETTINGSSCHEMADIRECTORY,
-			getFiles('schemas', '*.gschema.xml'));
+	}
+
+	if ($MODULES{'gedit2'} || $MODULES{'gedit3'}) {
 
 		foreach my $lang (@po_directories) {
 			install(
@@ -855,12 +901,15 @@ sub DO_vars(\%) {
 		'ETCDIRECTORY', $ETCDIRECTORY,
 		'ICONDIRECTORY', $ICONDIRECTORY,
 		'INSTALLDIRECTORY', $INSTALLDIRECTORY,
-		'GEDITPLUGINDIRECTORY', $GEDITPLUGINDIRECTORY,
-		'GSETTINGSSCHEMADIRECTORY', $GSETTINGSSCHEMADIRECTORY,
+		'GEDIT2PLUGINDIRECTORY', $GEDIT2PLUGINDIRECTORY,
+		'GEDIT3PLUGINDIRECTORY', $GEDIT3PLUGINDIRECTORY,
+		'GSETTINGS2SCHEMADIRECTORY', $GSETTINGS2SCHEMADIRECTORY,
+		'GSETTINGS3SCHEMADIRECTORY', $GSETTINGS3SCHEMADIRECTORY,
 		'LOCALEDIRECTORY', $LOCALEDIRECTORY,
 		'MANDIRECTORY', $MANDIRECTORY,
 		'STYDIRECTORY', $STYDIRECTORY,
-		'SUBLIME2PLUGINDIRECTORY', $SUBLIME2PLUGINDIRECTORY);
+		'SUBLIME2PLUGINDIRECTORY', $SUBLIME2PLUGINDIRECTORY
+	);
 }
 
 #------------------------------------------------------------------------------------------
@@ -1041,9 +1090,11 @@ if (("$^O" eq 'MSWin32')||
 	$LOCALEDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex', 'locale');
 	$ICONDIRECTORY = File::Spec->catfile("$PREFIX",'autolatex', 'icons');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
-	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
-	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
 	$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'}) || File::Spec->catfile("$PREFIX",'Sublime Text 2')), 'Pristine Packages');
+	$GEDIT2PLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex-gedit2');
+	$GEDIT3PLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
+	$GSETTINGS2SCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
+	$GSETTINGS3SCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
 }
 else {
 	# Unix compatible platform
@@ -1071,15 +1122,16 @@ else {
 	$LOCALEDIRECTORY = File::Spec->catfile("$PREFIX",'share', 'locale');
 	$ICONDIRECTORY = File::Spec->catfile("$PREFIX",'share', 'icons');
 	$STYDIRECTORY = File::Spec->catfile("$TEXPREFIX",'tex','latex','autolatex');
-	$GEDITPLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex');
-	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
-
 	if ("$^O" eq "rhapsody") {
 		$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'})  || File::Spec->catfile($ENV{'HOME'}, 'Library', 'Application Support', 'Sublime Text 2' )), 'Pristine Packages');
 	}
 	else {
 		$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'})  || File::Spec->catfile($ENV{'HOME'}, '.config', 'sublime-text-2')), 'Pristine Packages');
 	}
+	$GEDIT2PLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex-gedit2');
+	$GEDIT3PLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex');
+	$GSETTINGS2SCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
+	$GSETTINGS3SCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
 }
 
 # Run the action

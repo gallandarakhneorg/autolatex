@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 25.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-04 14:53+0200\n"
+"POT-Creation-Date: 2014-06-21 02:21+0200\n"
 "PO-Revision-Date: 2013-09-16 13:38+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -16,22 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: python/utils/latex_log_parser.py:153
-#, python-format
-msgid "Citation '%s' undefined"
-msgstr "La citation '%s' n'est pas définie"
-
-#: python/utils/latex_log_parser.py:169
-#, python-format
-msgid "Reference '%s' undefined"
-msgstr "La référence '%s' n'est pas définie"
-
-#: python/utils/latex_log_parser.py:185
-#, python-format
-msgid "Label '%s' multiply defined"
-msgstr "Le label '%s' est défini plusieurs fois"
-
-#: plugins/gedit/autolatex/__init__.py:93
+#: plugins/gedit3/autolatex/__init__.py:93
 msgid ""
 "The programs 'autolatex' and 'autolatex-backend'\n"
 "were not found.\n"
@@ -41,7 +26,7 @@ msgstr ""
 "n'ont pas été trouvés.\n"
 "Veuillez corriger la configuration du plugin AutoLaTeX."
 
-#: plugins/gedit/autolatex/__init__.py:97
+#: plugins/gedit3/autolatex/__init__.py:97
 msgid ""
 "The program 'autolatex' was not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
@@ -49,7 +34,7 @@ msgstr ""
 "Le programme 'autolatex' n'a pas été trouvé.\n"
 "Veuillez corriger la configuration du plugin AutoLaTeX."
 
-#: plugins/gedit/autolatex/__init__.py:101
+#: plugins/gedit3/autolatex/__init__.py:101
 msgid ""
 "The program 'autolatex-backend' was not found.\n"
 "Please fix the configuration of the AutoLaTeX plugin."
@@ -57,70 +42,70 @@ msgstr ""
 "Le programme 'autolatex-backend' n'a pas été trouvé.\n"
 "Veuillez corriger la configuration du plugin AutoLaTeX."
 
-#: plugins/gedit/autolatex/__init__.py:149
+#: plugins/gedit3/autolatex/__init__.py:145
 msgid "AutoLaTeX Console"
 msgstr "Console AutoLaTeX"
 
-#: plugins/gedit/autolatex/__init__.py:171
+#: plugins/gedit3/autolatex/__init__.py:167
 msgid "LaTeX warnings were found. Please open the bottom panel to see them."
 msgstr "Des avertissements LaTeX ont été trouvés (voir le panneau inférieur)."
 
-#: plugins/gedit/autolatex/__init__.py:190
-#: plugins/gedit/autolatex/__init__.py:191
+#: plugins/gedit3/autolatex/__init__.py:186
+#: plugins/gedit3/autolatex/__init__.py:187
 msgid "AutoLaTeX"
 msgstr "AutoLaTeX"
 
-#: plugins/gedit/autolatex/__init__.py:198
-#: plugins/gedit/autolatex/__init__.py:199
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:103
+#: plugins/gedit3/autolatex/__init__.py:194
+#: plugins/gedit3/autolatex/__init__.py:195
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:103
 msgid "SyncTeX"
 msgstr "SyncTeX"
 
-#: plugins/gedit/autolatex/__init__.py:206
+#: plugins/gedit3/autolatex/__init__.py:202
 msgid "Generate images"
 msgstr "Générer les images"
 
-#: plugins/gedit/autolatex/__init__.py:207
+#: plugins/gedit3/autolatex/__init__.py:203
 msgid "Generate the images with AutoLaTeX"
 msgstr "Générer les images avec AutoLaTeX"
 
-#: plugins/gedit/autolatex/__init__.py:209
+#: plugins/gedit3/autolatex/__init__.py:205
 msgid "Compile"
 msgstr "Compiler"
 
-#: plugins/gedit/autolatex/__init__.py:210
+#: plugins/gedit3/autolatex/__init__.py:206
 msgid "Compile with AutoLaTeX"
 msgstr "Compiler avec AutoLaTeX"
 
-#: plugins/gedit/autolatex/__init__.py:212
+#: plugins/gedit3/autolatex/__init__.py:208
 msgid "Remove temporary files"
 msgstr "Supprimer les fichiers temporaires"
 
-#: plugins/gedit/autolatex/__init__.py:213
+#: plugins/gedit3/autolatex/__init__.py:209
 msgid "Clean with AutoLaTeX"
 msgstr "Nettoyer avec AutoLaTeX"
 
-#: plugins/gedit/autolatex/__init__.py:215
+#: plugins/gedit3/autolatex/__init__.py:211
 msgid "Clean all"
 msgstr "Tout supprimer"
 
-#: plugins/gedit/autolatex/__init__.py:216
+#: plugins/gedit3/autolatex/__init__.py:212
 msgid "Clean all with AutoLaTeX"
 msgstr "Tout supprimer avec AutoLaTeX"
 
-#: plugins/gedit/autolatex/__init__.py:218
+#: plugins/gedit3/autolatex/__init__.py:214
 msgid "View the PDF"
 msgstr "Voir le PDF"
 
-#: plugins/gedit/autolatex/__init__.py:219
+#: plugins/gedit3/autolatex/__init__.py:215
 msgid "Open the PDF viewer"
 msgstr "Ouverture du visualisateur PDF"
 
-#: plugins/gedit/autolatex/__init__.py:221
+#: plugins/gedit3/autolatex/__init__.py:217
 msgid "Create flat version of the TeX document"
 msgstr "Création de la version \"plate\" du document TeX"
 
-#: plugins/gedit/autolatex/__init__.py:222
+#: plugins/gedit3/autolatex/__init__.py:218
 msgid ""
 "Create a flat version of the document, to be submitted to on-line "
 "publication systems (Elsevier...)"
@@ -128,112 +113,112 @@ msgstr ""
 "Création d'une version plate du document, afin de permettre la soumission à "
 "un système de publication on-line"
 
-#: plugins/gedit/autolatex/__init__.py:224
+#: plugins/gedit3/autolatex/__init__.py:220
 msgid "Show next error/warning"
 msgstr "Afficher le message suivant"
 
-#: plugins/gedit/autolatex/__init__.py:225
+#: plugins/gedit3/autolatex/__init__.py:221
 msgid "Show the next error or warning from the LaTeX console"
 msgstr "Afficher le message suivant d'erreur ou d'avertissement"
 
-#: plugins/gedit/autolatex/__init__.py:227
+#: plugins/gedit3/autolatex/__init__.py:223
 msgid "Show previous error/warning"
 msgstr "Afficher le message précédent"
 
-#: plugins/gedit/autolatex/__init__.py:228
+#: plugins/gedit3/autolatex/__init__.py:224
 msgid "Show the previous error or warning from the LaTeX console"
 msgstr "Afficher le message précédent d'erreur ou d'avertissement"
 
-#: plugins/gedit/autolatex/__init__.py:235
+#: plugins/gedit3/autolatex/__init__.py:231
 msgid "Document configuration"
 msgstr "Configuration pour le document"
 
-#: plugins/gedit/autolatex/__init__.py:236
+#: plugins/gedit3/autolatex/__init__.py:232
 msgid "Change the configuration for the document"
 msgstr "Changer la configuration pour le document"
 
-#: plugins/gedit/autolatex/__init__.py:243
+#: plugins/gedit3/autolatex/__init__.py:239
 msgid "Delete document configuration"
 msgstr "Supprimer configuration document"
 
-#: plugins/gedit/autolatex/__init__.py:244
+#: plugins/gedit3/autolatex/__init__.py:240
 msgid "Delete the configuration for the document"
 msgstr "Supprimer la configuration pour le document"
 
-#: plugins/gedit/autolatex/__init__.py:251
+#: plugins/gedit3/autolatex/__init__.py:247
 msgid "Delete user configuration"
 msgstr "Supprimer configuration utilisateur"
 
-#: plugins/gedit/autolatex/__init__.py:252
+#: plugins/gedit3/autolatex/__init__.py:248
 msgid "Delete the configuration for the user"
 msgstr "Supprimer la configuration de l'utilisateur"
 
-#: plugins/gedit/autolatex/__init__.py:259
+#: plugins/gedit3/autolatex/__init__.py:255
 msgid "Force the use of SyncTeX"
 msgstr "Forcer l'utilisation de SyncTeX"
 
-#: plugins/gedit/autolatex/__init__.py:260
+#: plugins/gedit3/autolatex/__init__.py:256
 msgid "Use SyncTeX even if the document and user configurations say 'no'"
 msgstr ""
 "Utiliser SyncTeX même si les configurations du document et utilisateur "
 "indiquent le contraire"
 
-#: plugins/gedit/autolatex/__init__.py:264
+#: plugins/gedit3/autolatex/__init__.py:260
 msgid "Update TeX file with SyncTeX reference"
 msgstr "Ajouter les références SyncTeX"
 
-#: plugins/gedit/autolatex/__init__.py:265
+#: plugins/gedit3/autolatex/__init__.py:261
 msgid ""
 "Update the text of the TeX file to add the reference to the main document"
 msgstr ""
 "Modifier le texte du fichier TeX pour ajouter les références au document "
 "principal"
 
-#: plugins/gedit/autolatex/__init__.py:267
+#: plugins/gedit3/autolatex/__init__.py:263
 msgid "User configuration"
 msgstr "Configuration de l'utilisateur"
 
-#: plugins/gedit/autolatex/__init__.py:268
+#: plugins/gedit3/autolatex/__init__.py:264
 msgid "Change the configuration for the user"
 msgstr "Changer la configuration de l'utilisateur"
 
-#: plugins/gedit/autolatex/__init__.py:357
+#: plugins/gedit3/autolatex/__init__.py:353
 msgid "Removing the generated files (except the figures)"
 msgstr "Suppression des fichiers générés (à l'exception des figures)"
 
-#: plugins/gedit/autolatex/__init__.py:364
+#: plugins/gedit3/autolatex/__init__.py:360
 msgid "Removing the generated files and figures"
 msgstr "Suppression des fichiers et des figures générés"
 
-#: plugins/gedit/autolatex/__init__.py:371
+#: plugins/gedit3/autolatex/__init__.py:367
 msgid "Generating the document"
 msgstr "Production du document"
 
-#: plugins/gedit/autolatex/__init__.py:378
+#: plugins/gedit3/autolatex/__init__.py:374
 msgid "Generating the figures with the translators"
 msgstr "Génération des images avec les convertisseurs"
 
-#: plugins/gedit/autolatex/__init__.py:385
+#: plugins/gedit3/autolatex/__init__.py:381
 msgid "Launching the viewer"
 msgstr "Ouverture du visualisateur PDF"
 
-#: plugins/gedit/autolatex/__init__.py:400
+#: plugins/gedit3/autolatex/__init__.py:396
 msgid "Do you want to delete the document configuration?"
 msgstr ""
 "Voulez-vous supprimer le fichier de\n"
 "configuration de votre document ?"
 
-#: plugins/gedit/autolatex/__init__.py:415
+#: plugins/gedit3/autolatex/__init__.py:411
 msgid "Do you want to delete the user configuration?"
 msgstr ""
 "Voulez-vous supprimer le fichier de\n"
 "configuration utilisateur ?"
 
-#: plugins/gedit/autolatex/__init__.py:492
+#: plugins/gedit3/autolatex/__init__.py:488
 msgid "Making the \"flat\" version of the document"
 msgstr "Création de la version \"plate\" du document"
 
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:60
+#: plugins/gedit3/autolatex/config/cli/figure_assignment_panel.py:60
 msgid ""
 "List of the figures detected in your document's directory.\n"
 "You can edit the second column to set the translator used for a particular "
@@ -243,134 +228,134 @@ msgstr ""
 "Vous pouvez éditer la seconde colonne pour changer le convertisseur\n"
 "utilisé pour une figure particulière."
 
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:67
+#: plugins/gedit3/autolatex/config/cli/figure_assignment_panel.py:67
 msgid "Figure"
 msgstr "Image"
 
-#: plugins/gedit/autolatex/config/cli/figure_assignment_panel.py:74
+#: plugins/gedit3/autolatex/config/cli/figure_assignment_panel.py:74
 msgid "Translator"
 msgstr "Convertisseur"
 
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:59
+#: plugins/gedit3/autolatex/config/cli/figure_panel.py:59
 msgid "Automatic generation of pictures with translators"
 msgstr "Génération automatique d'images avec des convertisseurs"
 
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:62
+#: plugins/gedit3/autolatex/config/cli/figure_panel.py:62
 msgid "Search paths for the pictures"
 msgstr "Chemins de recherche pour les images"
 
-#: plugins/gedit/autolatex/config/cli/figure_panel.py:187
+#: plugins/gedit3/autolatex/config/cli/figure_panel.py:187
 msgid "Select a figure path"
 msgstr "Sélectionner un chemin de recherche pour les images"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:123
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:123
 msgid "Main TeX file (optional)"
 msgstr "Fichier TeX principal (optionnel)"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:126
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:126
 msgid "Execute the bibliography tool (BibTeX, Bibber...)"
 msgstr "Exécution des outils bibliographique (BibTeX, Bibber, ...)"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:129
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:129
 msgid "Type of generation"
 msgstr "Type de génération"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:134
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:134
 msgid "Use SyncTeX when generating the document"
 msgstr "Utiliser SyncTeX lors de la génération du document"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:137
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:137
 msgid "Type of style for MakeIndex"
 msgstr "Type du style pour MakeIndex"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:138
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:138
 msgid "Specific '.ist' file"
 msgstr "Fichier '.ist' spécifique"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:139
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:139
 msgid "Autodetect the style inside the project directory"
 msgstr "Autodétection du style dans le répertoire du document"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:140
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:140
 msgid "Use only the default AutoLaTeX style"
 msgstr "Utiliser seulement le style par défaut AutoLaTeX"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:141
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:141
 msgid "No style is passed to MakeIndex"
 msgstr "Pas de style pour MakeIndex"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:142
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:142
 msgid ""
 "Custom definition by the user (do not change the original configuration)"
 msgstr "Définie par l'utilisateur (aucun changement de la config. originelle)"
 
-#: plugins/gedit/autolatex/config/cli/generator_panel.py:146
+#: plugins/gedit3/autolatex/config/cli/generator_panel.py:146
 msgid "Style file for MakeIndex"
 msgstr "Fichier de style pour MakeIndex"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:73
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:73
 msgid "Create a translator"
 msgstr "Création d'un convertisseur"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:90
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:90
 msgid "Note: read the tooltips of the fields for help."
 msgstr "Note: lisez les tooltips sur les champs pour obtenir une aide."
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:93
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:93
 msgid "Input extensions"
 msgstr "Extensions des entrées"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:95
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:95
 msgid "List of filename extensions, separated by spaces. Ex: .svg .svgz"
 msgstr ""
 "Liste des extensions de fichier, séparées par des espaces. Ex: .svg .svgz"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:99
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:99
 msgid "PDF or Postscript"
 msgstr "PDF ou Postscript"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:100
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:100
 msgid "TeX macros inside PDF or Postscript"
 msgstr "Macros TeX dans un PDF ou Postscript"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:101
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:101
 msgid "Beamer Layer"
 msgstr "Calque Beamer"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:102
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:102
 msgid "TeX macros inside Beamer Layer"
 msgstr "Macros TeX dans un calque Beamer"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:103
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:103
 msgid "PNG Picture"
 msgstr "Image PNG"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:104
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:104
 msgid "Output"
 msgstr "Sortie"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:106
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:106
 msgid "Variante"
 msgstr "Variante"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:110
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:110
 msgid "Shell Command line"
 msgstr "Ligne de commande Shell"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:121
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:121
 #, python-format
 msgid "Script in %s"
 msgstr "Script dans %s"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:123
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:123
 msgid "Execution mode"
 msgstr "Mode d'exécution"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:125
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:125
 msgid "Command line"
 msgstr "Ligne de commande"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:129
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:129
 msgid ""
 "Type a command line. Type:\n"
 "$in for the input filename;\n"
@@ -387,15 +372,15 @@ msgstr ""
 "$outwoext pour le nom de fichier de sortie sans répertoire ni extension;\n"
 "$NAME pour une variable d'environnement nommée 'NAME'."
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:146
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:146
 msgid "Script source code"
 msgstr "Code source du script"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:150
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:150
 msgid "Files to clean"
 msgstr "Fichiers à nettoyer"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:152
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:152
 msgid ""
 "Type list of patterns, separated by spaces. Type:\n"
 "$in for the input basename without the extension and without the directory;\n"
@@ -405,7 +390,7 @@ msgstr ""
 "$in pour un nom de fichier d'entrée sans répertoire ni extension;\n"
 "$in pour un nom de fichier de sortie sans répertoire ni extension."
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:178
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:178
 msgid ""
 "Type a source code. Type:\n"
 "#1in for the input filename;\n"
@@ -430,7 +415,7 @@ msgstr ""
 "#1ispdfmode indique si le convertisseur est en mode PDF;\n"
 "#1isepsmode indique si le convertisseur est en mode Postscript."
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:340
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:340
 msgid ""
 "List of available translators:\n"
 "(click on the second column to change the loading state of the translators)"
@@ -439,62 +424,62 @@ msgstr ""
 "(cliquez sur la seconde colonne pour changer l'état de chargement des "
 "convertisseurs)"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:351
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:355
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:351
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:355
 msgid "usr"
 msgstr "usr"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:352
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:352
 msgid "doc"
 msgstr "doc"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:360
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:360
 msgid "name"
 msgstr "nom"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:362
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:362
 msgid "description"
 msgstr "description"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:377
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:377
 msgid "Import"
 msgstr "Importer"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:389
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:393
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:389
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:393
 msgid "Current user"
 msgstr "Utilisateur"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:390
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:390
 msgid "Current document"
 msgstr "Document"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:392
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:392
 msgid "All users"
 msgstr "Tous le monde"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:401
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:401
 msgid "Loaded, no conflict"
 msgstr "Chargé, sans conflit"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:402
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:402
 msgid "Loaded, conflict"
 msgstr "Chargé, avec conflit"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:403
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:403
 msgid "Not loaded"
 msgstr "Non chargé"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:404
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:404
 msgid "Unspecified, no conflict"
 msgstr "Inconnu, sans conflit"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:405
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:405
 msgid "Unspecified, conflict"
 msgstr "Inconnu, avec conflit"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:662
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:710
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:662
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:710
 #, python-format
 msgid ""
 "The translator file '%s' already exists.\n"
@@ -503,20 +488,20 @@ msgstr ""
 "Le fichier du convertisseur '%s' existe déjà.\n"
 "Voulez-vous remplacer ce fichier par le fichier sélectionné ?"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:677
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:677
 msgid "Cannot compute a valid basename with the inputs."
 msgstr ""
 "Impossible de calculer un nom de fichier valide avec les données entrées."
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:685
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:685
 msgid "Select a translator definition"
 msgstr "Sélectionnez une définition de convertisseur"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:691
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:691
 msgid "AutoLaTeX Translator"
 msgstr "Convertisseur AutoLaTeX"
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:800
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:800
 msgid ""
 "There is a problem when reading the translator's definition.\n"
 "Please close and re-open the configuration dialog\n"
@@ -526,48 +511,48 @@ msgstr ""
 "Veuillez fermer la fenêtre de configuration, et la réouvrir\n"
 "pour tenter une nouvelle lecture de la définition."
 
-#: plugins/gedit/autolatex/config/cli/translator_panel.py:813
+#: plugins/gedit3/autolatex/config/cli/translator_panel.py:813
 #, python-format
 msgid "Do you want to delete the translator '%s'?"
 msgstr "Voulez-vous supprimer le convertisseur '%s' ?"
 
-#: plugins/gedit/autolatex/config/cli/viewer_panel.py:56
+#: plugins/gedit3/autolatex/config/cli/viewer_panel.py:56
 msgid "Launch a viewer after compilation"
 msgstr "Lancer un visualisateur après la compilation"
 
-#: plugins/gedit/autolatex/config/cli/viewer_panel.py:59
+#: plugins/gedit3/autolatex/config/cli/viewer_panel.py:59
 msgid "Command for launching the viewer (optional)"
 msgstr "Commande pour lancer le visualisateur (optionnel)"
 
-#: plugins/gedit/autolatex/config/cli/window.py:81
+#: plugins/gedit3/autolatex/config/cli/window.py:81
 msgid "Document Configuration"
 msgstr "Configuration pour le document"
 
-#: plugins/gedit/autolatex/config/cli/window.py:81
+#: plugins/gedit3/autolatex/config/cli/window.py:81
 msgid "User Configuration"
 msgstr "Configuration au niveau utilisateur"
 
-#: plugins/gedit/autolatex/config/cli/window.py:93
+#: plugins/gedit3/autolatex/config/cli/window.py:93
 msgid "Generator"
 msgstr "Génération"
 
-#: plugins/gedit/autolatex/config/cli/window.py:98
+#: plugins/gedit3/autolatex/config/cli/window.py:98
 msgid "Figures"
 msgstr "Images"
 
-#: plugins/gedit/autolatex/config/cli/window.py:104
+#: plugins/gedit3/autolatex/config/cli/window.py:104
 msgid "List of figures"
 msgstr "Liste des images"
 
-#: plugins/gedit/autolatex/config/cli/window.py:109
+#: plugins/gedit3/autolatex/config/cli/window.py:109
 msgid "Translators"
 msgstr "Convertisseurs"
 
-#: plugins/gedit/autolatex/config/cli/window.py:114
+#: plugins/gedit3/autolatex/config/cli/window.py:114
 msgid "Viewer"
 msgstr "Visualisateur"
 
-#: plugins/gedit/autolatex/config/cli/window.py:127
+#: plugins/gedit3/autolatex/config/cli/window.py:127
 #, python-format
 msgid ""
 "The page '%s' cannot save its fields.\n"
@@ -576,39 +561,39 @@ msgstr ""
 "La page '%s' ne peut pas sauver ses champs.\n"
 "Vous allez perdre vos changements sur cette page."
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:58
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:58
 msgid "Paths of the tools"
 msgstr "Chemins vers les outils"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:68
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:68
 msgid "Path of 'autolatex'"
 msgstr "Chemin de 'autolatex'"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:84
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:84
 msgid "Path to 'autolatex-backend'"
 msgstr "Chemin de 'autolatex-backend'"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:113
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:113
 msgid "Enable SyncTeX (overriding the configurations)"
 msgstr "Autorise SyncTeX (surcharge les configurations)"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:130
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:130
 msgid "Configuration of the UI"
 msgstr "Configuration de l'interface"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:140
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:140
 msgid "Show the progress info bar"
 msgstr "Afficher la barre d'information et de progression"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:157
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:157
 msgid "Configuration of the documents"
 msgstr "Configuration pour les documents"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:167
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:167
 msgid "Save before running AutoLaTeX"
 msgstr "Enregistrer les documents avant d'exécuter AutoLaTeX"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:236
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:236
 msgid ""
 "The path of AutoLaTeX has been changed by an external software. The new path "
 "is different from the one you have entered. Do you want to use the new path?"
@@ -617,7 +602,7 @@ msgstr ""
 "est différent de celui que vous avez entré. Voulez-vous utiliser ce nouveau "
 "chemin ?"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:246
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:246
 msgid ""
 "The path of AutoLaTeX Backend has been changed by an external software. The "
 "new path is different from the one you have entered. Do you want to use the "
@@ -627,7 +612,7 @@ msgstr ""
 "chemin est différent de celui que vous avez entré. Voulez-vous utiliser ce "
 "nouveau chemin ?"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:256
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:256
 msgid ""
 "The enabling flag for SyncTeX has been changed by an external software. The "
 "new flag is different from the one inside the preference dialog box. Do you "
@@ -637,7 +622,7 @@ msgstr ""
 "externe. Sa nouvelle valeur est différente de celle présente dans la fenêtre "
 "des préférences. Voulez-vous utiliser la nouvelle valeur ?"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:265
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:265
 msgid ""
 "The enabling flag for the progress info bar has been changed by an external "
 "software. The new flag is different from the one inside the preference "
@@ -647,7 +632,7 @@ msgstr ""
 "programme externe. Sa nouvelle valeur est différente de celle présente dans "
 "la fenêtre des préférences. Voulez-vous utiliser la nouvelle valeur ?"
 
-#: plugins/gedit/autolatex/config/plugin/main_panel.py:274
+#: plugins/gedit3/autolatex/config/plugin/main_panel.py:274
 msgid ""
 "The flag to save before running AutoLaTeX has been changed by an external "
 "software. The new flag is different from the one inside the preference "
@@ -658,15 +643,30 @@ msgstr ""
 "celle présente dans la fenêtre des préférences. Voulez-vous utiliser la "
 "nouvelle valeur ?"
 
-#: plugins/gedit/autolatex/widgets/inherit_button.py:95
+#: plugins/gedit3/autolatex/utils/latex_log_parser.py:153
+#, python-format
+msgid "Citation '%s' undefined"
+msgstr "La citation '%s' n'est pas définie"
+
+#: plugins/gedit3/autolatex/utils/latex_log_parser.py:169
+#, python-format
+msgid "Reference '%s' undefined"
+msgstr "La référence '%s' n'est pas définie"
+
+#: plugins/gedit3/autolatex/utils/latex_log_parser.py:185
+#, python-format
+msgid "Label '%s' multiply defined"
+msgstr "Le label '%s' est défini plusieurs fois"
+
+#: plugins/gedit3/autolatex/widgets/inherit_button.py:88
 msgid "Overriding the value in the current configuration"
 msgstr "Surcharger les valeurs dans la configuration courante"
 
-#: plugins/gedit/autolatex/widgets/inherit_button.py:98
+#: plugins/gedit3/autolatex/widgets/inherit_button.py:91
 msgid "Get the value from the inherited configuration"
 msgstr "Utiliser les valeurs hérités de la configuration utilisateur"
 
-#: plugins/gedit/autolatex/widgets/latex_console.py:203
+#: plugins/gedit3/autolatex/widgets/latex_console.py:203
 msgid ""
 "Internal Error: Unable to retreive the undefined references from the LaTeX "
 "log"
@@ -674,7 +674,7 @@ msgstr ""
 "Erreur interne: impossible de retrouver les références non définies dans le "
 "journal LaTeX"
 
-#: plugins/gedit/autolatex/widgets/latex_console.py:226
+#: plugins/gedit3/autolatex/widgets/latex_console.py:226
 msgid ""
 "Internal Error: Unable to retreive the multidefined references from the "
 "LaTeX log"
@@ -682,7 +682,7 @@ msgstr ""
 "Erreur interne: impossible de retrouver les références définies plusieurs "
 "fois dans le journal LaTeX"
 
-#: plugins/gedit/autolatex/widgets/latex_console.py:249
+#: plugins/gedit3/autolatex/widgets/latex_console.py:249
 msgid ""
 "Internal Error: Unable to retreive the undefined citations from the LaTeX log"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-04 14:53+0200\n"
+"POT-Creation-Date: 2014-06-21 02:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,21 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: python/utils/latex_log_parser.py:153
-#, python-format
-msgid "Citation '%s' undefined"
-msgstr ""
-
-#: python/utils/latex_log_parser.py:169
-#, python-format
-msgid "Reference '%s' undefined"
-msgstr ""
-
-#: python/utils/latex_log_parser.py:185
-#, python-format
-msgid "Label '%s' multiply defined"
-msgstr ""
 
 #: plugins/sublime-text-2/utils/runner_command.py:68
 #: plugins/sublime-text-2/utils/runner_command.py:83
@@ -60,4 +45,19 @@ msgstr ""
 #: plugins/sublime-text-2/utils/runner_command.py:132
 #, python-format
 msgid "Build finished with %d warnings"
+msgstr ""
+
+#: plugins/sublime-text-2/utils/latex_log_parser.py:153
+#, python-format
+msgid "Citation '%s' undefined"
+msgstr ""
+
+#: plugins/sublime-text-2/utils/latex_log_parser.py:169
+#, python-format
+msgid "Reference '%s' undefined"
+msgstr ""
+
+#: plugins/sublime-text-2/utils/latex_log_parser.py:185
+#, python-format
+msgid "Label '%s' multiply defined"
 msgstr ""
