@@ -914,12 +914,19 @@ if (defined $configuration{'__private__'}{'action.create config file'}) {
             ($configuration{'__private__'}{'action.create config file'} eq 'project')) {
                 printDbg(_T("Creating default project configuration file...\n"));
                 $filename = getProjectConfigFilename($configuration{'__private__'}{'output.directory'});
+		local *FILE;
+		open(*FILE, "> $filename") or printErr("$filename: $!");
+		print FILE "; Generated with ".getAutoLaTeXLaunchingName()." ".getAutoLaTeXVersion()."\n";
+		print FILE "[generation]\n";
+		print FILE "main file = ".File::Spec->abs2rel($configuration{'__private__'}{'input.latex file'},$configuration{'__private__'}{'output.directory'})."\n";
+		print FILE ";image directory = \n";
+		close(*FILE);
         }
         else {
                 printDbg(_T("Creating default user configuration file...\n"));
                 $filename = getUserConfigFilename();
+	        copy(getSystemConfigFilename(),"$filename") or printErr("$filename:", "$!");
         }
-        copy(getSystemConfigFilename(),"$filename") or printErr("$filename:", "$!");
 	$optionalAction = 1;
 }
 
