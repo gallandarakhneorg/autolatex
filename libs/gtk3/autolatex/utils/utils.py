@@ -194,6 +194,10 @@ def _find_icon(name, size):
   path = os.path.join(AUTOLATEX_DEV_PATH, 'libs', 'gtk3', 'autolatex', 'icons', size, name)
   if (os.path.isfile(path)):
     return path
+  for pp in sys.path:
+    path = os.path.join(pp, 'autolatex', 'icons', size, name)
+    if (os.path.isfile(path)):
+      return path
   return os.path.join('/usr', 'share', 'icons', 'autolatex', size, name)
 
 # Make a fully qualified path to the given icon for

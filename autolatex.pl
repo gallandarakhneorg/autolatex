@@ -874,7 +874,7 @@ my @ORIGINAL_ARGV = @ARGV;
 			if ($cmd) {
 				splice(@ORIGINAL_ARGV, $i, 1);
 				unshift @ORIGINAL_ARGV, $cmd;
-				exec ($cmd, @ORIGINAL_ARGV) or printErr("Unable to run $cmdname: $!\n");
+				exec $cmd (@ORIGINAL_ARGV) or printErr("Unable to run $cmdname: $!\n");
 			}
 		}
 		$i++;

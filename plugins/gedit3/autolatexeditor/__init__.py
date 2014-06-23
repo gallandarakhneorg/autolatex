@@ -31,8 +31,9 @@ import gettext
 from gi.repository import GObject, Gtk, Gio, GdkPixbuf, Gedit, PeasGtk
 
 # AutoLaTeX shared libs
-from autolatex.utils import utils
-from autolatex.utils import gsettings
+
+from autolatex.utils import utils as autolatex_utils
+from autolatex.utils import gsettings as autolatex_gsettings
 from autolatex.config import window as cli_config
 
 # AutoLaTeX-Gedit internal libs
@@ -45,7 +46,7 @@ from .widgets import latex_console
 # PLUGIN CONFIGURATION
 #---------------------------------
 
-utils.init_plugin_configuration(__file__, 'autolatex-gedit3')
+autolatex_utils.init_plugin_configuration(__file__, 'autolatex-gedit3')
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -68,7 +69,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     self._status_bar_context_id = None
     self._compilation_under_progress = False # Indicate if the compilation is under progress
     self._console_icon = None # Icon of the error console
-    self._gsettings = gsettings.Manager()
+    self._gsettings = autolatex_gsettings.Manager()
     self._syntex_regex = re.compile('\%.*mainfile:\s*(.*)$')
 
   # Invoked when the configuration window is open
@@ -80,7 +81,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     self._console_icon = self._get_icon('console')
     self._latex_console = latex_console.Console(self) # Current instance of the error console
     if not self._gsettings:
-      self._gsettings = gsettings.Manager()
+      self._gsettings = autolatex_gsettings.Manager()
     self._add_ui()
     self._check_autolatex_binaries()
 
@@ -93,15 +94,15 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 
   # Check if the AutoLaTeX binaries were found
   def _check_autolatex_binaries(self):
-    if not utils.AUTOLATEX_BINARY and not utils.AUTOLATEX_BACKEND_BINARY:
+    if not autolatex_utils.AUTOLATEX_BINARY and not autolatex_utils.AUTOLATEX_BACKEND_BINARY:
       dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _T("The programs 'autolatex' and 'autolatex-backend'\nwere not found.\nPlease fix the configuration of the AutoLaTeX plugin."))
       answer = dialog.run()
       dialog.destroy()
-    elif not utils.AUTOLATEX_BINARY:
+    elif not autolatex_utils.AUTOLATEX_BINARY:
       dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _T("The program 'autolatex' was not found.\nPlease fix the configuration of the AutoLaTeX plugin."))
       answer = dialog.run()
       dialog.destroy()
-    elif not utils.AUTOLATEX_BACKEND_BINARY:
+    elif not autolatex_utils.AUTOLATEX_BACKEND_BINARY:
       dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _T("The program 'autolatex-backend' was not found.\nPlease fix the configuration of the AutoLaTeX plugin."))
       answer = dialog.run()
       dialog.destroy()
@@ -119,11 +120,11 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     self._general_actions.set_visible(isInTeXContext)
 
     if directory:
-      cfgFile = utils.get_autolatex_document_config_file(directory)
+      cfgFile = autolatex_utils.get_autolatex_document_config_file(directory)
       hasDocConfFile = os.path.exists(cfgFile)
     else:
       hasDocConfFile = False
-    hasUserConfFile = os.path.exists(utils.get_autolatex_user_config_file())
+    hasUserConfFile = os.path.exists(autolatex_utils.get_autolatex_user_config_file())
     # Change the sensitivity
     if self._document_actions:
       self._document_actions.set_sensitive(hasAutoLaTeXDocument and not self._compilation_under_progress)
@@ -175,7 +176,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
 
   # Load an icon from the AutoLaTeX package
   def _get_icon(self, icon):
-    return GdkPixbuf.Pixbuf.new_from_file(utils.make_toolbar_icon_path('autolatex-'+icon+'.png'))
+    return GdkPixbuf.Pixbuf.new_from_file(autolatex_utils.make_toolbar_icon_path('autolatex-'+icon+'.png'))
 
 
   # Add any contribution to the Gtk UI
@@ -281,7 +282,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
       action = definition[0].get_action(definition[1])
       action.set_gicon(self._get_icon(definition[2]))
     # Add the Gtk contributions
-    ui_path = os.path.join(utils.AUTOLATEX_APP_PATH, 'ui')
+    ui_path = os.path.join(autolatex_utils.AUTOLATEX_APP_PATH, 'ui')
     self._ui_merge_ids = []
     for ui_file in [ 'menu.ui', 'toolbar.ui' ]:
       self._ui_merge_ids.append(manager.add_ui_from_file(os.path.join(ui_path, ui_file)))
@@ -323,7 +324,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     if doc:
       doc = Gedit.Document.get_location(doc)
       if doc:
-        return utils.is_TeX_document(doc.get_path())
+        return autolatex_utils.is_TeX_document(doc.get_path())
     return False
 
   # Try to find the directory where an AutoLaTeX configuration file is
@@ -335,7 +336,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
     if doc:
       doc = Gedit.Document.get_location(doc)
       if doc:
-        return utils.find_AutoLaTeX_directory(doc.get_path())
+        return autolatex_utils.find_AutoLaTeX_directory(doc.get_path())
     return adir
 
   def _save_documents(self):
@@ -349,7 +350,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
   def _apply_general_autolatex_cli_options(self, params):
     if self._gsettings.get_force_synctex():
       params = [ '--synctex' ] + params
-    params = [ utils.DEFAULT_LOG_LEVEL ] + params
+    params = [ autolatex_utils.DEFAULT_LOG_LEVEL ] + params
     return params
 
   def on_clean_action_activate(self, action, data=None):
@@ -395,7 +396,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
   def on_delete_document_configuration_action_activate(self, action, data=None):
     directory = self._find_AutoLaTeX_dir()
     if directory:
-      cfgFile = utils.get_autolatex_document_config_file(directory)
+      cfgFile = autolatex_utils.get_autolatex_document_config_file(directory)
       if os.path.exists(cfgFile):
         dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to delete the document configuration?"))
         answer = dialog.run()
@@ -410,7 +411,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
       cli_config.open_configuration_dialog(self.window, False, directory)
 
   def on_delete_user_configuration_action_activate(self, action, data=None):
-    cfgFile = utils.get_autolatex_user_config_file()
+    cfgFile = autolatex_utils.get_autolatex_user_config_file()
     if os.path.exists(cfgFile):
       dialog = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _T("Do you want to delete the user configuration?"))
       answer = dialog.run()
@@ -438,7 +439,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
                 max(3,text_buffer.get_line_count()-3))
       # Add the SyncTeX flag
       if not found:
-        private_config = utils.backend_get_configuration(
+        private_config = autolatex_utils.backend_get_configuration(
                   directory,
                   'all', '__private__');
         main_file = private_config.get('input', 'latex file', '');

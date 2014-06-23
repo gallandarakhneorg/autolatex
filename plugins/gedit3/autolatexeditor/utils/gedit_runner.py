@@ -20,18 +20,18 @@
 # Boston, MA 02111-1307, USA.
 
 from gi.repository import GObject, Gtk, Gedit
-from autolatex.utils import runner
+from autolatex.utils import runner as autolatex_runner
 
 # List of all the runners
 _all_runners = []
 
 def kill_all_runners():
-  runner.kill_all_runners()
+  autolatex_runner.kill_all_runners()
 
-class Runner(runner.Listener):
+class Runner(autolatex_runner.Listener):
 
   def __init__(self, caller, label, show_progress, directory, directive, params):
-    runner.Listener.__init__(self)
+    autolatex_runner.Listener.__init__(self)
     self._caller = caller
     self._info_bar_label = label
     self._show_progress = bool(show_progress)
@@ -42,7 +42,7 @@ class Runner(runner.Listener):
     self._automatic_bar_creation = False
     self._last_fraction = 0
     self._last_comment = None
-    self._thread = runner.Runner(self, directory, directive, params)
+    self._thread = autolatex_runner.Runner(self, directory, directive, params)
 
   def start(self):
     if self._thread:

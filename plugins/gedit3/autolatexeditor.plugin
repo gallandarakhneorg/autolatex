@@ -1,6 +1,6 @@
 [Plugin]
 Loader=python3
-Module=autolatex
+Module=autolatexeditor
 Version=3.0.0
 IAge=3
 Name=AutoLaTeX
