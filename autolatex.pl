@@ -130,8 +130,13 @@ sub __checkMainTeXfile() {
 	if (!$configuration{'__private__'}{'input.latex file'}) {
 		printErr(formatText(_T("No LaTeX file found nor specified for the directory '{}'.\n You must specify one on the command line option -f, or set the the variable 'generation.main file' in your configuration file, rename one of your files 'Main.tex'."), $configuration{'__private__'}{'output.directory'}));
 	}
-	elsif (-f $configuration{'__private__'}{'input.latex file'}) {
-		printErr($configuration{'__private__'}{'input.latex file'}.":", "$!");
+	else {
+		my $absfile = File::Spec->rel2abs(
+			$configuration{'__private__'}{'input.latex file'},
+			$configuration{'__private__'}{'input.project directory'});
+		if (! -f $absfile) {
+			printErr("$absfile:", "$!");
+		}
 	}
 }
 

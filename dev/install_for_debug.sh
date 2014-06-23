@@ -26,8 +26,8 @@ then
   #
   mkdir -p "$GEDIT_DEST_DIR"
 
-  rm -rfv "$GEDIT_DEST_DIR/autolatex"
-  rm -f "$GEDIT_DEST_DIR/autolatex.plugin"
+  rm -rfv "$GEDIT_DEST_DIR/autolatexeditor"
+  rm -f "$GEDIT_DEST_DIR/autolatexeditor.plugin"
 
   cp -Rfs "$GEDIT_SOURCE_DIR/"* "$GEDIT_DEST_DIR/"
 
