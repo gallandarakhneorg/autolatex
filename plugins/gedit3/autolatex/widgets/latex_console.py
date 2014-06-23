@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# autolatex/widgets/latex_console.py
 # Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -28,7 +27,7 @@ import re
 # Include the Gtk libraries
 from gi.repository import GObject, GdkPixbuf, Gdk, Gio, Gtk
 # AutoLaTeX includes
-from ..utils import latex_log_parser as log_parser
+from autolatex.utils import latex_log_parser as log_parser
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -49,10 +48,18 @@ class ConsoleMode:
 # CLASS Panel
 #---------------------------------
 
-# Gtk panel that is managing the configuration of the plugin
+#
+# Gtk panel that is managing the configuration of the plugin.
+#
 class Console(Gtk.ScrolledWindow):
   __gtype_name__ = "AutoLaTeXLaTeXConsole"
 
+  # Constructor.
+  # @param plugin - reference to the plugin. The plugin must provide
+  #                 the attribute "window" that contains the
+  #                 reference to the Gtk window that launched this,
+  #                 and the function "do_update_state" that will be
+  #                 invoked for notifying a state change.
   def __init__(self, plugin):
     Gtk.ScrolledWindow.__init__(self)
     self.window = plugin.window
@@ -88,7 +95,11 @@ class Console(Gtk.ScrolledWindow):
     self._message_widget.connect(
       'button-press-event', self.on_list_click_action);
 
-  # Set the text of the log
+  # Set the text of the log.
+  # @param log - message to output, if None the second parameter will be used.
+  # @param latex_warnings - list of LaTeX warnings, if None the first parameter
+  #                         will be used.
+  # @param document_directory - name of the document's directory.
   def set_log(self, log, latex_warnings, document_directory):
     # Reset attributes
     self._latex_parser = None
@@ -132,6 +143,7 @@ class Console(Gtk.ScrolledWindow):
       return ConsoleMode.OPTIONAL
     return ConsoleMode.HIDE
 
+  # Display the next error.
   def show_next_error(self):
     length = len(self._messages)
     if length>0 and self._current_error < (len(self._messages)-1):
@@ -148,10 +160,12 @@ class Console(Gtk.ScrolledWindow):
       return ConsoleMode.SHOW
     return ConsoleMode.HIDE
 
+  # Indicates if there is a "next" error.
   def has_next_error(self):
     length = len(self._messages)
     return length>0 and self._current_error < (length-1)
 
+  # Display the previous error.
   def show_previous_error(self):
     if self._current_error > 0:
       self._current_error = self._current_error - 1
@@ -167,9 +181,14 @@ class Console(Gtk.ScrolledWindow):
       return ConsoleMode.SHOW
     return ConsoleMode.HIDE
 
+  # Replies if there is a "previous" error.
   def has_previous_error(self):
     return self._current_error > 0
 
+  # Replace a "generic" error message for "undefined references" by
+  # the detailled list of the undefined references.
+  # @param list_iter - list of the undefined references.
+  # @param log_file - source of the error messages.
   def _replace_by_undefined_reference_warnings(self, list_iter, log_file):
     if not self._latex_parser:
       self._latex_parser = log_parser.Parser(log_file)
@@ -206,6 +225,10 @@ class Console(Gtk.ScrolledWindow):
             None ])
     self._messages.remove(list_iter)
 
+  # Replace a "generic" error message for "multidefined labels" by
+  # the detailled list of the multidefined labels.
+  # @param list_iter - list of the multidefined labels.
+  # @param log_file - source of the error messages.
   def _replace_by_multidefined_label_warnings(self, list_iter, log_file):
     if not self._latex_parser:
       self._latex_parser = log_parser.Parser(log_file)
@@ -229,6 +252,10 @@ class Console(Gtk.ScrolledWindow):
           None ])
     self._messages.remove(list_iter)
 
+  # Replace a "generic" error message for "undefined citations" by
+  # the detailled list of the undefined citations.
+  # @param list_iter - list of the undefined citations.
+  # @param log_file - source of the error messages.
   def _replace_by_undefined_citation_warnings(self, list_iter, log_file):
     if not self._latex_parser:
       self._latex_parser = log_parser.Parser(log_file)
@@ -252,6 +279,8 @@ class Console(Gtk.ScrolledWindow):
           None ])
     self._messages.remove(list_iter)
 
+  # Software execution of a "click" on the error message pointed
+  # by the given path.
   def _do_click_on_list(self, path):
     if path:
       list_iter = self._messages.get_iter(path)
@@ -301,6 +330,8 @@ class Console(Gtk.ScrolledWindow):
         GObject.idle_add(self._on_differed_selection, tab, linenumber)
     return False
 
+  # Private handler for the asynchronous highlight of the error's line
+  # in the text editor.
   def _on_differed_selection(self, tab, linenumber):
     if tab:
       document = tab.get_document()
@@ -309,6 +340,7 @@ class Console(Gtk.ScrolledWindow):
       end_line_iter.forward_to_line_end()
       document.select_range(line_iter, end_line_iter)    
 
+  # Handle the click on the Gtk list
   def on_list_click_action(self, widget, event, data=None):
     if (event.button==1 and (event.type==Gdk.EventType._2BUTTON_PRESS or event.type==Gdk.EventType._3BUTTON_PRESS)) or event.button==2:
       x, y = event.get_coords()

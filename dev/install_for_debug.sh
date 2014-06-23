@@ -9,6 +9,8 @@ fi
 AUTOLATEX_DIR=`pwd`
 AUTOLATEX_DIR=`readlink -f "$AUTOLATEX_DIR"`
 # GEDIT
+GTK3_SOURCE_DIR="$AUTOLATEX_DIR/libs/gtk3/autolatex"
+# GEDIT
 GEDIT_SOURCE_DIR="$AUTOLATEX_DIR/plugins/gedit3"
 GEDIT_DEST_DIR="$HOME/.local/share/gedit/plugins"
 
@@ -22,24 +24,14 @@ then
   #
   # GEDIT
   #
-  rm -rfv "$GEDIT_DEST_DIR/autolatex"*
+  mkdir -p "$GEDIT_DEST_DIR"
 
-  mkdir -pv "$GEDIT_DEST_DIR/autolatex/config"
-  mkdir -pv "$GEDIT_DEST_DIR/autolatex/config/cli"
-  mkdir -pv "$GEDIT_DEST_DIR/autolatex/config/plugin"
-  mkdir -pv "$GEDIT_DEST_DIR/autolatex/ui"
-  mkdir -pv "$GEDIT_DEST_DIR/autolatex/utils"
-  mkdir -pv "$GEDIT_DEST_DIR/autolatex/widgets"
+  rm -rfv "$GEDIT_DEST_DIR/autolatex"
+  rm -f "$GEDIT_DEST_DIR/autolatex.plugin"
 
-  ln -sv "$GEDIT_SOURCE_DIR/"*.plugin "$GEDIT_DEST_DIR/"
-  ln -sv "$GEDIT_SOURCE_DIR/autolatex/"*.py "$GEDIT_DEST_DIR/autolatex/"
-  ln -sv "$GEDIT_SOURCE_DIR/autolatex/icons" "$GEDIT_DEST_DIR/autolatex/"
-  ln -sv "$GEDIT_SOURCE_DIR/autolatex/config/"*.py "$GEDIT_DEST_DIR/autolatex/config"
-  ln -sv "$GEDIT_SOURCE_DIR/autolatex/config/cli/"*.py "$GEDIT_DEST_DIR/autolatex/config/cli"
-  ln -sv "$GEDIT_SOURCE_DIR/autolatex/config/plugin/"*.py "$GEDIT_DEST_DIR/autolatex/config/plugin"
-  ln -sv "$GEDIT_SOURCE_DIR/autolatex/ui/"*.ui "$GEDIT_DEST_DIR/autolatex/ui"
-  ln -sv "$GEDIT_SOURCE_DIR/autolatex/utils/"*.py "$GEDIT_DEST_DIR/autolatex/utils"
-  ln -sv "$GEDIT_SOURCE_DIR/autolatex/widgets/"*.py "$GEDIT_DEST_DIR/autolatex/widgets"
+  cp -Rfs "$GEDIT_SOURCE_DIR/"* "$GEDIT_DEST_DIR/"
+
+  cp -Rs "$GTK3_SOURCE_DIR/"* "$GEDIT_DEST_DIR/autolatex/"
 
   #
   # CONFIG

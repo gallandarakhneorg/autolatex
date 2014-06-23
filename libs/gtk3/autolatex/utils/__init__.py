@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# autolatex/config/cli/__init__.py
 # Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -19,4 +18,4 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-__all__ = [ 'window', 'abstract_panel', 'figure_assignment_panel', 'figure_panel', 'generator_panel', 'plugin_config_panel', 'translator_panel', 'viewer_panel' ]
+__all__ = [ 'debug', 'utils', 'latex_log_parser', 'runner', 'gsettings', 'gtk_utils' ]

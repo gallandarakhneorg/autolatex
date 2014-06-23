@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# autolatex/utils/latex_log_parser.py
 # Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -36,9 +35,20 @@ from . import utils
 import gettext
 _T = gettext.gettext
 
+#---------------------------------
+# CLASS: TeXWarning
+#---------------------------------
 
-
+#
+# Provide the support for storing TeX warnings
+#
 class TeXWarning:
+
+  # Constructor.
+  # @param filename - name of the file where the warning occurs.
+  # @param extension - extension of the filename.
+  # @param line - line where the warning occurs.
+  # @param message
   def __init__(self, filename, extension, line, message):
     self._data = {}
     if extension:
@@ -49,38 +59,68 @@ class TeXWarning:
     expr = re.compile("[\n\r\f\t ]+")
     self._message = re.sub(expr, ' ', message)
 
+  # Add a text to the warning's message.
   def append(self, message):
     self._message = self._message + message
 
+  # Add a data associated to the warning.
+  # Each data is identified by a "key", and
+  # has a "value".
   def set_data(self, key, value):
     self._data[key] = value
 
+  # Replies the value of the data associated
+  # to this warning, and with the given key.
   def get_data(self, key):
     return self._data[key]
 
+  # Replies the map of the data associated to
+  # this warning.
   def get_all_data(self):
     return self._data
 
+  # Replies the name of the file where the
+  # warning occurs
   def get_filename(self):
     return self._filename
 
+  # Replies the line number where the warning
+  # occurs
   def get_line_number(self):
     return self._linenumber
 
+  # Replies the message of the warning.
   def get_message(self):
     return self._message
 
+  # Change the message of the warning.
   def set_message(self, message):
     self._message = message
 
+  # Replies the string representation of
+  # this warning.
   def __str__(self):
     s = str(self._filename)+":"+str(self._linenumber)+":"+str(self._message)+"\n"
     if self._data:
       s = s + self._data
     return s
 
+#---------------------------------
+# CLASS: Parser
+#---------------------------------
+
+#
+# Parser of the logs given by a standard
+# LaTeX tool.
+#
+# This parser extracts the warning messages.
+#
+# The errors messages are ignored by this parser.
+#
 class Parser:
 
+  # Constructor.
+  # @param log_file - name of the file to parse. It must be a LaTeX log file.
   def __init__(self, log_file):
     self._directory = os.path.dirname(log_file)
     #
@@ -132,12 +172,17 @@ class Parser:
           mo.group(4))
         self._warnings.append(w)
 
+  # Replies the list of the detected warnings inside
+  # a string.
   def __str__(self):
     text = ""
     for w in self._warnings:
       text = text + str(w) + "\n"
     return text
 
+  # Replies an array of the detected warnings that
+  # are corresponding to "undefined citations."
+  # @return the array of objects of type TeXWarning.
   def get_undefined_citation_warnings(self):
     regex = re.compile(
         "^.*citation\\s*\\`([^']+)\\'.+undefined.*$",
@@ -154,6 +199,9 @@ class Parser:
         warnings.append(warning)
     return warnings
 
+  # Replies an array of the detected warnings that
+  # are corresponding to "undefined references."
+  # @return the array of objects of type TeXWarning.
   def get_undefined_reference_warnings(self):
     regex = re.compile(
         "^.*reference\\s*\\`([^']+)\\'.+undefined.*$",
@@ -170,6 +218,9 @@ class Parser:
         warnings.append(warning)
     return warnings
 
+  # Replies an array of the detected warnings that
+  # are corresponding to "multidefined labels."
+  # @return the array of objects of type TeXWarning.
   def get_multidefined_label_warnings(self):
     regex = re.compile(
         "^.*label\\s*\\`([^']+)\\'.+multiply\\s+defined.*$",

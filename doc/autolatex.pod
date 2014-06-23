@@ -37,6 +37,11 @@ AutoLaTeX provides a fixed set of targets, the arguments to
 pass to AutoLaTeX to run a module, for all projects. The
 default target is B<all>.
 
+If the specified target is not recognized by AutoLaTeX, a program name C<autolatex-target> (where C<target> is
+replaced by the given target string) is searched on your system, and launched.
+For example, C<autolatex config> permits to launch the graphical user interface for configuring AutoLaTeX.
+This interface is supported by the program C<autolatex-config>, which is provided in the AutoLaTeX distribution.
+
 The targets provided by AutoLaTeX are:
 
 =over 4
@@ -1407,13 +1412,13 @@ The available user interfaces are:
 
 =over 4
 
-=item B<Gedit:>
+=item B<Gedit 3:>
 
-This is the I<official> and up-to-date UI of AutoLaTeX. A plugin for the lightweight editor Gedit <https://projects.gnome.org/gedit> is provided. You could launch AutoLaTeX and configure it through the differents provided panels.
+This is the I<official> and up-to-date UI of AutoLaTeX. A plugin for the lightweight editor Gedit 3 <https://projects.gnome.org/gedit> is provided. You could launch AutoLaTeX and configure it through the differents provided panels.
 
-=item B<Sublime Text 2:>
+=item B<Standalone Gtk 3 Frontend:>
 
-A plugin for the editor Sublime Text 2 <http://www.sublimetext.com/2> is provided. You could launch AutoLaTeX through the building tools of Sublime Text.  It is now considered as I<obsolete>, even still maintained. See the use of LaTeXTools in Sublime Text.
+This front end is based on the Gtk3 library. It provides the same configuration windows as the Gedit 3 plugin. Indeed, both of them are using the same background API based on Gtk3. 
 
 =item B<Sublime Text with LaTeXTools:>
 
@@ -1459,9 +1464,23 @@ We recommend the following configuration to launch AutoLaTeX in TeXworks (it is 
  showPdf=true
  ...
 
-=item B<Standalone Gtk Frontend (deprecated):>
+=back
 
-It is the first UI for AutoLaTeX written in Perl and based on Gtk. It is now considered as I<obsolete>, even still maintained. You could launch AutoLaTeX and configure it through the differents provided panels.
+The following graphical user interfaces are still provided, but they are deprecated:
+
+=over 4
+
+=item B<Gedit 2:>
+
+A plugin for the lightweight editor Gedit 2.
+
+=item B<Sublime Text 2:>
+
+A plugin for the editor Sublime Text 2 <http://www.sublimetext.com/2>.
+
+=item B<Standalone Gtk 2 Frontend:>
+
+A collection of configuration windows written in Perl and based on Gtk 2.
 
 =back
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# autolatex/config/cli/translator_panel.py
 # Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -30,8 +29,8 @@ import re
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import GObject, Gdk, Gtk, GdkPixbuf, GtkSource
 # AutoLaTeX internal libs
-from ...utils import utils
-from ...utils import gtk_utils
+from ..utils import utils
+from ..utils import gtk_utils
 from . import abstract_panel
 
 #---------------------------------

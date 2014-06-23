@@ -1,47 +1,6 @@
 ; Config::Simple 4.59
 ; Fri Aug 23 20:48:19 2013
 
-
-# Configuration of the translator 'oct2png'
-[oct2png]
-include module=false
-
-
-# Configuration of the translator 'svg2png'
-[svg2png]
-include module=false
-
-
-# Configuration of the translator 'astah2png'
-[astah2png]
-include module=false
-
-
-# Configuration of the translator 'gxl2png'
-[gxl2png]
-include module=false
-
-
-# Configuration of the translator 'eps2pdf_epstopdf'
-[eps2pdf_epstopdf]
-include module=true
-
-
-# Configuration of the translator 'eps2pdf_ps2pdf'
-[eps2pdf_ps2pdf]
-include module=false
-
-
-# Configuration of the translator 'dot2pdf'
-[dot2pdf]
-include module=true
-
-
-# Configuration of the translator 'gxl2pdf'
-[gxl2pdf]
-include module=true
-
-
 # Configuration of the generation functions
 [generation]
 
@@ -72,57 +31,4 @@ makeindex style=@detect, @system
 # compilation. Valid values are 'yes' and 'no'.
 view=true
 
-
-# Configuration of the translator 'dot2tex'
-[dot2tex]
-include module=false
-
-
-# Configuration of the translator 'astah2pdf'
-[astah2pdf]
-include module=true
-
-
-# Configuration of the translator 'dot2png'
-[dot2png]
-include module=false
-
-
-# Configuration of the translator 'svg2pdf'
-[svg2pdf]
-include module=true
-
-
-# Configuration of the translator 'oct2pdf'
-[oct2pdf]
-include module=true
-
-# Configuration of the translator 'xmi2pdf_umbrello'
-[xmi2pdf_umbrello]
-include module=true
-
-# Configuration of the translator 'xmi2pdf_xmi2svg'
-[xmi2pdf_xmi2svg]
-include module=false
-
-# Configuration of the translator 'xmi2pdf_uml2svg'
-[xmi2pdf_uml2svg]
-include module=false
-
-# Configuration of the translator 'gle2pdf'
-[gle2pdf]
-include module=true
-
-# Configuration of the translator 'gle2png'
-[gle2png]
-include module=false
-
-
-# Configuration of the translator 'xcf2pdf'
-[xcf2pdf]
-include module=true
-
-# Configuration of the translator 'xcf2png'
-[xcf2png]
-include module=false
 

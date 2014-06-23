@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-21 02:21+0200\n"
+"POT-Creation-Date: 2014-06-23 10:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,19 +45,19 @@ msgstr ""
 msgid "Removing all the temporary and generated files"
 msgstr ""
 
-#: autolatex.pl:724
+#: autolatex.pl:727
 msgid "Command line action '{}' is not supported."
 msgstr ""
 
-#: autolatex.pl:763
+#: autolatex.pl:766
 msgid "Creating default project configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:767
+#: autolatex.pl:770
 msgid "Creating default user configuration file...\n"
 msgstr ""
 
-#: autolatex.pl:776
+#: autolatex.pl:779
 msgid "Creating default makeindex style file...\n"
 msgstr ""
 

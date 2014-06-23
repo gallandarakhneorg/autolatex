@@ -13,7 +13,7 @@ use Pod::Text;
 use Pod::Man ();
 use pp;
 
-my %MODULES = ( 'core' => 1 , 'sty' => 1, 'gedit2' => 0, 'gedit3' => 1, 'gtk' => 0, 'sublime2' => 0 );
+my %MODULES = ( 'core' => 1, 'sty' => 1, 'gedit2' => 1, 'gedit3' => 1, 'config' => 1, 'gtk' => 1, 'sublime2' => 1 );
 
 # GENERAL INSTALLATION INFORMATIONS
 my $ALLOW_SYMBOLIC_LINK;
@@ -25,11 +25,11 @@ my $DOCDIRECTORY;
 my $LOCALEDIRECTORY;
 my $ICONDIRECTORY;
 my $STYDIRECTORY;
-my $GSETTINGS2SCHEMADIRECTORY;
-my $GSETTINGS3SCHEMADIRECTORY;
+my $GSETTINGSSCHEMADIRECTORY;
 my $GEDIT2PLUGINDIRECTORY;
 my $GEDIT3PLUGINDIRECTORY;
 my $SUBLIME2PLUGINDIRECTORY;
+my $GTK3LIBSDIRECTORY;
 
 my $EXE_EXTENSION = '.bin';
 my %BINARY_FILES = (
@@ -44,9 +44,19 @@ my %BINARY_FILES = (
 			},
 	},
 	'gtk' => {
-			'autolatex-gtk.pl' => {
+			'autolatex-gtk2.pl' => {
+				'name' => 'autolatex-gtk2',
+				'opts' => [],
+			},
+			'autolatex-gtk.sh' => {
 				'name' => 'autolatex-gtk',
 				'opts' => ['-gui'],
+			},
+	},
+	'config' => {
+			'autolatex-config.py' => {
+				'name' => 'autolatex-config',
+				'opts' => [],
 			},
 	},
 );
@@ -435,6 +445,46 @@ sub runPAR($$;$\@) {
 	return $ret;
 }
 
+#------------------------------------------------------------------------------------------
+sub installBinariesForModule(\%$) {
+	my $need_pm_files = 0;
+	if (($_[0]->{'create-links'})&&($_[0]->{'create-bin-links'})) {
+		while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{$_[1]}})) {
+			if (-f $binfile->{'name'}.$EXE_EXTENSION) {
+				installLinkedBin(
+					$binfile->{'name'}.$EXE_EXTENSION,
+					$INSTALLDIRECTORY,
+					$binfile->{'name'}.$EXE_EXTENSION);
+			}
+			else {
+				$need_pm_files = 1;
+				installLinkedBin(
+					$scriptfile,
+					$INSTALLDIRECTORY,
+					$binfile->{'name'}.$EXE_EXTENSION);
+			}
+		}
+	}
+	else {
+		while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{$_[1]}})) {
+			if (-f $binfile->{'name'}.$EXE_EXTENSION) {
+				installExec(
+					$binfile->{'name'}.$EXE_EXTENSION,
+					$INSTALLDIRECTORY,
+					$binfile->{'name'}.$EXE_EXTENSION);
+			}
+			else {
+				$need_pm_files = 1;
+				installExec(
+					$scriptfile,
+					$INSTALLDIRECTORY,
+					$binfile->{'name'}.$EXE_EXTENSION);
+			}
+		}
+	}
+	return $need_pm_files;
+}
+
 
 #------------------------------------------------------------------------------------------
 sub DO_compile(\%) {
@@ -530,9 +580,6 @@ sub DO_compile(\%) {
 		my $sublime_tmp_file = 'autolatex.sublime-package';
 		mkdirrec($sublime_tmp);
 		installInto(
-			File::Spec->catfile($sublime_tmp, 'utils'),
-			getFiles('python','utils','*'));
-		installInto(
 			$sublime_tmp,
 			getFiles('plugins','sublime-text-2','*'));		
 		installInto(
@@ -572,41 +619,7 @@ sub DO_install(\%) {
 	my @po_directories = getDirectoryBasenames('po');
 
 	if ($MODULES{'core'}) {
-		my $need_pm_files = 0;
-		if (($_[0]->{'create-links'})&&($_[0]->{'create-bin-links'})) {
-			while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{'core'}})) {
-				if (-f $binfile->{'name'}.$EXE_EXTENSION) {
-					installLinkedBin(
-						$binfile->{'name'}.$EXE_EXTENSION,
-						$INSTALLDIRECTORY,
-						$binfile->{'name'}.$EXE_EXTENSION);
-				}
-				else {
-					$need_pm_files = 1;
-					installLinkedBin(
-						$scriptfile,
-						$INSTALLDIRECTORY,
-						$binfile->{'name'}.$EXE_EXTENSION);
-				}
-			}
-		}
-		else {
-			while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{'core'}})) {
-				if (-f $binfile->{'name'}.$EXE_EXTENSION) {
-					installExec(
-						$binfile->{'name'}.$EXE_EXTENSION,
-						$INSTALLDIRECTORY,
-						$binfile->{'name'}.$EXE_EXTENSION);
-				}
-				else {
-					$need_pm_files = 1;
-					installExec(
-						$scriptfile,
-						$INSTALLDIRECTORY,
-						$binfile->{'name'}.$EXE_EXTENSION);
-				}
-			}
-		}
+		my $need_pm_files = installBinariesForModule(%{$_[0]}, 'core');
 		install('AUTHORS', $INSTALLDIRECTORY);
 		install('VERSION', $INSTALLDIRECTORY);
 		if (($_[0]->{'create-links'})&&($_[0]->{'create-etc-links'})) {
@@ -658,41 +671,7 @@ sub DO_install(\%) {
 	}
 
 	if ($MODULES{'gtk'}) {
-		my $need_pm_files = 0;
-		if (($_[0]->{'create-links'})&&($_[0]->{'create-bin-links'})) {
-			while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{'gtk'}})) {
-				if (-f $binfile->{'name'}.$EXE_EXTENSION) {
-					installLinkedBin(
-						$binfile->{'name'}.$EXE_EXTENSION,
-						$INSTALLDIRECTORY,
-						$binfile->{'name'}.$EXE_EXTENSION);
-				}
-				else {
-					$need_pm_files = 1;
-					installLinkedBin(
-						$scriptfile,
-						$INSTALLDIRECTORY,
-						$binfile->{'name'}.$EXE_EXTENSION);
-				}
-			}
-		}
-		else {
-			while (my ($scriptfile, $binfile) = each(%{$BINARY_FILES{'gtk'}})) {
-				if (-f $binfile->{'name'}.$EXE_EXTENSION) {
-					installExec(
-						$binfile->{'name'}.$EXE_EXTENSION,
-						$INSTALLDIRECTORY,
-						$binfile->{'name'}.$EXE_EXTENSION);
-				}
-				else {
-					$need_pm_files = 1;
-					installExec(
-						$scriptfile,
-						$INSTALLDIRECTORY,
-						$binfile->{'name'}.$EXE_EXTENSION);
-				}
-			}
-		}
+		my $need_pm_files = installBinariesForModule(%{$_[0]}, 'gtk');
 		if ($need_pm_files) {
 			installInto(
 				File::Spec->catfile($INSTALLDIRECTORY,'pm','AutoLaTeX','GUI'),
@@ -717,6 +696,37 @@ sub DO_install(\%) {
 		installInto(
 			$STYDIRECTORY,
 			getFiles('sty','*'));
+	}
+
+	if ($MODULES{'gedit3'} || $MODULES{'config'}) {
+		installInto(
+			$GTK3LIBSDIRECTORY,
+			getFiles('libs', 'gtk3','autolatex','*'));
+		installInto(
+			File::Spec->catfile($GTK3LIBSDIRECTORY,'config'),
+			getFiles('libs', 'gtk3','autolatex','config','*'));
+		installInto(
+			File::Spec->catfile($GTK3LIBSDIRECTORY,'icons','16'),
+			getFiles('libs', 'gtk3','autolatex','icons','16','*'));
+		installInto(
+			File::Spec->catfile($GTK3LIBSDIRECTORY,'icons','24'),
+			getFiles('libs', 'gtk3','autolatex','icons','24','*'));
+		installInto(
+			File::Spec->catfile($GTK3LIBSDIRECTORY,'utils'),
+			getFiles('libs', 'gtk3','autolatex','utils','*'));
+		installInto(
+			File::Spec->catfile($GTK3LIBSDIRECTORY,'widgets'),
+			getFiles('libs', 'gtk3','autolatex','widgets','*'));
+	}
+
+	if ($MODULES{'config'}) {
+		installBinariesForModule(%{$_[0]}, 'config');
+
+		foreach my $lang (@po_directories) {
+			install(
+				File::Spec->catfile('po',"$lang",'LC_MESSAGES','autolatex-config.mo'),
+				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
+		}
 	}
 	
 	if ($MODULES{'gedit3'}) {
@@ -760,9 +770,11 @@ sub DO_install(\%) {
 			File::Spec->catfile($GEDIT3PLUGINDIRECTORY,'autolatex','icons','16'),
 			getFiles('plugins', 'gedit3','autolatex','icons','16','*'));
 
-		installInto(
-			$GSETTINGS3SCHEMADIRECTORY,
-			getFiles('schemas', '*.gschema.xml'));
+		foreach my $lang (@po_directories) {
+			install(
+				File::Spec->catfile('po',"$lang",'LC_MESSAGES','autolatex-gedit3.mo'),
+				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
+		}
 	}
 	
 	if ($MODULES{'gedit2'}) {
@@ -806,20 +818,17 @@ sub DO_install(\%) {
 			File::Spec->catfile($GEDIT2PLUGINDIRECTORY,'autolatex','icons','16'),
 			getFiles('plugins', 'gedit2','autolatex','icons','16','*'));
 
-		installInto(
-			$GSETTINGS2SCHEMADIRECTORY,
-			getFiles('schemas', '*.gschema.xml'));
-
-	}
-
-	if ($MODULES{'gedit2'} || $MODULES{'gedit3'}) {
-
 		foreach my $lang (@po_directories) {
 			install(
 				File::Spec->catfile('po',"$lang",'LC_MESSAGES','geditautolatex.mo'),
 				File::Spec->catfile($LOCALEDIRECTORY,"$lang",'LC_MESSAGES'));
 		}
+	}
 
+	if ($MODULES{'gedit2'} || $MODULES{'gedit3'} || $MODULES{'config'}) {
+		installInto(
+			$GSETTINGSSCHEMADIRECTORY,
+			getFiles('schemas', '*.gschema.xml'));
 		install(
 			File::Spec->catfile('icons','autolatex-icon.png'),
 			$ICONDIRECTORY);
@@ -832,7 +841,13 @@ sub DO_install(\%) {
 
 		installInto(
 			$SUBLIME2PLUGINDIRECTORY,
-			File::Spec->catfile('build','sublime2','autolatex.sublime-package'));
+			getFiles('build','sublime2','*'));
+		installInto(
+			File::Spec->catfile($SUBLIME2PLUGINDIRECTORY,'autolatex'),
+			getFiles('build','sublime2','autolatex','*'));
+		installInto(
+			File::Spec->catfile($SUBLIME2PLUGINDIRECTORY,'autolatex','utils'),
+			getFiles('build','sublime2','autolatex','utils','*'));
 
 		foreach my $lang (@po_directories) {
 			install(
@@ -903,8 +918,8 @@ sub DO_vars(\%) {
 		'INSTALLDIRECTORY', $INSTALLDIRECTORY,
 		'GEDIT2PLUGINDIRECTORY', $GEDIT2PLUGINDIRECTORY,
 		'GEDIT3PLUGINDIRECTORY', $GEDIT3PLUGINDIRECTORY,
-		'GSETTINGS2SCHEMADIRECTORY', $GSETTINGS2SCHEMADIRECTORY,
-		'GSETTINGS3SCHEMADIRECTORY', $GSETTINGS3SCHEMADIRECTORY,
+		'GSETTINGSSCHEMADIRECTORY', $GSETTINGSSCHEMADIRECTORY,
+		'GTK3LIBSDIRECTORY', $GTK3LIBSDIRECTORY,
 		'LOCALEDIRECTORY', $LOCALEDIRECTORY,
 		'MANDIRECTORY', $MANDIRECTORY,
 		'STYDIRECTORY', $STYDIRECTORY,
@@ -1093,8 +1108,8 @@ if (("$^O" eq 'MSWin32')||
 	$SUBLIME2PLUGINDIRECTORY = File::Spec->catfile((substShellPatterns($options{'sublime2-prefix'}) || File::Spec->catfile("$PREFIX",'Sublime Text 2')), 'Pristine Packages');
 	$GEDIT2PLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex-gedit2');
 	$GEDIT3PLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'gedit','plugins','autolatex');
-	$GSETTINGS2SCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
-	$GSETTINGS3SCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
+	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'glib-2.0','schemas');
+	$GTK3LIBSDIRECTORY = File::Spec->catfile("$PREFIX",'python3','dist-packages','autolatex');
 }
 else {
 	# Unix compatible platform
@@ -1130,8 +1145,8 @@ else {
 	}
 	$GEDIT2PLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex-gedit2');
 	$GEDIT3PLUGINDIRECTORY = File::Spec->catfile("$PREFIX",'lib','gedit','plugins','autolatex');
-	$GSETTINGS2SCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
-	$GSETTINGS3SCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
+	$GSETTINGSSCHEMADIRECTORY = File::Spec->catfile("$PREFIX",'share','glib-2.0','schemas');
+	$GTK3LIBSDIRECTORY = File::Spec->catfile("$PREFIX",'lib','python3','dist-packages','autolatex');
 }
 
 # Run the action

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# autolatex/__init__.py
 # Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,17 +30,22 @@ import gettext
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import GObject, Gtk, Gio, GdkPixbuf, Gedit, PeasGtk
 
-# AutoLaTeX internal libs
-from .utils import utils, gsettings, gedit_runner
-from .config.cli import window as cli_config
-from .config.plugin import main_panel as plugin_config
+# AutoLaTeX shared libs
+from autolatex.utils import utils
+from autolatex.utils import gsettings
+from autolatex.config import window as cli_config
+
+# AutoLaTeX-Gedit internal libs
+
+from .utils import gedit_runner
+from .config import main_panel as plugin_config
 from .widgets import latex_console
 
 #---------------------------------
 # PLUGIN CONFIGURATION
 #---------------------------------
 
-utils.init_plugin_configuration(__file__, 'geditautolatex')
+utils.init_plugin_configuration(__file__, 'autolatex-gedit3')
 
 #---------------------------------
 # INTERNATIONALIZATION
@@ -277,7 +281,7 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
       action = definition[0].get_action(definition[1])
       action.set_gicon(self._get_icon(definition[2]))
     # Add the Gtk contributions
-    ui_path = os.path.join(utils.AUTOLATEX_PLUGIN_PATH, 'ui')
+    ui_path = os.path.join(utils.AUTOLATEX_APP_PATH, 'ui')
     self._ui_merge_ids = []
     for ui_file in [ 'menu.ui', 'toolbar.ui' ]:
       self._ui_merge_ids.append(manager.add_ui_from_file(os.path.join(ui_path, ui_file)))
@@ -519,4 +523,3 @@ class AutoLaTeXPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configura
             directive,
             params)
       thread.start()
-

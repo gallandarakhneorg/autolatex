@@ -92,6 +92,10 @@ sub safe_exit {
 my %configuration;
 my %autolatexData = ();
 
+# List of the supported commands
+my @SUPPORTED_COMMANDS = ( 'all', 'view', 'clean', 'cleanall', 'gen_doc', 'bibtex', 'biblio', 'makeindex', 'images', 'showimages', 'showimagemap', 'commit', 'update', 'showpath', 'makeflat');
+
+
 ###################################################
 # Helping function to init the progress bar       #
 ###################################################
@@ -675,7 +679,6 @@ sub al_run_makeflat {
 sub _al_run_actions() {
 	# Loop on CLI actions
 	for(my $i=0; $i<@ARGV; $i++) {
-
 		if ($ARGV[$i] eq 'all' || $ARGV[$i] eq 'view') {
 			my $forceview = ($ARGV[$i] eq 'view');
 			al_run_makeandview(\$i,$forceview);
@@ -728,6 +731,23 @@ sub _al_run_actions() {
 
 # script parameters
 my @ORIGINAL_ARGV = @ARGV;
+
+# Try to launch an external program
+{
+	my $i = 0;
+	for my $cliParam (@ORIGINAL_ARGV) {
+		if ($cliParam =~ /^[a-zA-Z]+$/ && !arrayContains(@SUPPORTED_COMMANDS,$cliParam)) {
+			my $cmdname = 'autolatex-'.$cliParam;
+			my $cmd = which($cmdname);
+			if ($cmd) {
+				splice(@ORIGINAL_ARGV, $i, 1);
+				unshift @ORIGINAL_ARGV, $cmd;
+				exec ($cmd, @ORIGINAL_ARGV) or printErr("Unable to run $cmdname: $!\n");
+			}
+		}
+		$i++;
+	}
+}
 
 setDebugLevel(0);
 

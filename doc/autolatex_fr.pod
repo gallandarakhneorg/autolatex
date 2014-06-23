@@ -69,6 +69,12 @@ AutoLaTeX fournit un ensemble fixe d'actions, les arguments à
 passer à AutoLaTeX pour exécuter un de ses modules, pour tous
 les projets. L'action par défaut est B<all>.
 
+Si l'action spécifiée n'est pas reconnue par AutoLateX, un programme nommé C<autolatex-action> (avec
+C<action> remplacé par la chaîne de caractères du nom de l'action) est recherché sur votre système,
+et lancé.
+Par exemple, C<autolatex config> permet de lancer l'interface graphique de configuration de AutoLaTeX.
+Cette interface est supportée par le programme C<autolatex-config>, fourni dans la distribution AutoLaTeX.
+
 Les actions fournies par AutoLaTeX sont :
 
 =over 4
@@ -1446,13 +1452,13 @@ The interfaces utilisateur disponibles sont :
 
 =over 4
 
-=item B<Gedit:>
+=item B<Gedit 3:>
 
-C'est l'interface I<officielle> et "à jour" de AutoLaTeX. Un greffon pour l'éditeur léger Gedit <https://projects.gnome.org/gedit> est fourni. Vous pouvez lancer AutoLaTeX et le configurer grâce aux differents panneaux fournis.
+C'est l'interface I<officielle> et "à jour" de AutoLaTeX. Un greffon pour l'éditeur léger Gedit 3 <https://projects.gnome.org/gedit> est fourni. Vous pouvez lancer AutoLaTeX et le configurer grâce aux differents panneaux fournis.
 
-=item B<Sublime Text 2:>
+=item B<Application Gtk 3:>
 
-Un greffon pour l'éditeur Sublime Text 2 <http://www.sublimetext.com/2> est fourni. Vous pouvez lancer AutoLaTeX grâce aux outils de construction/compilation de Sublime Text. Ce greffon est maintenant considéré comme I<obsolète>, même s'il est toujours maintenu.
+Application Gtk 3 permettant de configurer AutoLaTeX. Elle utilise les mêmes fenêtres que le greffon Gedit 3. En effet, ces deux applications utilisent la même bibliothèque Gtk 3 pour AutoLaTeX.
 
 =item B<Sublime Text avec LaTeXTools:>
 
@@ -1498,9 +1504,23 @@ Nous recommandons d'utiliser la configuration ci-dessous pour lancer AutoLaTeX d
  showPdf=true
  ...
 
-=item B<Application Gtk (obsolète)>:
+=back
 
-Il s'agit de la première interface de AutoLaTeX, écrite en Perl et basée sur Gtk. Elle est maintenant considérée comme I<obsolète>, même si elle est toujours maintenue. Vous pouvez lancer AutoLaTeX et le configurer grâce aux differents panneaux fournis.
+Les interfaces suivantes sont toujours fournies, mais elles sont considérées comme obsolètes :
+
+=over 4
+
+=item B<Gedit 2:>
+
+Un greffon pour l'éditeur Gedit 2 <https://projects.gnome.org/gedit>.
+
+=item B<Sublime Text 2:>
+
+Un greffon pour l'éditeur Sublime Text 2 <http://www.sublimetext.com/2>.
+
+=item B<Application Gtk 2>:
+
+Un ensemble de fenêtres de configuration écrite en Perl et basée sur Gtk 3.
 
 =back
 

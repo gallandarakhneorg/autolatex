@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# autolatex/config/cli/window.py
 # Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,7 +25,7 @@
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import Gtk, GdkPixbuf
 # AutoLaTeX internal libs
-from ...utils import utils
+from ..utils import utils
 from . import generator_panel, figure_panel, figure_assignment_panel, translator_panel, viewer_panel
 
 #---------------------------------

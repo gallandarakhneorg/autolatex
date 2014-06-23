@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# autolatex/widgets/inherit_button.py
 # Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -39,10 +38,31 @@ _T = gettext.gettext
 # CLASS InheritButton
 #---------------------------------
 
-# Gtk button that is managing the inheriting flag
+#
+# Gtk button that is managing the inheriting flag.
+#
+# The inheriting flag indicates if the value(s)
+# is inherited or locally set.
+#
+# This button is displaying an icon that is indicating
+# if the inheriting flag is on or off.
+#
+# When the button state changed (toggled), the associated
+# widgets have their enabling states changed.
+#
+# The attribute 'autolatex_overriding_configuration_value'
+# in the associated widgets will reference this button.
+# This attribute may be used to detect if the value of
+# a given attribute by be taken from the inherited
+# configuration or locally set.
+#
 class InheritButton(Gtk.ToggleButton):
   __gtype_name__ = "AutoLaTeXInheritButton"
 
+  # Constructor.
+  # @param container - widget that is containing this button.
+  # @param widgets - array of widgets that are associated to this
+  #                  button.
   def __init__(self, container, *widgets):
     Gtk.ToggleButton.__init__(self)
     self._is_init = False
@@ -56,23 +76,28 @@ class InheritButton(Gtk.ToggleButton):
     for widget in self._widgets:
       widget.autolatex_overriding_configuration_value = weakref.ref(self)
 
+  # Event Handler: Button is pressed or unpressed.
   def on_button_toggled(self, widget, data=None):
     self._update_icon()
     self._update_widget_sensitivities(True)
 
+  # Associate a widget to this button.
   def bind_widget(self, widget):
     if widget:
       widget.autolatex_overriding_configuration_value = weakref.ref(self)
       self._widgets.append(widget)
 
+  # Disassociate a widget to this button.
   def unbind_widget(self, widget):
     if widget and widget in self._widgets:
       self._widgets.remove(widget)
       widget.autolatex_overriding_configuration_value = None
 
+  # Replies if the inheriting flag is on or off.
   def get_overriding_value(self):
     return self.get_active()
 
+  # Set the value of the inheriting flag.
   def set_overriding_value(self, override):
     self.set_active(override)
     if not self._is_init:
@@ -81,6 +106,8 @@ class InheritButton(Gtk.ToggleButton):
       self._update_widget_sensitivities(False, override)
       self.connect('toggled', self.on_button_toggled)
 
+  # Update the content of the button (icon and tooltip)
+  # according to the value of the inheriting flag.
   def _update_icon(self, is_over=None):
     if is_over is None:
       is_over = self.get_overriding_value()
@@ -91,6 +118,8 @@ class InheritButton(Gtk.ToggleButton):
       self.set_tooltip_text(_T("Get the value from the inherited configuration"))
       self.set_image(self._inherit_icon)
 
+  # Update the sensitivity of the button
+  # according to the value of the inheriting flag.
   def _update_widget_sensitivities(self, update_container, is_over=None):
     if is_over is None:
       is_over = self.get_overriding_value()
@@ -99,6 +128,7 @@ class InheritButton(Gtk.ToggleButton):
     if update_container:
       self._container.update_widget_states()
 
+  # Override
   def set_widget_sensitivity(self, is_sensitive):
     override_value = self.get_overriding_value()
     if not override_value:
@@ -107,6 +137,7 @@ class InheritButton(Gtk.ToggleButton):
       widget.set_sensitive(is_sensitive)
     return is_sensitive
 
+  # Override
   def get_widget_sensitivity(self, widget):
     override_value = self.get_overriding_value()
     if override_value:

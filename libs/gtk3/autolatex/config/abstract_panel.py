@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# autolatex/config/cli/figure_assignment_panel.py
 # Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,17 +25,26 @@
 # Include the Glib, Gtk and Gedit libraries
 from gi.repository import GObject, Gtk
 # AutoLaTeX internal libs
-from ...utils import utils
-from ...widgets import inherit_button
+from ..utils import utils
+from ..widgets import inherit_button
 
 #---------------------------------
-# CLASS Panel
+# CLASS AbstractPanel
 #---------------------------------
 
+#
 # Gtk panel that is managing the configuration of the figure assignments
+#
 class AbstractPanel(Gtk.Box):
   __gtype_name__ = "AutoLaTeXAbstractConfigurationPanel"
 
+  # Constructor.
+  # @param is_document_level - boolean value indicating if the configuration is
+  #                            at the document level (True), or a the user level
+  #                            (False).
+  # @param directory - the name of the folder where the document is located, and
+  #                    its AutoLaTeX configuration.
+  # @param window - parent Gtk window.
   def __init__(self, is_document_level, directory, window):
     # Use an intermediate GtkBox to be sure that
     # the child GtkGrid will not be expanded vertically

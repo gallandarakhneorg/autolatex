@@ -20,7 +20,7 @@
 # Boston, MA 02111-1307, USA.
 
 from gi.repository import GObject, Gtk, Gedit
-from . import runner
+from autolatex.utils import runner
 
 # List of all the runners
 _all_runners = []

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# autolatex/utils/runner.py
 # Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -19,6 +18,11 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+#---------------------------------
+# IMPORTS
+#---------------------------------
+
+# Import standard python libs
 import os
 import re
 import subprocess
@@ -29,11 +33,21 @@ try:
 except ImportError:
   import dummy_threading as _threading
 
+# Import AutoLaTeX libraries
 from . import utils
+
+#---------------------------------
+# GLOBAL VARIABLES
+#---------------------------------
 
 # List of all the runners
 _all_runners = []
 
+#---------------------------------
+# FUNCTIONS
+#---------------------------------
+
+# Kill all the lancuhed runners.
 def kill_all_runners():
   global _all_runners
   tab = _all_runners
@@ -41,26 +55,56 @@ def kill_all_runners():
   for r in tab:
     r.cancel()
 
-# Launch AutoLaTeX inside a thread, and wait for the result
+#---------------------------------
+# CLASS: Listener
+#---------------------------------
+
+#
+# Listener are notified by the runner API when
+# a task changes its state.
+#
 class Listener(object):
+  # Replies if the current is running.
+  # @return true if the task is running, false otherwise.
   def get_runner_progress(self):
     return False
+
+  # Invoked when the task wants to create the associated UI.
   def on_runner_add_ui(self):
     pass
+
+  # Invoked when the task wants to destroy the associated UI.
   def on_runner_remove_ui(self):
     pass
+
+  # Invoked when the task has progressed.
+  # @param amount - progression indicator.
+  # @param comment - associated comment.
   def on_runner_progress(self, amount, comment):
     pass
+
+  # Invoked when the task has finished.
+  # @param retcode - return code of the task.
+  # @param output - output of the task (standard output)
+  # @param latex_warnings - list of detected warnings.
   def on_runner_finalize_execution(self, retcode, output, latex_warnings):
     pass
 
-# Launch AutoLaTeX inside a thread, and wait for the result
+#---------------------------------
+# CLASS: Runner
+#---------------------------------
+
+#
+# A runner of a task.
+# A task is run in a dedicated thread.
+#
 class Runner(_threading.Thread):
 
-  # listener is the listener on the events
-  # directory is the path to set as the current path
-  # directive is the AutoLaTeX command
-  # params are the CLI options for AutoLaTeX
+  # Constructor.
+  # @param listener - the listener on the task events.
+  # @param directory - the path to set as the current path for the task.
+  # @param directive - the AutoLaTeX command, e.g. 'clean', 'all', etc.
+  # @param params - the CLI options for AutoLaTeX.
   def __init__(self, listener, directory, directive, params):
     _threading.Thread.__init__(self)
     assert listener
@@ -73,7 +117,7 @@ class Runner(_threading.Thread):
     self._has_progress = False
     self._subprocess = None
 
-  # Cancel the execution
+  # Cancel the execution of the task.
   def cancel(self):
     if self._subprocess:
       self._subprocess.terminate()
@@ -84,7 +128,8 @@ class Runner(_threading.Thread):
     # Update the rest of the UI from the inside of the UI  thread
     self._listener.on_runner_finalize_execution(0, '', [])
 
-  # Run the thread
+  # Invoked by the background threading API for
+  # running the task's activities.
   def run(self):
     global _all_runners
     _all_runners.append(self)
