@@ -380,9 +380,6 @@ sub mainProgram(;$) {
 			$configuration{'__private__'}{'output.directory'} = dirname($configuration{'__private__'}{'input.latex file'});
 			$configuration{'__private__'}{'output.latex basename'} = basename($configuration{'__private__'}{'input.latex file'});
 		}
-		else {
-			printErr($configuration{'__private__'}{'input.latex file'}.":", "$!");
-		}
 	}
 
 	if ($configuration{'__private__'}{'input.latex file'}) {

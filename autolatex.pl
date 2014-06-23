@@ -1,7 +1,7 @@
 #!/usr/bin/perl -W
 
 # autolatex - autolatex.pl
-# Copyright (C) 1998-13  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-14  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ use strict ;
 use File::Basename ;
 use File::Spec ;
 use File::Copy ;
+use File::Path qw(make_path);
 use Carp;
 
 $| = 1; # autoflush to get the progress indicator working
@@ -125,6 +126,15 @@ sub __subProgress($;$) {
 	return undef;
 }
 
+sub __checkMainTeXfile() {
+	if (!$configuration{'__private__'}{'input.latex file'}) {
+		printErr(formatText(_T("No LaTeX file found nor specified for the directory '{}'.\n You must specify one on the command line option -f, or set the the variable 'generation.main file' in your configuration file, rename one of your files 'Main.tex'."), $configuration{'__private__'}{'output.directory'}));
+	}
+	elsif (-f $configuration{'__private__'}{'input.latex file'}) {
+		printErr($configuration{'__private__'}{'input.latex file'}.":", "$!");
+	}
+}
+
 #------------------------------------------------------
 #
 # IMAGE MANAGEMENT
@@ -157,6 +167,7 @@ sub al_generateimages($) {
 
 sub al_run_images {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	# Force the generation of images
 	$configuration{'generation.generate images'} = 'yes';
 	my $progress = __initProgress(10000);
@@ -170,6 +181,7 @@ sub al_run_images {
 
 sub al_run_showimages {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
 	loadTranslatableImageList(%configuration,%autolatexData);
 	my @images = ();
@@ -187,6 +199,7 @@ sub al_run_showimages {
 
 sub al_run_showimagemap {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
 	loadTranslatableImageList(%configuration,%autolatexData);
 	my %images = ();
@@ -224,6 +237,7 @@ sub al_run_showimagemap {
 
 sub al_run_commit {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	if ($$i_ref==0 || $ARGV[$$i_ref-1] ne 'cleanall') {
 		splice @ARGV, $$i_ref, 0, 'cleanall';
 	}
@@ -237,6 +251,7 @@ sub al_run_commit {
 
 sub al_run_update {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	if ($$i_ref==0 || $ARGV[$$i_ref-1] ne 'cleanall') {
 		splice @ARGV, $$i_ref, 0, 'cleanall';
 	}
@@ -312,6 +327,7 @@ sub al_make($) {
 
 sub al_run_make {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	my $progress = __initProgress(10000);
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
 	$progress->setValue(100) if ($progress);
@@ -324,6 +340,7 @@ sub al_run_make {
 
 sub al_run_makeandview {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	my $force = shift;
 	my $progress = __initProgress(10000);
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
@@ -340,6 +357,7 @@ sub al_run_makeandview {
 
 sub al_run_biblio {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	my $progress = __initProgress(10000);
 	my $make = AutoLaTeX::Make::Make->new(\%configuration);
 	$make->enableBiblio(1);
@@ -351,6 +369,7 @@ sub al_run_biblio {
 
 sub al_run_makeindex {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	my $progress = __initProgress(10000);
 	my $make = AutoLaTeX::Make::Make->new(\%configuration);
 	$make->enableMakeIndex(1);
@@ -519,6 +538,7 @@ sub al_getcleanmorefiles() {
 
 sub al_run_clean {
 	my $i_ref = shift;
+	__checkMainTeXfile();
 	my ($a,$b) = al_getcleanfiles();
 	printDbg(_T("Removing all the temporary files"));
 	al_applyCleanRecursively(@$a, @$b);
@@ -526,7 +546,7 @@ sub al_run_clean {
 
 sub al_run_cleanall {
 	my $i_ref = shift;
-
+	__checkMainTeXfile();
 	printDbg(_T("Removing all the temporary and generated files"));
 
 	loadTranslatorsFromConfiguration(%configuration,%autolatexData);
@@ -606,7 +626,7 @@ sub al_run_cleanall {
 
 sub al_run_makeflat {
 	my $i_ref = shift;
-
+	__checkMainTeXfile();
 	my $progress = __initProgress(10000);
 
 	# Treat the command line option --biblio
@@ -672,6 +692,115 @@ sub al_run_makeflat {
 
 #------------------------------------------------------
 #
+# AUTO-GENERATION
+#
+#------------------------------------------------------
+
+sub al_run_init($) {
+	my $i_ref = shift;
+
+	my $progress = __initProgress(100);
+
+	my $imgDirectory = $configuration{'generation.image directory'};
+	if (!$imgDirectory || $imgDirectory eq File::Spec->rel2abs(File::Spec->curdir())) {
+		$imgDirectory = File::Spec->catfile($configuration{'__private__'}{'output.directory'}, 'images', 'auto');
+	}
+	if (! -d $imgDirectory) {
+		make_path($imgDirectory) or printErr("$imgDirectory: $!");
+		local *FIGURE;
+		my $figureFile = File::Spec->catfile($imgDirectory, "figuretest.svg");
+		open(*FIGURE, "> $figureFile") or printErr("$figureFile: $!\n");
+		my $content = <<"END_FIGURE";
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="291.42856"
+   height="248.57143"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-231.42857,-329.50503)"
+     id="layer1">
+    <path
+       d="m 522.85713,453.79074 a 145.71428,124.28571 0 1 1 -291.42856,0 145.71428,124.28571 0 1 1 291.42856,0 z"
+       id="path2985"
+       style="fill:#000080" />
+    <text
+       x="373.80359"
+       y="469.50504"
+       id="text2987"
+       xml:space="preserve"
+       style="font-size:64px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="373.80359"
+         y="469.50504"
+         id="tspan2989">Test</tspan></text>
+  </g>
+</svg>
+END_FIGURE
+		print FIGURE $content;
+		close(*FIGURE);
+	}
+	my $relativeImgDirectory = File::Spec->abs2rel($imgDirectory,$configuration{'__private__'}{'output.directory'});
+	$relativeImgDirectory = File::Spec->catfile($relativeImgDirectory, '');
+	$progress->setValue(33) if ($progress);
+
+	my $texFile = $configuration{'__private__'}{'input.latex file'};
+	if (!$texFile) {
+		$texFile = 'document.tex';
+	}
+	if (! -f $texFile) {
+		local *FILE;
+		open(*FILE, "> $texFile") or printErr("$texFile: $!");
+		print FILE "% Generated with ".getAutoLaTeXLaunchingName()." ".getAutoLaTeXVersion()."\n";
+		print FILE "\\documentclass{article}\n";
+		print FILE "\\usepackage[utf8x]{inputenc}\n";
+		print FILE "\\DeclareGraphicsExtensions{.pdf,.png}\n";
+		print FILE "\\graphicspath{{$relativeImgDirectory}}\n";
+		print FILE "\\begin{document}\n";
+		print FILE "\\begin{figure}\n";
+		print FILE "\\includegraphics[width=\linewidth]{figuretest}\n";
+		print FILE "\\end{figure}\n";
+		print FILE "\\end{document}\n";
+		close(*FILE);
+	}
+	$progress->setValue(66) if ($progress);
+
+	my $configFile = getProjectConfigFilename($configuration{'__private__'}{'output.directory'});
+	if ($configFile && (! -f $configFile)) {
+		local *FILE;
+		open(*FILE, "> $configFile") or printErr("$configFile: $!");
+		print FILE "; Generated with ".getAutoLaTeXLaunchingName()." ".getAutoLaTeXVersion()."\n";
+		print FILE "[generation]\n";
+		print FILE "main file = ".File::Spec->abs2rel($texFile,$configuration{'__private__'}{'output.directory'})."\n";
+		print FILE "image directory = $relativeImgDirectory\n";
+		close(*FILE);
+	}
+
+	$progress->stop() if ($progress);
+}
+
+#------------------------------------------------------
+#
 # MAIN PROGRAM
 #
 #------------------------------------------------------
@@ -722,6 +851,9 @@ sub _al_run_actions() {
 		}
 		elsif ($ARGV[$i] eq 'makeflat') {
 			al_run_makeflat(\$i);
+		}
+		elsif ($ARGV[$i] eq 'init') {
+			al_run_init(\$i);
 		}
 		else {
 			printErr(formatText(_T('Command line action \'{}\' is not supported.'),$ARGV[$i]));

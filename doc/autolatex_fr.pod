@@ -111,6 +111,11 @@ Production du fichier .pdf/.dvi/.ps associé au document.
 
 Génération automatique des figures avec les convertisseurs.
 
+=item B<init>
+
+Création d'un document LaTeX vide en suivant une structure
+classique de répertoires supportée par AutoLaTeX.
+
 =item B<makeflat>
 
 Créer une version du document, dans le sous-répertoire

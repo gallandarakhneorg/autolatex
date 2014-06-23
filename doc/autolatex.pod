@@ -81,6 +81,11 @@ Performs all processing required to produce the file
 
 Performs the automatic generation of the figures.
 
+=item B<init>
+
+Create an empty LaTeX document that is following a standard
+folder structure supported by AutoLaTeX.
+
 =item B<makeflat>
 
 Create a version of the document inside the subdirectory
