@@ -1,5 +1,5 @@
 # autolatex - Translator.pm
-# Copyright (C) 1998-13  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2014  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '18.0';
+$VERSION = '19.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -875,10 +875,10 @@ sub _runTranslator($$$$$$$$) {
 				my $bn = basename($out, $ext);
 				while (!defined($outChange) && ($fn = readdir(*DIR))) {
 					if ($fn ne File::Spec->updir() && $fn ne File::Spec->curdir()
-						&& $fn =~ /^\Q${bn}_\E/s) {
+							&& $fn =~ /^(\Q${bn}_\E.*)\Q$ext\E$/s) {
 						my $ffn = File::Spec->catfile("$dirname", "$fn");
 						my $t = lastFileChange("$ffn");
-						if (defined($t) && (!defined($outChange) || $t>$outChange)) {
+						if (defined($t) && (!defined($outChange) || $t<$outChange)) {
 							$outChange = $t;
 						}
 					}
