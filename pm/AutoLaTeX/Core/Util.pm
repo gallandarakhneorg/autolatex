@@ -1,4 +1,4 @@
-# Copyright (C) 1998-14  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-15  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '32.0';
+our $VERSION = '35.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
@@ -1447,7 +1447,7 @@ S<GNU Public License (GPL)>
 
 =head1 COPYRIGHT
 
-S<Copyright (c) 1998-13 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
+S<Copyright (c) 1998-15 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
 
 =head1 SEE ALSO
 

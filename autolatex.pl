@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # autolatex - autolatex.pl
-# Copyright (C) 1998-14  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-15  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -89,13 +89,15 @@ sub safe_exit {
 
 ###################################################
 # Global variables                                #
-###################################################
+#############################g######################
 my %configuration;
 my %autolatexData = ();
 
 # List of the supported commands
 my @SUPPORTED_COMMANDS = ( 'all', 'view', 'clean', 'cleanall', 'gen_doc', 'bibtex', 'biblio', 'makeindex', 'images', 'showimages', 'showimagemap', 'commit', 'update', 'showpath', 'makeflat');
 
+# script parameters
+my @ORIGINAL_ARGV = @ARGV;
 
 ###################################################
 # Helping function to init the progress bar       #
@@ -866,8 +868,95 @@ sub _al_run_actions() {
 	}
 }
 
-# script parameters
-my @ORIGINAL_ARGV = @ARGV;
+sub __sharedMainProgram() {
+	if (getDebugLevel()>=6) {
+		exitDbg(\%configuration, \@ORIGINAL_ARGV);
+	}
+	elsif ($configuration{'__private__'}{'action.debug mode'}) {
+		setDebugLevel(5);
+		# Force to fail on Perl warnings
+		$SIG{__WARN__} = sub { confess(@_); };
+	}
+	elsif (getDebugLevel()>=5) {
+		# Force to fail on Perl warnings
+		$SIG{__WARN__} = sub { confess(@_); };
+	}
+
+	if ($configuration{'__private__'}{'action.show progress'}) {
+		setDebugLevel(0); # Force to be not verbose when progress indicator is displayed
+	}
+
+	@ORIGINAL_ARGV = (); # Not more necessary
+
+	# Run the action of the configuration file generation
+	my $optionalAction = 0;
+	if (defined $configuration{'__private__'}{'action.create config file'}) {
+		my $filename;
+		if (($configuration{'__private__'}{'action.create config file'})&&
+		    ($configuration{'__private__'}{'action.create config file'} eq 'project')) {
+		        printDbg(_T("Creating default project configuration file...\n"));
+		        $filename = getProjectConfigFilename($configuration{'__private__'}{'output.directory'});
+			local *FILE;
+			open(*FILE, "> $filename") or printErr("$filename: $!");
+			print FILE "; Generated with ".getAutoLaTeXLaunchingName()." ".getAutoLaTeXVersion()."\n";
+			print FILE "[generation]\n";
+			print FILE "main file = ".File::Spec->abs2rel($configuration{'__private__'}{'input.latex file'},$configuration{'__private__'}{'output.directory'})."\n";
+			print FILE ";image directory = \n";
+			close(*FILE);
+		}
+		else {
+		        printDbg(_T("Creating default user configuration file...\n"));
+		        $filename = getUserConfigFilename();
+			copy(getSystemConfigFilename(),"$filename") or printErr("$filename:", "$!");
+		}
+		$optionalAction = 1;
+	}
+
+	# Run the action of the IST file generation
+	if (defined($configuration{'__private__'}{'action.create ist file'})) {
+		printDbg(_T("Creating default makeindex style file...\n"));
+		my $filename = File::Spec->catfile($configuration{'__private__'}{'output.directory'},"default.ist");
+		copy(getSystemISTFilename(),"$filename") or printErr("$filename:","$!");
+		$optionalAction = 1;
+	}
+
+	# Fix the configuration file
+	if (defined($configuration{'__private__'}{'action.fix config file'})) {
+		if (!$configuration{'__private__'}{'action.fix config file'}) {
+		        $configuration{'__private__'}{'action.fix config file'} = getProjectConfigFilename($configuration{'__private__'}{'output.directory'});
+		        $configuration{'__private__'}{'action.fix config file'} = undef unless (-r $configuration{'__private__'}{'action.fix config file'});
+		}
+		if (!$configuration{'__private__'}{'action.fix config file'}) {
+		        $configuration{'__private__'}{'action.fix config file'} = getUserConfigFile();
+		}
+		if (-r $configuration{'__private__'}{'action.fix config file'}) {
+		        print "Fixing configuration file '".$configuration{'__private__'}{'action.fix config file'}."'\n";
+		        doConfigurationFileFixing($configuration{'__private__'}{'action.fix config file'});
+		}
+		else {
+		        printErr($configuration{'__private__'}{'action.fix config file'},':',"$!\n");
+		}
+		$optionalAction = 1;
+	}
+
+
+	# Apply the default CLI action
+	if (!@ARGV && !$optionalAction) {
+		push @ARGV, 'all' ;
+	}
+
+	if (defined($configuration{'__private__'}{'action.continuous mode'})) {
+		while (1) {
+			_al_run_actions();
+			if ($configuration{'__private__'}{'action.continuous mode'}>0) {
+				sleep($configuration{'__private__'}{'action.continuous mode'});
+			}
+		}
+	}
+	else {
+		_al_run_actions();
+	}
+}
 
 # Try to launch an external program
 {
@@ -892,93 +981,26 @@ initTextDomain('autolatex', File::Spec->catfile(getAutoLaTeXDir(), 'po'), 'UTF-8
 
 %configuration = mainProgram(); # Exit on error
 
-if (getDebugLevel()>=6) {
-	exitDbg(\%configuration, \@ORIGINAL_ARGV);
-}
-elsif ($configuration{'__private__'}{'action.debug mode'}) {
-	setDebugLevel(5);
-	# Force to fail on Perl warnings
-	$SIG{__WARN__} = sub { confess(@_); };
-}
-elsif (getDebugLevel()>=5) {
-	# Force to fail on Perl warnings
-	$SIG{__WARN__} = sub { confess(@_); };
-}
-
-if ($configuration{'__private__'}{'action.show progress'}) {
-	setDebugLevel(0); # Force to be not verbose when progress indicator is displayed
-}
-
-@ORIGINAL_ARGV = (); # Not more necessary
-
-# Run the action of the configuration file generation
-my $optionalAction = 0;
-if (defined $configuration{'__private__'}{'action.create config file'}) {
-	my $filename;
-        if (($configuration{'__private__'}{'action.create config file'})&&
-            ($configuration{'__private__'}{'action.create config file'} eq 'project')) {
-                printDbg(_T("Creating default project configuration file...\n"));
-                $filename = getProjectConfigFilename($configuration{'__private__'}{'output.directory'});
-		local *FILE;
-		open(*FILE, "> $filename") or printErr("$filename: $!");
-		print FILE "; Generated with ".getAutoLaTeXLaunchingName()." ".getAutoLaTeXVersion()."\n";
-		print FILE "[generation]\n";
-		print FILE "main file = ".File::Spec->abs2rel($configuration{'__private__'}{'input.latex file'},$configuration{'__private__'}{'output.directory'})."\n";
-		print FILE ";image directory = \n";
-		close(*FILE);
-        }
-        else {
-                printDbg(_T("Creating default user configuration file...\n"));
-                $filename = getUserConfigFilename();
-	        copy(getSystemConfigFilename(),"$filename") or printErr("$filename:", "$!");
-        }
-	$optionalAction = 1;
-}
-
-# Run the action of the IST file generation
-if (defined($configuration{'__private__'}{'action.create ist file'})) {
-        printDbg(_T("Creating default makeindex style file...\n"));
-        my $filename = File::Spec->catfile($configuration{'__private__'}{'output.directory'},"default.ist");
-        copy(getSystemISTFilename(),"$filename") or printErr("$filename:","$!");
-	$optionalAction = 1;
-}
-
-# Fix the configuration file
-if (defined($configuration{'__private__'}{'action.fix config file'})) {
-        if (!$configuration{'__private__'}{'action.fix config file'}) {
-                $configuration{'__private__'}{'action.fix config file'} = getProjectConfigFilename($configuration{'__private__'}{'output.directory'});
-                $configuration{'__private__'}{'action.fix config file'} = undef unless (-r $configuration{'__private__'}{'action.fix config file'});
-        }
-        if (!$configuration{'__private__'}{'action.fix config file'}) {
-                $configuration{'__private__'}{'action.fix config file'} = getUserConfigFile();
-        }
-        if (-r $configuration{'__private__'}{'action.fix config file'}) {
-                print "Fixing configuration file '".$configuration{'__private__'}{'action.fix config file'}."'\n";
-                doConfigurationFileFixing($configuration{'__private__'}{'action.fix config file'});
-        }
-        else {
-                printErr($configuration{'__private__'}{'action.fix config file'},':',"$!\n");
-        }
-	$optionalAction = 1;
-}
-
-
-# Apply the default CLI action
-if (!@ARGV && !$optionalAction) {
-	push @ARGV, 'all' ;
-}
-
-# Continuous loop, or not
-if (defined($configuration{'__private__'}{'action.continuous mode'})) {
-	while (1) {
-		_al_run_actions();
-		if ($configuration{'__private__'}{'action.continuous mode'}>0) {
-			sleep($configuration{'__private__'}{'action.continuous mode'});
+if ($configuration{'__private__'}{'action.input directories'}) {
+	# Reset debug level
+	setDebugLevel(0);
+	foreach my $inputdirectory (@{$configuration{'__private__'}{'action.input directories'}}) {
+		$inputdirectory = File::Spec->rel2abs($inputdirectory);
+		my $pid = fork();
+		if ($pid == 0) {
+			chdir($inputdirectory) or die("$inputdirectory: $!\n");
+			@ARGV = (@ORIGINAL_ARGV, '--noview');
+			%configuration = mainProgram(); # Exit on error
+			__sharedMainProgram();
+		} elsif ($pid) {
+			waitpid($pid, 0) or die("Unable to wait for child process: $!\n");
+		} else {
+			die("Unable to fork the process: $!\n");
 		}
 	}
 }
 else {
-	_al_run_actions();
+	__sharedMainProgram();
 }
 
 exit(0);

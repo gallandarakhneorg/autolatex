@@ -1,5 +1,5 @@
 # autolatex - Config.pm
-# Copyright (C) 1998-13  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-15  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Config;
 
-$VERSION = '15.0';
+$VERSION = '35.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getProjectConfigFilename &getUserConfigFilename &getSystemConfigFilename
               &getSystemISTFilename &readConfiguration &readConfigFile &getUserConfigDirectory
@@ -866,7 +866,7 @@ S<GNU Public License (GPL)>
 
 =head1 COPYRIGHT
 
-S<Copyright (c) 1998-13 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
+S<Copyright (c) 1998-15 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
 
 =head1 SEE ALSO
 

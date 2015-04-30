@@ -1,5 +1,5 @@
 # autolatex - Main.pm
-# Copyright (C) 1998-13  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-15  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '25.0';
-$COPYRIGHT_YEAR = '2014';
+$VERSION = '35.0';
+$COPYRIGHT_YEAR = '2015';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
 @EXPORT_OK = qw();
@@ -90,6 +90,13 @@ sub analyzeCommandLineOptions(\%) {
 		'defaultist' => sub { 
 					$cfg->{'generation.makeindex style'} = '@system';
 				},
+
+		'directory=s' => sub {
+				if (!$realcfg->{'__private__'}{'action.input directories'}) {
+					$realcfg->{'__private__'}{'action.input directories'} = [];
+				}
+				push @{$realcfg->{'__private__'}{'action.input directories'}}, $_[1];
+			},
 
 		'dvi' => sub { 
 				$cfg->{'generation.generation type'} = 'dvi';
@@ -520,7 +527,7 @@ S<GNU Public License (GPL)>
 
 =head1 COPYRIGHT
 
-S<Copyright (c) 1998-13 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
+S<Copyright (c) 1998-15 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
 
 =head1 SEE ALSO
 
