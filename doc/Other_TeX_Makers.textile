@@ -8,7 +8,7 @@ table{border:1px solid black}.
 |<. "AutoLaTeX":http://www.ctan.org/pkg/autolatex |=. Perl/Python |=. 2014 |=. latex, pdflatex, xelatex, lualatex, bibtex, biber, makeindex, dvips |=. X |=. X |=. X |=. asta, dia, dot, fig, ggb, gxl, odg, plot, svg, vsdx, xmi |=. c/c++, java, matlab, ml, perl, python, ruby, sql, svg layers |=. fig, plot, dia, svg, svg layers |=. X |=. Gedit3, Gtk3, Sublime Text 3 (see "LaTeXTools plugin":https://github.com/SublimeText/LaTeXTools). Deprecated: Gedit2, Sublime Text 2, Gtk2 |
 |<. "go-make":http://www.ctan.org/pkg/go-make |=. Perl |=. 1993 |=. latex, dvips, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
 |<. "latex-make":http://www.ctan.org/pkg/latex-make |=. Makefile |=. 2003 |=. latex, pdflatex, dvips, ps2pdf, bibtex, makeindex |=. X |=.  |=. X |=. fig |=.  |=.  |=.  |=.  |
-|<. "latexmk":http://www.ctan.org/pkg/latexmk/ |=. Perl |=. 2012 |=. latex, dvips, dvipdf, pdflatex, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
+|<. "latexmk":http://www.ctan.org/pkg/latexmk/ |=. Perl |=. 2012 |=. latex, dvips, dvipdf, xelatex, pdflatex, bibtex, makeindex |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
 |<. "latexn":http://www.ctan.org/pkg/latexn |=. csh |=. 1997 |=. dvi |=. latex, bibtex, makeindex |=.  |=.  |=.  |=.  |=.  |=.  |=.  |
 |<. "make-latex":http://www.ctan.org/pkg/make-latex |=. Makefile |=. 1993 |=. latex, dvips, bibtex |=. X |=. X |=. X |=. fig, plot |=.  |=. fig |=.  |=.  |
 |<. "mk":http://www.ctan.org/pkg/mk |=. Ruby |=. 2012 |=. latex, xelatex, pdflatex, texi2dvi |=. X |=. X |=. X |=.  |=.  |=.  |=.  |=.  |
