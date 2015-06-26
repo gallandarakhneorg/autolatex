@@ -1224,7 +1224,7 @@ sub loadTranslatableImageList(\%\%;$) {
 		if ($rawdirs) {
 			my $separators = getPathListSeparator() || '';
 			my @dirs = split( /[$separators]/is, $rawdirs);
-			my @imageExtensions = keys $data->{'imageDatabase'};
+			my @imageExtensions = keys %{$data->{'imageDatabase'}};
 			@imageExtensions = sort {
 							my $la = length($a);
 							my $lb = length($b);
