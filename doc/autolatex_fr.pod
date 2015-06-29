@@ -1136,6 +1136,22 @@ TeX part:
 
 =back
 
+=item B<PGF/TikZ (tikz) vers Portable Document Format (pdf)>
+
+=over 12
+
+=item Nom :                              tikz2pdf
+
+=item Convertisseur externe utilisé :    pdflatex
+
+=item Use translator:                    
+
+=item Format d'entrée :                  .tikz
+
+=item Format de sortie :                 .pdf
+
+=back
+
 =item B<Gimp (xcf) vers Portable Document Format (pdf)>
 
 =over 12
