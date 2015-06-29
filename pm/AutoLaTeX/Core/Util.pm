@@ -38,7 +38,7 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '35.1';
+our $VERSION = '36.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
