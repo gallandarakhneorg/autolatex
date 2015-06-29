@@ -1,5 +1,5 @@
 # autolatex - Make.pm
-# Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '27.0';
+our $VERSION = '28.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -673,26 +673,7 @@ sub runLaTeX($;$$) : method {
 		
 		local *LOGFILE;
 
-##############################################################
-# Uncomment the following lines for testing the log analyzer #
-##############################################################
-#my @unittests = ('test1','test2','test3','test4','test5','test6','test7');
-#$exitcode = 255;
-##############################################################
-
 		if ($exitcode!=0) {
-
-##############################################################
-# Uncomment the following lines for testing the log analyzer #
-##############################################################
-#foreach my $unittest (@unittests) {
-#	{
-#		use File::Copy;
-#		my $unittest_log = File::Spec->catfile(dirname(__FILE__), "unittests", "$unittest.log");
-#		copy($unittest_log, $logFile) or printErr("$unittest_log: $!");
-#		printDbg(formatText("**** TESTING LOG FILE FROM {}", basename($unittest_log)));
-#	}
-##############################################################
 			printDbg(formatText(_T("{}: Error when processing {}"), 'PDFLATEX', basename($file)));
 
 			# Parse the log to extract the blocks of messages
@@ -840,26 +821,6 @@ sub runLaTeX($;$$) : method {
 			else {
 				print STDERR (formatText(_T("{}: Unable to extract the error from the log. Please read the log file."), 'PDFLATEX'))."\n";
 			}
-
-##############################################################
-# Uncomment the following lines for testing the log analyzer #
-##############################################################
-#	{
-#		my $unittestcontent = readFileLines(File::Spec->catfile(dirname(__FILE__), "unittests", "$unittest.result"));
-#		$unittestcontent =~ s/\Q------MAINFILE------\E/$file/sg;
-#		$unittestcontent =~ s/\Q------LINENUMBER------\E/$linenumber/sg;
-#		if (trim($unittestcontent) ne trim($extracted_message)) {
-#			print STDERR "\n***\nInvalid extraction for '$unittest'\n";
-#			print STDERR "EXPECTED:\n$unittestcontent\n\n";
-#			print STDERR "ACTUAL:\n$extracted_message\n";
-#			exit(255);
-#		}
-#		else {
-#			print STDERR "Extraction of '$unittest' is valid\n";
-#		}
-#	}
-#}
-##############################################################
 
 			exit(255);
 		}
@@ -1576,14 +1537,6 @@ sub __build_bbl($$$) : method {
 					@{$self->{'bibtex_cmd'}},
 						$self->makeRelativePath("$auxFile"));
 
-##############################################################
-# Uncomment the following lines for testing the log analyzer #
-##############################################################
-#use File::Copy;
-#my $unittest_log = File::Spec->catfile(dirname(__FILE__), "unittests", "bibtex_test1.log");
-#copy($unittest_log, 'autolatex_exec_stdout.log') or printErr("$unittest_log: $!");
-#$retcode = 255;
-##############################################################
 			# Output the log from the bibliography tool
 			if ($retcode!=0) {
 
@@ -1777,7 +1730,7 @@ S<GNU Public License (GPL)>
 
 =head1 COPYRIGHT
 
-S<Copyright (c) 2013 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
+S<Copyright (c) 2013-15 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
 
 =head1 SEE ALSO
 
