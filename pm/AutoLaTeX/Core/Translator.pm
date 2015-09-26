@@ -1,5 +1,5 @@
 # autolatex - Translator.pm
-# Copyright (C) 2014  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2014-2015  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '19.0';
+$VERSION = '20.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -218,7 +218,7 @@ sub getTranslatorFilesFrom(\%$\%$$$;$) {
 			formatText(_T("Get translator list from {}"),$dirname);
 			if (opendir(*DIR,"$dirname")) {
 				while (my $file = readdir(*DIR)) {
-					if ( $file ne File::Spec->curdir() && $file ne File::Spec->updir() ) {
+					if ( ! isIgnorableDirectory($file) ) {
 						my $fullname = File::Spec->catfile("$dirname","$file");
 						if (-d "$fullname") {
 							push @dirs, "$fullname" if ($recursive);
@@ -415,9 +415,9 @@ sub getLoadableTranslatorList(\%) {
 	opendir(*DIR,"$filename")
 		or printErr("$filename:","$!");
 	while (my $file = readdir(*DIR)) {
-		my $fullname = File::Spec->rel2abs(File::Spec->catfile("$filename","$file"));
-		if (($file ne File::Spec->curdir())&&($file ne File::Spec->updir())&&
+		if ((!isIgnorableDirectory($file))&&
 		    ($file =~ /^(.*)\.transdef$/i)) {
+			my $fullname = File::Spec->rel2abs(File::Spec->catfile("$filename","$file"));
 			my $scriptname = "$1";
 			if ((!exists $_[0]->{"$scriptname.include module"})||
 			    (cfgBoolean($_[0]->{"$scriptname.include module"}))) {
@@ -509,9 +509,9 @@ sub getTranslatorList(\%;$) {
 	printDbgIndent();
 	opendir(*DIR,"$filename") or printErr("$filename:","$!");
 	while (my $file = readdir(*DIR)) {
-		my $fullname = File::Spec->rel2abs(File::Spec->catfile("$filename","$file"));
-		if (($file ne File::Spec->curdir())&&($file ne File::Spec->updir())&&
+		if ((!isIgnorableDirectory($file))&&
 		    ($file =~ /^(.*)\.transdef$/i)) {
+			my $fullname = File::Spec->rel2abs(File::Spec->catfile("$filename","$file"));
 			my $scriptname = "$1";
 			$translators{"$scriptname"} = extractTranslatorNameComponents($scriptname);
 			$translators{"$scriptname"}{'human-readable'} = makeTranslatorHumanReadable($translators{"$scriptname"});
@@ -874,7 +874,7 @@ sub _runTranslator($$$$$$$$) {
 				my $ext = $translators->{"$transname"}{'transdef'}{'OUTPUT_EXTENSIONS'}{'value'}[0] || '';
 				my $bn = basename($out, $ext);
 				while (!defined($outChange) && ($fn = readdir(*DIR))) {
-					if ($fn ne File::Spec->updir() && $fn ne File::Spec->curdir()
+					if (!isIgnorableDirectory($fn)
 							&& $fn =~ /^(\Q${bn}_\E.*)\Q$ext\E$/s) {
 						my $ffn = File::Spec->catfile("$dirname", "$fn");
 						my $t = lastFileChange("$ffn");
@@ -1240,7 +1240,7 @@ sub loadTranslatableImageList(\%\%;$) {
 				$dir = File::Spec->rel2abs($dir, $configuration->{'__private__'}{'input.project directory'});
 				if (opendir(*DIR, "$dir")) {
 					while (my $fn = readdir(*DIR)) {
-						if ($fn ne File::Spec->curdir() && $fn ne File::Spec->updir()) {
+						if (!isIgnorableDirectory($fn)) {
 							my $ffn = File::Spec->catfile("$dir", "$fn");
 							if (-d "$ffn") {
 								push @dirs, "$ffn";

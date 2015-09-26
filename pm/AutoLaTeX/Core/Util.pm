@@ -38,7 +38,7 @@ package AutoLaTeX::Core::Util;
 
 our $INTERNAL_MESSAGE_PREFIX = '';
 
-our $VERSION = '36.0';
+our $VERSION = '37.0';
 
 @ISA = ('Exporter');
 @EXPORT = qw( &isHash &isArray &removeFromArray &arrayContains &getAutoLaTeXDir
@@ -51,7 +51,8 @@ our $VERSION = '36.0';
 	      &readFileLines &writeFileLines &runCommandOrFailRedirectTo
 	      &runCommandSilently &removePathPrefix &trim &trim_ws &formatText
 	      &makeMessage &makeMessageLong &secure_unlink &str2language
-	      &killSubProcesses &toANSI &toUTF8 &redirectToSTDOUT &redirectToSTDERR ) ;
+	      &killSubProcesses &toANSI &toUTF8 &redirectToSTDOUT &redirectToSTDERR
+		  &isIgnorableDirectory ) ;
 @EXPORT_OK = qw( $INTERNAL_MESSAGE_PREFIX );
 
 require 5.014;
@@ -327,7 +328,7 @@ sub showManual(@) {
 		opendir(*DIR,File::Spec->catfile(@_))
 			or die(_T("no manual page found\n").File::Spec->catfile(@_).": $!\n");
 		while (my $file = readdir(*DIR)) {
-			if (($file ne '.')&&($file ne '..')) {
+			if (!isIgnorableDirectory($file)) {
 				if ($file =~ /^\Q$filename\E[._\-]\Q$currentLocale$ext\E$/) {
 					$localePod = $file;
 				}
@@ -1426,6 +1427,18 @@ sub killSubProcesses() {
 	kill 9, @pids;
 }
 
+=pod
+
+=item B<isIgnorableDirectory($)>
+
+Replies if the given directory name is for directories to ignore.
+
+=cut
+sub isIgnorableDirectory($) {
+	my $file = shift || return 1;
+	return $file eq File::Spec->curdir() || $file eq File::Spec->updir()
+			|| $file eq ".git" || $file eq ".svn" || $file eq ".cvs";
+}
 
 
 

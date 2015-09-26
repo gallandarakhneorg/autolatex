@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '28.0';
+our $VERSION = '29.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -563,7 +563,7 @@ die(Dumper(\%deps));
 	local *DIR;
 	opendir(*DIR, "$rootdir") or printErr("$rootdir: $!");
 	while (my $dir = readdir(*DIR)) {
-		if ($dir ne File::Spec->curdir() && $dir ne File::Spec->updir() && $dir =~ /^(.+?)\.aux$/) {
+		if ((!isIgnorableDirectory($dir)) && $dir =~ /^(.+?)\.aux$/) {
 			my $bibdb = "$1";
 			if ($bibdb ne "$rootbasename") {
 				my $auxfile = File::Spec->catfile("$rootdir", "$dir");

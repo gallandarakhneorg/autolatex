@@ -463,7 +463,7 @@ sub al_applyCleanRecursively(\@\@) {
 		my $dir = shift @dirs;
 		opendir(*DIR, "$dir") or printErr("$dir: $!");
 		while (my $fn = readdir(*DIR)) {
-			if ($fn ne File::Spec->updir() && $fn ne File::Spec->curdir()) {
+			if (!isIgnorableDirectory($fn)) {
 				my $ffn = File::Spec->rel2abs(File::Spec->catfile("$dir","$fn"));
 				if (-d "$ffn") {
 					push @dirs, "$ffn";
@@ -610,7 +610,7 @@ sub al_run_cleanall {
 			if (opendir(*DIR, "$dir")) {
 				my @files_to_remove = ();
 				while (my $fn = readdir(*DIR)) {
-					if ($fn ne File::Spec->curdir() && $fn ne File::Spec->updir()
+					if ((!isIgnorableDirectory($fn))
 						&& $fn =~ /^(?:$localpattern)$/s) {
 						my $ffn = File::Spec->catfile("$dir","$fn");
 						push @files_to_remove, $ffn;
