@@ -1020,15 +1020,31 @@ TeX part:
 
 =back
 
-=item B<Scalable Vector Graphic (svg) vers Portable Document Format (pdf)>
+=item B<Scalable Vector Graphic (svg) vers Portable Document Format (pdf): variante Inkscape>
 
 =over 12
 
-=item Nom :                              svg2pdf
+=item Nom :                              svg2pdf_inkscape
 
 =item Convertisseur externe utilisé :    inkscape
 
-=item Convertisseur utilisé :            eps2pdf
+=item Convertisseur utilisé :            
+
+=item Format d'entrée :                  .svg
+
+=item Format de sortie :                 .pdf
+
+=back
+
+=item B<Scalable Vector Graphic (svg) vers Portable Document Format (pdf): variante rsvg2>
+
+=over 12
+
+=item Nom :                              svg2pdf_rsvg
+
+=item Convertisseur externe utilisé :    rsvg-convert
+
+=item Convertisseur utilisé :            
 
 =item Format d'entrée :                  .svg
 
@@ -1042,7 +1058,7 @@ PDF part:
 
 =over 12
 
-=item Nom :                              svg2pdf+tex
+=item Nom :                              svg2pdf+tex_inkscape
 
 =item Convertisseur externe utilisé :    inkscape
 
@@ -1058,7 +1074,7 @@ TeX part:
 
 =over 12
 
-=item Nom :                              svg2pdf+tex
+=item Nom :                              svg2pdf+tex_inkscape
 
 =item Convertisseur externe utilisé :    inkscape
 
@@ -1070,13 +1086,29 @@ TeX part:
 
 =back
 
-=item B<Scalable Vector Graphic (svg) vers Portable Network Graphic (png)>
+=item B<Scalable Vector Graphic (svg) vers Portable Network Graphic (png): variante Inkscape>
 
 =over 12
 
-=item Nom :                              svg2png
+=item Nom :                              svg2png_inkscape
 
 =item Convertisseur externe utilisé :    inkscape
+
+=item Convertisseur utilisé :           
+
+=item Format d'entrée :                  .svg
+
+=item Format de sortie :                 .png
+
+=back
+
+=item B<Scalable Vector Graphic (svg) vers Portable Network Graphic (png): variante rsvg2>
+
+=over 12
+
+=item Nom :                              svg2png_rsvg
+
+=item Convertisseur externe utilisé :    rsvg-convert
 
 =item Convertisseur utilisé :           
 
@@ -1090,7 +1122,7 @@ TeX part:
 
 =over 12
 
-=item Nom :                              svg2pdf+layers
+=item Nom :                              svg2pdf+layers_inkscape
 
 =item Convertisseur externe utilisé :    inkscape
 
@@ -1108,7 +1140,7 @@ PDF part:
 
 =over 12
 
-=item Nom :                              svg2pdf+layers+tex
+=item Nom :                              svg2pdf+layers+tex_inkscape
 
 =item Convertisseur externe utilisé :    inkscape
 
@@ -1124,7 +1156,7 @@ TeX part:
 
 =over 12
 
-=item Nom :                              svg2pdf+layers+tex
+=item Nom :                              svg2pdf+layers+tex_inkscape
 
 =item Convertisseur externe utilisé :    inkscape
 

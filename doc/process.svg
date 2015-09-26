@@ -14,7 +14,7 @@
    height="707.9436"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="process.svg">
   <defs
      id="defs4">
@@ -320,14 +320,14 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="1150.5611"
-     inkscape:cy="369.13909"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="1511.6226"
+     inkscape:cy="111.51077"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1440"
-     inkscape:window-height="876"
+     inkscape:window-width="1920"
+     inkscape:window-height="1056"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -484,17 +484,7 @@
            id="tspan3204"
            sodipodi:role="line">pdflatex</tspan></text>
     </g>
-    <flowRoot
-       xml:space="preserve"
-       id="flowRoot3206"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"><flowRegion
-         id="flowRegion3208"><rect
-           id="rect3210"
-           width="391.42856"
-           height="255.71428"
-           x="-60"
-           y="658.07648" /></flowRegion><flowPara
-         id="flowPara3212" /></flowRoot>    <g
+    <g
        id="g3214-5"
        transform="translate(535.62265,-136.33179)">
       <rect

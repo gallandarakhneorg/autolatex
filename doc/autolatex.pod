@@ -985,13 +985,29 @@ TeX part:
 
 =back
 
-=item B<Scalable Vector Graphic (svg) to Portable Document Format (pdf)>
+=item B<Scalable Vector Graphic (svg) to Portable Document Format (pdf): Inkscape variante>
 
 =over 12
 
-=item Name:                              svg2pdf
+=item Name:                              svg2pdf_inkscape
 
 =item Use external converter:            inkscape
+
+=item Use translator:                    
+
+=item Input format:                      .svg
+
+=item Output format:                     .pdf
+
+=back
+
+=item B<Scalable Vector Graphic (svg) to Portable Document Format (pdf): rsvg2 variante>
+
+=over 12
+
+=item Name:                              svg2pdf_rsvg
+
+=item Use external converter:            rsvg-convert
 
 =item Use translator:                    
 
@@ -1007,7 +1023,7 @@ PDF part:
 
 =over 12
 
-=item Name:                              svg2pdf+tex
+=item Name:                              svg2pdf+tex_inkscape
 
 =item Use external converter:            inkscape
 
@@ -1023,7 +1039,7 @@ TeX part:
 
 =over 12
 
-=item Name:                              svg2pdf+tex
+=item Name:                              svg2pdf+tex_inkscape
 
 =item Use external converter:            inkscape
 
@@ -1035,13 +1051,29 @@ TeX part:
 
 =back
 
-=item B<Scalable Vector Graphic (svg) to Portable Network Graphic (png)>
+=item B<Scalable Vector Graphic (svg) to Portable Network Graphic (png): Inkscape variante>
 
 =over 12
 
-=item Name:                              svg2png
+=item Name:                              svg2png_inkscape
 
 =item Use external converter:            inkscape
+
+=item Use translator:            
+
+=item Input format:                      .svg
+
+=item Output format:                     .png
+
+=back
+
+=item B<Scalable Vector Graphic (svg) to Portable Network Graphic (png): rsvg2 variante>
+
+=over 12
+
+=item Name:                              svg2png_rsvg
+
+=item Use external converter:            rsvg-convert
 
 =item Use translator:            
 
@@ -1055,7 +1087,7 @@ TeX part:
 
 =over 12
 
-=item Name:                              svg2pdf+layers
+=item Name:                              svg2pdf+layers_inkscape
 
 =item Use external converter:            inkscape
 
@@ -1073,7 +1105,7 @@ PDF part:
 
 =over 12
 
-=item Name:                              svg2pdf+layers+tex
+=item Name:                              svg2pdf+layers+tex_inkscape
 
 =item Use external converter:            inkscape
 
@@ -1089,7 +1121,7 @@ TeX part:
 
 =over 12
 
-=item Name:                              svg2pdf+layers+tex
+=item Name:                              svg2pdf+layers+tex_inkscape
 
 =item Use external converter:            inkscape
 
