@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '29.0';
+our $VERSION = '30.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -491,38 +491,34 @@ sub _computeDependenciesForRootFile($) : method {
 				if ($deps{'biblio'}) {
 					while (my ($bibdb,$bibdt) = each(%{$deps{'biblio'}})) {
 						my $dir = dirname($file);
-						if ($rootdir eq $dir) {
-							my $bblfile = File::Spec->catfile("$rootdir", "$bibdb.bbl");
-							printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
-							$self->{'files'}{"$bblfile"} = {
-								'type' => 'bbl',
-								'dependencies' => {},
-								'change' => lastFileChange("$bblfile"),
-								'use_biber' => $deps{'biber'},
-							};
-							$self->{'files'}{$pdfFile}{'dependencies'}{$bblfile} = undef;
-						
-if ($file =~ /appendixA/) {
-use Data::Dumper;
-die(Dumper(\%deps));
-}
-							foreach my $cat ('bib', 'bst', 'bbc', 'cbx') {
-								if ($bibdt->{$cat}) {
-									foreach my $dpath (@{$bibdt->{$cat}}) {
-										if (!File::Spec->file_name_is_absolute($dpath)) {
-											$dpath = File::Spec->catfile("$rootdir", $dpath);
-										}
-										if ($dpath !~ /\.$cat/) {
-											$dpath .= ".$cat";
-										}
-										printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
-										$self->{'files'}{$dpath} = {
-											'type' => $cat,
-											'dependencies' => {},
-											'change' => lastFileChange($dpath),
-										};
-										$self->{'files'}{"$bblfile"}{'dependencies'}{$dpath} = undef;
+						if ($rootdir ne $dir) {
+							$bibdb = $rootbasename;
+						}
+						my $bblfile = File::Spec->catfile("$rootdir", "$bibdb.bbl");
+						printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
+						$self->{'files'}{"$bblfile"} = {
+							'type' => 'bbl',
+							'dependencies' => {},
+							'change' => lastFileChange("$bblfile"),
+							'use_biber' => $deps{'biber'},
+						};
+						$self->{'files'}{$pdfFile}{'dependencies'}{$bblfile} = undef;
+						foreach my $cat ('bib', 'bst', 'bbc', 'cbx') {
+							if ($bibdt->{$cat}) {
+								foreach my $dpath (@{$bibdt->{$cat}}) {
+									if (!File::Spec->file_name_is_absolute($dpath)) {
+										$dpath = File::Spec->catfile("$rootdir", $dpath);
 									}
+									if ($dpath !~ /\.$cat/) {
+										$dpath .= ".$cat";
+									}
+									printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
+									$self->{'files'}{$dpath} = {
+										'type' => $cat,
+										'dependencies' => {},
+										'change' => lastFileChange($dpath),
+									};
+									$self->{'files'}{"$bblfile"}{'dependencies'}{$dpath} = undef;
 								}
 							}
 						}
@@ -746,12 +742,7 @@ sub runLaTeX($;$$) : method {
 						$candidate_pattern = "\Q$l\E[\n\r]+$candidate_pattern";
 						$candidate = $l.$candidate;
 					}
-##############################################################
-# Uncomment the following lines for testing the log analyzer #
-##############################################################
-#					if ($candidate) {
 					if ($candidate && -e "$candidate") {
-##############################################################
 						$linenumber = int($post);
 						# Search the error message in the log.
 						$candidate_pattern .= "\Q:$post:\E";

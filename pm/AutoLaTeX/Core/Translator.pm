@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Translator;
 
-$VERSION = '20.0';
+$VERSION = '21.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getTranslatorFilesFrom &getLoadableTranslatorList &getTranslatorList
 	      &detectConflicts @ALL_LEVELS 
@@ -891,6 +891,8 @@ sub _runTranslator($$$$$$$$) {
 			# No need to translate again
 			printDbgFor(2, formatText(_T("{} is up-to-date."), basename($out)));
 			return 1;
+		} else {
+			printDbgFor(3, formatText(_T("in={}; out={}."), $outChange, $inChange));
 		}
 	}
 

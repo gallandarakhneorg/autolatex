@@ -136,6 +136,8 @@ TRANSLATOR_FUNCTION =<<EOL {
 		}
 		if (!$transresult) {
 			printErr("No file generated.");
+		} else {
+			touch("$out");
 		}
 	}
 	elsif (@generatedFiles) {
