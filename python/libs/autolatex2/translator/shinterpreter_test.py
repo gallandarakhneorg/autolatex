@@ -51,40 +51,47 @@ class TestTranslatorInterpreter(unittest.TestCase):
 
 	@unittest.skipUnless(shutil.which('sh') is not None, "Shell interpreter not installed")
 	def test_run_valid1(self):
-		(sout, serr, sex) = self.interpreter.run('MYVAR=\'abc\'')
+		(sout, serr, sex, retcode) = self.interpreter.run('MYVAR=\'abc\'')
 		self.assertEqual('', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('sh') is not None, "Shell interpreter not installed")
 	def test_run_valid2(self):
-		(sout, serr, sex) = self.interpreter.run('MYVAR=\'abc\'; echo $MYVAR')
+		(sout, serr, sex, retcode) = self.interpreter.run('MYVAR=\'abc\'; echo $MYVAR')
 		self.assertEqual('abc\n', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('sh') is not None, "Shell interpreter not installed")
 	def test_run_valid3(self):
-		(sout, serr, sex) = self.interpreter.run('MYVAR=\'abc\'; echo $MYVAR >&2')
+		(sout, serr, sex, retcode) = self.interpreter.run('MYVAR=\'abc\'; echo $MYVAR >&2')
 		self.assertEqual('', sout)
 		self.assertEqual('abc\n', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('sh') is not None, "Shell interpreter not installed")
 	def test_run_valid4(self):
-		(sout, serr, sex) = self.interpreter.run('false')
+		(sout, serr, sex, retcode) = self.interpreter.run('false')
 		self.assertEqual('', sout)
 		self.assertEqual('', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
+		self.assertNotEqual(0, retcode)
+		self.assertEqual(sex.errno, retcode)
 
 	@unittest.skipUnless(shutil.which('sh') is not None, "Shell interpreter not installed")
 	def test_run_invalid1(self):
-		(sout, serr, sex) = self.interpreter.run('echo (1')
+		(sout, serr, sex, retcode) = self.interpreter.run('echo (1')
 		self.assertEqual('', sout)
 		self.assertEqual('sh: 5: Syntax error: word unexpected (expecting ")")\n', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
+		self.assertNotEqual(0, retcode)
+		self.assertEqual(sex.errno, retcode)
 
 
 

@@ -125,6 +125,9 @@ TRANSLATOR_FUNCTION =<<EOL {
 			$bn =~ s/\s+/_/sg;
 			move("$file", "$template$bn$outext") or printErr("$file -> $template$bn$outext: $!");
 		}
+		if (@generatedFiles) {
+			touch("$out");
+		}
 	}
 	elsif (@generatedFiles) {
 		my $file = shift @generatedFiles;

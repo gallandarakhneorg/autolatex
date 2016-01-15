@@ -51,40 +51,47 @@ class TestTranslatorInterpreter(unittest.TestCase):
 
 	@unittest.skipUnless(shutil.which('ruby') is not None, "Ruby interpreter not installed")
 	def test_run_valid1(self):
-		(sout, serr, sex) = self.interpreter.run('myvar = \'abc\'')
+		(sout, serr, sex, retcode) = self.interpreter.run('myvar = \'abc\'')
 		self.assertEqual('', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('ruby') is not None, "Ruby interpreter not installed")
 	def test_run_valid2(self):
-		(sout, serr, sex) = self.interpreter.run('myvar = \'abc\'; puts myvar')
+		(sout, serr, sex, retcode) = self.interpreter.run('myvar = \'abc\'; puts myvar')
 		self.assertEqual('abc\n', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('ruby') is not None, "Ruby interpreter not installed")
 	def test_run_valid3(self):
-		(sout, serr, sex) = self.interpreter.run('myvar = \'abc\'; $stderr.puts myvar')
+		(sout, serr, sex, retcode) = self.interpreter.run('myvar = \'abc\'; $stderr.puts myvar')
 		self.assertEqual('', sout)
 		self.assertEqual('abc\n', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('ruby') is not None, "Ruby interpreter not installed")
 	def test_run_valid4(self):
-		(sout, serr, sex) = self.interpreter.run('raise "error"')
+		(sout, serr, sex, retcode) = self.interpreter.run('raise "error"')
 		self.assertEqual('', sout)
 		self.assertEqual('-:5:in `<main>\': error (RuntimeError)\n', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
+		self.assertNotEqual(0, retcode)
+		self.assertEqual(sex.errno, retcode)
 
 	@unittest.skipUnless(shutil.which('ruby') is not None, "Ruby interpreter not installed")
 	def test_run_invalid1(self):
-		(sout, serr, sex) = self.interpreter.run('print (1')
+		(sout, serr, sex, retcode) = self.interpreter.run('print (1')
 		self.assertEqual('', sout)
 		self.assertEqual('-:5: syntax error, unexpected $end, expecting \')\'\nprint (1\n        ^\n', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
+		self.assertNotEqual(0, retcode)
+		self.assertEqual(sex.errno, retcode)
 
 
 

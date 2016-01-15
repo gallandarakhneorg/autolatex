@@ -51,40 +51,47 @@ class TestTranslatorInterpreter(unittest.TestCase):
 
 	@unittest.skipUnless(shutil.which('perl') is not None, "Perl interpreter not installed")
 	def test_run_valid1(self):
-		(sout, serr, sex) = self.interpreter.run('my $myvar = \'abc\';')
+		(sout, serr, sex, retcode) = self.interpreter.run('my $myvar = \'abc\';')
 		self.assertEqual('', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('perl') is not None, "Perl interpreter not installed")
 	def test_run_valid2(self):
-		(sout, serr, sex) = self.interpreter.run('my $myvar = \'abc\'; print "$myvar\\n";')
+		(sout, serr, sex, retcode) = self.interpreter.run('my $myvar = \'abc\'; print "$myvar\\n";')
 		self.assertEqual('abc\n', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('perl') is not None, "Perl interpreter not installed")
 	def test_run_valid3(self):
-		(sout, serr, sex) = self.interpreter.run('my $myvar = \'abc\'; print STDERR $myvar;')
+		(sout, serr, sex, retcode) = self.interpreter.run('my $myvar = \'abc\'; print STDERR $myvar;')
 		self.assertEqual('', sout)
 		self.assertEqual('abc', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('perl') is not None, "Perl interpreter not installed")
 	def test_run_valid4(self):
-		(sout, serr, sex) = self.interpreter.run('die "error";')
+		(sout, serr, sex, retcode) = self.interpreter.run('die "error";')
 		self.assertEqual('', sout)
 		self.assertEqual('error at - line 5.\n', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
+		self.assertNotEqual(0, retcode)
+		self.assertEqual(sex.errno, retcode)
 
 	@unittest.skipUnless(shutil.which('perl') is not None, "Perl interpreter not installed")
 	def test_run_invalid1(self):
-		(sout, serr, sex) = self.interpreter.run('print (1')
+		(sout, serr, sex, retcode) = self.interpreter.run('print (1')
 		self.assertEqual('', sout)
 		self.assertEqual('syntax error at - line 5, at EOF\nExecution of - aborted due to compilation errors.\n', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
+		self.assertNotEqual(0, retcode)
+		self.assertEqual(sex.errno, retcode)
 
 
 

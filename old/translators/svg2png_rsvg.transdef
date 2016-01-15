@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# autolatex - svg2png_rsvg.transdef
+# Copyright (C) 2015  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,4 +16,13 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-__all__ = [ 'utils' ]
+#--------------------------------------------
+# See template.txt for details on the fields
+#--------------------------------------------
+
+INPUT_EXTENSIONS = .svg
+
+OUTPUT_EXTENSIONS = .png
+
+COMMAND_LINE = rsvg-convert -a -d 160 -p 160 -f png -o "$out" "$in"
+

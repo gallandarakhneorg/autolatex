@@ -48,22 +48,25 @@ class TestTranslatorInterpreter(unittest.TestCase):
 
 
 	def test_run_valid1(self):
-		(sout, serr, sex) = self.interpreter.run('myvar = \'abc\'')
+		(sout, serr, sex, retcode) = self.interpreter.run('myvar = \'abc\'')
 		self.assertEqual('', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	def test_run_valid2(self):
-		(sout, serr, sex) = self.interpreter.run('myvar = \'abc\'\nprint(myvar)')
+		(sout, serr, sex, retcode) = self.interpreter.run('myvar = \'abc\'\nprint(myvar)')
 		self.assertEqual('abc\n', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	def test_run_valid3(self):
-		(sout, serr, sex) = self.interpreter.run('myvar = \'abc\'\nsys.stderr.write(myvar)')
+		(sout, serr, sex, retcode) = self.interpreter.run('myvar = \'abc\'\nsys.stderr.write(myvar)')
 		self.assertEqual('', sout)
 		self.assertEqual('abc', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	def test_run_valid4(self):
 		with self.assertRaises(NotImplementedError):

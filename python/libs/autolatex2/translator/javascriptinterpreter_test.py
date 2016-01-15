@@ -51,40 +51,47 @@ class TestTranslatorInterpreter(unittest.TestCase):
 
 	@unittest.skipUnless(shutil.which('js') is not None, "Javascript interpreter not installed")
 	def test_run_valid1(self):
-		(sout, serr, sex) = self.interpreter.run('var myvar = \'abc\'')
+		(sout, serr, sex, retcode) = self.interpreter.run('var myvar = \'abc\'')
 		self.assertEqual('', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('js') is not None, "Javascript interpreter not installed")
 	def test_run_valid2(self):
-		(sout, serr, sex) = self.interpreter.run('var myvar = \'abc\'; process.stdout.write(myvar)')
+		(sout, serr, sex, retcode) = self.interpreter.run('var myvar = \'abc\'; process.stdout.write(myvar)')
 		self.assertEqual('abc', sout)
 		self.assertEqual('', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('js') is not None, "Javascript interpreter not installed")
 	def test_run_valid3(self):
-		(sout, serr, sex) = self.interpreter.run('var myvar = \'abc\'; process.stderr.write(myvar)')
+		(sout, serr, sex, retcode) = self.interpreter.run('var myvar = \'abc\'; process.stderr.write(myvar)')
 		self.assertEqual('', sout)
 		self.assertEqual('abc', serr)
 		self.assertIsNone(sex)
+		self.assertEqual(0, retcode)
 
 	@unittest.skipUnless(shutil.which('js') is not None, "Javascript interpreter not installed")
 	def test_run_valid4(self):
-		(sout, serr, sex) = self.interpreter.run('throw "error"')
+		(sout, serr, sex, retcode) = self.interpreter.run('throw "error"')
 		self.assertEqual('', sout)
 		self.assertEqual('\n[stdin]:4\nthrow "error"\n^\nerror\n', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
+		self.assertNotEqual(0, retcode)
+		self.assertEqual(sex.errno, retcode)
 
 	@unittest.skipUnless(shutil.which('js') is not None, "Javascript interpreter not installed")
 	def test_run_invalid1(self):
-		(sout, serr, sex) = self.interpreter.run('process.stderr.write(1')
+		(sout, serr, sex, retcode) = self.interpreter.run('process.stderr.write(1')
 		self.assertEqual('', sout)
 		self.assertEqual('\n[stdin]:4\nprocess.stderr.write(1\n                      \nSyntaxError: Unexpected end of input\n    at Object.<anonymous> ([stdin]-wrapper:6:22)\n    at Module._compile (module.js:456:26)\n    at evalScript (node.js:532:25)\n    at Socket.<anonymous> (node.js:154:11)\n    at Socket.EventEmitter.emit (events.js:117:20)\n    at _stream_readable.js:920:16\n    at process._tickCallback (node.js:415:13)\n', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
+		self.assertNotEqual(0, retcode)
+		self.assertEqual(sex.errno, retcode)
 
 
 

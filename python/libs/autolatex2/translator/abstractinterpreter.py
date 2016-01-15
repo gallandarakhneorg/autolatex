@@ -31,26 +31,12 @@ import abc
 import gettext
 _T = gettext.gettext
 
-import autolatex2.utils.debug as debug
-######################################################################
-##
-class CommandExecutionError(EnvironmentError):
-
-	def __init__(self, interpreterName : str, returncode : int):
-		'''
-		Construct the exception with the given return code.
-		:param returncode: The return code of the executed command.
-		:type returncode: int
-		'''
-		super().__init__(self, (returncode, _T('Error during the execution of the command by the %s interpreter: %d') % (interpreterName, returncode)))
-
-	def __str__(self) -> str:
-		return self.strerror[1]
+from autolatex2.utils.runner import *
 
 
 ######################################################################
 ##
-class AbstractTranslatorInterpreter(object):
+class AbstractTranslatorInterpreter(AbstractRunner):
 	'''
 	Definition of an abstract implementation of an interpreter for the AutoLaTeX translators.
 	'''
@@ -137,86 +123,5 @@ class AbstractTranslatorInterpreter(object):
 		pp = pprint.PrettyPrinter(indent=2)
 		v = pp.pformat(value)
 		return v
-
-	def runPython(self, script : str, interceptError : bool = False, localVariables : dict = None):
-		'''
-		Run a Python script in the current process.
-		:param script: The Python script to run.
-		:type script: str
-		:param interceptError: Indicates if all the exception are intercepted
-		                       and put inside the returned value. If False,
-		                       the exceptions are not intercepted and they are
-		                       raised by this function. Default value is: False.
-		:return: A triplet containing the standard output, the
-				 error output, and the error.
-		:rtype: (str,str,exception)
-		'''
-		codeOut = io.StringIO()
-		codeErr = io.StringIO()
-		sys.stdout = codeOut
-		sys.stderr = codeErr
-		exception = None
-		if interceptError:
-			try:
-				exec(script, None, localVariables)
-			except BaseException as e:
-				exception = e
-		else:
-			exec(script, None, localVariables)
-		sys.stdout = sys.__stdout__
-		sys.stderr = sys.__stderr__
-		sout = codeOut.getvalue()
-		serr = codeErr.getvalue()
-		codeOut.close()
-		codeErr.close()
-		return (sout, serr, exception)
-
-	def runCommand(self, *cmd : str):
-		'''
-		Run an external command in a subprocess.
-		:param cmd: The command line to run.
-		:type cmd: list
-		:return: A triplet containing the standard output, the
-				 error output, and the exception with the return code if different of 0.
-		:rtype: (str,str,exception)
-		'''
-		out = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		(sout, serr) = out.communicate()
-		if out.returncode != 0:
-			sex = CommandExecutionError(self.interpreter, out.returncode)
-		else:
-			sex = None
-		if sout is not None and isinstance(sout, bytes):
-			sout = sout.decode("ascii")
-		if serr is not None and isinstance(serr, bytes):
-			serr = serr.decode("ascii")
-		return (sout or '', serr or '', sex)
-
-	def runScript(self, script : str, *interpreter : str):
-		'''
-		Run a script with the given interpreter.
-		The script is passed to the interpreter on the standard input.
-		The command line of the interpreter must be specified in order to
-		run the interpreter and read the script from the standard input.
-		:param script: The script to run.
-		:type script: str
-		:param interpreter: The command line of the interpreter to use.
-		:type interpreter: str
-		:return: A triplet containing the standard output, the
-				 error output, and the exception with the return code if different of 0.
-		:rtype: (str,str,exception)
-		'''
-		out = subprocess.Popen(interpreter, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		sin = script.encode("ascii")
-		(sout, serr) = out.communicate(input=sin)
-		if out.returncode != 0:
-			sex = CommandExecutionError(self.interpreter, out.returncode)
-		else:
-			sex = None
-		if sout is not None and isinstance(sout, bytes):
-			sout = sout.decode("ascii")
-		if serr is not None and isinstance(serr, bytes):
-			serr = serr.decode("ascii")
-		return (sout or '', serr or '', sex)
 
 

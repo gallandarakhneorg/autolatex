@@ -1,5 +1,7 @@
-# autolatex - svg2png.transdef
-# Copyright (C) 2009-2013  Stephane Galland <galland@arakhne.org>
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2015  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,13 +18,39 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-#--------------------------------------------
-# See template.txt for details on the fields
-#--------------------------------------------
 
-INPUT_EXTENSIONS = .svg .svgz
+import unittest
+import logging
 
-OUTPUT_EXTENSIONS = .png
+from autolatex2.make.make import *
 
-COMMAND_LINE = inkscape --without-gui --export-area-page --export-background-opacity=0.0 --export-dpi=160 --export-png "$out" "$in"
+from autolatex2.utils import debug
+
+class TestAutoLateXMaker(unittest.TestCase):
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.__maker = None
+
+	def setUp(self):
+		logging.getLogger().setLevel(logging.CRITICAL)
+		self.__maker = AutoLateXMaker()
+
+	@property
+	def maker(self):
+		return self.__maker
+
+
+
+
+	def test_parent_getter(self):
+		pass
+
+
+
+
+
+
+if __name__ == '__main__':
+    unittest.main()
 

@@ -37,7 +37,6 @@ _T = gettext.gettext
 from autolatex2.config import *
 from autolatex2.utils import utils
 
-from autolatex2.utils import debug
 
 ######################################################################
 ##
@@ -947,9 +946,9 @@ class TranslatorRunner(object):
 					return False
 			
 			execEnv['interpreterObject'].globalVariables.update(environment)
-			(sout, serr, exception) = execEnv['interpreterObject'].run(embeddedFunction)
-			if exception:
-				errmsg = _T("%s\nReturn code: %s") % ((serr or ''), exception)
+			(sout, serr, exception, retcode) = execEnv['interpreterObject'].run(embeddedFunction)
+			if exception is not None or retcode != 0:
+				errmsg = _T("%s\nReturn code: %s") % ((serr or ''), retcode)
 				if failOnError:
 					raise TranslatorError(errmsg)
 				else:
