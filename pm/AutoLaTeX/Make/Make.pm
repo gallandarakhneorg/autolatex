@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '30.0';
+our $VERSION = '31.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -289,7 +289,7 @@ sub new(\%) : method {
 
 	if ($_[0]->{'generation.latex_flags'}) {
 		my @params = split(/\s+/, ($_[0]->{'generation.latex_flags'}));
-		push @{$self->{'latex_flags'}}, @params;
+		push @{$self->{'latex_cmd'}}, @params;
 	}
 
 	# Change the warning level
@@ -321,7 +321,7 @@ sub new(\%) : method {
 
 	if ($_[0]->{'generation.bibtex_flags'}) {
 		my @params = split(/\s+/, ($_[0]->{'generation.bibtex_flags'}));
-		push @{$self->{'bibtex_flags'}}, @params;
+		push @{$self->{'bibtex_cmd'}}, @params;
 	}
 
 	# Biber
@@ -336,7 +336,7 @@ sub new(\%) : method {
 
 	if ($_[0]->{'generation.biber_flags'}) {
 		my @params = split(/\s+/, ($_[0]->{'generation.biber_flags'}));
-		push @{$self->{'biber_flags'}}, @params;
+		push @{$self->{'biber_cmd'}}, @params;
 	}
 
 	# MakeIndex
@@ -351,7 +351,7 @@ sub new(\%) : method {
 
 	if ($_[0]->{'generation.makeindex_flags'}) {
 		my @params = split(/\s+/, ($_[0]->{'generation.makeindex_flags'}));
-		push @{$self->{'makeindex_flags'}}, @params;
+		push @{$self->{'makeindex_cmd'}}, @params;
 	}
 
 	# dvi2ps
@@ -366,7 +366,7 @@ sub new(\%) : method {
 
 	if ($_[0]->{'generation.dvi2ps_flags'}) {
 		my @params = split(/\s+/, ($_[0]->{'generation.dvi2ps_flags'}));
-		push @{$self->{'dvi2ps_flags'}}, @params;
+		push @{$self->{'dvi2ps_cmd'}}, @params;
 	}
 
 	return $self;
