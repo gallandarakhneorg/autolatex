@@ -78,7 +78,7 @@ use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 
-our $VERSION = '31.0';
+our $VERSION = '32.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -179,7 +179,7 @@ my %COMMAND_DEFINITIONS = (
 		'ewarnings' => $EXTENDED_WARNING_CODE,
 	},
 	'lualatex' => {
-		'cmd' => 'luatex',
+		'cmd' => 'lualatex',
 		'flags' => ['-halt-on-error', '-interaction', 'batchmode', '-file-line-error'],
 		'to_dvi' => ['-output-format=dvi'],
 		'to_ps' => undef,
