@@ -1,5 +1,5 @@
 # autolatex - TeXDependencyAnalyzer.pm
-# Copyright (C) 2013-14  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2013-16  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::TeXDependencyAnalyzer;
 
-$VERSION = '5.0';
+$VERSION = '6.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getDependenciesOfTeX ) ;
 @EXPORT_OK = qw();
@@ -56,11 +56,14 @@ my %MACROS = (
 	'input'				=> '!{}',
 	'include'			=> '!{}',
 	'makeindex'			=> '',
-	'printindex'			=> '',
-	'usepackage'			=> '![]!{}',
-	'RequirePackage'		=> '![]!{}',
-	'documentclass'			=> '![]!{}',
-	'addbibresource'		=> '![]!{}',
+	'printindex'		=> '',
+	'makeglossaries'	=> '',
+	'printglossaries'	=> '',
+	'printglossary'		=> '![]',
+	'usepackage'		=> '![]!{}',
+	'RequirePackage'	=> '![]!{}',
+	'documentclass'		=> '![]!{}',
+	'addbibresource'	=> '![]!{}',
 	);
 
 =pod
@@ -147,6 +150,9 @@ sub _expandMacro($$@) : method {
 	}
 	elsif ( $macro eq '\\makeindex' || $macro eq '\\printindex' ) {
 		$self->{'dependencies'}{'idx'} = 1;
+	}
+	elsif ( $macro eq '\\makeglossaries' || $macro eq '\\printglossaries' || $macro eq '\\printglossary' ) {
+		$self->{'dependencies'}{'glo'} = 1;
 	}
 	elsif ( $macro eq '\\usepackage' || $macro eq '\\RequirePackage' ) {
 		my $sty = $_[1]{'text'};
@@ -272,7 +278,7 @@ sub _expandMacro($$@) : method {
 		$bibdb = $self->{'basename'} unless ($bibdb && $self->{'is_multibib'});
 		$self->_addbibreference($bibdb,@_);
 	}
-	elsif ($macro eq '\\addbibresource') {		
+	elsif ($macro eq '\\addbibresource') {
 		my $bibdb = $self->{'basename'};
 		$self->_addbibreference($bibdb,@_);
 	}

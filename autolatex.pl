@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # autolatex - autolatex.pl
-# Copyright (C) 1998-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2016  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ my %configuration;
 my %autolatexData = ();
 
 # List of the supported commands
-my @SUPPORTED_COMMANDS = ( 'all', 'view', 'clean', 'cleanall', 'gen_doc', 'bibtex', 'biblio', 'makeindex', 'images', 'showimages', 'showimagemap', 'commit', 'update', 'showpath', 'makeflat');
+my @SUPPORTED_COMMANDS = ( 'all', 'view', 'clean', 'cleanall', 'gen_doc', 'bibtex', 'biblio', 'makeindex', 'makeglossaries', 'images', 'showimages', 'showimagemap', 'commit', 'update', 'showpath', 'makeflat');
 
 # script parameters
 my @ORIGINAL_ARGV = @ARGV;
@@ -386,6 +386,18 @@ sub al_run_makeindex {
 	$progress->stop() if ($progress);
 }
 
+sub al_run_makeglossaries {
+	my $i_ref = shift;
+	__checkMainTeXfile();
+	my $progress = __initProgress(10000);
+	my $make = AutoLaTeX::Make::Make->new(\%configuration);
+	$make->enableMakeGlossaries(1);
+	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
+	$progress->setValue(1000) if ($progress);
+	$make->buildMakeGlossaries(__subProgress($progress));
+	$progress->stop() if ($progress);
+}
+
 #------------------------------------------------------
 #
 # CLEANING MANAGEMENT
@@ -511,6 +523,8 @@ sub al_getcleanfiles() {
 		'*.mtl[0-9][0-9][0-9]', '*.bmt',
 		'*.thlodef', '*.lbl', '*.brf',
 		'*.vrb', '*.spl',
+		#Make glossaries
+		'*.gls', '*.xdy', '*.glo', '*.glg',
 		# GS viewer
 		'.goutputstream-*',
 		# Biber
@@ -837,6 +851,9 @@ sub _al_run_actions() {
 		}
 		elsif ($ARGV[$i] eq 'makeindex') {
 			al_run_makeindex(\$i);
+		}
+		elsif ($ARGV[$i] eq 'makeglossaries') {
+			al_run_makeglossaries(\$i);
 		}
 		elsif ($ARGV[$i] eq 'images') {
 			al_run_images(\$i);

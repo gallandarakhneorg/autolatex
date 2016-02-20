@@ -1,5 +1,5 @@
 # autolatex - Main.pm
-# Copyright (C) 1998-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-16  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ The provided functions are:
 package AutoLaTeX::Core::Main;
 
 $VERSION = '35.0';
-$COPYRIGHT_YEAR = '2015';
+$COPYRIGHT_YEAR = '2016';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
 @EXPORT_OK = qw();

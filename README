@@ -55,6 +55,13 @@ TARGETS
     AutoLaTeX provides a fixed set of targets, the arguments to pass to
     AutoLaTeX to run a module, for all projects. The default target is all.
 
+    If the specified target is not recognized by AutoLaTeX, a program name
+    "autolatex-target" (where "target" is replaced by the given target
+    string) is searched on your system, and launched. For example,
+    "autolatex config" permits to launch the graphical user interface for
+    configuring AutoLaTeX. This interface is supported by the program
+    "autolatex-config", which is provided in the AutoLaTeX distribution.
+
     The targets provided by AutoLaTeX are:
 
     all Same as view, except that the viewer is launched only if the
@@ -83,6 +90,10 @@ TARGETS
     images
         Performs the automatic generation of the figures.
 
+    init
+        Create an empty LaTeX document that is following a standard folder
+        structure supported by AutoLaTeX.
+
     makeflat
         Create a version of the document inside the subdirectory
         'flat_version' in which there is a single TeX file, and all the
@@ -106,6 +117,10 @@ TARGETS
         you must use the CLI option:
 
         --set makeflat.basename=*name*
+
+    makeglossaries
+        Performs all processing that permits to generate the glossaries
+        (makeglossaries).
 
     makeindex
         Performs all processing that permits to generate the index
@@ -192,6 +207,11 @@ OPTIONS
         The options --index and --noindex also permit to change the behavior
         of AutoLaTeX against MakeIndex.
 
+    --directory=directory
+        Specify a directory in which a LaTeX document to compile is located.
+        You could specify this option for each directory in which you have a
+        LaTeX document to treat.
+
     --dvi
         Do the compilation to produce a DVI or a XDV document.
 
@@ -218,6 +238,12 @@ OPTIONS
         on the command line, AutoLaTeX will try to fix the project
         configuration, or the user configuration if no project configuration
         file was found.
+
+    --gloss
+        Allow AutoLaTeX to use MakeGlossaries.
+
+        The option --nogloss permits to change the behavior of AutoLaTeX
+        against MakeGlossaries
 
     -?
     --help
@@ -264,6 +290,12 @@ OPTIONS
 
     --lualatex
         Use the LaTeX command: lualatex.
+
+    --nogloss
+        Avoid AutoLaTeX to use MakeGloassaries.
+
+        The option --gloss also permits to change the behavior of AutoLaTeX
+        against MakeGlossaries.
 
     --noindex
         Avoid AutoLaTeX to use MakeIndex.
@@ -632,10 +664,20 @@ AUTO GENERATION OF FIGURES
         Input format: .sql
         Output format: .tex
 
-    Scalable Vector Graphic (svg) to Portable Document Format (pdf)
+    Scalable Vector Graphic (svg) to Portable Document Format (pdf):
+    Inkscape variante
 
-        Name: svg2pdf
+        Name: svg2pdf_inkscape
         Use external converter: inkscape
+        Use translator:
+        Input format: .svg
+        Output format: .pdf
+
+    Scalable Vector Graphic (svg) to Portable Document Format (pdf): rsvg2
+    variante
+
+        Name: svg2pdf_rsvg
+        Use external converter: rsvg-convert
         Use translator:
         Input format: .svg
         Output format: .pdf
@@ -644,7 +686,7 @@ AUTO GENERATION OF FIGURES
     Format (pdf+tex)
         PDF part:
 
-        Name: svg2pdf+tex
+        Name: svg2pdf+tex_inkscape
         Use external converter: inkscape
         Use translator:
         Input format: .svgt .svg_t .svgtex .svg+tex .tex.svg +tex.svg
@@ -652,23 +694,33 @@ AUTO GENERATION OF FIGURES
 
         TeX part:
 
-        Name: svg2pdf+tex
+        Name: svg2pdf+tex_inkscape
         Use external converter: inkscape
         Use translator:
         Input format: .svgt .svg_t .svgtex .svg+tex .tex.svg +tex.svg
         Output format: .pdftex_t
 
-    Scalable Vector Graphic (svg) to Portable Network Graphic (png)
+    Scalable Vector Graphic (svg) to Portable Network Graphic (png):
+    Inkscape variante
 
-        Name: svg2png
+        Name: svg2png_inkscape
         Use external converter: inkscape
+        Use translator:
+        Input format: .svg
+        Output format: .png
+
+    Scalable Vector Graphic (svg) to Portable Network Graphic (png): rsvg2
+    variante
+
+        Name: svg2png_rsvg
+        Use external converter: rsvg-convert
         Use translator:
         Input format: .svg
         Output format: .png
 
     Scalable Vector Graphic with layers (svg) to Beamer Overlays
 
-        Name: svg2pdf+layers
+        Name: svg2pdf+layers_inkscape
         Use external converter: inkscape
         Use translator:
         Input format: .svgl .svg_l .svglayers .svg+layers .layers.svg
@@ -679,7 +731,7 @@ AUTO GENERATION OF FIGURES
     Overlays
         PDF part:
 
-        Name: svg2pdf+layers+tex
+        Name: svg2pdf+layers+tex_inkscape
         Use external converter: inkscape
         Use translator:
         Input format: .svglt .svg_lt .svglayerstex .svgtexlayers
@@ -689,13 +741,21 @@ AUTO GENERATION OF FIGURES
 
         TeX part:
 
-        Name: svg2pdf+layers+tex
+        Name: svg2pdf+layers+tex_inkscape
         Use external converter: inkscape
         Use translator:
         Input format: .svglt .svg_lt .svglayerstex .svgtexlayers
         .svg+layers+tex .svg+tex+layers .layers.tex.svg .tex.layers.svg
         +layers+tex.svg +tex+layers.svg
         Output format: .pdftex_t
+
+    PGF/TikZ (tikz) to Portable Document Format (pdf)
+
+        Name: tikz2pdf
+        Use external converter: pdflatex
+        Use translator:
+        Input format: .tikz
+        Output format: .pdf
 
     Gimp (xcf) to Portable Document Format (pdf)
 
@@ -907,6 +967,8 @@ CONFIGURATION FILE
     any command line.
     *biber_cmd* : specifies the Biber tool command line. Accepted value: any
     command line.
+    *makeglossaries_cmd* : specifies the MakeGlossaries tool command line.
+    Accepted value: any command line.
     *makeindex_cmd* : specifies the MakeIndex tool command line. Accepted
     value: any command line.
     *dvi2ps_cmd* : specifies the dvips tool command line. Accepted value:
@@ -917,6 +979,8 @@ CONFIGURATION FILE
     Accepted value: any command line.
     *biber_flags* : specifies the options to pass to the Biber tool.
     Accepted value: any command line.
+    *makeglossaries_flags* : specifies the options to pass to the
+    MakeGlossaries tool. Accepted value: any command line.
     *makeindex_flags* : specifies the options to pass to the MakeIndex tool.
     Accepted value: any command line.
     *dvi2ps_flags* : specifies the options to pass to the dvips tool.
@@ -956,18 +1020,16 @@ GRAPHIC USER INTERFACE
 
     The available user interfaces are:
 
-    Gedit:
+    Gedit 3:
         This is the *official* and up-to-date UI of AutoLaTeX. A plugin for
-        the lightweight editor Gedit <https://projects.gnome.org/gedit> is
+        the lightweight editor Gedit 3 <https://projects.gnome.org/gedit> is
         provided. You could launch AutoLaTeX and configure it through the
         differents provided panels.
 
-    Sublime Text 2:
-        A plugin for the editor Sublime Text 2
-        <http://www.sublimetext.com/2> is provided. You could launch
-        AutoLaTeX through the building tools of Sublime Text. It is now
-        considered as *obsolete*, even still maintained. See the use of
-        LaTeXTools in Sublime Text.
+    Standalone Gtk 3 Frontend:
+        This front end is based on the Gtk3 library. It provides the same
+        configuration windows as the Gedit 3 plugin. Indeed, both of them
+        are using the same background API based on Gtk3.
 
     Sublime Text with LaTeXTools:
         Since 2014, AutoLaTeX is integrated as one of the builders of the
@@ -1026,11 +1088,19 @@ GRAPHIC USER INTERFACE
          showPdf=true
          ...
 
-    Standalone Gtk Frontend (deprecated):
-        It is the first UI for AutoLaTeX written in Perl and based on Gtk.
-        It is now considered as *obsolete*, even still maintained. You could
-        launch AutoLaTeX and configure it through the differents provided
-        panels.
+    The following graphical user interfaces are still provided, but they are
+    deprecated:
+
+    Gedit 2:
+        A plugin for the lightweight editor Gedit 2.
+
+    Sublime Text 2:
+        A plugin for the editor Sublime Text 2
+        <http://www.sublimetext.com/2>.
+
+    Standalone Gtk 2 Frontend:
+        A collection of configuration windows written in Perl and based on
+        Gtk 2.
 
 BUG REPORT AND FEEDBACK
     To report bugs, provide feedback, suggest new features, etc. (in
@@ -1080,7 +1150,7 @@ INSTALLATION
 AUTOLATEX LICENSE
     GNU Public License (GPL)
 
-    Copyright (c) 1998-2014 Stephane GALLAND <galland@arakhne.org>
+    Copyright (c) 1998-2016 Stephane GALLAND <galland@arakhne.org>
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public License
@@ -1101,7 +1171,7 @@ AUTOLATEX LICENSE
 MANUAL COPYRIGHT
     GNU Free Documentation License (FDL)
 
-    Copyright (c) 1998-2014 Stephane Galland <galland@arakhne.org>.
+    Copyright (c) 1998-2016 Stephane Galland <galland@arakhne.org>.
 
     Permission is granted to copy, distribute and/or modify this document
     under the terms of the GNU Free Documentation License

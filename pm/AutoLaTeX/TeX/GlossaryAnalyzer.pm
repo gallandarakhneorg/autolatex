@@ -1,5 +1,5 @@
-# autolatex - IndexAnalyzer.pm
-# Copyright (C) 2013-2016  Stephane Galland <galland@arakhne.org>
+# autolatex - GlossaryAnalyzer.pm
+# Copyright (C) 2016  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@
 
 =head1 NAME
 
-IndexAnalyzer.pm - Extract index definitions from an IDX file.
+GlossaryAnalyzer.pm - Extract glossary definitions from a GLS file.
 
 =head1 DESCRIPTION
 
-Tool that is extracting the definitions of indexes from an IDX file.
+Tool that is extracting the definitions of glossary from a GLS file.
 
-To use this library, type C<use AutoLaTeX::TeX::IndexAnalyzer;>.
+To use this library, type C<use AutoLaTeX::TeX::GlossaryAnalyzer;>.
 
 =head1 FUNCTIONS
 
@@ -35,11 +35,11 @@ The provided functions are:
 =over 4
 
 =cut
-package AutoLaTeX::TeX::IndexAnalyzer;
+package AutoLaTeX::TeX::GlossaryAnalyzer;
 
-$VERSION = '1.1';
+$VERSION = '1.0';
 @ISA = ('Exporter');
-@EXPORT = qw( &getIdxIndexDefinitions &makeIdxIndexDefinitionMd5 ) ;
+@EXPORT = qw( &getGlsIndexDefinitions &makeGlsIndexDefinitionMd5 ) ;
 @EXPORT_OK = qw();
 
 require 5.014;
@@ -55,25 +55,25 @@ use AutoLaTeX::Core::Util;
 use AutoLaTeX::TeX::TeXParser;
 
 my %MACROS = (
-	'indexentry'			=> '[]!{}!{}',
+	'glossentry'			=> '[]!{}!{}',
 	);
 
 =pod
 
-=item B<getIdxIndexDefinitions($)>
+=item B<getGlsIndexDefinitions($)>
 
-Parse an idx file and extract the index definitions.
+Parse a gls file and extract the glossary definitions.
 
 =over 4
 
-=item * C<idxfile> is the name of the IDX file to parse.
+=item * C<glsfile> is the name of the GLS file to parse.
 
 =back
 
-I<Returns:> the indexes
+I<Returns:> the glossary entries
 
 =cut
-sub getIdxIndexDefinitions($) {
+sub getGlsIndexDefinitions($) {
 	my $input = shift;
 	
 	local *FILE;
@@ -84,7 +84,7 @@ sub getIdxIndexDefinitions($) {
 	}
 	close(*FILE);
 
-	my $listener = AutoLaTeX::TeX::IndexAnalyzer->_new($input);
+	my $listener = AutoLaTeX::TeX::GlossaryAnalyzer->_new($input);
 
 	my $parser = AutoLaTeX::TeX::TeXParser->new("$input", $listener);
 
@@ -95,30 +95,30 @@ sub getIdxIndexDefinitions($) {
 
 	$parser->parse( $content );
 
-	my @indexes = keys %{$listener->{'indexes'}};
-	@indexes = sort @indexes;
+	my @glossaryEntries = keys %{$listener->{'glossaryEntries'}};
+	@glossaryEntries = sort @glossaryEntries;
 
-	return @indexes;
+	return @glossaryEntries;
 }
 
 =pod
 
-=item B<makeIdxIndexDefinitionMd5($)>
+=item B<makeGlsIndexDefinitionMd5($)>
 
-Parse an idx file, extract the index definitions, and build a MD5.
+Parse a gls file, extract the glossary definitions, and build a MD5.
 
 =over 4
 
-=item * C<idxfile> is the name of the IDX file to parse.
+=item * C<glsfile> is the name of the GLS file to parse.
 
 =back
 
-I<Returns:> the MD5 of the indexes.
+I<Returns:> the MD5 of the glossary entries.
 
 =cut
-sub makeIdxIndexDefinitionMd5($) {
-	my @indexes = getIdxIndexDefinitions($_[0]);
-	return md5_base64(@indexes);
+sub makeGlsIndexDefinitionMd5($) {
+	my @glossaryEntries = getGlsIndexDefinitions($_[0]);
+	return md5_base64(@glossaryEntries);
 }
 
 sub _expandMacro($$@) : method {
@@ -127,7 +127,7 @@ sub _expandMacro($$@) : method {
 	my $macro = shift;
 	if ($_[1]->{'text'} || $_[2]->{'text'}) {
 		my $key = ($_[2]->{'text'} || '') . '|' . ($_[1]->{'text'} || '');
-		$self->{'indexes'}{$key} = 1;
+		$self->{'glossaryEntries'}{$key} = 1;
 	}
 	return '';
 }
@@ -146,7 +146,7 @@ sub _new($) : method {
 			'basename' => basename($_[0],'.tex'),
 			'file' => $_[0],
 			'expandMacro' => \&_expandMacro,
-			'indexes' => {},
+			'glossaryEntries' => {},
 		};
 	}
 	bless( $self, $class );

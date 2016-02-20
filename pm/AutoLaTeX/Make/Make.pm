@@ -1,5 +1,5 @@
 # autolatex - Make.pm
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2013-2016  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -77,8 +77,9 @@ use AutoLaTeX::Core::Progress;
 use AutoLaTeX::TeX::BibCitationAnalyzer;
 use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
+use AutoLaTeX::TeX::GlossaryAnalyzer;
 
-our $VERSION = '32.0';
+our $VERSION = '33.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -200,6 +201,10 @@ my %COMMAND_DEFINITIONS = (
 		'cmd' => 'makeindex',
 		'flags' => [],
 	},
+	'makeglossaries' => {
+		'cmd' => 'makeglossaries',
+		'flags' => [],
+	},
 	'dvi2ps' => {
 		'cmd' => 'dvips',
 		'flags' => [],
@@ -242,12 +247,14 @@ sub new(\%) : method {
 			'is_extended_warning_enable' => 0,
 			'is_biblio_enable' => 1,
 			'is_makeindex_enable' => 1,
+			'is_makeglossaries_enable' => 1,
 			'warning_level' => 1,
 			'generation_type' => 'pdf',
 			'latex_cmd' => [],
 			'bibtex_cmd' => [],
 			'biber_cmd' => [],
 			'makeindex_cmd' => [],
+			'makeglossaries_cmd' => [],
 			'dvi2ps_cmd' => [],
 		};
 	}
@@ -352,6 +359,21 @@ sub new(\%) : method {
 	if ($_[0]->{'generation.makeindex_flags'}) {
 		my @params = split(/\s+/, ($_[0]->{'generation.makeindex_flags'}));
 		push @{$self->{'makeindex_cmd'}}, @params;
+	}
+
+	# MakeGlossaries
+	if ($_[0]->{'generation.makeglossaries_cmd'}) {
+		push @{$self->{'makeglossaries_cmd'}}, $_[0]->{'generation.makeglossaries_cmd'};
+	}
+	else {
+		$def = $COMMAND_DEFINITIONS{'makeglossaries'};
+		confess("No command definition for 'makeglossaries'") unless ($def);
+		push @{$self->{'makeglossaries_cmd'}}, $def->{'cmd'}, @{$def->{'flags'}};
+	}
+
+	if ($_[0]->{'generation.makeglossaries_flags'}) {
+		my @params = split(/\s+/, ($_[0]->{'generation.makeglossaries_flags'}));
+		push @{$self->{'makeglossaries_cmd'}}, @params;
 	}
 
 	# dvi2ps
@@ -544,6 +566,27 @@ sub _computeDependenciesForRootFile($) : method {
 						'change' => lastFileChange("$indfile"),
 					};
 					$self->{'files'}{$pdfFile}{'dependencies'}{$indfile} = undef;
+				}
+
+				#
+				# GLOSSARIES
+				#
+				if ($deps{'glo'}) {
+					my $glofile = "$roottemplate.glo";
+					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$glofile)));
+					$self->{'files'}{"$glofile"} = {
+						'type' => 'glo',
+						'dependencies' => {},
+						'change' => lastFileChange("$glofile"),
+					};
+					my $glsfile = "$roottemplate.gls";
+					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$glsfile)));
+					$self->{'files'}{"$glsfile"} = {
+						'type' => 'gls',
+						'dependencies' => { $glofile => undef },
+						'change' => lastFileChange("$glsfile"),
+					};
+					$self->{'files'}{$pdfFile}{'dependencies'}{$glsfile} = undef;
 				}
 			}
 			printDbgUnindent();
@@ -1176,6 +1219,87 @@ sub buildBiblio(;$) : method {
 
 =pod
 
+=item * buildMakeGlossaries($)
+
+Launch the MakeGlossaries only.
+
+=over 4
+
+=item B<progress> (optional) is the progress indicator to use.
+
+=back
+
+=cut
+sub buildMakeGlossaries(;$) : method {
+	my $self = shift;
+	my $progress = shift;
+
+	my $progValue;
+	if ($progress) {
+		my $numberOfRootFiles = @{$self->{'rootFiles'}};
+		$progress->setMax($numberOfRootFiles*100);
+		$progValue = 0;
+	}
+
+	foreach my $rootFile (@{$self->{'rootFiles'}}) {
+
+		my $sprogress = undef;
+		if ($progress) {
+			$sprogress = $progress->subProgress(100);
+			$sprogress->setMax(1000);
+		}
+
+		# Read building stamps
+		$self->_readBuildStamps($rootFile);
+
+		$sprogress->setValue(10) if ($sprogress);
+
+		# Compute the dependencies of the file
+		$self->_computeDependenciesForRootFile($rootFile);
+
+		$sprogress->setValue(60) if ($sprogress);
+
+		# Construct the build list and launch the required builds
+		my @builds = $self->_buildExecutionList("$rootFile",1);
+
+		$sprogress->setValue(110) if ($sprogress);
+
+		if (@builds) {
+			foreach my $file (@builds) {
+				if (exists $self->{'files'}{$file}) {
+					my $type = $self->{'files'}{$file}{'type'};
+					if ($type eq 'gls') {
+						my $func = $self->can('__build_'.lc($type));
+						if ($func) {
+							$func->($self, $rootFile, $file, $self->{'files'}{$file});
+							return undef;
+						}
+					}
+				}
+			}
+		}
+		else {
+			printDbgFor(2, formatText(_T('{} is up-to-date.'), basename($rootFile)));
+		}
+
+		$sprogress->setValue(990) if ($sprogress);
+
+		# Write building stamps
+		$self->_writeBuildStamps($rootFile);
+
+		if ($progress) {
+			$progValue += 100;
+			$progress->setValue($progValue);
+		}
+	}
+
+	$progress->stop() if ($progress);
+
+	return undef;
+}
+
+=pod
+
 =item * buildMakeIndex($)
 
 Launch the MakeIndex only.
@@ -1279,6 +1403,10 @@ sub _readBuildStamps($) : method {
 				my ($k,$n) = ($1,$2);
 				$self->{'stamps'}{'idx'}{$n} = $k;
 			}
+			if ($line =~ /^GLS\(([^)]+?)\)\:(.+)$/) {
+				my ($k,$n) = ($1,$2);
+				$self->{'stamps'}{'gls'}{$n} = $k;
+			}
 		}
 		close(*FILE);
 	}
@@ -1303,6 +1431,11 @@ sub _writeBuildStamps($) : method {
 	if ($self->{'stamps'}{'idx'}) {
 		while (my ($k,$v) = each(%{$self->{'stamps'}{'idx'}})) {
 			print FILE "IDX($v):$k\n";
+		}
+	}
+	if ($self->{'stamps'}{'gls'}) {
+		while (my ($k,$v) = each(%{$self->{'stamps'}{'gls'}})) {
+			print FILE "GLS($v):$k\n";
 		}
 	}
 	close(*FILE);
@@ -1371,6 +1504,17 @@ sub _need_rebuild($$$$) : method {
 			my $oldMd5 = $self->{'stamps'}{'idx'}{$idxFile} || '';
 			if ($currentMd5 ne $oldMd5) {
 				$self->{'stamps'}{'idx'}{$idxFile} = $currentMd5;
+				return 1;
+			}
+			return 0;
+		}
+		elsif ($ext eq '.gls') {
+			# Parse the GLS file to detect the index definitions
+			my $glsFile = File::Spec->catfile(dirname($filename), basename($filename, '.pdf').'.gls');
+			my $currentMd5 = makeGlsIndexDefinitionMd5($glsFile) || '';
+			my $oldMd5 = $self->{'stamps'}{'gls'}{$glsFile} || '';
+			if ($currentMd5 ne $oldMd5) {
+				$self->{'stamps'}{'gls'}{$glsFile} = $currentMd5;
 				return 1;
 			}
 			return 0;
@@ -1606,6 +1750,25 @@ sub __build_ind($$$) : method {
 	}
 }
 
+# Callback to build a GLS file.
+# Parameters:
+# $_[0] = name of the root file that should be build.
+# $_[1] = name of the file to build (the root file or one of its dependencies).
+# $_[2] = description of the file to build.
+# Result: nothing.
+sub __build_gls($$$) : method {
+	my $self = shift;
+	my $rootFile = shift;
+	my $file = shift;
+	my $filedesc = shift;
+	if ($self->{'is_makeglossaries_enable'}) {
+		my $filename = File::Spec->catfile(dirname($rootFile), basename($rootFile,'.pdf'));
+		$filename = $self->makeRelativePath("$filename");
+		printDbg(formatText(_T('{}: {}'), 'MAKEGLOSSARIES', basename($rootFile))); 
+		runCommandOrFail(@{$self->{'makeglossaries_cmd'}}, "$filename");
+	}
+}
+
 # Callback to build a PDF file.
 # Parameters:
 # $_[0] = name of the root file that should be build.
@@ -1675,6 +1838,30 @@ sub enableMakeIndex : method {
 		$self->{'is_makeindex_enable'} = $_[0];
 	}
 	return $self->{'is_makeindex_enable'};
+}
+
+=pod
+
+=item * enableMakeGlossaries
+
+Enable or disable the call to makeglossaries.
+If this function has a parameter, the flag is changed.
+
+=over
+
+=item * isEnable (optional boolean)
+
+=back
+
+I<Returns:> the vlaue of the enabling flag.
+
+=cut
+sub enableMakeGlossaries : method {
+	my $self = shift;
+	if (@_) {
+		$self->{'is_makeglossaries_enable'} = $_[0];
+	}
+	return $self->{'is_makeglossaries_enable'};
 }
 
 =pod
