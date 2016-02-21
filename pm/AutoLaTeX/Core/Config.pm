@@ -105,6 +105,7 @@ my %CONFIGURATION_COMMENTS = (
 							"configuration files)."),
 	'generation.generation type'		=> _T(	"Type of generation.\n   pdf   : use pdflatex to create a ".
 							"PDF document."),
+	'generation.makeglossaries'	=> _T(	"Indicates if glossary tool (makeglossaries) should be run ('yes' or 'no')."),
 	'generation.makeindex style'		=> _T(	"Specify the style that must be used by makeindex.\n".
 							"Valid values are:\n   <filename>      if a filename ".
 							"was specified, AutoLaTeX assumes that it is the .ist ".

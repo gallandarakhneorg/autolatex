@@ -327,6 +327,7 @@ sub al_make($) {
 	my $progress = shift;
 	my $make = AutoLaTeX::Make::Make->new(\%configuration);
 	$make->enableBiblio(cfgBoolean($configuration{'generation.biblio'}));
+	$make->enableMakeGlossaries(cfgBoolean($configuration{'generation.makeglossaries'}));
 	$make->generationType($configuration{'generation.generation type'});
 	$make->addTeXFile( $configuration{'__private__'}{'input.latex file'} );
 	$make->build($progress);

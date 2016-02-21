@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '35.0';
+$VERSION = '36.0';
 $COPYRIGHT_YEAR = '2016';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -124,6 +124,10 @@ sub analyzeCommandLineOptions(\%) {
 				$realcfg->{'__private__'}{'action.fix config file'} = File::Spec->rel2abs($realcfg->{'__private__'}{'action.fix config file'}) if ($realcfg->{'__private__'}{'action.fix config file'});
 			},
 
+		'gloss' => sub { 
+					$cfg->{'generation.makeglossaries'} = 'yes';
+				},
+
 		'help|?' => sub { showManual(getAutoLaTeXDocDir(),"autolatex.pod"); },
 
 		'I=s@' => sub	{
@@ -157,6 +161,10 @@ sub analyzeCommandLineOptions(\%) {
 
 		'lualatex' => 	sub { 
 					$cfg->{'generation.tex compiler'} = 'lualatex';
+				},
+
+		'nogloss' => sub { 
+					$cfg->{'generation.makeglossaries'} = 'no';
 				},
 
 		'noindex' => 	sub { 

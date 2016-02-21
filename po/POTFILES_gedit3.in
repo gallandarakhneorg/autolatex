@@ -18,11 +18,11 @@ libs/gtk3/autolatex/utils/runner.py
 libs/gtk3/autolatex/utils/utils.py
 libs/gtk3/autolatex/widgets/inherit_button.py
 libs/gtk3/autolatex/widgets/__init__.py
-plugins/gedit3/autolatex/__init__.py
-plugins/gedit3/autolatex/config/__init__.py
-plugins/gedit3/autolatex/config/main_panel.py
-plugins/gedit3/autolatex/utils/gedit_runner.py
-plugins/gedit3/autolatex/utils/__init__.py
-plugins/gedit3/autolatex/widgets/__init__.py
-plugins/gedit3/autolatex/widgets/latex_console.py
+plugins/gedit3/autolatexeditor/__init__.py
+plugins/gedit3/autolatexeditor/config/__init__.py
+plugins/gedit3/autolatexeditor/config/main_panel.py
+plugins/gedit3/autolatexeditor/utils/gedit_runner.py
+plugins/gedit3/autolatexeditor/utils/__init__.py
+plugins/gedit3/autolatexeditor/widgets/__init__.py
+plugins/gedit3/autolatexeditor/widgets/latex_console.py
 
