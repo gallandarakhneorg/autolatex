@@ -397,6 +397,14 @@ AutoLaTeX produit un fichier PDF.
 
 Utilise le compilateur LaTeX : F<pdflatex>.
 
+=item B<--postcompilationruns[=n]>
+
+Définie le nombre minimal de lancements de l'outil LaTeX (habituellement pdflatex)
+durant la dernière phase d'exécution d'AutoLaTeX. La valeur par défaut est 1.
+
+Cette option en ligne de commande vous permettra de forcer AutoLaTeX à exécuter plus d'une fois
+l'outil LaTeX afin de résoudre des problèmes connus de LaTeX concernant la gestion des références.
+
 =item B<--progress[=n]>
 
 Activer ou désactiver l'affichage de la progression des tâches.

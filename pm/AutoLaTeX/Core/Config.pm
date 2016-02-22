@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Config;
 
-$VERSION = '35.0';
+$VERSION = '36.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getProjectConfigFilename &getUserConfigFilename &getSystemConfigFilename
               &getSystemISTFilename &readConfiguration &readConfigFile &getUserConfigDirectory
@@ -117,6 +117,8 @@ my %CONFIGURATION_COMMENTS = (
 							"           AutoLaTeX assumes that no .ist file must be ".
 							"passed to makeindex;\n   <empty>         AutoLaTeX assumes ".
 							"that no .ist file must be passed to makeindex."),
+	'generation.post compilation runs'	=> _T(	"Defines the minimal number of times the LaTeX compilation tools (usually ".
+							"pdflatex) is run during the last running stage of AutoLaTeX. The default value is 1."),
 	'generation.translator include path'	=> _T(	"Defines the paths from which the translators could be ".
 							"loaded. This is a list of paths separated by the path ".
 							"separator character used by your operating system: ':' ".
@@ -867,7 +869,7 @@ S<GNU Public License (GPL)>
 
 =head1 COPYRIGHT
 
-S<Copyright (c) 1998-15 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
+S<Copyright (c) 1998-2016 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
 
 =head1 SEE ALSO
 

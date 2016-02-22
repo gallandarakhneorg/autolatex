@@ -31,7 +31,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::Core::Main;
 
-$VERSION = '36.0';
+$VERSION = '37.0';
 $COPYRIGHT_YEAR = '2016';
 @ISA = ('Exporter');
 @EXPORT = qw( &analyzeCommandLineOptions &mainProgram &detectMainTeXFile ) ;
@@ -124,9 +124,7 @@ sub analyzeCommandLineOptions(\%) {
 				$realcfg->{'__private__'}{'action.fix config file'} = File::Spec->rel2abs($realcfg->{'__private__'}{'action.fix config file'}) if ($realcfg->{'__private__'}{'action.fix config file'});
 			},
 
-		'gloss' => sub { 
-					$cfg->{'generation.makeglossaries'} = 'yes';
-				},
+		'gloss!' => sub { $cfg->{'generation.makeglossaries'} = ($_[1] ? 'yes' : 'no'); },
 
 		'help|?' => sub { showManual(getAutoLaTeXDocDir(),"autolatex.pod"); },
 
@@ -163,10 +161,6 @@ sub analyzeCommandLineOptions(\%) {
 					$cfg->{'generation.tex compiler'} = 'lualatex';
 				},
 
-		'nogloss' => sub { 
-					$cfg->{'generation.makeglossaries'} = 'no';
-				},
-
 		'noindex' => 	sub { 
 					delete $cfg->{'generation.makeindex style'};
 				},
@@ -177,6 +171,12 @@ sub analyzeCommandLineOptions(\%) {
 
 		'pdflatex' => 	sub { 
 					$cfg->{'generation.tex compiler'} = 'pdflatex';
+				},
+
+		'postcompilationruns=i' => 	sub { 
+				my $number = int($_[1]);
+				$number = 1 if ($number<1);
+				$cfg->{'generation.post compilation runs'} = $number;
 				},
 
 		'progress:s' => sub { 
@@ -535,7 +535,7 @@ S<GNU Public License (GPL)>
 
 =head1 COPYRIGHT
 
-S<Copyright (c) 1998-15 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
+S<Copyright (c) 1998-2016 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
 
 =head1 SEE ALSO
 

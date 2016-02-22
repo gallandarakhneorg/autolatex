@@ -682,6 +682,8 @@ sub runLaTeX($;$$) : method {
 		$file = $self->{'files'}{$file}{'mainFile'};
 	}
 	my $logFile = File::Spec->catfile(dirname($file), basename($file, '.tex').'.log');
+	my $minNumberOfLaunchs = $self->{'configuration'}{'generation.post compilation runs'} || 1;
+	my $numberOfRuns = 0;
 	my $continueToCompile;
 	do {
 		printDbg(formatText(_T('{}: {}'), 'PDFLATEX', basename($file))); 
@@ -859,8 +861,16 @@ sub runLaTeX($;$$) : method {
 			exit(255);
 		}
 		elsif ($enableLoop) {
-			($continueToCompile,$enableLoop) = $self->_testLaTeXWarningInFile(
-				$logFile,$continueToCompile,$enableLoop);
+			$numberOfRuns ++;
+			if ($numberOfRuns < $minNumberOfLaunchs) {
+				# Force a new run of the LaTeX tool.
+				printDbg(formatText(_T('{}: Forcing a new launch to reach {} on {}'), 'PDFLATEX', ($numberOfRuns + 1), $minNumberOfLaunchs)); 
+				$continueToCompile = 1;
+			}
+			else {
+				($continueToCompile,$enableLoop) = $self->_testLaTeXWarningInFile(
+					$logFile,$continueToCompile,$enableLoop);
+			}
 		}
 	}
 	while ($continueToCompile);
@@ -1908,7 +1918,7 @@ S<GNU Public License (GPL)>
 
 =head1 COPYRIGHT
 
-S<Copyright (c) 2013-15 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
+S<Copyright (c) 2013-2016 Stéphane Galland E<lt>galland@arakhne.orgE<gt>>
 
 =head1 SEE ALSO
 

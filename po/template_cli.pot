@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-21 22:19+0100\n"
+"POT-Creation-Date: 2016-02-22 11:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -219,12 +219,19 @@ msgstr ""
 
 #: pm/AutoLaTeX/Core/Config.pm:120
 msgid ""
+"Defines the minimal number of times the LaTeX compilation tools (usually "
+"pdflatex) is run during the last running stage of AutoLaTeX. The default "
+"value is 1."
+msgstr ""
+
+#: pm/AutoLaTeX/Core/Config.pm:122
+msgid ""
 "Defines the paths from which the translators could be loaded. This is a list "
 "of paths separated by the path separator character used by your operating "
 "system: ':' on Unix platforms or ';' on Windows platforms for example."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:124
+#: pm/AutoLaTeX/Core/Config.pm:126
 msgid ""
 "Indicates if the PDF document must be produced with the SyncTeX flag on or "
 "not. SyncTeX enables to link a PDF viewer (as evince) and a text editor (as "
@@ -232,61 +239,61 @@ msgid ""
 "side."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:128
+#: pm/AutoLaTeX/Core/Config.pm:130
 msgid ""
 "Tool to launch when a SCM commit action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:130
+#: pm/AutoLaTeX/Core/Config.pm:132
 msgid ""
 "Tool to launch when a SCM update action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:133
+#: pm/AutoLaTeX/Core/Config.pm:135
 msgid ""
 "Indicates if a viewer should be launch after the compilation. Valid values "
 "are 'yes' and 'no'."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:135
+#: pm/AutoLaTeX/Core/Config.pm:137
 msgid "Specify, if not commented,the command line of the viewer."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:136
+#: pm/AutoLaTeX/Core/Config.pm:138
 msgid "Indicates if the viewer is launched in background, or not."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:460
+#: pm/AutoLaTeX/Core/Config.pm:462
 msgid "Opening configuration file {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:477
+#: pm/AutoLaTeX/Core/Config.pm:479
 msgid "Succeed on reading"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:480
+#: pm/AutoLaTeX/Core/Config.pm:482
 msgid "Failed to read {}: {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:571
+#: pm/AutoLaTeX/Core/Config.pm:573
 msgid "Writing configuration file {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:589
+#: pm/AutoLaTeX/Core/Config.pm:591
 msgid "Adding configuration comments"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:603
+#: pm/AutoLaTeX/Core/Config.pm:605
 msgid "Configuration of the translator"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:617
+#: pm/AutoLaTeX/Core/Config.pm:619
 msgid "Saving configuration comments"
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Config.pm:688
+#: pm/AutoLaTeX/Core/Config.pm:690
 msgid ""
 "AutoLaTeX has detecting an old fashion syntax for the configuration file {}\n"
 "Please regenerate this file with the command line option --fixconfig."
@@ -404,8 +411,8 @@ msgstr ""
 msgid "{}: file not found or not readable."
 msgstr ""
 
-#: pm/AutoLaTeX/Core/Translator.pm:892 pm/AutoLaTeX/Make/Make.pm:1201
-#: pm/AutoLaTeX/Make/Make.pm:1282 pm/AutoLaTeX/Make/Make.pm:1363
+#: pm/AutoLaTeX/Core/Translator.pm:892 pm/AutoLaTeX/Make/Make.pm:1211
+#: pm/AutoLaTeX/Make/Make.pm:1292 pm/AutoLaTeX/Make/Make.pm:1373
 msgid "{} is up-to-date."
 msgstr ""
 
@@ -503,9 +510,9 @@ msgstr ""
 #: pm/AutoLaTeX/Core/Util.pm:793 pm/AutoLaTeX/Core/Util.pm:897
 #: pm/AutoLaTeX/Core/Util.pm:903 pm/AutoLaTeX/Core/Util.pm:979
 #: pm/AutoLaTeX/Core/Util.pm:985 pm/AutoLaTeX/TeX/Flattener.pm:117
-#: pm/AutoLaTeX/Make/Make.pm:687 pm/AutoLaTeX/Make/Make.pm:1070
-#: pm/AutoLaTeX/Make/Make.pm:1635 pm/AutoLaTeX/Make/Make.pm:1670
-#: pm/AutoLaTeX/Make/Make.pm:1741 pm/AutoLaTeX/Make/Make.pm:1767
+#: pm/AutoLaTeX/Make/Make.pm:689 pm/AutoLaTeX/Make/Make.pm:1080
+#: pm/AutoLaTeX/Make/Make.pm:1645 pm/AutoLaTeX/Make/Make.pm:1680
+#: pm/AutoLaTeX/Make/Make.pm:1751 pm/AutoLaTeX/Make/Make.pm:1777
 msgid "{}: {}"
 msgstr ""
 
@@ -629,52 +636,56 @@ msgstr ""
 msgid "Parsing auxiliary files"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:716 pm/AutoLaTeX/Make/Make.pm:1640
-#: pm/AutoLaTeX/Make/Make.pm:1678
+#: pm/AutoLaTeX/Make/Make.pm:718 pm/AutoLaTeX/Make/Make.pm:1650
+#: pm/AutoLaTeX/Make/Make.pm:1688
 msgid "{}: Error when processing {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:851
+#: pm/AutoLaTeX/Make/Make.pm:853
 msgid "{}: The first error found in the log file is:"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:853
+#: pm/AutoLaTeX/Make/Make.pm:855
 msgid "{}: End of error log."
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:856
+#: pm/AutoLaTeX/Make/Make.pm:858
 msgid "{}: Unable to extract the error from the log. Please read the log file."
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1007 pm/AutoLaTeX/Make/Make.pm:1068
+#: pm/AutoLaTeX/Make/Make.pm:867
+msgid "{}: Forcing a new launch to reach {} on {}"
+msgstr ""
+
+#: pm/AutoLaTeX/Make/Make.pm:1017 pm/AutoLaTeX/Make/Make.pm:1078
 msgid "Generating {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1037
+#: pm/AutoLaTeX/Make/Make.pm:1047
 msgid "Compiling {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1078
+#: pm/AutoLaTeX/Make/Make.pm:1088
 msgid "Analyzing logs for {}"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1093
+#: pm/AutoLaTeX/Make/Make.pm:1103
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1102
+#: pm/AutoLaTeX/Make/Make.pm:1112
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1111
+#: pm/AutoLaTeX/Make/Make.pm:1121
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1124
+#: pm/AutoLaTeX/Make/Make.pm:1134
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
 msgstr ""
 
-#: pm/AutoLaTeX/Make/Make.pm:1745
+#: pm/AutoLaTeX/Make/Make.pm:1755
 msgid "Style file: {}"
 msgstr ""

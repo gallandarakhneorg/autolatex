@@ -309,6 +309,15 @@ OPTIONS
     --pdflatex
         Use the LaTeX command: pdflatex.
 
+    --postcompilationruns[=n]
+        Defines the minimal number of times the LaTeX tool (usually
+        pdflatex) is launched at the last AutoLaTeX running stage. The
+        default value is 1.
+
+        This command line option enables you to force AutoLaTeX to run the
+        LaTeX tool more than once time for fixing some LaTeX issues in
+        references.
+
     --progress[=n]
         Enable or disable the progression indicator. The value of the
         parameter permits to determine what is the character that will be

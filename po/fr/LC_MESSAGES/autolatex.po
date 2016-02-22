@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AutoLaTeX 25.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-21 22:19+0100\n"
+"POT-Creation-Date: 2016-02-22 11:27+0100\n"
 "PO-Revision-Date: 2013-09-16 13:38+0200\n"
 "Last-Translator: Stephane Galland <galland@arakhne.org>\n"
 "Language-Team: FR <galland@arakhne.org>\n"
@@ -266,6 +266,16 @@ msgstr ""
 
 #: pm/AutoLaTeX/Core/Config.pm:120
 msgid ""
+"Defines the minimal number of times the LaTeX compilation tools (usually "
+"pdflatex) is run during the last running stage of AutoLaTeX. The default "
+"value is 1."
+msgstr ""
+"Définition du nombre minimal de fois que l'outils de compilation LaTeX "
+"(habituellement pdflatex) est lancé durant la dernière phase d'exécution "
+"d'AutoLaTeX. La valeur par défaut est 1."
+
+#: pm/AutoLaTeX/Core/Config.pm:122
+msgid ""
 "Defines the paths from which the translators could be loaded. This is a list "
 "of paths separated by the path separator character used by your operating "
 "system: ':' on Unix platforms or ';' on Windows platforms for example."
@@ -274,7 +284,7 @@ msgstr ""
 "trouvés. C'est une liste de chemins séparés par le caractère séparateur de "
 "votre système d'exploitation : ':' sous Unix ou ';' sous Windows par exemple."
 
-#: pm/AutoLaTeX/Core/Config.pm:124
+#: pm/AutoLaTeX/Core/Config.pm:126
 msgid ""
 "Indicates if the PDF document must be produced with the SyncTeX flag on or "
 "not. SyncTeX enables to link a PDF viewer (as evince) and a text editor (as "
@@ -286,7 +296,7 @@ msgstr ""
 "(comme Gedit). Lorsque vous cliquez dans l'un, l'autre logiciel affiche en "
 "surbrillance la ligne correspondante de son côté."
 
-#: pm/AutoLaTeX/Core/Config.pm:128
+#: pm/AutoLaTeX/Core/Config.pm:130
 msgid ""
 "Tool to launch when a SCM commit action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
@@ -294,7 +304,7 @@ msgstr ""
 "Outils à lancer lors d'une action d'enregistrement dans un SCM. Les outils "
 "SCM connus sont : CVS, SVN, GIT."
 
-#: pm/AutoLaTeX/Core/Config.pm:130
+#: pm/AutoLaTeX/Core/Config.pm:132
 msgid ""
 "Tool to launch when a SCM update action is requested. Basically the SCM "
 "tools are CVS, SVN, or GIT."
@@ -302,7 +312,7 @@ msgstr ""
 "Outils à lancer lors d'une action de raffaichissement depuis un SCM. Les "
 "outils SCM connus sont : CVS, SVN, GIT."
 
-#: pm/AutoLaTeX/Core/Config.pm:133
+#: pm/AutoLaTeX/Core/Config.pm:135
 msgid ""
 "Indicates if a viewer should be launch after the compilation. Valid values "
 "are 'yes' and 'no'."
@@ -310,43 +320,43 @@ msgstr ""
 "Indique si un visualisateur doit être lancé après la génération du "
 "document.  Valeurs autorisées : 'yes' et 'no'."
 
-#: pm/AutoLaTeX/Core/Config.pm:135
+#: pm/AutoLaTeX/Core/Config.pm:137
 msgid "Specify, if not commented,the command line of the viewer."
 msgstr "Ligne de commande du visualisateur, si non commenté."
 
-#: pm/AutoLaTeX/Core/Config.pm:136
+#: pm/AutoLaTeX/Core/Config.pm:138
 msgid "Indicates if the viewer is launched in background, or not."
 msgstr "Indique si le visualisateur est lancé en tâche de fond, ou non."
 
-#: pm/AutoLaTeX/Core/Config.pm:460
+#: pm/AutoLaTeX/Core/Config.pm:462
 msgid "Opening configuration file {}"
 msgstr "Ouverture du fichier de configuration {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:477
+#: pm/AutoLaTeX/Core/Config.pm:479
 msgid "Succeed on reading"
 msgstr "Succès de la lecture"
 
-#: pm/AutoLaTeX/Core/Config.pm:480
+#: pm/AutoLaTeX/Core/Config.pm:482
 msgid "Failed to read {}: {}"
 msgstr "Echec de lecture de {}: {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:571
+#: pm/AutoLaTeX/Core/Config.pm:573
 msgid "Writing configuration file {}"
 msgstr "Enregistrement du fichier de configuration {}"
 
-#: pm/AutoLaTeX/Core/Config.pm:589
+#: pm/AutoLaTeX/Core/Config.pm:591
 msgid "Adding configuration comments"
 msgstr "Ajout des commentaires dans la configuration"
 
-#: pm/AutoLaTeX/Core/Config.pm:603
+#: pm/AutoLaTeX/Core/Config.pm:605
 msgid "Configuration of the translator"
 msgstr "Configuration du convertisseur"
 
-#: pm/AutoLaTeX/Core/Config.pm:617
+#: pm/AutoLaTeX/Core/Config.pm:619
 msgid "Saving configuration comments"
 msgstr "Enregistrement des commentaires dans la configuration"
 
-#: pm/AutoLaTeX/Core/Config.pm:688
+#: pm/AutoLaTeX/Core/Config.pm:690
 msgid ""
 "AutoLaTeX has detecting an old fashion syntax for the configuration file {}\n"
 "Please regenerate this file with the command line option --fixconfig."
@@ -491,8 +501,8 @@ msgstr ""
 msgid "{}: file not found or not readable."
 msgstr "{}: fichier non trouvé ou non lisible."
 
-#: pm/AutoLaTeX/Core/Translator.pm:892 pm/AutoLaTeX/Make/Make.pm:1201
-#: pm/AutoLaTeX/Make/Make.pm:1282 pm/AutoLaTeX/Make/Make.pm:1363
+#: pm/AutoLaTeX/Core/Translator.pm:892 pm/AutoLaTeX/Make/Make.pm:1211
+#: pm/AutoLaTeX/Make/Make.pm:1292 pm/AutoLaTeX/Make/Make.pm:1373
 msgid "{} is up-to-date."
 msgstr "{} est à-jour."
 
@@ -599,9 +609,9 @@ msgstr "Impossible de rediriger STDERR : {}"
 #: pm/AutoLaTeX/Core/Util.pm:793 pm/AutoLaTeX/Core/Util.pm:897
 #: pm/AutoLaTeX/Core/Util.pm:903 pm/AutoLaTeX/Core/Util.pm:979
 #: pm/AutoLaTeX/Core/Util.pm:985 pm/AutoLaTeX/TeX/Flattener.pm:117
-#: pm/AutoLaTeX/Make/Make.pm:687 pm/AutoLaTeX/Make/Make.pm:1070
-#: pm/AutoLaTeX/Make/Make.pm:1635 pm/AutoLaTeX/Make/Make.pm:1670
-#: pm/AutoLaTeX/Make/Make.pm:1741 pm/AutoLaTeX/Make/Make.pm:1767
+#: pm/AutoLaTeX/Make/Make.pm:689 pm/AutoLaTeX/Make/Make.pm:1080
+#: pm/AutoLaTeX/Make/Make.pm:1645 pm/AutoLaTeX/Make/Make.pm:1680
+#: pm/AutoLaTeX/Make/Make.pm:1751 pm/AutoLaTeX/Make/Make.pm:1777
 msgid "{}: {}"
 msgstr "{} : {}"
 
@@ -737,59 +747,63 @@ msgstr "Ajout du fichier '{}'"
 msgid "Parsing auxiliary files"
 msgstr "Analyse des fichiers auxiliaires"
 
-#: pm/AutoLaTeX/Make/Make.pm:716 pm/AutoLaTeX/Make/Make.pm:1640
-#: pm/AutoLaTeX/Make/Make.pm:1678
+#: pm/AutoLaTeX/Make/Make.pm:718 pm/AutoLaTeX/Make/Make.pm:1650
+#: pm/AutoLaTeX/Make/Make.pm:1688
 msgid "{}: Error when processing {}"
 msgstr "{} : Erreur lors de la génération de {}"
 
-#: pm/AutoLaTeX/Make/Make.pm:851
+#: pm/AutoLaTeX/Make/Make.pm:853
 msgid "{}: The first error found in the log file is:"
 msgstr "{}: La première erreur détectée dans le journal d'erreur est :"
 
-#: pm/AutoLaTeX/Make/Make.pm:853
+#: pm/AutoLaTeX/Make/Make.pm:855
 msgid "{}: End of error log."
 msgstr "{}: Fin du journal d'erreur."
 
-#: pm/AutoLaTeX/Make/Make.pm:856
+#: pm/AutoLaTeX/Make/Make.pm:858
 msgid "{}: Unable to extract the error from the log. Please read the log file."
 msgstr ""
 "{}: Impossible d'extraire l'erreur depuis le journal. Veuillez lire le "
 "fichier journal."
 
-#: pm/AutoLaTeX/Make/Make.pm:1007 pm/AutoLaTeX/Make/Make.pm:1068
+#: pm/AutoLaTeX/Make/Make.pm:867
+msgid "{}: Forcing a new launch to reach {} on {}"
+msgstr "Lancement forcé pour atteindre {} exécutions sur {}"
+
+#: pm/AutoLaTeX/Make/Make.pm:1017 pm/AutoLaTeX/Make/Make.pm:1078
 msgid "Generating {}"
 msgstr "Génération de {}"
 
-#: pm/AutoLaTeX/Make/Make.pm:1037
+#: pm/AutoLaTeX/Make/Make.pm:1047
 msgid "Compiling {}"
 msgstr "Génération de {}"
 
-#: pm/AutoLaTeX/Make/Make.pm:1078
+#: pm/AutoLaTeX/Make/Make.pm:1088
 msgid "Analyzing logs for {}"
 msgstr "Analyse du journal de {}"
 
-#: pm/AutoLaTeX/Make/Make.pm:1093
+#: pm/AutoLaTeX/Make/Make.pm:1103
 msgid "LaTeX Warning: There were multiply-defined labels.\n"
 msgstr "Avertissement LaTeX : il existe des labels définis plusieurs fois.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:1102
+#: pm/AutoLaTeX/Make/Make.pm:1112
 msgid "LaTeX Warning: There were undefined references.\n"
 msgstr ""
 "Avertissement LaTeX : il existe des références vers des labels non définis.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:1111
+#: pm/AutoLaTeX/Make/Make.pm:1121
 msgid "LaTeX Warning: There were undefined citations.\n"
 msgstr ""
 "Avertissement LaTeX : il existe des références vers citations "
 "bibliographiques non définies.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:1124
+#: pm/AutoLaTeX/Make/Make.pm:1134
 msgid ""
 "LaTeX Warning: Please look inside {} for the other the warning messages.\n"
 msgstr ""
 "Avertissement LaTeX : Veuillez ouvrir {} pour plus de messages "
 "d'avertissement.\n"
 
-#: pm/AutoLaTeX/Make/Make.pm:1745
+#: pm/AutoLaTeX/Make/Make.pm:1755
 msgid "Style file: {}"
 msgstr "Fichier de style : {}"
