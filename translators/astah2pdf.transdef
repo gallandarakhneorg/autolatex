@@ -34,6 +34,7 @@ TRANSLATOR_FUNCTION =<<EOL {
 		'astah-pro.jar',
 		'astah-professional.jar',
 		'astah-uml.jar',
+		'astah-community.jar',
 	);
 
 	# Detect the Astah installation
