@@ -505,22 +505,6 @@ The provided translators are:
 
 =back
 
-=item B<Asymptote (asy) to Portable Document Format (pdf)>
-
-=over 12
-
-=item Name:                              asy2pdf
-
-=item Use external converter:            asy
-
-=item Use translator:                    eps2pdf
-
-=item Input format:                      .asy
-
-=item Output format:                     .pdf
-
-=back
-
 =item B<Astah/Jude (asta) to Portable Network Graphic (png)>
 
 =over 12
@@ -534,6 +518,38 @@ The provided translators are:
 =item Input format:                      .asta .jude .juth
 
 =item Output format:                     .png
+
+=back
+
+=item B<Astah SysML (asml) to Portable Document Format (pdf)>
+
+=over 12
+
+=item Name:                              asml2pdf
+
+=item Use external converter:            astah-sysml
+
+=item Use translator:                    svg2pdf
+
+=item Input format:                      .asml
+
+=item Output format:                     .pdf
+
+=back
+
+=item B<Asymptote (asy) to Portable Document Format (pdf)>
+
+=over 12
+
+=item Name:                              asy2pdf
+
+=item Use external converter:            asy
+
+=item Use translator:                    eps2pdf
+
+=item Input format:                      .asy
+
+=item Output format:                     .pdf
 
 =back
 

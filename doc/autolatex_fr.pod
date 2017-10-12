@@ -553,6 +553,22 @@ Les convertisseurs fournis avec AutoLaTeX sont :
 
 =back
 
+=item B<Astah SysML (asml) vers Portable Document Format (pdf)>
+
+=over 12
+
+=item Nom :                              asml2pdf
+
+=item Convertisseur externe utilisé :    astah-sysml
+
+=item Convertisseur utilisé :            svg2pdf
+
+=item Format d'entrée :                  .asml
+
+=item Format de sortie :                 .pdf
+
+=back
+
 =item B<Asymptote (asy) vers Portable Document Format (pdf)>
 
 =over 12
