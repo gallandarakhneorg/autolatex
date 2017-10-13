@@ -79,7 +79,7 @@ use AutoLaTeX::TeX::TeXDependencyAnalyzer;
 use AutoLaTeX::TeX::IndexAnalyzer;
 use AutoLaTeX::TeX::GlossaryAnalyzer;
 
-our $VERSION = '33.0';
+our $VERSION = '34.0';
 
 my $EXTENDED_WARNING_CODE = <<'ENDOFTEX';
 	%*************************************************************
@@ -551,21 +551,29 @@ sub _computeDependenciesForRootFile($) : method {
 				# INDEX
 				#
 				if ($deps{'idx'}) {
-					my $idxfile = "$roottemplate.idx";
-					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$idxfile)));
-					$self->{'files'}{"$idxfile"} = {
-						'type' => 'idx',
-						'dependencies' => {},
-						'change' => lastFileChange("$idxfile"),
-					};
-					my $indfile = "$roottemplate.ind";
-					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$indfile)));
-					$self->{'files'}{"$indfile"} = {
-						'type' => 'ind',
-						'dependencies' => { $idxfile => undef },
-						'change' => lastFileChange("$indfile"),
-					};
-					$self->{'files'}{$pdfFile}{'dependencies'}{$indfile} = undef;
+					for my $idxdep (@{$deps{'idx'}}) {
+						my $idxbasefilename;
+						if ($idxdep) {
+							$idxbasefilename = "$idxdep";
+						} else {
+							$idxbasefilename = "$roottemplate";
+						}
+						my $idxfile = "$idxbasefilename.idx";
+						printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$idxfile)));
+						$self->{'files'}{"$idxfile"} = {
+							'type' => 'idx',
+							'dependencies' => {},
+							'change' => lastFileChange("$idxfile"),
+						};
+						my $indfile = "$idxbasefilename.ind";
+						printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$indfile)));
+						$self->{'files'}{"$indfile"} = {
+							'type' => 'ind',
+							'dependencies' => { $idxfile => undef },
+							'change' => lastFileChange("$indfile"),
+						};
+						$self->{'files'}{$pdfFile}{'dependencies'}{$indfile} = undef;
+					}
 				}
 
 				#
@@ -1748,15 +1756,17 @@ sub __build_ind($$$) : method {
 	if ($self->{'is_makeindex_enable'}) {
 		my $basename = basename($file,'.ind');
 		my $idxFile = File::Spec->catfile(dirname($file),"$basename.idx");
-		printDbg(formatText(_T('{}: {}'), 'MAKEINDEX', basename($idxFile))); 
-		my @styleArgs = ();
-		my $istFile = $self->{'configuration'}{'__private__'}{'output.ist file'};
-		if ($istFile && -f "$istFile") {
-			printDbgFor(2, formatText(_T('Style file: {}'), $istFile)); 
-			push @styleArgs, '-s', "$istFile";
+		if (-f "$idxFile") {
+			printDbg(formatText(_T('{}: {}'), 'MAKEINDEX', basename($idxFile))); 
+			my @styleArgs = ();
+			my $istFile = $self->{'configuration'}{'__private__'}{'output.ist file'};
+			if ($istFile && -f "$istFile") {
+				printDbgFor(2, formatText(_T('Style file: {}'), $istFile)); 
+				push @styleArgs, '-s', "$istFile";
+			}
+			runCommandOrFail(@{$self->{'makeindex_cmd'}}, @styleArgs, 
+				$self->makeRelativePath("$idxFile"));
 		}
-		runCommandOrFail(@{$self->{'makeindex_cmd'}}, @styleArgs, 
-			$self->makeRelativePath("$idxFile"));
 	}
 }
 

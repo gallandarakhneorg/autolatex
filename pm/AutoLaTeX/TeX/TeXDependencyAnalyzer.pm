@@ -1,5 +1,5 @@
 # autolatex - TeXDependencyAnalyzer.pm
-# Copyright (C) 2013-16  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 2013-17  Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ The provided functions are:
 =cut
 package AutoLaTeX::TeX::TeXDependencyAnalyzer;
 
-$VERSION = '6.0';
+$VERSION = '7.0';
 @ISA = ('Exporter');
 @EXPORT = qw( &getDependenciesOfTeX ) ;
 @EXPORT_OK = qw();
@@ -53,10 +53,10 @@ use AutoLaTeX::Core::Util;
 use AutoLaTeX::TeX::TeXParser;
 
 my %MACROS = (
-	'input'				=> '!{}',
-	'include'			=> '!{}',
-	'makeindex'			=> '',
-	'printindex'		=> '',
+	'input'			=> '!{}',
+	'include'		=> '!{}',
+	'makeindex'		=> '[]',
+	'printindex'		=> '[]',
 	'makeglossaries'	=> '',
 	'printglossaries'	=> '',
 	'printglossary'		=> '![]',
@@ -149,7 +149,7 @@ sub _expandMacro($$@) : method {
 		}
 	}
 	elsif ( $macro eq '\\makeindex' || $macro eq '\\printindex' ) {
-		$self->{'dependencies'}{'idx'} = 1;
+		$self->_addidxreference(@_);
 	}
 	elsif ( $macro eq '\\makeglossaries' || $macro eq '\\printglossaries' || $macro eq '\\printglossary' ) {
 		$self->{'dependencies'}{'glo'} = 1;
@@ -285,6 +285,24 @@ sub _expandMacro($$@) : method {
 	return '';
 }
 
+sub _addidxreference($@) {
+	my $self = shift;
+	for my $param (@_) {
+		my $text = $param->{'text'} || '';
+		if ($text =~ /name=([^,]+)/) {
+			my $name = "$1";
+			if (!$self->{'dependencies'}{'idx'}) {
+				$self->{'dependencies'}{'idx'} = [];
+			}
+			push @{$self->{'dependencies'}{'idx'}}, $name;
+		}
+	}
+	if (!$self->{'dependencies'}{'idx'}) {
+		$self->{'dependencies'}{'idx'} = [];
+	}
+	push @{$self->{'dependencies'}{'idx'}}, "";
+}
+
 sub _addbibreference($@) {
 	my $self = shift;
 	my $bibdb = shift || '';
@@ -346,7 +364,7 @@ sub _new($$) : method {
 				'tex' => {},
 				'sty' => {},
 				'cls' => [],
-				'idx' => 0,
+				'idx' => [],
 			},
 		};
 	}
