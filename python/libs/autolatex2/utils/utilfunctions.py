@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15	Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,12 +30,46 @@ if os.name == 'nt':
 	import win32api
 	import win32con
 
-import autolatex2.utils.debug as debug
+def findFileInPath(filename : str,  useEnvironmentVariable : bool = False) -> str:
+	'''
+	Search a file into the "sys.path" (filled with PYTHONPATH) variable.
+	:param filename: The relative filename.
+	:type filenamename: str
+	:param useEnvironmentVariable: Indicates if the PYTHONPATH environment variable should be preferred to sys.path.
+	:type useEnvironmentVariable: bool
+	:return: The absolute path of the file, or None if the file was not found.
+	:rtype: str
+	'''
+	if useEnvironmentVariable:
+		path = os.getenv("PYTHONPATH")
+		elements = path.split(os.pathsep)
+	else:
+		elements = sys.path
+	for root in elements:
+		if root is None or root == '':
+			fn = os.path.join(os.curdir, filename)
+		else:
+			fn = os.path.join(root, filename)
+		fn = os.path.abspath(fn)
+		if os.path.exists(fn):
+			return fn
+	return None
+
+def unlink(name : str):
+	'''
+	Remove the file. Do not fail if the file does not exist.
+	:param name: The filename.
+	:type name: str
+	'''
+	try:
+		os.unlink(name)
+	except:
+		pass
 
 def basename(name : str, *ext : str) -> str:
 	'''
 	Replies the basename, with the given extensions.
-	This function mimics the 'basename' command on Unix systems.
+	This function remove the directory name.
 	:param name: The filename.
 	:type name: str
 	:param ext: The extensions to remove.
@@ -55,6 +89,23 @@ def basename(name : str, *ext : str) -> str:
 			i = len(e)
 			n = bn[0:-i]
 			return n
+	return bn
+
+def basename2(name : str, *ext : str) -> str:
+	'''
+	Replies the basename, with the given extensions.
+	This function mimics the 'basename' command on Unix systems.
+	:param name: The filename.
+	:type name: str
+	:param ext: The extensions to remove.
+	:type ext: str
+	:return: The absolute path of the command, or None.
+	:rtype: str
+	'''
+	bn = basename(name,  *ext)
+	dn = os.path.dirname(name)
+	if dn:
+		return os.path.join(dn,  bn)
 	return bn
 
 def firstOf(*values : list) -> object:
@@ -84,7 +135,7 @@ def isHiddenFile(filename : str) -> bool:
 	else:
 		return filename.startswith('.')
 
-def fileLastChange(filename : str) -> int:
+def getFileLastChange(filename : str) -> int:
 	'''
 	Replies the time of the last change on the given file.
 	'''
@@ -97,13 +148,13 @@ def fileLastChange(filename : str) -> int:
 
 def parseCLI(commandLine : str, environment : dict, exceptions : set = {}) -> list:
 	'''
-	<p>Parse the given strings as command lines and extract each component.
+	Parse the given strings as command lines and extract each component.
 	The components are separated by space characters. If you want a
 	space character inside a component, you muse enclose the component
 	with quotes. To have quotes in components, you must protect them
 	with the backslash character.
 	This function expand the environment variables.</p>
-	<p><i>Note:</i> Every paramerter that is an associative array is assumed to be an
+	<p><i>Note:</i> Every parameter that is an associative array is assumed to be an
 	environment of variables that should be used prior to <code>@ENV</code> to expand the
 	environment variables. The elements in the parameter are treated from the
 	first to the last. Each time an environment was found, it is replacing any

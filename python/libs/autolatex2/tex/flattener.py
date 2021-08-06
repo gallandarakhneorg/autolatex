@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ import logging
 import gettext
 _T = gettext.gettext
 
-import texparser
-from autolatex2.utils import utils
+from autolatex2.tex import texparser
+import autolatex2.utils.utilfunctions as genutils
 
 class Flattener(texparser.Observer):
 	'''
@@ -309,7 +309,6 @@ class Flattener(texparser.Observer):
 			if t:
 				r = re.match(r'^\s*(?:(?:\{([^\}]+)\})|([^,]+))\s*[,;]?\s*(.*)$', t)
 				while r:					
-					prev = t
 					path = r.group(1) or r.group(2)
 					if not os.path.isabs(path):
 						path = os.path.join(self.__dirname, path)
@@ -376,7 +375,7 @@ class Flattener(texparser.Observer):
 				if not os.path.isabs(bblFile):
 					bblFile = os.path.join(self.dirname, bblFile)
 				if os.path.isfile(bblFile):
-					with open(bbFile) as f:
+					with open(bblFile) as f:
 						content = f.read()
 					return r'''
 							%%=======================================================
@@ -473,7 +472,7 @@ class Flattener(texparser.Observer):
 			figexts = (	'.pdf', '.eps', '.ps', '.png', '.jpeg', '.jpg', '.gif', '.bmp')
 			exts = figexts + texexts
 			ofilename = filename
-			obasename = utils.basename(texname, *exts)
+			obasename = genutils.basename(texname, *exts)
 			filenames = {}
 
 			# Search in the registered paths
@@ -492,7 +491,7 @@ class Flattener(texparser.Observer):
 
 			# Search in the folder, i.e. the document directory.
 			if not filenames:
-				template = os.path.join(os.path.dirname(ofilename), utils.basename(ofilename, exts))
+				template = os.path.join(os.path.dirname(ofilename), genutils.basename(ofilename, exts))
 				for ext in figexts:
 					fn = template + ext
 					if os.path.isfile(fn):

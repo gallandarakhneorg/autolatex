@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,17 +25,15 @@ Translation engine.
 import os
 import re
 import logging
-import pprint
 import shlex
-import shutil
 import subprocess
 from enum import IntEnum, unique
 
 import gettext
 _T = gettext.gettext
 
-from autolatex2.config import *
-from autolatex2.utils import utils
+import autolatex2.utils.utilfunctions as genutils
+from autolatex2.config .configobj import Config
 
 
 ######################################################################
@@ -82,7 +80,7 @@ class Translator(object):
 	Description of a translator.
 	'''
 
-	def __init__(self, name : str, configuration : config.Config):
+	def __init__(self, name : str, configuration : Config):
 		'''
 		Parse a complete translator name to extract the components.
 		:param name: The name must have the syntax:<ul>
@@ -419,7 +417,7 @@ class TranslatorRepository(object):
 	Repository of translators.
 	'''
 
-	def __init__(self, configuration : config.Config):
+	def __init__(self, configuration : Config):
 		'''
 		Construct the repository of translators.
 		:param configuration: The current configuration.
@@ -664,7 +662,6 @@ class TranslatorRepository(object):
 		'''
 		for source, translators in conflicts.items():
 			msg = ''
-			configline = ''
 			excludemsg = ''
 			firstTranslator = None
 			for translator in translators:
@@ -742,12 +739,12 @@ class TranslatorRunner(object):
 					for root, dirs, files in os.walk(imageDirectory):
 						for filename in files:
 							absPath = os.path.join(root, filename)
-							if not utils.isHiddenFile(absPath) and absPath.endswith(types):
+							if not genutils.isHiddenFile(absPath) and absPath.endswith(types):
 								self.__images.add(absPath)
 				else:
 					for filename in os.listdir(imageDirectory):
 						absPath = os.path.join(imageDirectory, filename)
-						if not os.path.isdir(absPath) and not utils.isHiddenFile(absPath):
+						if not os.path.isdir(absPath) and not genutils.isHiddenFile(absPath):
 							if absPath.endswith(types):
 								self.__images.add(absPath)
 		return self.__images
@@ -844,22 +841,22 @@ class TranslatorRunner(object):
 		outext = outexts[0]
 
 		if not outfile:
-			outfile = os.path.join(os.path.dirname(infile), utils.basename(infile, inexts) + outext)
+			outfile = genutils.basename2(infile, inexts) + outext
 
 		# Try to avoid the translation if the source file is no more recent than the target file.
 		if onlymorerecent:
-			inchange = utils.fileLastChange(infile)
-			outchange = utils.fileLastChange(outfile)
+			inchange = genutils.getFileLastChange(infile)
+			outchange = genutils.getFileLastChange(outfile)
 			if outchange is None:
 				# No out file, try to detect other types of generated files
 				dirname = os.path.dirname(outfile)
 				for filename in os.listdir(dirname):
 					absPath = os.path.join(dirname, filename)
-					if not os.path.isdir(absPath) and not utils.isHiddenFile(absPath):
-						bn = utils.basename(filename, outexts)
+					if not os.path.isdir(absPath) and not genutils.isHiddenFile(absPath):
+						bn = genutils.basename(filename, outexts)
 						m = re.match(r'^(\Q'+bn+r'_\E.*)\Q'+outext+r'\E$', filename, re.S)
 						if m:
-							t = utils.fileLastChange(absPath)
+							t = genutils.getFileLastChange(absPath)
 							if t is not None and (outchange is None or t < outchange):
 								outchange = t
 								break
@@ -885,10 +882,10 @@ class TranslatorRunner(object):
 			environment['outexts'] = outexts
 			environment['outext'] = outext
 			environment['ext'] = outext
-			environment['outbasename'] = utils.basename(outfile, outexts)
+			environment['outbasename'] = genutils.basename(outfile, outexts)
 			environment['outwoext'] = os.path.join(os.path.dirname(outfile), environment['outbasename'])
 			# Create the CLI to run
-			cli = utils.parseCLI(commandLine, environment)
+			cli = genutils.parseCLI(commandLine, environment)
 			
 			# Run the cli
 			if logging.getLogger().isEnabledFor(logging.DEBUG):
@@ -916,8 +913,7 @@ class TranslatorRunner(object):
 			else:
 				interpreter = interpreter.lower()
 
-			ext = outext
-			outbasename = utils.basename(outfile, outexts)
+			outbasename = genutils.basename(outfile, outexts)
 			outwoext = os.path.join(os.path.dirname(outfile), outbasename)
 
 			environment = translator.getConstants()

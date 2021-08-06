@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2015  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,8 +25,6 @@ import shutil
 
 from autolatex2.translator.abstractinterpreter import CommandExecutionError
 from autolatex2.translator.rubyinterpreter import TranslatorInterpreter
-
-from autolatex2.utils import debug
 
 class TestTranslatorInterpreter(unittest.TestCase):
 
@@ -87,7 +85,7 @@ class TestTranslatorInterpreter(unittest.TestCase):
 	def test_run_invalid1(self):
 		(sout, serr, sex, retcode) = self.interpreter.run('print (1')
 		self.assertEqual('', sout)
-		self.assertEqual('-:5: syntax error, unexpected $end, expecting \')\'\nprint (1\n        ^\n', serr)
+		self.assertEqual('-:5: syntax error, unexpected end-of-input, expecting \')\'\n', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
 		self.assertNotEqual(0, retcode)

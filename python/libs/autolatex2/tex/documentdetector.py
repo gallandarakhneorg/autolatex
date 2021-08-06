@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 Tools that is parsing a TeX file and detect if \documentclass is inside.
 '''
 
-import texparser
+from autolatex2.tex import texparser
 
 class DocumentDetector(texparser.Observer):
 	'''

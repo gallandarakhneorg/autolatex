@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,6 +36,23 @@ class TranslatorConfig(object):
 		self.__imagesToConvert = set()
 		self.__recursiveImagePath = True
 		self.__inclusions = list((dict(), dict(), dict()))
+		self.__is_translator_enable = True
+
+	@property
+	def is_translator_enable(self) -> bool:
+		'''
+		Replies if the translators are activated.
+		:rtype: bool
+		'''
+		return self.__enableTranslator
+
+	@is_translator_enable.setter
+	def is_translator_enable(self, enable : bool):
+		'''
+		Change the activation flag for the translators.
+		:type enable: bool
+		'''
+		self.__enableTranslator = enable
 
 	@property
 	def ignoreSystemTranslators(self) -> bool:

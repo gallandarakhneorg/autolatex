@@ -1,0 +1,37 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+
+\usepackage{makeidx}
+\makeindex
+
+\usepackage{glossaries}
+\makeglossaries
+\newglossaryentry{duc}
+{
+    name=duc,
+    description={Duc de Bourgogne}
+}
+\newglossaryentry{ducs}
+{
+    name=duc,
+    description={Ducs et pairs}
+}
+
+\begin{document}
+
+\section{Section 1}
+
+\input{test12a}
+
+\`A la mort de M. le \gls{duc} de Bourgogne, lorsqu'il fut question d'aller jeter de l'eau b\'enite, le feu Roi d\'ecida que si les princes lorrains s'y pr\'esenteroient, qu'eux ni les \gls{ducs}\index{Ducs et pairs} n'en jetteroient (...)
+
+\input{test12b}
+
+\bibliography{test5}
+
+\printindex
+
+\printglossaries
+
+\end{document}

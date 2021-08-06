@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2015  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,10 +26,10 @@ import shutil
 import textwrap
 import time
 
-from autolatex2.translator.translator import *
-from autolatex2.config.config import *
+import autolatex2.utils.utilfunctions as genutils
 
-from autolatex2.utils import debug
+from autolatex2.translator.translatorobj import *
+from autolatex2.config.configobj import Config
 
 ##############################################################
 ##
@@ -170,7 +170,7 @@ class TestTranslatorS2T(unittest.TestCase):
 
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
-		self.config = config.Config()
+		self.config = Config()
 		self.translator = Translator("s2t", self.config)
 
 	def test_name(self):
@@ -202,7 +202,7 @@ class TestTranslatorS2TpX(unittest.TestCase):
 
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
-		self.config = config.Config()
+		self.config = Config()
 
 	def test_name(self):
 		targets = ['u', 'tex', 'layers', 'tex+layers', 'layers+tex']
@@ -260,7 +260,7 @@ class TestTranslatorS2TuV(unittest.TestCase):
 
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
-		self.config = config.Config()
+		self.config = Config()
 		self.translator = Translator("s2t_v", self.config)
 
 	def test_name(self):
@@ -292,7 +292,7 @@ class TestTranslatorS2TpXuV(unittest.TestCase):
 
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
-		self.config = config.Config()
+		self.config = Config()
 
 	def test_name(self):
 		targets = ['u', 'tex', 'layers', 'tex+layers', 'layers+tex']
@@ -352,7 +352,7 @@ class TestTranslatorRepositoryInit(unittest.TestCase):
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
 		self.directory = generateTranslatorStubs()
-		self.config = config.Config()
+		self.config = Config()
 		self.repo = TranslatorRepository(self.config)
 
 	def tearDown(self):
@@ -393,7 +393,7 @@ class TestTranslatorRepositoryShared(unittest.TestCase):
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
 		self.directory = generateTranslatorStubs()
-		self.config = config.Config()
+		self.config = Config()
 		self.repo = TranslatorRepository(self.config)
 		translators = self.repo._readDirectory(directory=self.directory, recursive=True, warn=False)
 		for translator in translators:
@@ -454,7 +454,7 @@ class TestTranslatorRepositoryConflict(unittest.TestCase):
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
 		self.directory = generateTranslatorStubsWithConflicts()
-		self.config = config.Config()
+		self.config = Config()
 		self.repo = TranslatorRepository(self.config)
 		translators = self.repo._readDirectory(directory=self.directory, recursive=True, warn=False)
 		for translator in translators:
@@ -482,8 +482,8 @@ class TestTranslatorRepositoryConflict(unittest.TestCase):
 				}], conflicts)
 
 	def test__failOnConflict(self):
-		svg2pdf = self.repo._getObjectFor('svg2pdf')
-		svg2png = self.repo._getObjectFor('svg2png')
+		self.repo._getObjectFor('svg2pdf')
+		self.repo._getObjectFor('svg2png')
 		conflicts = self.repo._detectConflicts()
 		with self.assertRaises(TranslatorConflictError):
 			self.repo._failOnConflict(conflicts[TranslatorLevel.document.value], 'myfilename.cfg')
@@ -505,7 +505,7 @@ class TestTranslatorRunner(unittest.TestCase):
 		logging.getLogger().setLevel(logging.CRITICAL)
 		self.directory1 = generateTranslatorStubs()
 		self.directory2 = generateImageStubs()
-		self.config = config.Config()
+		self.config = Config()
 		self.config.translators.ignoreSystemTranslators = True
 		self.config.translators.ignoreUserTranslators = True
 		self.config.translators.ignoreDocumentTranslators = True
@@ -575,7 +575,7 @@ class TestTranslatorRunnerGeneration(unittest.TestCase):
 		logging.getLogger().setLevel(logging.CRITICAL)
 		self.directory1 = generateTranslatorStubsForGeneration()
 		self.directory2 = generateImageStubs()
-		self.config = config.Config()
+		self.config = Config()
 		self.config.translators.ignoreSystemTranslators = True
 		self.config.translators.ignoreUserTranslators = True
 		self.config.translators.ignoreDocumentTranslators = True
@@ -628,13 +628,13 @@ class TestTranslatorRunnerGeneration(unittest.TestCase):
 		self.config.translators.setIncluded('svg2pdf_perl', TranslatorLevel.system.value, False)
 		self.runner.sync()
 		self.runner.generateImage(infile=os.path.join(self.directory2, 'img1.svg'), onlymorerecent=False)
-		lastChange = utils.fileLastChange(os.path.join(self.directory2, 'img1.pdf'))
+		lastChange = genutils.getFileLastChange(os.path.join(self.directory2, 'img1.pdf'))
 		time.sleep(1)
 		self.assertEqual(
 				os.path.join(self.directory2, 'img1.pdf'),
 				self.runner.generateImage(infile=os.path.join(self.directory2, 'img1.svg')))
 		self.assertTrue(os.path.isfile(os.path.join(self.directory2, 'img1.pdf')))
-		lastChange2 = utils.fileLastChange(os.path.join(self.directory2, 'img1.pdf'))
+		lastChange2 = genutils.getFileLastChange(os.path.join(self.directory2, 'img1.pdf'))
 		self.assertEqual(lastChange, lastChange2)
 
 	def test_generateImages_python_noForce(self):
@@ -643,13 +643,13 @@ class TestTranslatorRunnerGeneration(unittest.TestCase):
 		self.config.translators.setIncluded('svg2pdf_perl', TranslatorLevel.system.value, False)
 		self.runner.sync()
 		self.runner.generateImage(infile=os.path.join(self.directory2, 'img1.svg'), onlymorerecent=False)
-		lastChange = utils.fileLastChange(os.path.join(self.directory2, 'img1.pdf'))
+		lastChange = genutils.getFileLastChange(os.path.join(self.directory2, 'img1.pdf'))
 		time.sleep(1)
 		self.assertEqual(
 				os.path.join(self.directory2, 'img1.pdf'),
 				self.runner.generateImage(infile=os.path.join(self.directory2, 'img1.svg')))
 		self.assertTrue(os.path.isfile(os.path.join(self.directory2, 'img1.pdf')))
-		lastChange2 = utils.fileLastChange(os.path.join(self.directory2, 'img1.pdf'))
+		lastChange2 = genutils.getFileLastChange(os.path.join(self.directory2, 'img1.pdf'))
 		self.assertEqual(lastChange, lastChange2)
 
 	def test_generateImages_perl_noForce(self):
@@ -658,13 +658,13 @@ class TestTranslatorRunnerGeneration(unittest.TestCase):
 		self.config.translators.setIncluded('svg2pdf_perl', TranslatorLevel.system.value, True)
 		self.runner.sync()
 		self.runner.generateImage(infile=os.path.join(self.directory2, 'img1.svg'), onlymorerecent=False)
-		lastChange = utils.fileLastChange(os.path.join(self.directory2, 'img1.pdf'))
+		lastChange = genutils.getFileLastChange(os.path.join(self.directory2, 'img1.pdf'))
 		time.sleep(1)
 		self.assertEqual(
 				os.path.join(self.directory2, 'img1.pdf'),
 				self.runner.generateImage(infile=os.path.join(self.directory2, 'img1.svg')))
 		self.assertTrue(os.path.isfile(os.path.join(self.directory2, 'img1.pdf')))
-		lastChange2 = utils.fileLastChange(os.path.join(self.directory2, 'img1.pdf'))
+		lastChange2 = genutils.getFileLastChange(os.path.join(self.directory2, 'img1.pdf'))
 		self.assertEqual(lastChange, lastChange2)
 
 

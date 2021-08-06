@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import re
 import base64
 from Crypto.Hash import MD5
 
-import texparser
+from autolatex2.tex import texparser
 
 class AuxiliaryCitationAnalyzer(texparser.Observer):
 	'''
@@ -149,16 +149,16 @@ class AuxiliaryCitationAnalyzer(texparser.Observer):
 		:rtype: str
 		'''
 		if name == '\\bibdata':
-			if parameter[1]['text']:
+			if parameter and len(parameter) > 1 and 'text' in parameter[1] and parameter[1]['text']:
 				for bibdb in re.split(r'\s*,\s*', parameter[1]['text']):
 					if bibdb:
 						self.__databases.add(bibdb)
 		elif name == '\\bibstyle':
-			if parameter[1]['text']:
+			if parameter and len(parameter) > 1 and 'text' in parameter[1] and parameter[1]['text']:
 				for bibdb in re.split(r'\s*,\s*', parameter[1]['text']):
 					if bibdb:
 						self.__styles.add(bibdb)
-		elif parameter[1]['text']:
+		elif parameter and len(parameter) > 1 and 'text' in parameter[1] and parameter[1]['text']:
 			for bibdb in re.split(r'\s*,\s*', parameter[1]['text']):
 				if bibdb:
 					self.__citations.add(bibdb)

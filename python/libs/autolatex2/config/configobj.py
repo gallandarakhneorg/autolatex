@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ Configuration of a AutoLaTeX instance.
 
 import os
 import re
+import autolatex2.utils as utils
 
 import gettext
 _T = gettext.gettext
@@ -193,7 +194,7 @@ class Config(object):
 			adir = os.path.dirname(cfgFile)
 		else:
 			ext = os.path.splitext(currentDocument)[-1]
-			if isTeXFileExtension(ext):
+			if utils.isTeXFileExtension(ext):
 				adir = document_dir
 		
 		if adir is None:

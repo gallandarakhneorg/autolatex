@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2015  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,8 +25,6 @@ import shutil
 
 from autolatex2.translator.abstractinterpreter import CommandExecutionError
 from autolatex2.translator.javascriptinterpreter import TranslatorInterpreter
-
-from autolatex2.utils import debug
 
 class TestTranslatorInterpreter(unittest.TestCase):
 
@@ -87,7 +85,7 @@ class TestTranslatorInterpreter(unittest.TestCase):
 	def test_run_invalid1(self):
 		(sout, serr, sex, retcode) = self.interpreter.run('process.stderr.write(1')
 		self.assertEqual('', sout)
-		self.assertEqual('\n[stdin]:4\nprocess.stderr.write(1\n                      \nSyntaxError: Unexpected end of input\n    at Object.<anonymous> ([stdin]-wrapper:6:22)\n    at Module._compile (module.js:456:26)\n    at evalScript (node.js:532:25)\n    at Socket.<anonymous> (node.js:154:11)\n    at Socket.EventEmitter.emit (events.js:117:20)\n    at _stream_readable.js:920:16\n    at process._tickCallback (node.js:415:13)\n', serr)
+		self.assertEqual('[stdin]:4\nprocess.stderr.write(1\n                     ^\n\nSyntaxError: missing ) after argument list\n    at Object.exports.runInThisContext (vm.js:53:16)\n    at Object.<anonymous> ([stdin]-wrapper:6:22)\n    at Module._compile (module.js:410:26)\n    at node.js:578:27\n    at nextTickCallbackWith0Args (node.js:419:9)\n    at process._tickCallback (node.js:348:13)\n', serr)
 		self.assertIsInstance(sex, CommandExecutionError)
 		self.assertNotEqual(0, sex.errno)
 		self.assertNotEqual(0, retcode)

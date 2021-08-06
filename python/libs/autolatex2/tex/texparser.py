@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,8 +50,8 @@ class Parameter(object):
 		'''
 		Construct an expandable parameter.
 		'''
-		self.expandable = True
-		self.separators = []
+		self.__expandable = True
+		self.__value = None
 
 	@property
 	def expandable(self) -> bool:
@@ -81,7 +81,7 @@ class Parameter(object):
 		return self.__value
 
 	@value.setter
-	def value(self, v : bool):
+	def value(self, v : str):
 		'''
 		Set the value of the argument.
 		:param v: The value.
@@ -730,17 +730,17 @@ class TeXParser(Parser):
 			self.__textModeActiveCharacters.update(self.default_text_mode_active_characters)
 		return self.__textModeActiveCharacters
 
-	def add_text_mode_active_character(self, character : str, prototype : str):
+	def add_text_mode_active_character(self, character: str, prototype : str):
 		'''
 		Add an active character for the text mode.
 		See the explanation in the class documentation for the format of the macro prototype.
-		:param name: The active character.
-		:type name: str
+		:param character: The active character.
+		:type character: str
 		:param prototype: The prototype of the active character.
 		:type prototype: str
 		'''
 		self.text_mode_active_characters
-		self.__textModeActiveCharacters[name] = prototype
+		self.__textModeActiveCharacters[character] = prototype
 		self.separators = None
 
 	@property
@@ -760,13 +760,13 @@ class TeXParser(Parser):
 		'''
 		Add an active character for the math mode.
 		See the explanation in the class documentation for the format of the macro prototype.
-		:param name: The active character.
-		:type name: str
+		:param character: The active character.
+		:type character: str
 		:param prototype: The prototype of the active character.
 		:type prototype: str
 		'''
 		self.math_mode_active_characters
-		self.__mathModeActiveCharacters[name] = prototype
+		self.__mathModeActiveCharacters[character] = prototype
 		self.separators = None
 
 	@property

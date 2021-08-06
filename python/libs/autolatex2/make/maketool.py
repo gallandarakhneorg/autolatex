@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,28 +26,34 @@ import os
 import re
 import sys
 import textwrap
+import logging
 from enum import IntEnum, unique
+
+from autolatex2.translator.translatorobj import TranslatorRunner
+import autolatex2.utils.utilfunctions as genutils
+import autolatex2.tex.utils as texutils
+from autolatex2.utils.runner import *
+from autolatex2.tex.bibtex import BibTeXErrorParser
+from autolatex2.tex.biber import BiberErrorParser
+from autolatex2.tex.dependencyanalyzer import DependencyAnalyzer
+from autolatex2.tex.citationanalyzer import AuxiliaryCitationAnalyzer
+
+import autolatex2.utils.debug as debug
+
 import gettext
 _T = gettext.gettext
 
-from autolatex2.translator.translator import TranslatorRunner
-import autolatex2.utils.utils as utils
-import autolatex2.tex.utils as texutils
-from autolatex2.utils.runner import *
-
-from autolatex2.utils import debug
-	
 ######################################################################
 ##
 @unique
 class TeXTools(IntEnum):
 	'''
-	Type of a TeX compilers supported by AutoLaTeX.
+	Type of TeX tools supported by AutoLaTeX.
 	'''
 	bibtex = 0
 	biber = 1
 	makeindex = 2
-	dvi2ps = 3
+	dvips = 3
 	pdflatex = 4
 	latex = 5
 	xelatex = 6
@@ -56,28 +62,33 @@ class TeXTools(IntEnum):
 ######################################################################
 ##
 @unique
-class TeXWarnings(IntEnum):
-	'''
-	List of LaTeX warnings supported by TeX maker
-	'''
-	done = 0
-	undefined_reference = 1
-	undefined_citation = 2
-	multiple_definition = 3
-	other_warning = 4
-
-######################################################################
-##
-@unique
 class TeXCompiler(IntEnum):
 	'''
-	Type of a TeX compilers supported by AutoLaTeX.
+	Type of TeX compilers supported by AutoLaTeX.
 	'''
 	pdflatex = TeXTools.pdflatex
 	latex = TeXTools.latex
 	xelatex = TeXTools.xelatex
 	lualatex = TeXTools.lualatex
-	
+
+######################################################################
+##
+@unique
+class BibCompiler(IntEnum):
+	'''
+	Type of bibliography compilers supported by AutoLaTeX.
+	'''
+	bibtex = TeXTools.bibtex
+	biber = TeXTools.biber
+
+######################################################################
+##
+@unique
+class IndexCompiler(IntEnum):
+	'''
+	Type of index compilers supported by AutoLaTeX.
+	'''
+	makeindex = TeXTools.makeindex
 
 ######################################################################
 ##
@@ -147,9 +158,9 @@ class FileDescription(object):
 
 ######################################################################
 ##
-class AutoLateXMaker(AbstractRunner):
+class AutoLaTeXMaker(AbstractRunner):
 	'''
-	The maker of AutoLaTeX.
+	The maker for AutoLaTeX.
 	'''
 
 	__EXTENDED_WARNING_CODE = textwrap.dedent("""\
@@ -228,6 +239,7 @@ class AutoLateXMaker(AbstractRunner):
 			'to_pdf': ['-output-format=pdf'],
 			'synctex': '-synctex=1',
 			'jobname': '-jobname',
+			'output_dir':  '-output-directory', 
 			'ewarnings': __EXTENDED_WARNING_CODE,
 		},
 		TeXTools.latex.value: {
@@ -238,6 +250,7 @@ class AutoLateXMaker(AbstractRunner):
 			'to_pdf': ['-output-format=pdf'],
 			'synctex': '-synctex=1',
 			'jobname': '-jobname',
+			'output_dir':  '-output-directory', 
 			'ewarnings': __EXTENDED_WARNING_CODE,
 		},
 		TeXTools.xelatex.value: {
@@ -248,6 +261,7 @@ class AutoLateXMaker(AbstractRunner):
 			'to_pdf': [],
 			'synctex': '-synctex=1',
 			'jobname': '-jobname',
+			'output_dir':  '-output-directory', 
 			'ewarnings': __EXTENDED_WARNING_CODE,
 		},
 		TeXTools.lualatex.value: {
@@ -258,47 +272,26 @@ class AutoLateXMaker(AbstractRunner):
 			'to_pdf': ['-output-format=pdf'],
 			'synctex': '-synctex=1',
 			'jobname': '-jobname',
+			'output_dir':  '-output-directory', 
 			'ewarnings': __EXTENDED_WARNING_CODE,
+
 		},
 		TeXTools.bibtex.value: {
 			'cmd': 'bibtex',
 			'flags': [],
-			'to_dvi': None,
-			'to_ps': None,
-			'to_pdf': None,
-			'synctex': None,
-			'jobname': None,
-			'ewarnings': None,
 		},
 		TeXTools.biber.value: {
 			'cmd': 'biber',
 			'flags': [],
-			'to_dvi': None,
-			'to_ps': None,
-			'to_pdf': None,
-			'synctex': None,
-			'jobname': None,
-			'ewarnings': None,
 		},
 		TeXTools.makeindex.value: {
 			'cmd': 'makeindex',
 			'flags': [],
-			'to_dvi': None,
-			'to_ps': None,
-			'to_pdf': None,
-			'synctex': None,
-			'jobname': None,
-			'ewarnings': None,
+			'index_style_flag': '-s',
 		},
-		TeXTools.dvi2ps.value: {
+		TeXTools.dvips.value: {
 			'cmd': 'dvips',
 			'flags': [],
-			'to_dvi': None,
-			'to_ps': None,
-			'to_pdf': None,
-			'synctex': None,
-			'jobname': None,
-			'ewarnings': None,
 		},
 	}
 
@@ -310,112 +303,112 @@ class AutoLateXMaker(AbstractRunner):
 		'''
 		self.translatorRunner = translatorRunner
 		self.configuration = translatorRunner.configuration
-		self.__files = dict()
-		self.__rootFiles = dict()
-		self.__bufferedWarnings = list()
-		self.__warnings = set()
+		# Initialize fields by resetting them
+		self.reset()
 
 		#
 		# Build the different commands according to the current configuration
 		#
-		compiler = self.configuration.latexCompiler
-		self.__compilerDefinition = __COMMAND_DEFINITIONS[TeXCompiler(compiler).value].copy()
+		compiler = self.configuration.generation.latexCompiler
+		self.__compilerDefinition = AutoLaTeXMaker.__COMMAND_DEFINITIONS[TeXCompiler[compiler].value].copy()
 		if not self.__compilerDefinition:
-			raise RuntimeError[_T("Cannot find a definition of the command line for the LaTeX compiler '%s'") % (compiler)]
+			raise Exception[_T("Cannot find a definition of the command line for the LaTeX compiler '%s'") % (compiler)]
 
 		outtype = 'pdf' if self.configuration.generation.pdfMode else 'ps'
 
 		# LaTeX
 		self.__latexCLI = list()
-		if self.configuration.latexCLI:
-			self.__latexCLI.update(self.configuration.latexCLI)
+		if self.configuration.generation.latexCLI:
+			self.__latexCLI.extend(self.configuration.generation.latexCLI)
 		else:
-			self.__latexCLI.add(self.__compilerDefinition['cmd'])
-			self.__latexCLI.update(self.__compilerDefinition['flags'])
-			if ('to_%s' % (outtype)) in self.__compilerDefinition:
-				raise RuntimeError[_T("No command definition for '%s/%s'") % (compiler, outtype)]
-
+			self.__latexCLI.append(self.__compilerDefinition['cmd'])
+			self.__latexCLI.extend(self.__compilerDefinition['flags'])
+			if ('to_%s' % (outtype)) not in self.__compilerDefinition:
+				raise Exception(_T("No command definition for '%s/%s'") % (compiler, outtype))
 			# Support of SyncTeX
-			if self.configuration.generationsynctex and self.__compilerDefinition['synctex']:
-				self.__latexCLI.add(self.__compilerDefinition['synctex'])
+			if self.configuration.generation.synctex and self.__compilerDefinition['synctex']:
+				if isinstance(self.__compilerDefinition['synctex'], list):
+					self.__latexCLI.extend(self.__compilerDefinition['synctex'])
+				else:
+					self.__latexCLI.append(self.__compilerDefinition['synctex'])
 
 			target = self.__compilerDefinition['to_%s' % (outtype)]
 			if target:
 				if isinstance(target, list):
-					self.__latexCLI.update(target)
+					self.__latexCLI.extend(target)
 				else:
 					self.__latexCLI.append(target)
 			elif outtype == 'ps':
 				if isinstance(self.__compilerDefinition['to_dvi'], list):
-					self.__latexCLI.update(self.__compilerDefinition['to_dvi'])
+					self.__latexCLI.extend(self.__compilerDefinition['to_dvi'])
 				else:
 					self.__latexCLI.append(self.__compilerDefinition['to_dvi'])
 			else:
-				raise RuntimeError[_T('Invalid maker state: cannot find the command line to compile TeX files.')]
+				raise Exception(_T('Invalid maker state: cannot find the command line to compile TeX files.'))
 
 		if self.configuration.generation.latexFlags:
-			self.__latexCLI.update(self.configuration.generation.latexFlags)
+			self.__latexCLI.extend(self.configuration.generation.latexFlags)
 
 		# BibTeX
 		self.__bibtexCLI = list()
 		if self.configuration.generation.bibtexCLI:
-			self.__bibtexCLI.update(self.configuration.bibtexCLI)
+			self.__bibtexCLI.extend(self.configuration.generation.bibtexCLI)
 		else:
-			cmd = __COMMAND_DEFINITIONS[TeXCompiler.bibtex.value]
+			cmd = AutoLaTeXMaker.__COMMAND_DEFINITIONS[BibCompiler.bibtex.value]
 			if not cmd:
-				raise RuntimeError[_T("No command definition for 'bibtex'")]
+				raise Exception(_T("No command definition for 'bibtex'"))
 			self.__bibtexCLI.append(cmd['cmd'])
-			self.__bibtexCLI.update(cmd['flags'])
+			self.__bibtexCLI.extend(cmd['flags'])
 
 		if self.configuration.generation.bibtexFlags:
-			self.__bibtexCLI.update(self.configuration.generation.bibtexFlags)
+			self.__bibtexCLI.extend(self.configuration.generation.bibtexFlags)
 
 		# Biber
 		self.__biberCLI = list()
 		if self.configuration.generation.biberCLI:
-			self.__biberCLI.update(self.configuration.biberCLI)
+			self.__biberCLI.extend(self.configuration.generation.biberCLI)
 		else:
-			cmd = __COMMAND_DEFINITIONS[TeXCompiler.biber.value]
+			cmd = AutoLaTeXMaker.__COMMAND_DEFINITIONS[BibCompiler.biber.value]
 			if not cmd:
-				raise RuntimeError[_T("No command definition for 'biber'")]
+				raise Exception(_T("No command definition for 'biber'"))
 			self.__biberCLI.append(cmd['cmd'])
-			self.__biberCLI.update(cmd['flags'])
+			self.__biberCLI.extend(cmd['flags'])
 
 		if self.configuration.generation.biberFlags:
-			self.__biberCLI.update(self.configuration.generation.biberFlags)
+			self.__biberCLI.extend(self.configuration.generation.biberFlags)
 
 		# MakeIndex
 		self.__makeindexCLI = list()
 		if self.configuration.generation.makeindexCLI:
-			self.__makeindexCLI.update(self.configuration.makeindexCLI)
+			self.__makeindexCLI.extend(self.configuration.generation.makeindexCLI)
 		else:
-			cmd = __COMMAND_DEFINITIONS[TeXCompiler.makeindex.value]
+			cmd = AutoLaTeXMaker.__COMMAND_DEFINITIONS[IndexCompiler.makeindex.value]
 			if not cmd:
-				raise RuntimeError[_T("No command definition for 'makeindex'")]
+				raise Exception(_T("No command definition for 'makeindex'"))
 			self.__makeindexCLI.append(cmd['cmd'])
-			self.__makeindexCLI.update(cmd['flags'])
+			self.__makeindexCLI.extend(cmd['flags'])
 
 		if self.configuration.generation.makeindexFlags:
-			self.__makeindexCLI.update(self.configuration.generation.makeindexFlags)
+			self.__makeindexCLI.extend(self.configuration.generation.makeindexFlags)
 
-		# dvi2ps
+		# dvips
 		self.__dvipsCLI = list()
 		if self.configuration.generation.dvipsCLI:
-			self.__dvipsCLI.update(self.configuration.dvipsCLI)
+			self.__dvipsCLI.extend(self.configuration.generation.dvipsCLI)
 		else:
-			cmd = __COMMAND_DEFINITIONS[TeXCompiler.dvips.value]
+			cmd = AutoLaTeXMaker.__COMMAND_DEFINITIONS[TeXTools.dvips.value]
 			if not cmd:
-				raise RuntimeError[_T("No command definition for 'dvi2ps'")]
+				raise Exception(_T("No command definition for 'dvips'"))
 			self.__dvipsCLI.append(cmd['cmd'])
-			self.__dvipsCLI.update(cmd['flags'])
+			self.__dvipsCLI.extend(cmd['flags'])
 
 		if self.configuration.generation.dvipsFlags:
-			self.__dvipsCLI.update(self.configuration.generation.dvipsFlags)
+			self.__dvipsCLI.extend(self.configuration.generation.dvipsFlags)
 
 		# Support of extended warnings
-		if self.configuration.generation.extendedWarnings and 'ewarning' in self.__compilerDefinition and self.__compilerDefinition['ewarning']:
-			code = self.__compilerDefinition['ewarning'].strip()
-			s = - (code.count('\n') + 1)
+		if self.configuration.generation.extendedWarnings and 'ewarnings' in self.__compilerDefinition and self.__compilerDefinition['ewarnings']:
+			code = self.__compilerDefinition['ewarnings'].strip()
+			s = str(-(code.count('\n') + 1))
 			code = code.replace('::::AUTOLATEXHEADERSIZE::::', s)
 			self.__latexWarningCode = code
 			self.__isExtendedWarningEnable = True
@@ -423,236 +416,246 @@ class AutoLateXMaker(AbstractRunner):
 			self.__latexWarningCode = ''
 			self.__isExtendedWarningEnable = False
 
-
 	def reset(self):
 		'''
 		Reset the maker.
 		'''
 		self.__files = dict()
 		self.__rootFiles = dict()
+		self.__resetWarnings()
 
-	def __parseLatexLogFile(self, logFile : str) -> tuple:
-		re_fatal_error = "==>\\s*f\\s*a\\s*t\\s*a\\s*l\\s+e\\s*r\\s*r\\s*o\\s*r"
-		logBlocks = list()
-		fatalError = ''
-		currentLogBlock = ''
-		with open(logFile, "r") as f:
-			line = f.readline().strip()
-			while line and not fatalError:
-				if not line:
-					# Empty line => break the block
-					if currentLogBlock:
-						if re.search('^.+:[0-9]+:', currentLogBlock, re.M):
-							if re.search('^\\!\\s*'+re_fatal_error, currentLogBlock, re.S | re.I):
-								fatalError = "\\![^!]"
-							else:
-								m = re.search('^(.+:[0-9]+:)\\s*'+re_fatal_error, currentLogBlock, re.S | re.I)
-								if m:
-									fatalError = re.group(1)
-								else:
-									logBlocks.append(currentLogBlock)
-						elif re.search('^\!', currentLogBlock, re.M):
-							logBlocks.append(currentLogBlock)
-					currentLogBlock = ''
-				else:
-					currentLogBlock += line
-		if currentLogBlock:
-			if re.search('^.+:[0-9]+:', currentLogBlock, re.M):
-				if re.search('^\\!\\s*'+re_fatal_error, currentLogBlock, re.S | re.I):
-					fatalError = "\\![^!]"
-				else:
-					m = re.search('^(.+:[0-9]+:)\\s*'+re_fatal_error, currentLogBlock, re.S | re.I)
-					if m:
-						fatalError = m.group(1)
-					else:
-						logBlocks.append(currentLogBlock)
-			elif currentLogBlock.startswith('!'):
-				if re.search('^\\!\\s*'+re_fatal_error, currentLogBlock, re.S | re.I):
-					fatalError = "\\![^!]"
-				else:
-					logBlocks.append(currentLogBlock)
-		return (fatalError, logBlocks)
+	def __resetWarnings(self):
+		'''
+		Reset the lists of warnings.
+		'''
+		self.__standardsWarnings = set()
+		self.__detailledWarnings = list()
 
-	def __extractErrorMessageFromLogs(self, filename : str, fatalError : str, logBlocks : list) -> str:
-		extractedMessage = ''
-		if fatalError:
-			# Parse the fatal error block to extract the filename
-			# where the error occured
-			m = re.search('^(.+?)\\:([0-9]+)\\:$', fatalError, re.S)
-			if m:
-				candidate = m.group(1)
-				post = m.group(2)
-				candidates = re.split('[\n\r]+', candidate)
-				candidate = candidates.pop(0)
-				candidate_pattern = re.escape(candidate)
-				while candidate and candidates and not os.path.isfile(candidate):
-					l = candidates.pop(0)
-					candidate_pattern = re.escape(l) + '[\n\r]+' + candidate_pattern
-					candidate = l + candidate
-				if candidate and os.path.isfile(candidate):
-					linenumber = int(post)
-					# Search the error message in the log.
-					candidate_pattern += re.escape(":"+post+":")
-					# Filtering the 'autogenerated' file
-					if self.__isExtendedWarningEnable and os.path.basename(candidate) == 'autolatex_autogenerated.tex':
-						code = self.__latexWarningCode
-						candidate = filename
-						linenumber -= (code.count('\n') + 1)
-					i = 0
-					while not extractedMessage and i < len(logBlocks):
-						block = logBlocks[i]
-						m = re.search(candidate_pattern+'(.*)$', block, re.S)
-						if m:
-							messageText = m.group(1)
-							extractedMessage = ("%s:%d:%s" % (candidate, linenumber, messageText)).strip()
-						i = i + 1
-					if extractedMessage:
-						if int(post) != linenumber:
-							extractedMessage = re.sub('^'+re.escape(l+post), l + linenumber, extractedMessage, re.G | re.M)
-						# Do not cut the words with carriage returns
-						extractedMessage = re.sub('([a-z])[\n\r\f]([a-z])', '\\1\\2', extractedMessage, re.S | re.G | re.I)
-						extractedMessage = re.sub('([a-z]) [\n\r\f]([a-z])', '\\1 \\2', extractedMessage, re.S | re.G | re.I)
-						extractedMessage = re.sub('([a-z])[\n\r\f] ([a-z])', '\\1 \\2', extractedMessage, re.S | re.G | re.I)
-			else:
-				# Search the error message in the log.
-				candidate_pattern += re.escape(fatalError)
-				i = 0
-				while not extractedMessage and i < len(logBlocks):
-					block = logBlocks[i]
-					m = re.search('(?:^|\n|\r)'+candidate_pattern+'\\s*(.*)$', block, re.S)
-					if m:
-						message = m.group(1)
-						linenumber = 0
-						m = re.search('line\\s+([0-9]+)', message, re.I)
-						if m:
-							linenumber = int(m.group(1))
-						extractedMessage = "%s:%d: %s" % (filename, linenumber, message)
-					i = i + 1
-		return extractedMessage
+	@property
+	def compilerDefinition(self) -> dict:
+		'''
+		The definition of the LaTeX compiler that must be used by this maker.
+		:rtype: dict
+		'''
+		return self.__compilerDefinition
 
+	@property
+	def extendedWarningsEnabled(self) -> bool:
+		'''
+		Replies if the extended warnings are supported by the TeX compiler.
+		:rtype: bool
+		'''
+		return self.__isExtendedWarningEnable
 
-	def __testLaTeXWarningInFile(self, logFile : str, continueToCompile : bool, loop : bool) -> tuple:
+	@property
+	def extendedWarningsCode(self) -> str:
+		'''
+		Replies the TeX code that permits to output the extended warnings.
+		:rtype: str
+		'''
+		return self.__latexWarningCode
+
+	@property
+	def latexCLI(self) -> list:
+		'''
+		The command-line that is used for running the LaTeX tool.
+		:rtype: list
+		'''
+		return self.__latexCLI
+
+	@property
+	def bibtexCLI(self) -> list:
+		'''
+		The command-line that is used for running the BibTeX tool.
+		:rtype: list
+		'''
+		return self.__bibtexCLI
+
+	@property
+	def biberCLI(self) -> list:
+		'''
+		The command-line that is used for running the Biber tool.
+		:rtype: list
+		'''
+		return self.__biberCLI
+
+	@property
+	def makeindexCLI(self) -> list:
+		'''
+		The command-line that is used for running the makeindex tool.
+		:rtype: list
+		'''
+		return self.__makeindexCLI
+
+	@property
+	def dvipsCLI(self) -> list:
+		'''
+		The command-line that is used for running the dvips tool.
+		:rtype: list
+		'''
+		return self.__dvipsCLI
+
+	@property
+	def rootFiles(self) -> dict:
+		'''
+		The root files that are involved within the lastest compilation process.
+		:rtype: dict
+		'''
+		return self.__rootFiles
+
+	@property
+	def files(self) -> dict:
+		'''
+		The files that are involved within the lastest compilation process.
+		:rtype: dict
+		'''
+		return self.__files
+
+	@property
+	def standardWarnings(self) -> set:
+		'''
+		The standard LaTeX warnings that are discovered during the lastest compilation process.
+		:rtype: set
+		'''
+		return self.__standardsWarnings
+
+	@property
+	def extendedWarnings(self) -> list:
+		'''
+		The extended warnings that are discovered during the lastest compilation process.
+		:rtype: set
+		'''
+		return self.__detailledWarnings
+
+	def __extractInfoFromTeXLogFile(self, logFile : str, loop : bool) -> bool:
+		'''
+		Parse the TeX log in order to extract warnings and replies if another TeX compilation is needed.
+		:param logFile: The filename of the log file that is used for detecting the compilation loop.
+		:type logFile: str
+		:param loop: Indicate if the compilation loop is enable.
+		:type loop: bool
+		:rtype: bool
+		'''
 		warning = False
-		with open(logFile, 'r') as f:
-			lastline = ''
-			currentLogBlock = ''
-			line = f.readline() if continueToCompile else None
-			while not continueToCompile and line:
-				lastline += line
-				if re.search('\\.\\s*$', lastline):
-					if self.__testLaTeXWarningOn(lastline):
-						continueToCompile = loop
-					lastline = ''
-				# Parse and output the detailled warning messages
-				if self.__isExtendedWarningEnable:
-					if warning:
-						if line.startswith('!!!![EndWarning]'):
-							m = re.search('^(.*?):([^:]*):([0-9]+):\\s*(.*?)\\s*$', currentLogBlock)
-							if m:
-								filename = m.group(1)
-								extension = m.group(2)
-								line = int(m.group(3))
-								message = m.group(4)
-								logging.warning(_T("%s%s:%d: %s") % (filename, extension, line, message))
-							warning = False
-							currentLogBlock = ''
+		currentLogBlock = ''
+		if os.path.exists(logFile):
+			with open(logFile, 'r') as f:
+				lastline = ''
+				line = f.readline()
+				while line:
+					lastline += line
+					# Detect standatd TeX warnings
+					if re.search('\\.\\s*$', lastline):
+						if texutils.extractTeXWarningFromLine(lastline, self.__standardsWarnings):
+							if loop:
+								return True
+					# Parse and output the detailled warning messages
+					if self.__isExtendedWarningEnable:
+						if warning:
+							if line.startswith('!!!![EndWarning]'):
+								m = re.search('^(.*?):([^:]*):([0-9]+):\\s*(.*?)\\s*$', currentLogBlock)
+								if m:
+									wdetails = dict()
+									wdetails['filename'] = m.group(1)
+									wdetails['extension'] = m.group(2)
+									wdetails['lineno'] = int(m.group(3))
+									wdetails['message'] = m.group(4)
+									self.__detailledWarnings.append(wdetails)
+								warning = False
+								currentLogBlock = ''
+							else:
+								l = line
+								if not re.search('\.\n+$', l):
+									l = re.sub('\s+$', '',  l)
+								currentLogBlock += l
 						else:
-							l = line
-							if not re.search('\.\n+$', l):
-								l = re.sub('\s+', '')
-							currentLogBlock += l
-					else:
-						m = re.search('^'+re.escape('!!!![BeginWarning]')+'(.*)$', line)
-						if m:
-							if not re.search('\.\n+$', l):
-								l = re.sub('\s+', '')
-							currentLogBlock += l
-							warning = True
-				line = f.readline() if continueToCompile else None
-			if re.search('\\.\\s*$', lastline) and self.__testLaTeXWarningOn(lastline):
-				continueToCompile = enableLoop
+							m = re.search('^'+re.escape('!!!![BeginWarning]')+'(.*)$', line)
+							if m:
+								l = m.group(1)
+								if not re.search('\.\n+$', l):
+									l = re.sub('\s+$', '',  l)
+								currentLogBlock += l
+								warning = True
+					line = f.readline()
+				if re.search('\\.\\s*$', lastline) and texutils.extractTeXWarningFromLine(lastline, self.__standardsWarnings):
+					if loop:
+						return True
 		# Output the detailled wanring message that was not already output
 		if warning and currentLogBlock:
 			m = re.search('^(.*?):([^:]*):([0-9]+):\\s*(.*?)\\s*$', currentLogBlock)
 			if m:
-				filename = m.group(1)
-				extension = m.group(2)
-				line = int(m.group(3))
-				message = m.group(4)
-				logging.warning(_T("%s%s:%d: %s") % (filename, extension, line, message))
-		self.__warnings.add(TeXWarnings.done)
-		return (continueToCompile, loop)
-
-
-	def __testLaTeXWarningOn(self, line : int) -> bool:
-		oline = "%s" % (line)
-		line = re.sub('[\n\r\t \f]+', '', line)
-		if re.search('Warning.*re\\-?run\\s', line, re.I):
-			return True
-		elif re.search('Warning:Therewereundefinedreferences', line, re.I):
-			self.__warnings.add(TeXWarnings.undefined_reference)
-		elif re.search('Warning:Citation.+undefined', line, re.I):
-			self.__warnings.add(TeXWarnings.undefined_citation)
-		elif re.search('Warning:Thereweremultiply\\-definedlabels', line, re.I):
-			self.__warnings.add(TeXWarnings.multiple_definition)
-		elif re.search('(?:\\s|^)Warning', line, re.I | re.M):
-			self.__warnings.add(TeXWarnings.other_warning)
+				wdetails = dict()
+				wdetails['filename'] = m.group(1)
+				wdetails['extension'] = m.group(2)
+				wdetails['lineno'] = int(m.group(3))
+				wdetails['message'] = m.group(4)
+				self.__detailledWarnings.append(wdetails)
 		return False
 
-
-	def runLaTeX(self, *, pdffile : str, loop : bool = False, bufferingWarnings : bool = False):
+	def runLatex(self, filename : str, loop : bool = False):
 		'''
-		Launch pdfLaTeX once time.
-		:param pdffile: The name of the PDF or the TeX file to compile.
-		:type pdffile: str
+		Launch the LaTeX tool and return the number of times the
+		tool was launched.
+		:param filename: The name TeX file to compile.
+		:type filename: str
 		:param loop: Indicates if this function may loop on the LaTeX compilation when it is requested by the LaTeX tool. Default value: False.
 		:type loop: bool
-		:param bufferingWarnings: Indicates if the warnings are buffered or not into the property. If warnings are not buffered, they are output on the logger. Default value: False.
-		:type bufferingWarnings: bool
+		:rtype: int
 		'''
-		linenumber = 0
-		if self.__files[filename].mainfilename:
-			filename = self.__files[filename].mainfilename
-		logFile = os.path.join(os.path.join.dirname(filename), utils.basename(filename, '.tex') + '.log')
+		if filename in self.__files:
+			mfn = self.__files[filename].mainfilename
+			if mfn is not None and mfn != '':
+				filename = mfn
+		logFile = genutils.basename2(filename, texutils.getTeXFileExtensions()) + '.log'
 		continueToCompile = True
+		nbRuns = 0
 		while continueToCompile:
-			logging.debug(_T('LATEX: %s'), os.join.basename(filename))
-			continueToCompile = False
-			self.__bufferedWarnings = list()
-			self.__warnings = list()
+			logging.debug(_T('LATEX: %s'), os.path.basename(filename))
+			self.__resetWarnings()
 			if os.path.isfile(logFile):
 				os.remove(logFile)
 			exitcode = 0
 			if self.__isExtendedWarningEnable:
 				with open(filename, "r") as f:
 					content = f.readlines()
-				with open("autolatex_autogenerated.tex") as f:
+				autofile = genutils.basename2(filename, texutils.getTeXFileExtensions()) + "_autolatex_autogenerated.tex"
+				with open(autofile, "w") as f:
 					code = self.__latexWarningCode.replace('::::REALFILENAME::::', filename)
 					f.write(code)
 					f.write("\n")
-					f.write(content)
+					f.write(''.join(content))
 					f.write("\n")
-				cmd = self.__latexCLI.copy()
-				if self.__compilerDefinition['jobname']:
-					cmd.append(self.__compilerDefinition['jobname'])
-					cmd.append(utils.basename(filename, texutils.getTeXFileExtensions()))
-				cmd.append('autolatex_autogenerated.tex')
-				(sout, serr, sex, exitcode) = runCommand(*cmd)
-				if existcode == 0:
-					os.remove('autolatex_autogenerated.tex')
+				try:
+					cmd = self.__latexCLI.copy()
+					if 'jobname' in self.__compilerDefinition and self.__compilerDefinition['jobname'] != '':
+						cmd.append(self.__compilerDefinition['jobname'])
+						cmd.append(genutils.basename(filename, texutils.getTeXFileExtensions()))
+					if 'output_dir' in self.__compilerDefinition and self.__compilerDefinition['output_dir'] is not None and self.__compilerDefinition['output_dir'] != '':
+						cmd.append(self.__compilerDefinition['output_dir'])
+						cmd.append(os.path.dirname(filename))
+					else:
+						logging.warning(_T('LATEX: no command-line option provided for changing the output directory'), os.path.basename(filename))
+					cmd.append(autofile)
+					cmd = AbstractRunner.normalizeCommand(cmd)
+					nbRuns += 1
+					(sout, serr, sex, exitcode) = AbstractRunner.runCommand(*cmd)
+				finally:
+					genutils.unlink(autofile)
 			else:
 				cmd = self.__latexCLI.copy()
 				cmd.append(os.path.relpath(filename))
-				(sout, serr, sex, exitcode) = runCommand(*cmd)
-		
+				cmd = AbstractRunner.normalizeCommand(cmd)
+				nbRuns += 1
+				(sout, serr, sex, exitcode) = AbstractRunner.runCommand(*cmd)
+
 			if exitcode != 0:
 				logging.debug(_T("LATEX: Error when processing %s") % (os.path.basename(filename)))
 
 				# Parse the log to extract the blocks of messages
-				(fatalError, logBlocks) = self.__parseLatexLogFile(logFile)
+				(fatalError, logBlocks) = texutils.parseTeXLogFile(logFile)
 
 				# Search the fatal error inside the blocks
-				extractedMessage = self.__extractErrorMessageFromLogs(filename, fatalError, logBlocks)
+				extractedMessage = texutils.extractErrorMessageFromTeXLogs(filename, fatalError, logBlocks, self.__isExtendedWarningEnable, self.__latexWarningCode)
 
 				# Display the message
 				if extractedMessage:
@@ -672,15 +675,242 @@ class AutoLateXMaker(AbstractRunner):
 
 				sys.exit(255)
 
-			elif loop:
-				(continueToCompile, loop) = self.__testLaTeXWarningInFile(logFile, continueToCompile, loop)
+			else:
+				continueToCompile = self.__extractInfoFromTeXLogFile(logFile, loop)
 
+		return nbRuns
 
-		if not bufferingWarnings and self.__bufferedWarnings:
-			for w in self.__bufferedWarnings:
-				logging.error(w)
-			self.__buffered_warnings = list()
+	def runBibtex(self, filename : str) -> dict:
+		'''
+		Launch the BibTeX tool (bibtex, biber, etc) once time and replies a dictionary that describes any error.
+		The returned dictionnary has the keys: filename, lineno and message.
+		:param filename: The name TeX file to compile.
+		:type filename: str
+		:rtype: dict
+		'''
+		if filename in self.__files:
+			mfn = self.__files[filename].mainfilename
+			if mfn is not None and mfn != '':
+				filename = mfn
+		self.__resetWarnings()
+		auxFile = genutils.basename2(filename,  texutils.getTeXFileExtensions()) 
+		if self.configuration.generation.is_biber:
+			logging.debug(_T('BIBER: %s'), os.path.basename(auxFile))
+			cmd = self.__biberCLI.copy()
+		else:
+			auxFile += '.aux'
+			logging.debug(_T('BIBTEX: %s'), os.path.basename(auxFile))
+			cmd = self.__bibtexCLI.copy()
+		cmd.append(os.path.relpath(auxFile))
+		cmd = AbstractRunner.normalizeCommand(cmd)
+		(sout, serr, sex, exitcode) = AbstractRunner.runCommand(*cmd)
+		if exitcode != 0:
+			if self.configuration.generation.is_biber:
+				logging.debug(_T('BIBER: error when processing %s'), os.path.basename(auxFile))
+			else:
+				logging.debug(_T('BIBTEX: error when processing %s'), os.path.basename(auxFile))
+			log = sout
+			if not log:
+				log = serr
+			if log:
+				if self.configuration.generation.is_biber:
+					logging.debug(_T('BIBTEX: Use biber tool'))
+					logParser = BiberErrorParser()
+				else:
+					logging.debug(_T('BIBTEX: Use bibtex tool'))
+					logParser = BibTeXErrorParser()
+				currentError = logParser.parseLog(auxFile,  log)
+				if currentError:
+					return currentError
+			currentError = {'filename': auxFile,  'lineno': 0,  'message': sout + "\n" + serr}
+			return currentError
+		return None
 
+	def runMakeindex(self, filename : str) -> dict:
+		'''
+		Launch the MakeIndex tool once time and replies a dictionary that describes any error.
+		The success status if the run of MakeIndex is replied.
+		:param filename: The filename of the index file to compile.
+		:type filename: str
+		:rtype: bool
+		'''
+		if filename in self.__files:
+			mfn = self.__files[filename].mainfilename
+			if mfn is not None and mfn != '':
+				filename = mfn
+		idxExt = texutils.getIndexFileExtensions()[0]
+		idxFile = genutils.basename2(filename,  texutils.getIndexFileExtensions()) + idxExt
+		logging.debug(_T('MAKEINDEX: %s'), os.path.basename(idxFile))
+		self.__resetWarnings()
+		cmd = self.__makeindexCLI.copy()
+		istFile = self.configuration.generation.makeindexStyleFilename
+		if istFile:
+			cmd_def = AutoLaTeXMaker.__COMMAND_DEFINITIONS[IndexCompiler.makeindex.value]
+			if not cmd_def:
+				raise Exception(_T("No command definition for 'makeindex'"))
+			cmd.append(cmd_def['index_style_flag'])
+			cmd.append(os.path.relpath(istFile))
+		cmd.append(os.path.relpath(idxFile))
+		cmd = AbstractRunner.normalizeCommand(cmd)
+		(sout, serr, sex, exitcode) = AbstractRunner.runCommand(*cmd)
+		if exitcode:
+			return False
+		return True
+
+	def __createDependency(self,  dependencies : dict,  filename : str,  type : str) -> bool:
+		'''
+		Create an entry into the dependency tree.
+		:param dependencies: The list of dependencies to fill up.
+		:type dependencies: dict
+		:rtype: bool
+		'''
+		if filename not in dependencies:
+			dependencies[filename] = {
+				'type': type, 
+				'dependencies': set(), 
+				'change': genutils.getFileLastChange(filename)
+			}
+			return True
+		return False
+
+	def __computeTeXDependencies(self,  filename : str,  root_dir : str, dependencies : dict) -> bool:
+		'''
+		Build the dependency tree for the given TeX file. Replies if the dependencies have been changed.
+		:param filename: The TeX filename.
+		:type filename: str
+		:param root_dir: The name of the root directory.
+		:type root_dir: str
+		:param dependencies: The list of dependencies to fill up.
+		:type dependencies: dict
+		:rtype: bool
+		'''
+		files = [filename]
+		changed = False
+		while files:
+			file = files[0]
+			files = files[1:]
+			if os.path.isfile(file):
+				chg = self.__createDependency(dependencies,  file,  'tex')
+				changed = changed or chg
+				file_description = dependencies[file]
+				analyzer = DependencyAnalyzer(file,  root_dir)
+				analyzer.run()
+				# Treat the pure TeX files
+				for type in analyzer.getDependencyTypes():
+					deps = analyzer.getDependencies(type)
+					for dep in deps:
+						chg = self.__createDependency(dependencies,  dep,  type)
+						changed = changed or chg
+						file_description['dependencies'].add(dep)
+						changed = True
+						if type == 'tex':
+							files.append(dep)
+				# Treat the bibliography files that  are referred from the TeX code
+				biblio_deps = analyzer.getDependencies('biblio')
+				if biblio_deps:
+					for bibdb,  bibdt in biblio_deps.items():
+						bblfiles = []
+						if 'bib' in bibdt and bibdt['bib']:
+							for bibfile in bibdt['bib']:
+								bblfile = genutils.basename2(bibfile,  ['.bib']) + '.bbl'
+								self.__createDependency(dependencies,  bblfile,  'bbl')
+								file_description['dependencies'].add(bblfile)
+								dependencies[bblfile]['dependencies'].add(bibfile)
+								dependencies[bblfile]['use_biber'] = analyzer.is_biber
+								bblfiles.append(bblfile)
+						for bibext in [ 'bib',  'bst', 'bbc',  'cbx']:
+							if bibext in bibdt and bibdt[bibext]:
+								for bibdepfile in bibdt[bibext]:
+									self.__createDependency(dependencies,  bibdepfile,  bibext)
+									for bblfile in bblfiles:
+										dependencies[bblfile]['dependencies'].add(bibdepfile)
+				# Treat the index files that  are referred from the TeX code
+				if analyzer.is_makeindex:
+					idxfile = genutils.basename2(filename,  texutils.getTeXFileExtensions()) + '.idx'
+					self.__createDependency(dependencies,  idxfile,  'idx')
+					indfile = genutils.basename2(idxfile,  ['.idx']) + '.ind'
+					self.__createDependency(dependencies,  indfile,  'ind')
+					dependencies[indfile]['dependencies'].add(idxfile)
+					dependencies[filename]['dependencies'].add(indfile)
+				# Treat the glossaries files that  are referred from the TeX code
+				if analyzer.is_glossary:
+					glofile = genutils.basename2(filename,  texutils.getTeXFileExtensions()) + '.glo'
+					self.__createDependency(dependencies,  glofile,  'glo')
+					glsfile = genutils.basename2(glofile,  ['.glo']) + '.gls'
+					self.__createDependency(dependencies,  glsfile,  'gls')
+					dependencies[glsfile]['dependencies'].add(glofile)
+					dependencies[filename]['dependencies'].add(glsfile)
+		return changed
+
+	def __computeAuxDependencies(self,  filename : str,  root_dir : str, dependencies : dict) -> bool:
+		'''
+		Build the dependency tree for the given Aux file. Replies if the dependencies have been changed.
+		The references in the auxiliary file is related to specific bibliography systems, e.g., multibib.
+		:param filename: The Aux filename.
+		:type filename: str
+		:param root_dir: The name of the root directory.
+		:type root_dir: str
+		:param dependencies: The list of dependencies to fill up.
+		:type dependencies: dict
+		:rtype: bool
+		'''
+		onlyfiles = [os.path.join(root_dir,  f) for f in os.listdir(root_dir) if f.lower().endswith('.aux') and os.path.isfile(os.path.join(root_dir, f))]
+		changed = False
+		for file in onlyfiles:
+			analyzer = AuxiliaryCitationAnalyzer(file)
+			analyzer.run()
+			styles = analyzer.styles
+			databases = analyzer.databases
+			if styles:
+				for style in styles:
+					bstfile = os.path.abspath(style + '.bst')
+					if os.path.isfile(bstfile):
+						chg = self.__createDependency(dependencies,  bstfile,  'bst')
+						changed = changed or chg
+						for db in databases:
+							bblfile = os.path.abspath(genutils.basename2(db,  '.bib') + '.bbl')
+							self.__createDependency(dependencies,  bblfile,  'bbl')
+							dependencies[bblfile]['dependencies'].add(bstfile)
+							dependencies[filename]['dependencies'].add(bblfile)
+							changed = True
+			if databases:
+				for db in databases:
+					bibfile = os.path.abspath(db)
+					if os.path.isfile(bibfile):
+						self.__createDependency(dependencies,  bibfile,  'bib')
+						bblfile = genutils.basename2(bibfile,  '.bib') + '.bbl'
+						self.__createDependency(dependencies,  bblfile,  'bbl')
+						dependencies[bblfile]['dependencies'].add(bibfile)
+						dependencies[filename]['dependencies'].add(bblfile)
+						changed = True
+		return changed
+
+	def computeDependencies(self,  filename : str,  readAuxFile : bool = True) -> dict:
+		'''
+		Build the dependency tree for the given TeX file.
+		:param filename: The TeX filename.
+		:type filename: str
+		:param readAuxFile: Indicates if the auxilliary files must be read too. Default is True.
+		:type readAuxFile: bool
+		:rtype: dict
+		'''
+		dependencies = dict()
+		root_dir = os.path.dirname(filename)
+		# Add dependency for the final PDF file
+		pdfFile = genutils.basename2(filename,  texutils.getTeXFileExtensions()) + '.pdf'
+		self.__createDependency(dependencies,  pdfFile,  'pdf')
+		dependencies[pdfFile]['dependencies'].add(filename)
+		# TeX files
+		self.__computeTeXDependencies(filename,  root_dir,  dependencies)
+		# Aux files
+		if readAuxFile:
+			self.__computeAuxDependencies(filename,  root_dir,  dependencies)
+		return dependencies
+
+	def runTranslators(self):
+		self.translatorRunner.sync()
+		images = self.translatorRunner.getSourceImages()
+		debug.dbg(images)
 
 #	def build(self):
 #		'''
@@ -729,8 +959,8 @@ class AutoLateXMaker(AbstractRunner):
 #					my $psFile = File::Spec->catfile($dirname, $basename.'.ps');
 #					my $psDate = lastFileChange("$psFile");
 #					if (!$psDate || ($dviDate>=$psDate)) {
-#						printDbg(formatText(_T('{}: {}'), 'DVI2PS', basename($dviFile))); 
-#						runCommandOrFail(@{$self->{'dvi2ps_cmd'}}, 
+#						printDbg(formatText(_T('{}: {}'), 'DVIPS', basename($dviFile))); 
+#						runCommandOrFail(@{$self->{'dvips_cmd'}}, 
 #							$self->makeRelativePath($dviFile));
 #					}
 #				}
@@ -812,25 +1042,6 @@ class AutoLateXMaker(AbstractRunner):
 #					@{$self->{'biber_cmd'}}, "$basename");
 #			# Output the log from the bibliography tool
 #			if ($retcode!=0) {
-#				printDbg(formatText(_T("{}: Error when processing {}"), 'BIBER', $basename));
-#				local *INFILE;
-#				open(*INFILE, "<autolatex_exec_stdout.log") or printErr("autolatex_exec_stdout.log: $!");
-#				while (my $line = <INFILE>) {
-#					if ($line =~ /^\s*ERROR\s*\-\s*.*subsystem:\s*(.+?),\s*line\s+([0-9]+),\s*(.*?)\s*$/i) {
-#						my ($filename, $linenumber, $message) = ($1, $2, $3);
-#						if ($filename =~ /^(.+)_[0-9]+\.[a-zA-Z0-9_-]+$/) {
-#							$filename = $1;
-#						}
-#						$filename = $self->__find_file_with_basename(basename($filename));
-#						print STDERR "$filename:$linenumber: $message\n";
-#					}
-#					elsif ($line =~ /^\s*ERROR\s*\-\s*(.+?)\s*$/i) {
-#						my $message = $1;
-#						print STDERR "$message\n";
-#					}
-#				}
-#				close(*INFILE);
-#				exit(255);
 #			}
 #			else {
 #				unlink("autolatex_exec_stdout.log");
@@ -959,187 +1170,6 @@ class AutoLateXMaker(AbstractRunner):
 #	my $e = Entry->new;
 #	@$e = ($_[0],0,0,$_[1]);
 #	return $e;
-#}
-
-#sub _computeDependenciesForRootFile($) : method {
-#	my $self = shift;
-#	my $pdfFile = shift;
-#	my $rootfile = $self->{'files'}{$pdfFile}{'mainFile'};
-#	my $rootdir = dirname($rootfile);
-#	my $rootbasename = basename($rootfile, '.tex');
-#	my $roottemplate = File::Spec->catfile(dirname($rootfile), "$rootbasename");
-
-#	my @files = ( $rootfile );
-#	while (@files) {
-#		my $file = shift @files;
-#		printDbgFor(2, formatText(_T("Parsing '{}'"), $file));
-#		if (-f "$file" ) {
-#			printDbgIndent();
-#			printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$file)));
-#			$self->{'files'}{$file} = {
-#				'type' => 'tex',
-#				'dependencies' => {},
-#				'change' => lastFileChange($file),
-#			};
-#			my %deps = getDependenciesOfTeX($file,$rootdir);
-#			if (%deps) {
-#				my $dir = dirname($file);
-
-#				#
-#				# INCLUDED FILES
-#				#
-#				foreach my $cat ('tex', 'sty', 'cls') {
-#					if ($deps{$cat}) {
-#						foreach my $dpath (@{$deps{$cat}}) {
-#							if (!File::Spec->file_name_is_absolute($dpath)) {
-#								$dpath = File::Spec->catfile($dir, $dpath);
-#							}
-#							if ($dpath !~ /\.$cat/) {
-#								$dpath .= ".$cat";
-#							}
-#							printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
-#							$self->{'files'}{$dpath} = {
-#								'type' => $cat,
-#								'dependencies' => {},
-#								'change' => lastFileChange($dpath),
-#							};
-#							$self->{'files'}{$pdfFile}{'dependencies'}{$dpath} = undef;
-#							if ($cat eq 'tex') {
-#								push @files, $dpath;
-#							}
-#						}
-#					}
-#				}
-
-#				#
-#				# BIBLIOGRAPHY CALLED FROM THE TEX
-#				#
-#				if ($deps{'biblio'}) {
-#					while (my ($bibdb,$bibdt) = each(%{$deps{'biblio'}})) {
-#						my $dir = dirname($file);
-#						if ($rootdir eq $dir) {
-#							my $bblfile = File::Spec->catfile("$rootdir", "$bibdb.bbl");
-#							printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
-#							$self->{'files'}{"$bblfile"} = {
-#								'type' => 'bbl',
-#								'dependencies' => {},
-#								'change' => lastFileChange("$bblfile"),
-#								'use_biber' => $deps{'biber'},
-#							};
-#							$self->{'files'}{$pdfFile}{'dependencies'}{$bblfile} = undef;
-#						
-#if ($file =~ /appendixA/) {
-#use Data::Dumper;
-#die(Dumper(\%deps));
-#}
-#							foreach my $cat ('bib', 'bst', 'bbc', 'cbx') {
-#								if ($bibdt->{$cat}) {
-#									foreach my $dpath (@{$bibdt->{$cat}}) {
-#										if (!File::Spec->file_name_is_absolute($dpath)) {
-#											$dpath = File::Spec->catfile("$rootdir", $dpath);
-#										}
-#										if ($dpath !~ /\.$cat/) {
-#											$dpath .= ".$cat";
-#										}
-#										printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$dpath)));
-#										$self->{'files'}{$dpath} = {
-#											'type' => $cat,
-#											'dependencies' => {},
-#											'change' => lastFileChange($dpath),
-#										};
-#										$self->{'files'}{"$bblfile"}{'dependencies'}{$dpath} = undef;
-#									}
-#								}
-#							}
-#						}
-#					}					
-#				}
-
-#				#
-#				# INDEX
-#				#
-#				if ($deps{'idx'}) {
-#					my $idxfile = "$roottemplate.idx";
-#					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$idxfile)));
-#					$self->{'files'}{"$idxfile"} = {
-#						'type' => 'idx',
-#						'dependencies' => {},
-#						'change' => lastFileChange("$idxfile"),
-#					};
-#					my $indfile = "$roottemplate.ind";
-#					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$indfile)));
-#					$self->{'files'}{"$indfile"} = {
-#						'type' => 'ind',
-#						'dependencies' => { $idxfile => undef },
-#						'change' => lastFileChange("$indfile"),
-#					};
-#					$self->{'files'}{$pdfFile}{'dependencies'}{$indfile} = undef;
-#				}
-#			}
-#			printDbgUnindent();
-#		}
-#	}
-
-#	printDbgFor(2, formatText(_T("Parsing auxiliary files")));
-#	printDbgIndent();
-
-#	#
-#	# BIBLIOGRAPHY FROM INSIDE AUXILIARY FILES (MULTIBIB...)
-#	#
-#	local *DIR;
-#	opendir(*DIR, "$rootdir") or printErr("$rootdir: $!");
-#	while (my $dir = readdir(*DIR)) {
-#		if ($dir ne File::Spec->curdir() && $dir ne File::Spec->updir() && $dir =~ /^(.+?)\.aux$/) {
-#			my $bibdb = "$1";
-#			if ($bibdb ne "$rootbasename") {
-#				my $auxfile = File::Spec->catfile("$rootdir", "$dir");
-#				my %data = getAuxBibliographyData("$auxfile");
-#				if ($data{'databases'} || $data{'styles'}) {
-#					my $bblfile = File::Spec->catfile("$rootdir", "$bibdb.bbl");
-#					printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bblfile)));
-#					$self->{'files'}{"$bblfile"} = {
-#						'type' => 'bbl',
-#						'dependencies' => {},
-#						'change' => lastFileChange("$bblfile"),
-#					};
-#					$self->{'files'}{$pdfFile}{'dependencies'}{$bblfile} = undef;
-#					if ($data{'styles'}) {
-#						foreach my $style (@{$data{'styles'}}) {
-#							my $bstfile = File::Spec->catfile("$rootdir", "$style.bst");
-#							if (-r "$bstfile") {
-#								printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bstfile)));
-#								$self->{'files'}{"$bstfile"} = {
-#									'type' => 'bst',
-#									'dependencies' => {},
-#									'change' => lastFileChange("$bstfile"),
-#								};
-#								$self->{'files'}{$bblfile}{'dependencies'}{$bstfile} = undef;
-#							}
-#						}
-#					}
-#					if ($data{'databases'}) {
-#						foreach my $db (@{$data{'databases'}}) {
-#							my $bibfile = File::Spec->catfile("$rootdir", "$db.bib");
-#							if (-r "$bibfile") {
-#								printDbgFor(3, formatText(_T("Adding file '{}'"), removePathPrefix($rootdir,$bibfile)));
-#								$self->{'files'}{"$bibfile"} = {
-#									'type' => 'bib',
-#									'dependencies' => {},
-#									'change' => lastFileChange("$bibfile"),
-#								};
-#								$self->{'files'}{$bblfile}{'dependencies'}{$bibfile} = undef;
-#							}
-#						}
-#					}
-#				}
-#			}
-#		}
-#	}
-#	closedir(*DIR);
-
-#	printDbgUnindent();
-
-#	return undef;
 #}
 
 #=pod

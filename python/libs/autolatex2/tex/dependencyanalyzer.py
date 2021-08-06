@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ Tools that is extracting the dependencies of the TeX file.
 import os
 import re
 
-import texparser
+from autolatex2.tex import texparser
 from autolatex2.tex import utils
 
 class DependencyAnalyzer(texparser.Observer):
@@ -34,14 +34,17 @@ class DependencyAnalyzer(texparser.Observer):
 	'''
 
 	__MACROS = {
-		'input'				: '!{}',
-		'include'			: '!{}',
-		'makeindex'			: '',
-		'printindex'		: '',
-		'usepackage'		: '![]!{}',
-		'RequirePackage'	: '![]!{}',
-		'documentclass'		: '![]!{}',
-		'addbibresource'	: '![]!{}',
+		'input'							: '!{}',
+		'include'						: '!{}',
+		'makeindex'					: '',
+		'printindex'					: '',
+		'usepackage'					: '![]!{}',
+		'RequirePackage'			: '![]!{}',
+		'documentclass'			: '![]!{}',
+		'addbibresource'			: '![]!{}',
+		'makeglossaries'			: '',
+		'printglossaries'		:'',
+		'newglossaryentry'		:'![]!{}', 
 	}
 
 	def __init__(self, filename : str, rootDirectory : str):
@@ -56,6 +59,7 @@ class DependencyAnalyzer(texparser.Observer):
 		self.__isBibLaTeX = False
 		self.__isBiber = False
 		self.__isIndex = False
+		self.__isGlossary = False
 		self.__dependencies = {}
 		self.__filename = filename
 		self.__basename = os.path.basename(os.path.splitext(filename)[0])
@@ -186,6 +190,24 @@ class DependencyAnalyzer(texparser.Observer):
 		:type enable: bool
 		'''
 		self.__isIndex = enable
+
+	@property
+	def is_glossary(self) -> bool:
+		'''
+		Replies the glossary support is enable
+		:return: True if the glossary support is enabled.
+		:rtype: bool
+		'''
+		return self.__isGlossary
+
+	@is_glossary.setter
+	def is_glossary(self, enable : bool) -> bool:
+		'''
+		Set if the glossary support is enable
+		:param enable: True if the glossary support is enabled.
+		:type enable: bool
+		'''
+		self.__isGlossary = enable
 
 	def __addDependency(self, dependencyType : str, dependencyFile : str):
 		'''
@@ -321,7 +343,7 @@ class DependencyAnalyzer(texparser.Observer):
 			for param in parameter:
 				value = param['text']
 				if value:
-					if utils.isTeXFileExtension(value):
+					if utils.isTeXDocument(value):
 						texFile = value
 					else:
 						texFile = value + utils.getTeXFileExtensions()[0]
@@ -331,6 +353,8 @@ class DependencyAnalyzer(texparser.Observer):
 						self.__addDependency('tex', texFile)
 		elif name == '\\makeindex' or name == '\\printindex':
 			self.is_makeindex = True
+		elif name == '\\makeglossaries' or name == '\\printglossaries' or name == '\\newglossaryentry':
+			self.is_glossary = True
 		elif name == '\\usepackage' or name == '\\RequirePackage':
 			sty = parameter[1]['text']
 			if sty.endswith('.sty'):
@@ -391,6 +415,8 @@ class DependencyAnalyzer(texparser.Observer):
 								cbxFile = os.path.join(self.root_directory, cbxFile)
 							if os.path.isfile(cbxFile):
 								self.__addBibDependency('cbx', cbxFile)
+			elif styFile == 'glossaries.sty':
+				self.is_glossary = True
 			else:
 				if not os.path.isabs(styFile):
 					styFile = os.path.join(self.root_directory, styFile)

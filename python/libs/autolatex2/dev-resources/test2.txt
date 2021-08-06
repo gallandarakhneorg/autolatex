@@ -1,0 +1,168 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.12)  16 JAN 2019 20:28
+LaTeX Info: Redefining \includegraphics on input line 53.
+################ FRAME 1
+LaTeX Font Info:    Try loading font information for U+msa on input line 53.
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 53.
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Try loading font information for OT1+mathkerncmss on input 
+line 53.
+(/usr/share/texlive/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
+File: ot1mathkerncmss.fd 2013/03/27 Fontinst v1.933 font definitions for OT1/ma
+thkerncmss.
+)
+
+LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <4> not available
+(Font)              size <5> substituted on input line 53.
+
+
+Overfull \vbox (9.0pt too high) has occurred while \output is active []
+
+[1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./ciadlogoinv.pdf> <./ciad
+logo.pdf
+
+pdfTeX warning: pdflatex (file ./ciadlogo.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <./ubfclogo.pdf
+
+pdfTeX warning: pdflatex (file ./ubfclogo.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+>] (./documentation.nav)
+
+LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <3> not available
+(Font)              size <5> substituted on input line 53.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 53--53
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+################ FRAME 2
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[2
+
+] ################ FRAME 3
+LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 78.
+
+LaTeX Font Info:    No file OMScmtt.fd. on input line 78.
+
+LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
+(Font)              using `OMS/cmsy/m/n' instead
+(Font)              for symbol `textbackslash' on input line 78.
+
+
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[3
+
+] ################ FRAME 4
+Overfull \vbox (16.20587pt too high) detected at line 85
+ []
+
+
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[4
+
+] ################ FRAME 5 (./documentation.toc)
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[5
+
+] ################ FRAME 6 (./documentation.toc)
+Overfull \vbox (5.36461pt too high) detected at line 93
+ []
+
+
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[6
+
+] ################ FRAME 7
+Overfull \vbox (17.68657pt too high) detected at line 123
+ []
+
+
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[7
+
+] ################ FRAME 8
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[8
+
+] ################ FRAME 9
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[9
+
+] ################ FRAME 10 (./documentation.toc)
+Overfull \vbox (26.3646pt too high) detected at line 158
+ []
+
+
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[10
+
+] ################ FRAME 11
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[11
+
+] ################ FRAME 12
+Overfull \vbox (5.36539pt too high) detected at line 190
+ []
+
+
+Underfull \hbox (badness 10000) has occurred while \output is active
+[]|[][][] |[][][] |[][][] |[][][]
+ []
+
+[12
+
+] ################ FRAME 13
+./documentation.tex:209: Undefined control sequence.
+\beamer@doifinframe ... text on the slides. \refa 
+                                                  {noref} \end {itemize} \en...
+l.209 \end{frame}
+                  
+Here is how much of TeX's memory you used:
+ 23157 strings out of 494883
+ 450747 string characters out of 6178692
+ 520329 words of memory out of 5000000
+ 25811 multiletter control sequences out of 15000+600000
+ 22303 words of font info for 82 fonts, out of 8000000 for 9000
+ 36 hyphenation exceptions out of 8191
+ 76i,15n,77p,394b,791s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+./documentation.tex:209:  ==> Fatal error occurred, no output PDF file produced
+!

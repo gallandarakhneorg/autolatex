@@ -2,6 +2,7 @@
 .svn/
 .cvs/
 .git/
+**/__pycache__/**
 
 # Temp files
 *.bak

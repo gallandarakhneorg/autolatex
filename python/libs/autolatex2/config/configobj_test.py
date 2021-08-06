@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2015  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,11 +23,9 @@ import unittest
 import logging
 import os
 
-from autolatex2.config.config import Config
+from autolatex2.config.configobj import Config
 from autolatex2.config.generation import GenerationConfig
 from autolatex2.config.translator import TranslatorConfig
-
-from autolatex2.utils import debug
 
 ########################################################
 ##
@@ -41,10 +39,17 @@ class ConfigMock(Config):
 	def _isdir(self, directory : str) -> bool:
 		return self.__isDir
 
+########################################################
+##
+class AbstractTestConfig(unittest.TestCase):
+
+	@property
+	def expectedAutoLaTeXVersion(self) -> str:
+		return "50.0"
 
 ########################################################
 ##
-class TestPosixConfig(unittest.TestCase):
+class TestPosixConfig(AbstractTestConfig):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -132,7 +137,7 @@ class TestPosixConfig(unittest.TestCase):
 
 	def test_version(self):
 		version = self.config.version
-		self.assertEqual("36.0", version)
+		self.assertEqual(self.expectedAutoLaTeXVersion, version)
 
 
 
@@ -158,7 +163,7 @@ class TestPosixConfig(unittest.TestCase):
 
 ########################################################
 ##
-class TestNtConfig(unittest.TestCase):
+class TestNtConfig(AbstractTestConfig):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -247,7 +252,7 @@ class TestNtConfig(unittest.TestCase):
 
 	def test_version(self):
 		version = self.config.version
-		self.assertEqual("36.0", version)
+		self.assertEqual(self.expectedAutoLaTeXVersion, version)
 
 
 
@@ -271,7 +276,7 @@ class TestNtConfig(unittest.TestCase):
 
 ########################################################
 ##
-class TestOtherConfig(unittest.TestCase):
+class TestOtherConfig(AbstractTestConfig):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -360,7 +365,7 @@ class TestOtherConfig(unittest.TestCase):
 
 	def test_version(self):
 		version = self.config.version
-		self.assertEqual("36.0", version)
+		self.assertEqual(self.expectedAutoLaTeXVersion, version)
 
 
 

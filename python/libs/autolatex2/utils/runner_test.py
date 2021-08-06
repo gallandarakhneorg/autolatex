@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2015  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@ import unittest
 import logging
 
 from autolatex2.utils.runner import *
-
-from autolatex2.utils import debug
 
 class TestAbstractRunner(unittest.TestCase):
 

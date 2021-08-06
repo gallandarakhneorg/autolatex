@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@ Abstract implementation of a command and script runner.
 
 import sys
 import io
+import os
 import subprocess
-import pprint
 import abc
 
 import gettext
@@ -109,7 +109,7 @@ class AbstractRunner(object):
 		return (sout, serr, exception, (0 if exception is None else 255))
 
 	@staticmethod
-	def runCommand(*cmd : str):
+	def runCommand(*cmd : str) -> tuple:
 		'''
 		Run an external command in a subprocess.
 		:param cmd: The command line to run.
@@ -118,7 +118,7 @@ class AbstractRunner(object):
 				 error output, and the exception with the return code if different of 0.
 		:rtype: (str,str,exception)
 		'''
-		out = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		out = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		(sout, serr) = out.communicate()
 		retcode = out.returncode
 		if retcode != 0:
@@ -130,6 +130,24 @@ class AbstractRunner(object):
 		if serr is not None and isinstance(serr, bytes):
 			serr = serr.decode("ascii")
 		return (sout or '', serr or '', sex, retcode)
+
+	@staticmethod
+	def normalizeCommand(cmd : tuple) -> tuple:
+		'''
+		Ensure that the command (the first element of the list) is a command with an absolute path.
+		:param cmd: The command line to run.
+		:type cmd: list
+		:rtype: tuple
+		'''
+		c = cmd[0]
+		if not os.path.isabs(c):
+			for p in os.getenv("PATH").split(os.pathsep):
+				fn = os.path.join(p, c)
+				if os.path.exists(fn):
+					cmd = list(cmd[1:])
+					cmd.insert(0, fn)
+					return tuple(cmd)
+		return cmd
 
 	@staticmethod
 	def runScript(script : str, *interpreter : str):

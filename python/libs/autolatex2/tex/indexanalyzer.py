@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,11 +23,10 @@ Tools for that is extracting the definitions of indexes from an IDX file.
 '''
 
 import os
-import re
 import base64
 from Crypto.Hash import MD5
 
-import texparser
+from autolatex2.tex import texparser
 
 class IndexAnalyzer(texparser.Observer):
 	'''
@@ -135,7 +134,7 @@ class IndexAnalyzer(texparser.Observer):
 
 	def run(self):
 		'''
-		Extract the data from the AUX file.
+		Extract the data from the IDX file.
 		'''
 		with open(self.filename) as f:
 			content = f.read()

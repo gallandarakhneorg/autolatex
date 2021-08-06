@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-15  Stephane Galland <galland@arakhne.org>
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,8 +44,16 @@ class GenerationConfig(object):
 		self.__biberFlags = None
 		self.__makeindexCLI = None
 		self.__makeindexFlags = None
+		self.__makeindexStyleFilename = None
 		self.__dvipsCLI = None
 		self.__dvipsFlags = None
+		self.__useBiber = False
+		self.__useBiblatex = False
+		self.__useMakeindex = False
+		self.__useMultibib = False
+		self.__enableBiblio = True
+		self.__enableIndex = True
+		self.__enableGlossary = True
 
 	@property
 	def pdfMode(self) -> bool:
@@ -270,6 +278,118 @@ class GenerationConfig(object):
 			self.__biberFlags = re.split(r'\s+', flags, re.S)
 
 	@property
+	def is_biber(self) -> bool:
+		'''
+		Replies if the Biber tool must be used instead of the standard bibtex.
+		:rtype: bool
+		'''
+		return self.__useBiber
+
+	@is_biber.setter
+	def is_biber(self, enable : bool):
+		'''
+		Change the flag that indicates if the Biber tool must be used instead of the standard bibtex.
+		:type enable: bool
+		'''
+		self.__useBiber = enable
+
+	@property
+	def is_biblatex(self) -> bool:
+		'''
+		Replies if the biblatex tool must be used.
+		:rtype: bool
+		'''
+		return self.__useBiblatex
+
+	@is_biblatex.setter
+	def is_biblatex(self, enable : bool):
+		'''
+		Change the flag that indicates if the biblatex tool must be used.
+		:type enable: bool
+		'''
+		self.__useBiblatex = enable
+	
+	@property
+	def is_makeindex(self) -> bool:
+		'''
+		Replies if the makeindex tool must be used.
+		:rtype: bool
+		'''
+		return self.__useMakeindex
+
+	@is_makeindex.setter
+	def is_makeindex(self, enable : bool):
+		'''
+		Change the flag that indicates if the makeindex tool must be used.
+		:type enable: bool
+		'''
+		self.__useMakeindex = enable
+
+	@property
+	def is_multibib(self) -> bool:
+		'''
+		Replies if the multibib tool must be used.
+		:rtype: bool
+		'''
+		return self.__useMultibib
+
+	@is_multibib.setter
+	def is_multibib(self, enable : bool):
+		'''
+		Change the flag that indicates if the multibib tool must be used.
+		:type enable: bool
+		'''
+		self.__useMultibib = enable
+
+	@property
+	def is_biblio_enable(self) -> bool:
+		'''
+		Replies if the bibliography generation is activated.
+		:rtype: bool
+		'''
+		return self.__enableBiblio
+
+	@is_biblio_enable.setter
+	def is_biblio_enable(self, enable : bool):
+		'''
+		Change the activation flag for the bibliography generation.
+		:type enable: bool
+		'''
+		self.__enableBiblio = enable
+
+	@property
+	def is_index_enable(self) -> bool:
+		'''
+		Replies if the index generation is activated.
+		:rtype: bool
+		'''
+		return self.__enableIndex
+
+	@is_index_enable.setter
+	def is_index_enable(self, enable : bool):
+		'''
+		Change the activation flag for the index generation.
+		:type enable: bool
+		'''
+		self.__enableIndex = enable
+
+	@property
+	def is_glossary_enable(self) -> bool:
+		'''
+		Replies if the glossary generation is activated.
+		:rtype: bool
+		'''
+		return self.__enableGlossary
+
+	@is_glossary_enable.setter
+	def is_glossary_enable(self, enable : bool):
+		'''
+		Change the activation flag for the glossary generation.
+		:type enable: bool
+		'''
+		self.__enableGlossary = enable
+
+	@property
 	def makeindexCLI(self) -> list:
 		'''
 		Replies the command-line for makeindex.
@@ -306,6 +426,22 @@ class GenerationConfig(object):
 			self.__makeindexFlags = flags
 		else:
 			self.__makeindexFlags = re.split(r'\s+', flags, re.S)
+
+	@property
+	def makeindexStyleFilename(self) -> str:
+		'''
+		Replies filename that is the MakeIndex style to be used.
+		:rtype: str
+		'''
+		return self.__makeindexStyleFilename
+
+	@makeindexStyleFilename.setter
+	def makeindexStyleFilename(self, filename : str):
+		'''
+		Set the filename that is the MakeIndex style to be used.
+		:type filename: str
+		'''
+		self.__makeindexStyleFilename = filename
 
 	@property
 	def dvipsCLI(self) -> list:
