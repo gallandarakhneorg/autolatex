@@ -25,16 +25,18 @@ import shutil
 
 from autolatex2.translator.abstractinterpreter import CommandExecutionError
 from autolatex2.translator.shinterpreter import TranslatorInterpreter
+from autolatex2.config.configobj import Config
 
 class TestTranslatorInterpreter(unittest.TestCase):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.__interpreter = None
+		self.__config = Config()
 
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
-		self.__interpreter = TranslatorInterpreter()
+		self.__interpreter = TranslatorInterpreter(self.__config)
 
 	@property
 	def interpreter(self):

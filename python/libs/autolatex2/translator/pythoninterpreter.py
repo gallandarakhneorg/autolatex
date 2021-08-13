@@ -23,8 +23,10 @@ Python implementation of an interpreter for the AutoLaTeX translators.
 '''
 
 import shutil
+import re
 
 from autolatex2.translator.abstractinterpreter import AbstractTranslatorInterpreter
+from autolatex2.config.configobj import Config
 
 ######################################################################
 ##
@@ -33,6 +35,14 @@ class TranslatorInterpreter(AbstractTranslatorInterpreter):
 	Definition of a Python implementation of an interpreter for the AutoLaTeX translators.
 	'''
 
+	def __init__(self,  configuration : Config):
+		'''
+		Construct an translator interpreter.
+		:param configuration: The general configuration.
+		:type configuration: Config
+		'''
+		super().__init__(configuration)
+
 	@property
 	def runnable(self) -> bool:
 		'''
@@ -40,7 +50,11 @@ class TranslatorInterpreter(AbstractTranslatorInterpreter):
 		:return: True if the interpreter could be run.
 		:rtype: bool
 		'''
-		return shutil.which('python') is not None
+		if self.configuration:
+			cmd = self.configuration.pythonInterpreter
+		else:
+			cmd = 'python'
+		return shutil.which(cmd) is not None
 
 	
 	@property
@@ -50,7 +64,11 @@ class TranslatorInterpreter(AbstractTranslatorInterpreter):
 		:return: The name of the interpreter.
 		:rtype: str
 		'''
-		return 'python'
+		if self.configuration:
+			cmd = self.configuration.pythonInterpreter
+		else:
+			cmd = 'python'
+		return cmd
 
 
 	def filterVariableName(self, name : str) -> str:
@@ -63,16 +81,42 @@ class TranslatorInterpreter(AbstractTranslatorInterpreter):
 		'''
 		return "_%s" % (name)
 
-	def run(self, code : str):
+	def __find_line_prefix(self,  code_array : list) -> str:
+		prefix = ''
+		if code_array and len(code_array) > 0:
+			m = re.match('^([ \t]+)',  code_array[0])
+			if m:
+				prefix = m.group(1)
+		return prefix
+
+	def __reformatCode(self,  code : str) -> str:
+		code_array = code.rstrip().split("\n")
+		prefix = self.__find_line_prefix(code_array)
+		for i in range(len(code_array)):
+			code_array[i] = code_array[i].replace(prefix,  '')
+		return "\n".join(code_array)
+
+	def run(self, code : str,  showScriptOnError : bool = True):
 		'''
 		Run the interpreter.
 		:param code: The Python code to interprete.
 		:type code: str
+	    :param showScriptOnError: Indicates if the script must be output on the standard error output in case of an error. Default is True.
+		:type showScriptOnError: bool
+		:return: A triplet containing the standard output, the
+				 error output, and the error.
+		:rtype: (str,str,exception)
 		'''
-		fullcode = "#!/usr/bin/env python3\n\n\n" + code
+		fullcode = "#!/usr/bin/env " + self.configuration.pythonInterpreter + "\n\n"
+		fullcode = fullcode + "from autolatex2.utils.runner import Runner\n"
+		if 'python_script_dependencies' in self.globalVariables and self.globalVariables['python_script_dependencies']:
+			for dep in self.globalVariables['python_script_dependencies']:
+				fullcode = fullcode + 'import '
+				fullcode = fullcode + str(dep)
+				fullcode = fullcode + "\n"
+		fullcode = fullcode + "\n"
+		fullcode = fullcode + self.__reformatCode(code)
 		variables = dict()
 		for k, v in self.globalVariables.items():
 			variables[self.filterVariableName(k)] = v
-		return self.runPython(fullcode, False, variables)
-
-
+		return self.runPython(fullcode, False, variables,  showScriptOnError)

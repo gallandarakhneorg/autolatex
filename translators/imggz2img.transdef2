@@ -17,16 +17,15 @@
 # Boston, MA 02111-1307, USA.
 
 #--------------------------------------------
-# See template.txt for details on the fields
+# See template2.txt for details on the fields
 #--------------------------------------------
 
-INPUT_EXTENSIONS = .gz
-
-OUTPUT_EXTENSIONS =
-
-TRANSLATOR_FUNCTION =<<EOL {
-	runCommandOrFailRedirectTo( "$out", 'zcat', "$in" );
-	1;
-}
-EOL
-
+---
+input_extensions:
+    - .gz
+output_extensions:
+    -
+translator_function: |
+    (sout, serr, sex, retcode) = Runner.runCommandTo(_out, 'zcat', _in)
+    Runner.checkRunnerStatus(serr, sex)
+...

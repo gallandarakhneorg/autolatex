@@ -95,6 +95,14 @@ class TranslatorConfig(object):
 		'''
 		self.__includePaths = path
 
+	def addIncludePath(self,  path : str):
+		'''
+		Add a translator path for the translators.
+		:param path: the path to add.
+		:type path: str
+		'''
+		self.__includePaths.append(path)
+
 	@property
 	def imagePaths(self) -> list:
 		'''
@@ -112,6 +120,14 @@ class TranslatorConfig(object):
 		'''
 		self.__imagePaths = path
 
+	def addImagePath(self,  path : str):
+		'''
+		Add an image path for the translators.
+		:param path: the path to add.
+		:type path: str
+		'''
+		self.__imagePaths.append(path)
+
 	@property
 	def imagesToConvert(self) -> set:
 		'''
@@ -128,6 +144,14 @@ class TranslatorConfig(object):
 		:type images: set
 		'''
 		self.__imagesToConvert = images
+
+	def addImageToConvert(self,  img_path : str):
+		'''
+		Add an image to be converted.
+		:param img_path: the path of the image to convert.
+		:type img_path: str
+		'''
+		self.__imagesToConvert.append(img_path)
 
 	@property
 	def recursiveImagePath(self) -> bool:

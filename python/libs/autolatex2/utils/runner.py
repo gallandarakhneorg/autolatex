@@ -26,7 +26,6 @@ import sys
 import io
 import os
 import subprocess
-import abc
 
 import gettext
 _T = gettext.gettext
@@ -35,14 +34,19 @@ _T = gettext.gettext
 ##
 class CommandExecutionError(Exception):
 
-	def __init__(self, returncode : int):
+	def __init__(self, returncode : int,  msg : str =  None):
 		'''
 		Construct the exception with the given return code.
 		:param returncode: The return code of the executed command.
 		:type returncode: int
+		:param msg: Error message.
+		:type msg: str
 		'''
 		self.__errno = returncode
-		self.__strerror = _T('Error during the execution of the command: %d') % (returncode)
+		if msg:
+			self.__strerror = _T('Error during the execution of the command: %s') % (msg)
+		else:
+			self.__strerror = _T('Error during the execution of the command; return code is %d') % (returncode)
 
 	@property
 	def errno(self) -> int:
@@ -68,14 +72,25 @@ class CommandExecutionError(Exception):
 
 ######################################################################
 ##
-class AbstractRunner(object):
+class Runner(object):
 	'''
 	Definition of an abstract implementation of a command and script runner.
 	'''
-	__metaclass__ = abc.ABCMeta
 
 	@staticmethod
-	def runPython(script : str, interceptError : bool = False, localVariables : dict = None):
+	def checkRunnerStatus(serr, sex):
+		'''
+		Helper function that generate the correct running behavior regarding the status of a command.
+		:param serr: Standard error output.
+		:param sex: Exception during script execution.
+		'''
+		if sex:
+			raise sex
+		elif serr:
+			raise Exception(serr)
+
+	@staticmethod
+	def runPython(script : str, interceptError : bool = False, localVariables : dict = None,  showScriptOnError : bool = True):
 		'''
 		Run a Python script in the current process.
 		:param script: The Python script to run.
@@ -84,29 +99,58 @@ class AbstractRunner(object):
 		                       and put inside the returned value. If False,
 		                       the exceptions are not intercepted and they are
 		                       raised by this function. Default value is: False.
+		:type interceptError: bool
+		:param localVariables: Dictionnary of the predefined elmeents (imports or local variables)
+		:type localVariables: dict
+	    :param showScriptOnError: Indicates if the script must be output on the standard error output in case of an error. Default is True.
+		:type showScriptOnError: bool
 		:return: A triplet containing the standard output, the
 				 error output, and the error.
 		:rtype: (str,str,exception)
 		'''
+		script = script + "\n"
 		codeOut = io.StringIO()
 		codeErr = io.StringIO()
+		savedStdout = sys.stdout
+		savedStderr = sys.stderr
 		sys.stdout = codeOut
 		sys.stderr = codeErr
 		exception = None
-		if interceptError:
-			try:
-				exec(script, None, localVariables)
-			except BaseException as e:
-				exception = e
-		else:
-			exec(script, None, localVariables)
-		sys.stdout = sys.__stdout__
-		sys.stderr = sys.__stderr__
+		try:
+			if interceptError:
+				try:
+					exec(script, None,  localVariables)
+				except BaseException as e:
+					exception = e
+			else:
+				try:
+					exec(script, None,  localVariables)
+				except SyntaxError as err:
+					if showScriptOnError:
+						savedStderr.write(str(err))
+						savedStderr.write(Runner.__formatScript(script))
+					raise err
+		finally:
+			sys.stdout = savedStdout
+			sys.stderr = savedStderr
 		sout = codeOut.getvalue()
 		serr = codeErr.getvalue()
 		codeOut.close()
 		codeErr.close()
 		return (sout, serr, exception, (0 if exception is None else 255))
+
+	@staticmethod
+	def __formatScript(script : str) -> str:
+		lines = script.split("\n")
+		nlines = len(lines)
+		pattern = "%d" % (nlines)
+		s = len(pattern)
+		pattern = "%" + str(s) + "d %s"
+		for i in range(nlines):
+			nl = str(pattern) % ((i+1),  lines[i])
+			lines[i] = nl
+		return "\n" + ("\n".join(lines))
+
 
 	@staticmethod
 	def runCommand(*cmd : str) -> tuple:
@@ -118,11 +162,31 @@ class AbstractRunner(object):
 				 error output, and the exception with the return code if different of 0.
 		:rtype: (str,str,exception)
 		'''
-		out = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		(sout, serr) = out.communicate()
-		retcode = out.returncode
+		return Runner.runCommandTo(None,  *cmd)
+
+	@staticmethod
+	def runCommandTo(redirectStdoutTo : str,  *cmd : str) -> tuple:
+		'''
+		Run an external command in a subprocess.
+		:param redirectStdoutTo: Specify the path of the file that must receive the standard output.
+		:type redirectStdoutTo: str
+		:param cmd: The command line to run.
+		:type cmd: list
+		:return: A triplet containing the standard output, the
+				 error output, and the exception with the return code if different of 0.
+		:rtype: (str,str,exception)
+		'''
+		if redirectStdoutTo is not None:
+			with open(redirectStdoutTo, "w") as stdout_file:
+				out = subprocess.Popen(cmd, shell=False, stdout=stdout_file, stderr=subprocess.PIPE)
+				(sout, serr) = out.communicate()
+				retcode = out.returncode
+		else:
+			out = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			(sout, serr) = out.communicate()
+			retcode = out.returncode
 		if retcode != 0:
-			sex = CommandExecutionError(retcode)
+			sex = CommandExecutionError(retcode,  serr)
 		else:
 			sex = None
 		if sout is not None and isinstance(sout, bytes):
@@ -168,7 +232,7 @@ class AbstractRunner(object):
 		sin = script.encode("ascii")
 		(sout, serr) = out.communicate(input=sin)
 		if out.returncode != 0:
-			sex = CommandExecutionError(out.returncode)
+			sex = CommandExecutionError(out.returncode,  serr)
 		else:
 			sex = None
 		if sout is not None and isinstance(sout, bytes):

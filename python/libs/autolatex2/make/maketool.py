@@ -38,8 +38,6 @@ from autolatex2.tex.biber import BiberErrorParser
 from autolatex2.tex.dependencyanalyzer import DependencyAnalyzer
 from autolatex2.tex.citationanalyzer import AuxiliaryCitationAnalyzer
 
-import autolatex2.utils.debug as debug
-
 import gettext
 _T = gettext.gettext
 
@@ -158,7 +156,7 @@ class FileDescription(object):
 
 ######################################################################
 ##
-class AutoLaTeXMaker(AbstractRunner):
+class AutoLaTeXMaker(Runner):
 	'''
 	The maker for AutoLaTeX.
 	'''
@@ -636,17 +634,17 @@ class AutoLaTeXMaker(AbstractRunner):
 					else:
 						logging.warning(_T('LATEX: no command-line option provided for changing the output directory'), os.path.basename(filename))
 					cmd.append(autofile)
-					cmd = AbstractRunner.normalizeCommand(cmd)
+					cmd = Runner.normalizeCommand(cmd)
 					nbRuns += 1
-					(sout, serr, sex, exitcode) = AbstractRunner.runCommand(*cmd)
+					(sout, serr, sex, exitcode) = Runner.runCommand(*cmd)
 				finally:
 					genutils.unlink(autofile)
 			else:
 				cmd = self.__latexCLI.copy()
 				cmd.append(os.path.relpath(filename))
-				cmd = AbstractRunner.normalizeCommand(cmd)
+				cmd = Runner.normalizeCommand(cmd)
 				nbRuns += 1
-				(sout, serr, sex, exitcode) = AbstractRunner.runCommand(*cmd)
+				(sout, serr, sex, exitcode) = Runner.runCommand(*cmd)
 
 			if exitcode != 0:
 				logging.debug(_T("LATEX: Error when processing %s") % (os.path.basename(filename)))
@@ -702,8 +700,8 @@ class AutoLaTeXMaker(AbstractRunner):
 			logging.debug(_T('BIBTEX: %s'), os.path.basename(auxFile))
 			cmd = self.__bibtexCLI.copy()
 		cmd.append(os.path.relpath(auxFile))
-		cmd = AbstractRunner.normalizeCommand(cmd)
-		(sout, serr, sex, exitcode) = AbstractRunner.runCommand(*cmd)
+		cmd = Runner.normalizeCommand(cmd)
+		(sout, serr, sex, exitcode) = Runner.runCommand(*cmd)
 		if exitcode != 0:
 			if self.configuration.generation.is_biber:
 				logging.debug(_T('BIBER: error when processing %s'), os.path.basename(auxFile))
@@ -751,8 +749,8 @@ class AutoLaTeXMaker(AbstractRunner):
 			cmd.append(cmd_def['index_style_flag'])
 			cmd.append(os.path.relpath(istFile))
 		cmd.append(os.path.relpath(idxFile))
-		cmd = AbstractRunner.normalizeCommand(cmd)
-		(sout, serr, sex, exitcode) = AbstractRunner.runCommand(*cmd)
+		cmd = Runner.normalizeCommand(cmd)
+		(sout, serr, sex, exitcode) = Runner.runCommand(*cmd)
 		if exitcode:
 			return False
 		return True
@@ -907,10 +905,21 @@ class AutoLaTeXMaker(AbstractRunner):
 			self.__computeAuxDependencies(filename,  root_dir,  dependencies)
 		return dependencies
 
-	def runTranslators(self):
+	def runTranslators(self,  forceGeneration : bool = False):
+		'''
+		Run the image translators. Replies the list of images that is detected.
+		The replied dict associated to each source image (keys) the generated image's filename (values) or None.
+		:param forceGeneration: Indicates if the image generation is forced to be run on all the images (True) or if only the changed source images are considered for the image generation (False). Default is: False.
+		:type forceGeneration: bool
+		:rtype: dict
+		'''
 		self.translatorRunner.sync()
 		images = self.translatorRunner.getSourceImages()
-		debug.dbg(images)
+		generatedImages = dict()
+		for img in images:
+			generatedImage = self.translatorRunner.generateImage(infile = img, onlymorerecent = not forceGeneration)
+			generatedImages[img] = generatedImage
+		return generatedImages
 
 #	def build(self):
 #		'''

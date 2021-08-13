@@ -23,16 +23,18 @@ import unittest
 import logging
 
 from autolatex2.translator.pythoninterpreter import TranslatorInterpreter
+from autolatex2.config.configobj import Config
 
 class TestTranslatorInterpreter(unittest.TestCase):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.__interpreter = None
+		self.__config = Config()
 
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
-		self.__interpreter = TranslatorInterpreter()
+		self.__interpreter = TranslatorInterpreter(self.__config)
 
 	@property
 	def interpreter(self):
@@ -72,11 +74,11 @@ class TestTranslatorInterpreter(unittest.TestCase):
 
 	def test_run_invalid1(self):
 		with self.assertRaises(SyntaxError):
-			self.interpreter.run('print(1')
+			self.interpreter.run(code = 'print(1',  showScriptOnError = False)
 
 	def test_run_invalid2(self):
 		with self.assertRaises(SyntaxError):
-			self.interpreter.runPython('print(1', False)
+			self.interpreter.runPython(script = 'print(1', interceptError = False,  showScriptOnError = False)
 
 
 

@@ -21,6 +21,7 @@
 
 import unittest
 import logging
+import os
 
 from autolatex2.make.maketool import *
 from autolatex2.translator.translatorobj import *
@@ -291,7 +292,13 @@ class TestAutoLaTeXMaker(unittest.TestCase):
 		self.config.translators.ignoreUserTranslators = True
 		self.config.translators.ignoreDocumentTranslators = True
 		self.config.translators.includePaths = []
-		self.config.translators.imagePaths = []
+		#
+		doc_dir = os.path.join(self.config.installationDirectory,  'python', 'libs', 'autolatex2', 'dev-resources')
+		self.config.setRawDocumentDirectory(doc_dir)
+		#
+		img_dir = os.path.join(doc_dir, 'images')
+		self.config.translators.imagePaths = [ img_dir ]
+		#
 		self.repo = TranslatorRepository(self.config)
 		self.runner = TranslatorRunner(self.repo)
 		self.__maker = AutoLaTeXMaker(self.runner)
@@ -695,11 +702,14 @@ class TestAutoLaTeXMaker(unittest.TestCase):
 			os.path.join(os.path.dirname(texfile),  'test12b.tex'), 
 		]))
 
-	def test_runTranslators(self):
-		debug.dbg(self.config.installationDirectory)
-		#self.__cleanTmpFigureFile(figfolder)
-		#debug.dbg(self.maker.configuration.translators.includedPaths)
-		#deps = self.maker.runTranslators()
+	def test_runTranslators_0(self):
+		self.config.translators.ignoreSystemTranslators = False
+		self.__cleanTmpFigureFile(self.config.translators.imagePaths)
+		images = self.maker.runTranslators(False)
+		self.assertIsNotNone(images)
+		self.assertIsFile(os.path.join(self.config.translators.imagePaths[0],  'english.png'))
+		self.assertIsFile(os.path.join(self.config.translators.imagePaths[0],  'subfolder', 'french.png'))
+		self.__cleanTmpFigureFile(self.config.translators.imagePaths)
 
 #	def test_make_1(self):
 #		texfile = genutils.findFileInPath("test1.tex")
@@ -714,6 +724,9 @@ class TestAutoLaTeXMaker(unittest.TestCase):
 #			os.path.join(os.path.dirname(texfile),  'test12a.tex'), 
 #			os.path.join(os.path.dirname(texfile),  'test12b.tex'), 
 #		]))
+
+	def assertIsFile(self,  filename : str):
+		self.assertTrue(os.path.isfile(filename))
 
 	def assertDependency(self,  dependencies : dict,  filename : str,  type : str,  deps : set):
 		self.assertTrue(filename in dependencies)
@@ -750,8 +763,12 @@ class TestAutoLaTeXMaker(unittest.TestCase):
 		fn = genutils.basename2(name, ".tex")+".gls"
 		genutils.unlink(fn)
 
-	def __cleanTmpFigureFile(self, name : str):
-		pass
+	def __cleanTmpFigureFile(self, paths : list):
+		for path in paths:
+			fn = os.path.join(path,  'english.png')
+			genutils.unlink(fn)
+			fn = os.path.join(path,  'subfolder', 'french.png')
+			genutils.unlink(fn)
 
 if __name__ == '__main__':
     unittest.main()

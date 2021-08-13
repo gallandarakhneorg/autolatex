@@ -27,6 +27,7 @@ import re
 import logging
 import shlex
 import subprocess
+import importlib
 from enum import IntEnum, unique
 
 import gettext
@@ -34,6 +35,8 @@ _T = gettext.gettext
 
 import autolatex2.utils.utilfunctions as genutils
 from autolatex2.config .configobj import Config
+from autolatex2.translator .transdefreader import YamlTransdefReader
+from autolatex2.translator .transdefreader import PerlTransdefReader
 
 
 ######################################################################
@@ -253,90 +256,13 @@ class Translator(object):
 		:return: The dictionary of the content.
 		:rtype: dict
 		'''
-		content = dict()
-		with open(filename) as f:
-			lineno = 0
-			eol = False
-			curvar = None
-			for line in f.readlines():
-				lineno = lineno + 1
-				if eol:
-					if line.startswith(eol):
-						eol = None
-						curvar = None
-					elif curvar:
-						content[curvar]['value'] += line
-				elif not re.match(r'^\s*[#;]', line):
-					m = re.match(r'^\s*([azA-Z0-9_]+)(?:\s+with\s+(.*?))?(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\<\<([a-zA-Z0-9_]+)\s*(.*?)\s*$', line, re.I)
-					if m:
-						curvar = m.group(1)
-						interpreter = m.group(2)
-						mode = m.group(3)
-						eol = m.group(4)
-						value = m.group(5)
-						if (not mode) or (self.configuration.generator.pdfMode and mode.lower() == 'pdf') or (not self.configuration.generator.pdfMode and mode.lower() == 'eps'):
-							curvar = curvar.upper()
-							content[curvar] = dict()
-							content[curvar]['lineno'] = lineno
-							content[curvar]['value'] = value
-							content[curvar]['interpreter'] = (interpreter.lower() if interpreter else None)
-						else:
-							curvar = None
-					else:
-						m = re.match(r'^\s*([azA-Z0-9_]+)(?:\s+with\s+(.*?))?(?:\s+for\s+((?:pdf)|(?:eps)))?\s*=\s*(.*?)\s*$', line, re.I)
-						if m:
-							var = m.group(1)
-							interpreter = m.group(2)
-							mode = m.group(3)
-							value = m.group(4)
-							if (not mode) or (self.configuration.generation.pdfMode and mode.lower() == 'pdf') or (not self.configuration.generation.pdfMode and mode.lower() == 'eps'):
-								curvar = None
-								eol = None
-								content[var.upper()] = dict()
-								content[var.upper()]['lineno'] = lineno
-								content[var.upper()]['value'] = value
-								content[var.upper()]['interpreter'] = (interpreter.lower() if interpreter else None)
-						elif not re.match(r'^\s*$', line):
-							logging.error(_T("Line outside a definition (%s:%d).") % (filename, lineno))
-
-		if eol:
-			logging.error(_T("The block for the variable '%s' is not closed. Keyword '%s' was not found (%s:%s).")
-				% (curvar, eol, filename, lineno))
-
-
-		# Translate the values into suitable Python objects
-		if 'INPUT_EXTENSIONS' in content and 'value' in content['INPUT_EXTENSIONS']:
-			exts = re.split(r'\s+', content['INPUT_EXTENSIONS']['value'] or '')
-			content['INPUT_EXTENSIONS']['value'] = list()
-			for e in exts:
-				if not re.match(r'^\^s*$', e):
-					if not re.match(r'^[\.+]', e):
-						e = "." + e
-					content['INPUT_EXTENSIONS']['value'].append(e)
-
-		if 'OUTPUT_EXTENSIONS' in content and 'value' in content['OUTPUT_EXTENSIONS']:
-			exts = re.split(r'\s+', content['OUTPUT_EXTENSIONS']['value'] or '')
-			content['OUTPUT_EXTENSIONS']['value'] = list()
-			for e in exts:
-				if not re.match(r'^\^s*$', e):
-					if not re.match(r'^\.', e):
-						e = "." + e
-					content['OUTPUT_EXTENSIONS']['value'].append(e)
-
-		if 'TRANSLATOR_PERL_DEPENDENCIES' in content and 'value' in content['TRANSLATOR_PERL_DEPENDENCIES']:
-			logging.warning(_T("The key 'TRANSLATOR_PERL_DEPENDENCIES' is no more supported in the translator files. Please use 'TRANSLATOR_PYTHON_DEPENDENCIES'"))
-
-		if 'TRANSLATOR_PYTHON_DEPENDENCIES' in content and 'value' in content['TRANSLATOR_PYTHON_DEPENDENCIES']:
-			content['TRANSLATOR_PYTHON_DEPENDENCIES']['value'] = re.split(r'\s+', content['TRANSLATOR_PYTHON_DEPENDENCIES']['value'] or '')
-				
-
-		if 'FILES_TO_CLEAN' in content and 'value' in content['FILES_TO_CLEAN']:
-			patterns = re.split(r'\s+', content['FILES_TO_CLEAN']['value'] or '')
-			content['FILES_TO_CLEAN']['value'] = list()
-			for p in patterns:
-				if not re.match(r'^\^s*$', p):
-					content['FILES_TO_CLEAN']['value'].append(p)
-
+		exts = os.path.splitext(filename)
+		ext = exts[-1]
+		if ext == '.transdef':
+			reader = PerlTransdefReader(self.configuration)
+		else:
+			reader = YamlTransdefReader(self.configuration)
+		content = reader.readTranslatorFile(filename)
 		return content
 
 	def getInputExtensions(self) -> list:
@@ -346,8 +272,8 @@ class Translator(object):
 		'''
 		if self.__fileContent is None:
 			self.__fileContent = self.__readTranslatorFile(self.filename)
-		if 'INPUT_EXTENSIONS' in self.__fileContent and 'value' in self.__fileContent['INPUT_EXTENSIONS']:
-			return self.__fileContent['INPUT_EXTENSIONS']['value']
+		if 'INPUT_EXTENSIONS' in self.__fileContent and self.__fileContent['INPUT_EXTENSIONS'] and self.__fileContent['INPUT_EXTENSIONS'].value_list:
+			return list(self.__fileContent['INPUT_EXTENSIONS'].value_list)
 		return list()
 
 	def getOutputExtensions(self) -> list:
@@ -357,8 +283,8 @@ class Translator(object):
 		'''
 		if self.__fileContent is None:
 			self.__fileContent = self.__readTranslatorFile(self.filename)
-		if 'OUTPUT_EXTENSIONS' in self.__fileContent and 'value' in self.__fileContent['OUTPUT_EXTENSIONS']:
-			return self.__fileContent['OUTPUT_EXTENSIONS']['value']
+		if 'OUTPUT_EXTENSIONS' in self.__fileContent and self.__fileContent['OUTPUT_EXTENSIONS'] and self.__fileContent['OUTPUT_EXTENSIONS'].value:
+			return list(self.__fileContent['OUTPUT_EXTENSIONS'].value_list)
 		return list()
 
 	def getCommandLine(self) -> str:
@@ -368,8 +294,8 @@ class Translator(object):
 		'''
 		if self.__fileContent is None:
 			self.__fileContent = self.__readTranslatorFile(self.filename)
-		if 'COMMAND_LINE' in self.__fileContent and 'value' in self.__fileContent['COMMAND_LINE']:
-			return self.__fileContent['COMMAND_LINE']['value']
+		if 'COMMAND_LINE' in self.__fileContent and self.__fileContent['COMMAND_LINE'] and self.__fileContent['COMMAND_LINE'].value:
+			return self.__fileContent['COMMAND_LINE'].value
 		return None
 
 	def getEmbeddedFunction(self) -> str:
@@ -379,8 +305,8 @@ class Translator(object):
 		'''
 		if self.__fileContent is None:
 			self.__fileContent = self.__readTranslatorFile(self.filename)
-		if 'TRANSLATOR_FUNCTION' in self.__fileContent and 'value' in self.__fileContent['TRANSLATOR_FUNCTION']:
-			return self.__fileContent['TRANSLATOR_FUNCTION']['value']
+		if 'TRANSLATOR_FUNCTION' in self.__fileContent and self.__fileContent['TRANSLATOR_FUNCTION'] and self.__fileContent['TRANSLATOR_FUNCTION'].value:
+			return self.__fileContent['TRANSLATOR_FUNCTION'].value
 		return None
 
 	def getEmbeddedFunctionInterpreter(self) -> str:
@@ -390,8 +316,19 @@ class Translator(object):
 		'''
 		if self.__fileContent is None:
 			self.__fileContent = self.__readTranslatorFile(self.filename)
-		if 'TRANSLATOR_FUNCTION' in self.__fileContent and 'interpreter' in self.__fileContent['TRANSLATOR_FUNCTION']:
-			return self.__fileContent['TRANSLATOR_FUNCTION']['interpreter']
+		if 'TRANSLATOR_FUNCTION' in self.__fileContent and self.__fileContent['TRANSLATOR_FUNCTION'] and self.__fileContent['TRANSLATOR_FUNCTION'].interpreter:
+			return self.__fileContent['TRANSLATOR_FUNCTION'].interpreter
+		return None
+
+	def getPythonDependencies(self) -> str:
+		'''
+		Replies the python dependencies that must be included in the executed script.
+		:rtype: list
+		'''
+		if self.__fileContent is None:
+			self.__fileContent = self.__readTranslatorFile(self.filename)
+		if 'TRANSLATOR_PYTHON_DEPENDENCIES' in self.__fileContent and self.__fileContent['TRANSLATOR_PYTHON_DEPENDENCIES'] and self.__fileContent['TRANSLATOR_PYTHON_DEPENDENCIES'].value_list:
+			return self.__fileContent['TRANSLATOR_PYTHON_DEPENDENCIES'].value_list
 		return None
 
 	def getConstants(self) -> dict:
@@ -405,8 +342,10 @@ class Translator(object):
 			self.__fileContent = self.__readTranslatorFile(self.filename)
 		variables = dict()
 		for k, v in self.__fileContent.items():
-			if k not in [ 'INPUT_EXTENSIONS', 'OUTPUT_EXTENSIONS', 'TRANSLATOR_FUNCTION', 'FILES_TO_CLEAN', 'COMMAND_LINE', 'TRANSLATOR_PYTHON_DEPENDENCIES' ]:
-				variables[k] = v['value']
+			if k not in [ 'INPUT_EXTENSIONS', 'OUTPUT_EXTENSIONS', 'FILES_TO_CLEAN', 'TRANSLATOR_PYTHON_DEPENDENCIES']:
+				variables[k] = v.value_list
+			if k not in [ 'TRANSLATOR_FUNCTION', 'COMMAND_LINE' ]:
+				variables[k] = v.value
 		return variables
 
 
@@ -480,7 +419,7 @@ class TranslatorRepository(object):
 			if recursive:
 				for root, dirs, files in os.walk(directory):
 					for filename in files:
-						m = re.match(r'^([a-zA-Z+-]+2[a-zA-Z0-9+-]+(?:_[a-zA-Z0-9_+-]+)?).transdef$', filename, re.I)
+						m = re.match(r'^([a-zA-Z+-]+2[a-zA-Z0-9+-]+(?:_[a-zA-Z0-9_+-]+)?).transdef[0-9]*$', filename, re.I)
 						if m:
 							scriptname = m.group(1)
 							translator = Translator(scriptname, self.configuration)
@@ -490,7 +429,7 @@ class TranslatorRepository(object):
 				for child in os.listdir(directory):
 					absPath = os.path.join(directory, child)
 					if not os.path.isdir(absPath):
-						m = re.match(r'^([a-zA-Z+-]+2[a-zA-Z0-9+-]+(?:_[a-zA-Z0-9_+-]+)?).transdef$', child, re.I)
+						m = re.match(r'^([a-zA-Z+-]+2[a-zA-Z0-9+-]+(?:_[a-zA-Z0-9_+-]+)?).transdef[0-9]*$', child, re.I)
 						if m:
 							scriptname = m.group(1)
 							translator = Translator(scriptname, self.configuration)
@@ -585,7 +524,7 @@ class TranslatorRepository(object):
 		self._installedTranslatorNames = set()
 		self._includedTranslators = dict()
 
-		# Load distribution modules
+		# Load distribution/system modules
 		if not self.configuration.translators.ignoreSystemTranslators:
 			dirname = os.path.join(self.configuration.installationDirectory, 'translators')
 			logging.debug(_T("Get loadable translators from %s") % (dirname))
@@ -838,7 +777,10 @@ class TranslatorRunner(object):
 		if not inext:
 			inext = translator.getInputExtensions()[0]
 		outexts = translator.getOutputExtensions()
-		outext = outexts[0]
+		if len(outexts) > 0 and outexts[0]:
+			outext = outexts[0]
+		else:
+			outext = ''
 
 		if not outfile:
 			outfile = genutils.basename2(infile, inexts) + outext
@@ -854,7 +796,7 @@ class TranslatorRunner(object):
 					absPath = os.path.join(dirname, filename)
 					if not os.path.isdir(absPath) and not genutils.isHiddenFile(absPath):
 						bn = genutils.basename(filename, outexts)
-						m = re.match(r'^(\Q'+bn+r'_\E.*)\Q'+outext+r'\E$', filename, re.S)
+						m = re.match('^('+re.escape(bn+'_')+'.*)'+re.escape(outext)+'$', filename, re.S)
 						if m:
 							t = genutils.getFileLastChange(absPath)
 							if t is not None and (outchange is None or t < outchange):
@@ -909,7 +851,7 @@ class TranslatorRunner(object):
 			#########################
 			interpreter = translator.getEmbeddedFunctionInterpreter()
 			if not interpreter:
-				interpreter = 'python'
+				interpreter = translator.configuration.pythonInterpreter
 			else:
 				interpreter = interpreter.lower()
 
@@ -917,7 +859,7 @@ class TranslatorRunner(object):
 			outwoext = os.path.join(os.path.dirname(outfile), outbasename)
 
 			environment = translator.getConstants()
-			if interpreter == 'python':
+			if interpreter == translator.configuration.pythonInterpreter:
 				environment['runner'] = self;
 			environment['in'] = infile;
 			environment['inexts'] = inexts;
@@ -928,10 +870,24 @@ class TranslatorRunner(object):
 			environment['ext'] = outext
 			environment['outbasename'] = outbasename
 			environment['outwoext'] = outwoext
+			environment['python_script_dependencies'] = translator.getPythonDependencies()
+			environment['global_configuration'] = translator.configuration
 
-			execEnv = { 'interpreterObject': None }
-			exec(	"from autolatex2.translator." + interpreter + "interpreter import TranslatorInterpreter\n"
-					"interpreterObject = TranslatorInterpreter()", None, execEnv)
+			execEnv = {
+				'interpreterObject': None, 
+				'global_configuration': translator.configuration,
+			}
+
+			if translator.configuration is None:
+				raise Exception('No configuration specification')
+			
+			package_name = "autolatex2.translator." + interpreter + "interpreter"
+			if importlib.util.find_spec(package_name) is None:
+				m = re.match('^(.*?)[0-9]+$',  interpreter)
+				if m:
+					package_name = "autolatex2.translator." + m.group(1) + "interpreter"
+			exec("from " + package_name + " import TranslatorInterpreter\n"
+					"interpreterObject = TranslatorInterpreter(global_configuration)",  None, execEnv)
 
 			if not execEnv['interpreterObject'].runnable:
 				errmsg = _T("Cannot execute the translator '%s'.") % (translatorName)
@@ -959,5 +915,3 @@ class TranslatorRunner(object):
 			else:
 				logging.error(errmsg)
 				return None
-
-

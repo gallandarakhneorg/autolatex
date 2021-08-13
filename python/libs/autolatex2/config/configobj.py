@@ -24,7 +24,7 @@ Configuration of a AutoLaTeX instance.
 
 import os
 import re
-import autolatex2.utils as utils
+import autolatex2.tex.utils as texutils
 
 import gettext
 _T = gettext.gettext
@@ -38,6 +38,7 @@ class Config(object):
 	'''
 
 	def __init__(self):
+		self.__pythonInterpreter = 'python3'
 		self.__osName = None
 		self.__homeDirectory = None
 		self.__userDirectory = None
@@ -51,6 +52,23 @@ class Config(object):
 		self.__generation = GenerationConfig()
 		self.__translation = TranslatorConfig()
 
+	@property
+	def pythonInterpreter(self):
+		'''
+		Replies the name of the python interpreter.
+		:rtype: str
+		'''
+		return self.__pythonInterpreter
+
+	@pythonInterpreter.setter
+	def pythonInterpreter(self, name : str):
+		'''
+		Change the name of the python interpreter.
+		:param name: The name of the interpreter.
+		:type name: str
+		'''
+		self.__pythonInterpreter = name
+	
 	@property
 	def osname(self):
 		'''
@@ -194,7 +212,7 @@ class Config(object):
 			adir = os.path.dirname(cfgFile)
 		else:
 			ext = os.path.splitext(currentDocument)[-1]
-			if utils.isTeXFileExtension(ext):
+			if texutils.isTeXFileExtension(ext):
 				adir = document_dir
 		
 		if adir is None:
@@ -203,6 +221,14 @@ class Config(object):
 			self.__documentDirectory = adir
 
 		return adir
+
+	def setRawDocumentDirectory(self, folder : str):
+		'''
+		Change the document directory.
+		:param folder: The path to the folder in which the current LaTeX document is located.
+		:type folder: str
+		'''
+		self.__documentDirectory = folder
 
 	@property
 	def installationDirectory(self) -> str:

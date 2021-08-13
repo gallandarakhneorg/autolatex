@@ -30,6 +30,7 @@ import gettext
 _T = gettext.gettext
 
 from autolatex2.translator.abstractinterpreter import AbstractTranslatorInterpreter
+from autolatex2.config.configobj import Config
 
 ######################################################################
 ##
@@ -37,6 +38,14 @@ class TranslatorInterpreter(AbstractTranslatorInterpreter):
 	'''
 	Definition of a Perl implementation of an interpreter for the AutoLaTeX translators.
 	'''
+
+	def __init__(self,  configuration : Config):
+		'''
+		Construct an translator interpreter.
+		:param configuration: The general configuration.
+		:type configuration: Config
+		'''
+		super().__init__(configuration)
 
 	@property
 	def runnable(self) -> bool:

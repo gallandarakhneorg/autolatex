@@ -23,16 +23,18 @@ import unittest
 import logging
 
 from autolatex2.translator.abstractinterpreter import *
+from autolatex2.config.configobj import Config
 
 class TestAbstractTranslatorInterpreter(unittest.TestCase):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.__interpreter = None
+		self.__config = Config()
 
 	def setUp(self):
 		logging.getLogger().setLevel(logging.CRITICAL)
-		self.__interpreter = AbstractTranslatorInterpreter()
+		self.__interpreter = AbstractTranslatorInterpreter(self.__config)
 
 	@property
 	def interpreter(self):
@@ -45,7 +47,7 @@ class TestAbstractTranslatorInterpreter(unittest.TestCase):
 		self.assertIsNone(self.interpreter.parent)
 
 	def test_parent_setter(self):
-		p = AbstractTranslatorInterpreter()
+		p = AbstractTranslatorInterpreter(self.__config)
 		self.interpreter.parent = p
 		self.assertEqual(p, self.interpreter.parent)
 

@@ -29,22 +29,42 @@ import gettext
 _T = gettext.gettext
 
 from autolatex2.utils.runner import *
-
+from autolatex2.config.configobj import Config
 
 ######################################################################
 ##
-class AbstractTranslatorInterpreter(AbstractRunner):
+class AbstractTranslatorInterpreter(Runner):
 	'''
 	Definition of an abstract implementation of an interpreter for the AutoLaTeX translators.
 	'''
-	__metaclass__ = abc.ABCMeta
 
-	def __init__(self):
+	def __init__(self,  configuration : Config):
 		'''
 		Construct an translator interpreter.
+		:param configuration: The general configuration.
+		:type configuration: Config
 		'''
 		self.__globalVariables = dict()
 		self.__parent = None
+		self.__configuration = configuration
+
+	@property
+	def configuration(self) -> Config:
+		'''
+		Replies the configuration.
+		:return: The configuration.
+		:rtype: Config
+		'''
+		return self.__configuration
+
+	@configuration.setter
+	def configuration(self, c : Config):
+		'''
+		Change the configuration.
+		:param c: The configuration.
+		:type c: Config
+		'''
+		self.__configuration = c
 
 	@property
 	def parent(self) -> object:
