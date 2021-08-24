@@ -3,6 +3,9 @@
 .cvs/
 .git/
 **/__pycache__/**
+build/
+dist/
+**/*.egg-info/**
 
 # Temp files
 *.bak
