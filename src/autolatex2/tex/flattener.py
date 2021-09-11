@@ -61,6 +61,8 @@ class Flattener(texparser.Observer):
 		'mfiguretex'									: '![]!{}!{}!{}!{}',
 		'mfiguretex*'								: '![]!{}!{}!{}!{}',
 		'addbibresource'							: '![]!{}',
+		'begin'											: '![]!{}', 
+		'end'												: '![]!{}', 
 	}
 
 	def __init__(self, filename : str, outputDirectory : str):
@@ -77,6 +79,7 @@ class Flattener(texparser.Observer):
 		self.__output = outputDirectory
 		self.__useBiblio = False
 		self.__init()
+		self.__included_sty = dict()
 
 	def __init(self) :
 		# Inclusion paths for pictures.
@@ -92,6 +95,10 @@ class Flattener(texparser.Observer):
 		self.__target2source = dict()
 		# Files to copy
 		self.__filesToCopy = set()
+		# Embedded files
+		self.__embedded_files_added = set()
+		self.__embedded_files = dict()
+		self.__file_content_counter = 0
 
 	@property
 	def includePaths(self) -> list:
@@ -291,51 +298,85 @@ class Flattener(texparser.Observer):
 		:return: the result of the expand of the macro, or None to not replace the macro by something (the macro is used as-is)
 		:rtype: str
 		'''
-		if name == r'\usepackage' or name == r'\RequirePackage':
+		if name == "\\begin":
+			texname = parameter[1]['text']
+			if texname == 'filecontents*':
+				self.__file_content_counter = self.__file_content_counter + 1
+			ret = name
+			if parameter[0]['text']:
+				ret += "[%s]" % (parameter[0]['text'])
+			ret += "{%s}" % (texname)
+			return ret
+		elif name == "\\end":
+			texname = parameter[1]['text']
+			if texname == 'filecontents*':
+				self.__file_content_counter = self.__file_content_counter - 1
+				if self.__file_content_counter <= 0:
+					for key,  value in self.__embedded_files.items():
+						parser.putBack(value)
+					self.__embedded_files = dict()
+			ret = name
+			if parameter[0]['text']:
+				ret += "[%s]" % (parameter[0]['text'])
+			ret += "{%s}" % (texname)
+			return ret
+		elif name == "\\usepackage" or name == "\\RequirePackage":
 			texname = parameter[1]['text']
 			filename = self.__makeFilename(texname, '.sty')
-			ret = ''
+			added_file = ''
 			if texname == 'biblatex':
 				if not self.use_biblio:
 					filename = self.__makeFilename(self.basename, '.bbl', '.tex')
-					if os.path.isfile(filename):
+					if os.path.isfile(filename) and filename not in self.__embedded_files_added:
 						logging.trace(_T('Embedding %s'), filename)
-						self.__dynamicPreamble.append(r'\usepackage{filecontents}')
+						if not self.__embedded_files_added:
+							self.__dynamicPreamble.append("\\usepackage{filecontents}")
+						self.__embedded_files_added.add(filename)
 						with open(filename) as f:
 							content = f.read()
 						basename = os.path.basename(filename)
-						ret +=	textwrap.dedent('''
+						added_file = textwrap.dedent("""
 								%%=======================================================
 								%%== BEGIN FILE: %s
 								%%=======================================================
-								\begin{filecontents*}{%s}
+								\\begin{filecontents*}{%s}
 								%s
-								\end{filecontents*}
+								\\end{filecontents*}
 								%%=======================================================
-								''') % (basename, basename, content)
+								""") % (basename, basename, content)
 					else:
 						logging.error(_T('File not found: %s'), filename)
-			elif self.__isDocumentFile(filename):
+			elif self.__isDocumentFile(filename) and filename not in self.__embedded_files_added:
 				logging.trace(_T('Embedding %s'), filename)
-				self.__dynamicPreamble.append(r'\usepackage{filecontents}')
+				if not self.__embedded_files_added:
+					self.__dynamicPreamble.append("\\usepackage{filecontents}")
+				self.__embedded_files_added.add(filename)
 				with open(filename) as f:
 					content = f.read()
 				basename = os.path.basename(filename)
-				ret +=	r'''
+				added_file = textwrap.dedent("""
 						%%=======================================================
 						%%== BEGIN FILE: %s
 						%%=======================================================
-						\begin{filecontents*}{%s}
+						\\begin{filecontents*}{%s}
 						%s
-						\end{filecontents*}
+						\\end{filecontents*}
 						%%=======================================================
-						''' % (basename, basename, content)
-			ret += name
+						""") % (basename, basename, content)
+			ret = name
 			if parameter[0]['text']:
-				ret += '[%s]' % (parameter[0]['text'])
-			ret += '{%s}' % (texname)
-			return ret
-		if name == r'\documentclass':
+				ret += "[%s]" % (parameter[0]['text'])
+			ret += "{%s}" % (texname)
+			if added_file:
+				if 	self.__file_content_counter <= 0:
+					parser.putBack(added_file + ret)
+					return ''
+				else:
+					self.__embedded_files[filename] = added_file
+					return ret
+			else:
+				return ret
+		if name == "\\documentclass":
 			texname = parameter[1]['text']
 			filename = self.__makeFilename(texname, '.cls')
 			if self.__isDocumentFile(filename):
@@ -343,66 +384,66 @@ class Flattener(texparser.Observer):
 				self.__filesToCopy.add(filename)
 			ret = name
 			if parameter[0]['text']:
-				ret += '[%s]' % (parameter[0]['text'])
-			ret += '{%s}\n\n%%========= AUTOLATEX PREAMBLE\n\n' % (texname)
+				ret += "[%s]" % (parameter[0]['text'])
+			ret += "{%s}\n\n%%========= AUTOLATEX PREAMBLE\n\n" % (texname)
 			return ret
-		elif	name == r'\includegraphics' or \
-				name == r'\includeanimatedfigure' or \
-				name == r'\includeanimatedfigurewtex' or \
-				name == r'\includefigurewtex' or \
-				name == r'\includegraphicswtex':
+		elif	name == "\\includegraphics" or \
+				name == "\\includeanimatedfigure" or \
+				name == "\\includeanimatedfigurewtex" or \
+				name == "\\includefigurewtex" or \
+				name == "\\includegraphicswtex":
 			texname, prefix = self.__findPicture(parameter[1]['text'])
 			ret = prefix + name
 			if parameter[0]['text']:
-				ret += '[%s]' % (parameter[0]['text'])
-			ret += '{%s}' % (texname)
+				ret += "[%s]" % (parameter[0]['text'])
+			ret += "{%s}" % (texname)
 			return ret
-		elif name == r'\graphicspath':
+		elif name == "\\graphicspath":
 			t = parameter[1]['text']
 			if t:
-				r = re.match(r'^\s*(?:(?:\{([^\}]+)\})|([^,]+))\s*[,;]?\s*(.*)$', t)
+				r = re.match('^\\s*(?:(?:\\{([^\\}]+)\\})|([^,]+))\\s*[,;]?\\s*(.*)$', t)
 				while r:					
 					path = r.group(1) or r.group(2)
 					if not os.path.isabs(path):
 						path = os.path.join(self.__dirname, path)
 					t = r.group(3)
 					self.__includePaths.insert(0, path)
-					r = re.match(r'^\s*(?:(?:\{([^\}]+)\})|([^,]+))\s*[,;]?\s*(.*)$', t) if t else None
-			return r'\graphicspath{{./}}'
-		elif	name == r'\mfigure' or \
-				name == r'\mfigure*' or \
-				name == r'\mfiguretex' or \
-				name == r'\mfiguretex*':
+					r = re.match('^\\s*(?:(?:\\{([^\\}]+)\\})|([^,]+))\\s*[,;]?\\s*(.*)$', t) if t else None
+			return "\\graphicspath{{./}}"
+		elif	name == "\\mfigure" or \
+				name == "\\mfigure*" or \
+				name == "\\mfiguretex" or \
+				name == "\\mfiguretex*":
 			texname, prefix = self.__findPicture(parameter[2]['text'])
 			ret = prefix + name
 			if parameter[0]['text']:
-				ret += '[%s]' % (parameter[0]['text'])
-			ret += '{%s}{%s}{%s}{%s}' % (parameter[1]['text'], texname, parameter[3]['text'], parameter[4]['text'])
+				ret += "[%s]" % (parameter[0]['text'])
+			ret += "{%s}{%s}{%s}{%s}" % (parameter[1]['text'], texname, parameter[3]['text'], parameter[4]['text'])
 			return ret
-		elif name == r'\msubfigure' or name == r'\msubfigure*':
+		elif name == "\\msubfigure" or name == "\\msubfigure*":
 			texname, prefix = self.__findPicture(parameter[2]['text'])
 			ret = prefix + name
 			if parameter[0]['text']:
-				ret += '[%s]' % (parameter[0]['text'])
-			ret += '{%s}{%s}{%s}' % (parameter[1]['text'], texname, parameter[3]['text'])
+				ret += "[%s]" % (parameter[0]['text'])
+			ret += "{%s}{%s}{%s}" % (parameter[1]['text'], texname, parameter[3]['text'])
 			return ret
-		elif name == r'\include' or name == r'\input':
+		elif name == "\\include" or name == "\\input":
 			filename = self.__makeFilename(parameter[0]['text'], '.tex')
 			with open(filename) as f:
 				subcontent = f.read()
-			subcontent += r'''
+			subcontent += textwrap.dedent("""
 							%%=======================================================
 							%%== END FILE: %s
 							%%=======================================================
-							''' % (os.path.basename(filename))
+							""") % (os.path.basename(filename))
 
 			parser.putBack(subcontent)
-			return r'''
+			return textwrap.dedent("""
 					%%=======================================================
 					%%== BEGIN FILE: %s
 					%%=======================================================
-					''' % (os.path.basename(filename))
-		elif name.startswith('\\bibliographystyle'):
+					""") % (os.path.basename(filename))
+		elif name.startswith("\\bibliographystyle"):
 			if self.use_biblio:
 				texname = parameter[0]['text']
 				filename = self.__makeFilename(texname, '.bst')
@@ -411,7 +452,7 @@ class Flattener(texparser.Observer):
 					self.__filesToCopy.add(filename)
 				return "%s{%s}" % (name, texname)
 			return None
-		elif name.startswith('\\bibliography'):
+		elif name.startswith("\\bibliography"):
 			if self.use_biblio:
 				texname = parameter[0]['text']
 				filename = self.__makeFilename(texname, '.bib')
@@ -430,16 +471,16 @@ class Flattener(texparser.Observer):
 				if os.path.isfile(bblFile):
 					with open(bblFile) as f:
 						content = f.read()
-					return r'''
+					return textwrap.dedent("""
 							%%=======================================================
 							%%== BEGIN FILE: %s
 							%%=======================================================
 							%s
 							%%=======================================================
-							''' % (os.path.basename(bblFile), content)
+							""") % (os.path.basename(bblFile), content)
 				else:
 					logging.error(_T('File not found: %s'), bblFile)
-		elif name == r'\addbibresource':
+		elif name == "\\addbibresource":
 			if self.use_biblio:
 				texname = parameter[1]['text']
 				filename = self.__makeFilename(texname, '.bib')
@@ -578,15 +619,15 @@ class Flattener(texparser.Observer):
 						for source in self.__source2target:
 							filecontent = filecontent.replace('{' + source + '}',
 											'{' + self.__source2target[source] + '}')
-					prefix +=	textwrap.dedent(r'''
+					prefix +=	textwrap.dedent("""
 								%%=======================================================
 								%%== BEGIN FILE: %s
 								%%=======================================================
-								\begin{filecontents*}{%s}
+								\\begin{filecontents*}{%s}
 								%s
-								\end{filecontents*}
+								\\end{filecontents*}
 								%%=======================================================
-								''') % (os.path.basename(texname), os.path.basename(texname), filecontent)
+								""") % (os.path.basename(texname), os.path.basename(texname), filecontent)
 					self.__dynamicPreamble.append(r'\usepackage{filecontents}')
 				elif selectedName2:
 					texname = selectedName2

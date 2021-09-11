@@ -24,6 +24,7 @@ import sys
 import argparse
 
 from autolatex2.cli.main import AbstractAutoLaTeXMain
+from autolatex2.cli.main import AutoLaTeXExiter
 from autolatex2.utils.extlogging import ensureAutoLaTeXLoggingLevels
 
 import gettext
@@ -32,16 +33,20 @@ _T = gettext.gettext
 
 class AutoLaTeXMain(AbstractAutoLaTeXMain):
 
-	def __init__(self,  read_system_config : bool = True,  read_user_config : bool = True):
+	def __init__(self,  read_system_config : bool = True,  read_user_config : bool = True, args : list = None,  exiter : AutoLaTeXExiter = None):
 		'''
 		Constructor.
 		:param read_system_config: Indicates if the system-level configuration must be read. Default is True.
 		:type read_system_config: bool
 		:param read_user_config: Indicates if the user-level configuration must be read. Default is True.
 		:type read_user_config: bool
+		:param args: List of command line arguments. If it is None, the system args are used.
+		:type args: list
+		:param exiter: The instance of the object that is called when AutoLaTeX should stop.
+		:type exister: AutoLaTeXExiter
 		'''
 		ensureAutoLaTeXLoggingLevels()
-		super().__init__(read_system_config,  read_user_config)
+		super().__init__(read_system_config=read_system_config, read_user_config=read_user_config, args=args,  exiter=exiter)
 		self.__commands = dict()
 
 	def add_cli_options(self,  cli_parser : object):

@@ -42,6 +42,24 @@ import autolatex2.utils.extprint as eprintpkg
 import gettext
 _T = gettext.gettext
 
+class AutoLaTeXExiter(object):
+	'''
+	Callback that is invoked when AutoLaTeX should be terminated. This callback call the system exit instructions.
+	'''
+	def exitOnFailure(self):
+		sys.exit(255)
+	def exitOnSuccess(self):
+		sys.exit(0)
+
+class AutoLaTeXExceptionExiter(object):
+	'''
+	Callback that is invoked when AutoLaTeX should be terminated. This callback generates an exception on failure.
+	'''
+	def exitOnFailure(self):
+		raise Exception()
+	def exitOnSuccess(self):
+		pass
+
 class AutoLaTeXCommand(object):
 	'''
 	Command to be run that is launched by the user of AutoLaTeX.
@@ -128,14 +146,24 @@ class AbstractAutoLaTeXMain(ABC):
 	Main program implementation for AutoLaTeX.
 	'''
 
-	def __init__(self,  read_system_config : bool = True,  read_user_config : bool = True):
+	def __init__(self,  read_system_config : bool = True,  read_user_config : bool = True, args : list = None,  exiter : AutoLaTeXExiter = None):
 		'''
 		Constructor.
 		:param read_system_config: Indicates if the system-level configuration must be read. Default is True.
 		:type read_system_config: bool
 		:param read_user_config: Indicates if the user-level configuration must be read. Default is True.
 		:type read_user_config: bool
+		:param args: List of command line arguments. If it is None, the system args are used.
+		:type args: list
+		:param exiter: The instance of the object that is called when AutoLaTeX should stop.
+		:type exister: AutoLaTeXExiter
 		'''
+		self.__initial_argv = args
+		if exiter:
+			self.__exiter = exiter
+		else:
+			self.__exiter = AutoLaTeXExiter()
+
 		# Create the AutoLaTeX configuration object
 		self.configuration = Config()
 
@@ -220,7 +248,10 @@ class AbstractAutoLaTeXMain(ABC):
 		:return: the tuple with as first element the CLI args that are not consumed by argparse library, and the second element the list of unknown arguments.
 		:rtype: tuple (args, list)
 		'''
-		cli = sys.argv[1:]
+		if self.__initial_argv is None or not isinstance(self.__initial_argv, list):
+			cli = sys.argv[1:]
+		else:
+			cli = list(self.__initial_argv)
 		unknown_arguments = list()
 		commands = list()
 		self._cli_parser.exit_on_error = False
@@ -262,16 +293,21 @@ class AbstractAutoLaTeXMain(ABC):
 		# Check existing command
 		if not args:
 			logging.error(_T('Unable to determine the command to run'))
-			sys.exit(255)
+			self.__exiter.exitOnFailure()
+			return
 
 		# Run the sequence of commands
 		for cmd, cmd_args in args:
 			try:
 				continuation = cmd(cmd_args)
 				if not continuation:
-					sys.exit(255)
-			except:
-				sys.exit(255)
+					self.__exiter.exitOnSuccess()
+					return
+			except BaseException as excp:
+				logging.error(_T('Error when running the command: %s') % (str(excp)))
+				self.__exiter.exitOnFailure()
+				return
+
 
 	def _build_help_epilog(self) -> str:
 		'''
@@ -370,7 +406,8 @@ class AbstractAutoLaTeXMain(ABC):
 					self.configuration.documentFilename = None
 				else:
 					logging.error(_T("Invalid directory: %s") % (value))
-					sys.exit(255)
+					self.__exiter.exitOnFailure()
+					return
 		input_method_group.add_argument('-d', '--directory',
 			action=DirectoryAction, 
 			help=_T('Specify a directory in which a LaTeX document to compile is located. You could specify this option for each directory in which you have a LaTeX document to treat'))
@@ -382,7 +419,8 @@ class AbstractAutoLaTeXMain(ABC):
 					self.configuration.setDocumentDirectoryAndFilename(value)
 				else:
 					logging.error(_T("File not found: %s") % (value))
-					sys.exit(255)
+					self.__exiter.exitOnFailure()
+					return
 		input_method_group.add_argument('-f', '--file',
 			action=FileAction, 
 			metavar=('TEX_FILE'), 
@@ -633,7 +671,8 @@ class AbstractAutoLaTeXMain(ABC):
 						self.configuration.generation.makeindexStyleFilename = path
 					else:
 						logging.error(_T("File not found: %s") % (value))
-						sys.exit(255)
+						self.__exiter.exitOnFailure()
+						return
 		index_e_group.add_argument('--index',
 			action = IndexAction, 
 			default = None, 
@@ -756,7 +795,7 @@ class AbstractAutoLaTeXMain(ABC):
 				if level < LogLevel.TRACE:
 					# Specific behavior that shows up the configuration
 					self.show_configuration()
-					sys.exit(0)
+					self.__exiter.exitOnSuccess()
 				else:
 					logger.setLevel(level)
 					for handler in logger.handlers:
@@ -860,7 +899,7 @@ class AbstractAutoLaTeXMain(ABC):
 		:param unknown_args: the list of the unsupported arguments.
 		:type unknown_args: list
 		'''
-		sys.exit(0)
+		self.__exiter.exitOnSuccess()
 
 	def run(self):
 		'''
