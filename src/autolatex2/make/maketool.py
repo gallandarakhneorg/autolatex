@@ -35,8 +35,8 @@ from dataclasses import dataclass
 from sortedcontainers import SortedSet
 
 from autolatex2.config.configobj import Config
-from autolatex2.translator.translatorobj import TranslatorRepository
-from autolatex2.translator.translatorobj import TranslatorRunner
+from autolatex2.translator.translatorrepository import TranslatorRepository
+from autolatex2.translator.translatorrunner import TranslatorRunner
 import autolatex2.utils.utilfunctions as genutils
 import autolatex2.tex.utils as texutils
 import autolatex2.utils.extlogging as extlogging

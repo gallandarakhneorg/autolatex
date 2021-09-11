@@ -20,7 +20,7 @@
 
 from autolatex2.cli.main import AbstractMakerAction
 from autolatex2.config.translator import TranslatorLevel
-from autolatex2.translator.translatorobj import TranslatorRepository
+from autolatex2.translator.translatorrepository import TranslatorRepository
 from autolatex2.utils.extprint import eprint
 
 import gettext
