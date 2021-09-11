@@ -81,6 +81,10 @@ class MakerAction(extended_maker_action):
 			cmd = list(cli)
 			cmd.append(pdf_file)
 			cmd = Runner.normalizeCommand(cmd)
-			if not Runner.startCommandWithoutRedirect(*cmd):
-				return False
+			if self.configuration.view.asyncview:
+				if not Runner.startCommandWithoutRedirect(*cmd):
+					return False
+			else:
+				if not Runner.runCommandWithoutRedirect(*cmd):
+					return False
 		return True

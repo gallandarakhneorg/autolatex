@@ -18,6 +18,7 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+import logging
 import os
 
 import autolatex2.utils.utilfunctions as genutils
@@ -60,5 +61,6 @@ class MakerAction(AbstractMakerAction):
 		for root_file in maker.rootFiles:
 			idxFile = genutils.basename2(root_file,  texutils.getTeXFileExtensions()) + idxExt
 			if not maker.run_makeindex(idxFile):
+				logging.error(_T("Error when running the indexing tool"))
 				return False
 		return True

@@ -1,0 +1,126 @@
+# autolatex - plot2pdf+tex.transdef2
+# Copyright (C) 1998-2021  Stephane Galland <galland@arakhne.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+
+#--------------------------------------------
+# See template2.txt for details on the fields
+#--------------------------------------------
+
+---
+input_extensions:
+    - '.plott'
+    - '.plot_tex'
+    - '.plottex'
+    - '.plot+tex'
+    - '.tex.plot'
+    - '+tex.plot'
+    - '.gnut'
+    - '.gnu_tex'
+    - '.gnutex'
+    - '.gnu+tex'
+    - '.tex.gnu'
+    - '+tex.gnu'
+output_extensions for pdf:
+    - .pdf
+    - .pdftex_t
+output_extensions for eps:
+    - .eps
+    - .pstex_t
+temporary_files:
+    - "*__xxxx_autolatex.plot"
+all_output_files:
+    - ${outwoext}.pdftex_t
+    - ${outwoext}.pstex_t
+    - $out
+translator_python_dependencies:
+    - import os
+    - import re
+    - import shutil
+    - import autolatex2.utils.utilfunctions as genutils
+    - from autolatex2.tex.texparser import ReinjectObserver
+    - from autolatex2.tex.texparser import TeXParser
+translator_function: |
+    curdir = os.getcwd()
+    plotdir = os.path.dirname(_in)
+    plotFile = genutils.basename2(_in, _inexts) + '__xxxx_autolatex.plot'
+    texFile = genutils.basename2(_out, _outexts) + '.tex'
+    psFile = genutils.basename2(_out, _outexts) + '.ps'
+    epsFile = genutils.basename2(_out, _outexts) + '.eps'
+    ptexFile = genutils.basename2(_out, _outexts)
+    if _global_configuration.generation.pdfMode:
+    	ptexFile += '.pdftex_t'
+    else:
+    	ptexFile += '.pstex_t'
+    try:
+    	genutils.unlink(plotFile)
+    	with open(plotFile, 'wt') as out_file:
+    		with open(_in, 'rt') as in_file:
+    			out_file.write("set terminal pstex color auxfile;\n")
+    			out_file.write("set output \"" + re.escape(texFile) + "\";\n")
+    			for line in in_file.readlines():
+    				line = re.sub('^\\s*set\\s+term(?:inal)?.*?[\\n\\r;]*$',  '',  line).strip();
+    				if line:
+    					out_file.write(line)
+    					out_file.write("\n")
+    	os.chdir(plotdir)
+    	(sout, serr, sex, retcode) = Runner.runCommand('gnuplot', plotFile)
+    	if retcode == 0:
+    		if not os.path.isfile(epsFile):
+    			shutil.move(psFile,  epsFile)
+    		if _global_configuration.generation.pdfMode:
+    			try:
+    				class PlotObserver(ReinjectObserver):
+    					def __init__(self, out):
+    						super().__init__()
+    						self._out = out
+    					def expand(self, parser, rawtext, name, *parameter) -> str:
+    						if name == '\\special':
+    							if len(parameter) > 0 and parameter[0] and 'text' in parameter[0] and parameter[0]['text']:
+    								if 'psfile=' in parameter[0]['text']:
+    									return "\\put(0,0){\\includegraphics{%s}}" % (self._out)
+    								elif parameter[0]['text'] =='}':
+    									return name + "}"
+    						return super().expand(parser,  rawtext,  name,  *parameter)
+    				obs = PlotObserver(_out)
+    				with open(texFile, 'rt') as texfile_in:
+    					content = texfile_in.read()
+    				parser = TeXParser()
+    				parser.observer = obs
+    				parser.add_text_mode_macro('special','!{}')
+    				parser.add_math_mode_macro('special','!{}')
+    				parser.parse(content)
+    				genutils.unlink(ptexFile)
+    				with open(ptexFile, 'wt') as ptexfile_out:
+    					ptexfile_out.write(obs.content)
+    				_runner.generateImage(infile = epsFile, outfile = _out, onlymorerecent = False, ignoreDebugFeature = True)
+    			finally:
+    				genutils.unlink(epsFile)
+    				if not os.path.isfile(_out):
+    					genutils.unlink(ptexFile)
+    			if not os.path.isfile(_out):
+    				raise Exception("Cannot generate output file %s" % (_out))
+    		else:
+    			genutils.unlink(ptexFile)
+    			shutil.move(texFile, ptexFile)
+    			genutils.unlink(_out)
+    			shutil.move(psFile, _out)
+    finally:
+    	os.chdir(curdir)
+    	genutils.unlink(texFile)
+    	genutils.unlink(plotFile)
+...
+

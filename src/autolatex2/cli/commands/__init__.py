@@ -35,6 +35,7 @@ __all__ = [
 	'showimagemap', 
 	'showimages', 
 	'showpath', 
+	'showtranslators', 
 	'update', 
 	'view', 
 ]

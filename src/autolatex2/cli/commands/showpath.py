@@ -21,6 +21,7 @@
 import os
 
 from autolatex2.cli.main import AbstractMakerAction
+from autolatex2.utils.extprint import eprint
 
 import gettext
 _T = gettext.gettext
@@ -36,5 +37,5 @@ class MakerAction(AbstractMakerAction):
 		Callback for running the command.
 		:param args: the arguments.
 		'''
-		print(os.environ['PATH'])
+		eprint(os.environ['PATH'])
 		return True

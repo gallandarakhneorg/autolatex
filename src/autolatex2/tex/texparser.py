@@ -144,7 +144,7 @@ class Observer(object):
 		pass
 
 	@abc.abstractmethod
-	def comment(self, parser : Parser, raw : str, comment : str):
+	def comment(self, parser : Parser, raw : str, comment : str) -> str:
 		'''
 		Invoked when comments were found and must be output.
 		:param parser: reference to the parser.
@@ -153,8 +153,10 @@ class Observer(object):
 		:type raw: str
 		:param comment: the comment to filter.
 		:type comment: str
+		:return: The text to reinject and to pass to the 'text' callback
+		:rtype: str
 		'''
-		pass
+		return None
 
 	@abc.abstractmethod
 	def openBlock(self, parser : Parser, text : str) -> str:
@@ -168,7 +170,7 @@ class Observer(object):
 		         None if no replacement is needed.
 		:rtype: str
 		'''
-		None
+		return None
 
 	@abc.abstractmethod
 	def closeBlock(self, parser : Parser, text : str) -> str:
@@ -182,7 +184,7 @@ class Observer(object):
 		         None if no replacement is needed.
 		:rtype: str
 		'''
-		None
+		return None
 
 	@abc.abstractmethod
 	def openMath(self, parser : Parser, inline : bool) -> str:
@@ -196,7 +198,7 @@ class Observer(object):
 		         None if no replacement is needed.
 		:rtype: str
 		'''
-		None
+		return None
 
 	@abc.abstractmethod
 	def closeMath(self, parser : Parser, inline : bool) -> str:
@@ -210,7 +212,7 @@ class Observer(object):
 		         None if no replacement is needed.
 		:rtype: str
 		'''
-		None
+		return None
 
 	@abc.abstractmethod
 	def findMacro(self, parser : Parser, name : str, special : bool, math : bool) -> str:
@@ -227,10 +229,10 @@ class Observer(object):
 		:return: the definition of the macro, ie. the macro prototype. See the class documentation for an explanation about the format of the macro prototype.
 		:rtype: str
 		'''
-		None
+		return None
 
 	@abc.abstractmethod
-	def expand(self, parser : Parser, rawtext : str, name : str, *parameter : Parameter) -> str:
+	def expand(self, parser : Parser, rawtext : str, name : str, *parameter : dict) -> str:
 		'''
 		Expand the given macro on the given parameters.
 		:param parser: reference to the parser.
@@ -240,12 +242,130 @@ class Observer(object):
 		:param name: Name of the macro.
 		:type name: str
 		:param parameter: Descriptions of the values passed to the TeX macro.
-		:type parameter: Parameter
+		:type parameter: dict
 		:return: the result of the expand of the macro, or None to not replace the macro by something (the macro is used as-is)
 		:rtype: str
 		'''
-		None
+		return None
 
+
+
+######################################################################
+##
+class ReinjectObserver(Observer):
+	'''
+	Observer on events in the TeX parser that is putting back the detected text into the given content.
+	'''
+
+	def __init__(self):
+		self.__content = ''
+
+	@property
+	def content(self):
+		'''
+		Replies the content of the TeX file.
+		'''
+		return self.__content
+
+	def text(self, parser : Parser, text : str):
+		'''
+		Invoked when characters were found and must be output.
+		:param parser: reference to the parser.
+		:type parser: Parser
+		:param text: the text to filter.
+		:type text: str
+		'''
+		t = str(text)
+		if t:
+			self.__content += t
+
+	def comment(self, parser : Parser, raw : str, comment : str) -> str:
+		'''
+		Invoked when comments were found and must be output.
+		:param parser: reference to the parser.
+		:type parser: Parser
+		:param raw: Raw text of the comment to filter.
+		:type raw: str
+		:param comment: the comment to filter.
+		:type comment: str
+		:return: The text to reinject and to pass to the 'text' callback
+		:rtype: str
+		'''
+		return "%" + re.sub('[\n\r]',  ' ',  str(comment)) + "\n"
+
+	def openBlock(self, parser : Parser, text : str) -> str:
+		'''
+		Invoked when a block is opened.
+		:param parser: reference to the parser.
+		:type parser: Parser
+		:param text: The text used for opening the block.
+		:type text: str
+		:return: the text that must replace the block opening in the output, or
+		         None if no replacement is needed.
+		:rtype: str
+		'''
+		return text
+
+	def closeBlock(self, parser : Parser, text : str) -> str:
+		'''
+		Invoked when a block is closed.
+		:param parser: reference to the parser.
+		:type parser: Parser
+		:param text: The text used for opening the block.
+		:type text: str
+		:return: the text that must replace the block opening in the output, or
+		         None if no replacement is needed.
+		:rtype: str
+		'''
+		return text
+
+	def openMath(self, parser : Parser, inline : bool) -> str:
+		'''
+		Invoked when a math environment is opened.
+		:param parser: reference to the parser.
+		:type parser: Parser
+		:param inline: Indicates if the math environment is inline or not.
+		:type inline: bool
+		:return: the text that must replace the block opening in the output, or
+		         None if no replacement is needed.
+		:rtype: str
+		'''
+		if inline:
+			return '$'
+		else:
+			return '\\['
+
+	def closeMath(self, parser : Parser, inline : bool) -> str:
+		'''
+		Invoked when a math environment is closed.
+		:param parser: reference to the parser.
+		:type parser: Parser
+		:param inline: Indicates if the math environment is inline or not.
+		:type inline: bool
+		:return: the text that must replace the block opening in the output, or
+		         None if no replacement is needed.
+		:rtype: str
+		'''
+		if inline:
+			return '$'
+		else:
+			return '\\]'
+
+	def expand(self, parser : Parser, rawtext : str, name : str, *parameter : dict) -> str:
+		'''
+		Expand the given macro on the given parameters.
+		:param parser: reference to the parser.
+		:type parser: Parser
+		:param rawtext: The raw text that is the source of the expansion.
+		:type rawtext: str
+		:param name: Name of the macro.
+		:type name: str
+		:param parameter: Descriptions of the values passed to the TeX macro.
+		:type parameter: dict
+		:return: the result of the expand of the macro, or None to not replace the macro by something (the macro is used as-is)
+		:rtype: str
+		'''
+		return rawtext
 
 
 
@@ -1099,7 +1219,7 @@ class TeXParser(Parser):
 						found_text = True
 						text = proto
 
-		logging.trace(_T("Found parameter definition for '%s': math=%s; text=%s (%s:%d)") % (name, (math or '<undef>'), (text or '<undef>'), self.filename, lineno))
+		logging.debug(_T("Found parameter definition for '%s': math=%s; text=%s (%s:%d)") % (name, (math or '<undef>'), (text or '<undef>'), self.filename, lineno))
 
 		if found_math or found_text:
 			if self.math_mode is not None:
@@ -1133,13 +1253,13 @@ class TeXParser(Parser):
 		expandTo = ''
 		if trans:
 			# This macro has params
-			logging.trace(_T("Expanding '%s' (%s:%d)") % (name, self.filename, lineno))
+			logging.debug(_T("Expanding '%s' (%s:%d)") % (name, self.filename, lineno))
 			text, params, rawparams = self.__eatCmdParameters(trans, text, name, lineno)
 			# Apply the macro
 			expandTo = self.observer.expand(self, name + rawparams, name, *params)
 		else:
-			# No param, put the HTML string inside the output stream
-			logging.trace(_T("Expanding '%s' (%s:%d)") % (name, self.filename, lineno))
+			# No param, put the string inside the output stream
+			logging.debug(_T("Expanding '%s' (%s:%d)") % (name, self.filename, lineno))
 			expandTo = self.observer.expand(self, name, name)
 		return (expandTo, text)
 
@@ -1159,7 +1279,7 @@ class TeXParser(Parser):
 		'''
 		params = []
 		rawparams = ''
-		logging.trace(_T("Macro prototype of '%s': %s (%s:%d)") % (macro, p_params, self.filename, lineno))
+		logging.debug(_T("Macro prototype of '%s': %s (%s:%d)") % (macro, p_params, self.filename, lineno))
 		for p in re.findall(r'((?:\!?\{\})|(?:\!?\[[^\]]*\])|-|\\)', p_params, re.DOTALL):
 			# Eats no significant white spaces
 			r = re.match(r'^(\!?)\{\}', p, re.DOTALL)

@@ -53,12 +53,12 @@ class MakerAction(extended_maker_action):
 
 		action_parser.add_argument('--externalbiblio', 
 			action='store_true', 
-			help=_T('Force the use of an external BibTeX file (i.e. \'.bib\' file instead of inlining the bibliography database inside the TeX file'))
+			help=_T('Force the use of an external BibTeX file (i.e. \'.bib\' file) instead of inlining the bibliography database inside the TeX file'))
 
-		action_parser.add_argument('--output', 
+		action_parser.add_argument('--out', 
 			default='flat_version', 
 			metavar=('DIRECTORY'), 
-			help=_T('Specify the output directory in which the flat version is created to be the given DIRECTORY. By default is it \'flat_version\''))
+			help=_T('Specify the output directory in which the flat version is created. By default, the name of the directory is \'flat_version\''))
 
 	def run(self,  args) -> bool:
 		'''
@@ -75,7 +75,7 @@ class MakerAction(extended_maker_action):
 		for root_file in maker.rootFiles:
 			root_dir = os.path.dirname(root_file)
 			# Output
-			output_dir = genutils.abspath(args.output, root_dir)
+			output_dir = genutils.abspath(args.out, root_dir)
 			
 			logging.debug(_T("Generating flat version into: %s") % (output_dir))
 

@@ -24,6 +24,9 @@ Configuration for the translators.
 
 from enum import IntEnum, unique
 
+import gettext
+_T = gettext.gettext
+
 
 ######################################################################
 ##
@@ -36,6 +39,9 @@ class TranslatorLevel(IntEnum):
 	SYSTEM = 0
 	USER = 1
 	DOCUMENT = 2
+
+	def __str__(self):
+		return _T(self.name.lower())
 
 
 class TranslatorConfig(object):
@@ -53,6 +59,23 @@ class TranslatorConfig(object):
 		self.__recursiveImagePath = True
 		self.__inclusions = list((dict(), dict(), dict()))
 		self.__is_translator_enable = True
+		self.__enable_translatorfile_format_1 = False
+
+	@property
+	def is_translator_fileformat_1_enable(self) -> bool:
+		'''
+		Replies if the reading of the translators' fils in format 1 is activated.
+		:rtype: bool
+		'''
+		return self.__enable_translatorfile_format_1
+
+	@is_translator_fileformat_1_enable.setter
+	def is_translator_fileformat_1_enable(self, enable : bool):
+		'''
+		Change the activation flag for the reading of the translators' fils in format 1.
+		:type enable: bool
+		'''
+		self.__enable_translatorfile_format_1 = enable
 
 	@property
 	def is_translator_enable(self) -> bool:
@@ -109,7 +132,13 @@ class TranslatorConfig(object):
 		:param path: The inclusion paths.
 		:type path: list
 		'''
-		self.__includePaths = path
+		if path is None:
+			self.__includePaths = list()
+		else:
+			for p in path:
+				if p is None:
+					raise Exception(_T('Illegal None value for the include path'))
+			self.__includePaths = path
 
 	def addIncludePath(self,  path : str):
 		'''
@@ -117,6 +146,8 @@ class TranslatorConfig(object):
 		:param path: the path to add.
 		:type path: str
 		'''
+		if path is None:
+			raise Exception(_T('Illegal None value for the include path'))
 		self.__includePaths.append(path)
 
 	@property

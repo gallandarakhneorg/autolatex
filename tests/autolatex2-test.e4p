@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Project SYSTEM "Project-5.1.dtd">
+<!-- eric project file for project autolatex2-test -->
+<!-- Saved: 2021-09-11, 00:42:52 -->
+<!-- Copyright (C) 2021 ,  -->
+<Project version="5.1">
+  <Language>en_US</Language>
+  <Hash>6eae1772772dbea5b9475c798689f874bee01806</Hash>
+  <ProgLanguage mixed="0">Python3</ProgLanguage>
+  <ProjectType>Console</ProjectType>
+  <Version>0.1</Version>
+  <Author></Author>
+  <Email></Email>
+  <Eol index="0"/>
+  <Sources>
+    <Source>autolatex2tests/__init__.py</Source>
+    <Source>autolatex2tests/config/__init__.py</Source>
+    <Source>autolatex2tests/config/clean_test.py</Source>
+    <Source>autolatex2tests/config/configobj_test.py</Source>
+    <Source>autolatex2tests/config/configreader_test.py</Source>
+    <Source>autolatex2tests/config/generation_test.py</Source>
+    <Source>autolatex2tests/config/logging_test.py</Source>
+    <Source>autolatex2tests/config/scm_test.py</Source>
+    <Source>autolatex2tests/config/translator_test.py</Source>
+    <Source>autolatex2tests/config/view_test.py</Source>
+    <Source>autolatex2tests/tex/__init__.py</Source>
+    <Source>autolatex2tests/tex/citationanalyzer_test.py</Source>
+    <Source>autolatex2tests/tex/dependencyanalyzer_test.py</Source>
+    <Source>autolatex2tests/tex/documentdetector_test.py</Source>
+    <Source>autolatex2tests/tex/flattener_test.py</Source>
+    <Source>autolatex2tests/tex/glossaryanalyzer_test.py</Source>
+    <Source>autolatex2tests/tex/indexanalyzer_test.py</Source>
+    <Source>autolatex2tests/tex/texparser_test.py</Source>
+    <Source>autolatex2tests/tex/utils_test.py</Source>
+    <Source>autolatex2tests/translator/__init__.py</Source>
+    <Source>autolatex2tests/translator/interpreters/__init__.py</Source>
+    <Source>autolatex2tests/translator/interpreters/abstractinterpreter_test.py</Source>
+    <Source>autolatex2tests/translator/interpreters/javascriptinterpreter_test.py</Source>
+    <Source>autolatex2tests/translator/interpreters/perlinterpreter_test.py</Source>
+    <Source>autolatex2tests/translator/interpreters/pythoninterpreter_test.py</Source>
+    <Source>autolatex2tests/translator/interpreters/rubyinterpreter_test.py</Source>
+    <Source>autolatex2tests/translator/interpreters/shinterpreter_test.py</Source>
+    <Source>autolatex2tests/translator/translatorobj_test.py</Source>
+    <Source>autolatex2tests/translator/translatorrepository_test.py</Source>
+    <Source>autolatex2tests/translator/translatorrunner_test.py</Source>
+    <Source>autolatex2tests/translators/__init__.py</Source>
+    <Source>autolatex2tests/translators/abstracttesttype.py</Source>
+    <Source>autolatex2tests/translators/asml2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/astah2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/astah2png_test.py</Source>
+    <Source>autolatex2tests/translators/asy2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/cpp2tex_texify_test.py</Source>
+    <Source>autolatex2tests/translators/dia2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/dia2pdf_tex_test.py</Source>
+    <Source>autolatex2tests/translators/dot2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/dot2png_test.py</Source>
+    <Source>autolatex2tests/translators/dot2tex_test.py</Source>
+    <Source>autolatex2tests/translators/gxl2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/gxl2png_test.py</Source>
+    <Source>autolatex2tests/translators/imggz2img_test.py</Source>
+    <Source>autolatex2tests/translators/java2tex_texify_test.py</Source>
+    <Source>autolatex2tests/translators/lisp2tex_texify_test.py</Source>
+    <Source>autolatex2tests/translators/matlab2tex_texify_test.py</Source>
+    <Source>autolatex2tests/translators/ml2tex_texify_test.py</Source>
+    <Source>autolatex2tests/translators/oct2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/oct2png_test.py</Source>
+    <Source>autolatex2tests/translators/odg2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/perl2tex_texify_test.py</Source>
+    <Source>autolatex2tests/translators/plot2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/plot2pdf_tex_test.py</Source>
+    <Source>autolatex2tests/translators/ppt2pdf_libreoffice_test.py</Source>
+    <Source>autolatex2tests/translators/python2tex_texify_test.py</Source>
+    <Source>autolatex2tests/translators/ruby2tex_texify_test.py</Source>
+    <Source>autolatex2tests/translators/sql2tex_texify_test.py</Source>
+    <Source>autolatex2tests/translators/svg2pdf_inkscape_test.py</Source>
+    <Source>autolatex2tests/translators/svg2pdf_layers_inkscape_test.py</Source>
+    <Source>autolatex2tests/translators/svg2pdf_layers_tex_inkscape_test.py</Source>
+    <Source>autolatex2tests/translators/svg2pdf_tex_inkscape_test.py</Source>
+    <Source>autolatex2tests/translators/svg2png_inkscape_test.py</Source>
+    <Source>autolatex2tests/translators/tikz2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/vsd2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/xcf2pdf_test.py</Source>
+    <Source>autolatex2tests/translators/xcf2png_test.py</Source>
+    <Source>autolatex2tests/translators/xmi2pdf_umbrello_test.py</Source>
+    <Source>autolatex2tests/utils/__init__.py</Source>
+    <Source>autolatex2tests/utils/runner_test.py</Source>
+    <Source>autolatex2tests/utils/utilfunctions_test.py</Source>
+    <Source>test_libs.py</Source>
+  </Sources>
+  <Vcs>
+    <VcsType>None</VcsType>
+  </Vcs>
+  <FiletypeAssociations>
+    <FiletypeAssociation pattern="*.e4p" type="OTHERS"/>
+    <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
+    <FiletypeAssociation pattern="*.md" type="OTHERS"/>
+    <FiletypeAssociation pattern="*.proto" type="PROTOCOLS"/>
+    <FiletypeAssociation pattern="*.py" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.py3" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.pyw" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.pyw3" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.rst" type="OTHERS"/>
+    <FiletypeAssociation pattern="*.txt" type="OTHERS"/>
+    <FiletypeAssociation pattern="GNUmakefile" type="OTHERS"/>
+    <FiletypeAssociation pattern="Makefile" type="OTHERS"/>
+    <FiletypeAssociation pattern="README" type="OTHERS"/>
+    <FiletypeAssociation pattern="README.*" type="OTHERS"/>
+    <FiletypeAssociation pattern="makefile" type="OTHERS"/>
+  </FiletypeAssociations>
+</Project>

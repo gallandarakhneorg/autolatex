@@ -78,16 +78,29 @@ class Runner(object):
 	'''
 
 	@staticmethod
-	def checkRunnerStatus(serr, sex):
+	def checkRunnerStatus(serr, sex, retcode : int = 0):
 		'''
 		Helper function that generate the correct running behavior regarding the status of a command.
 		:param serr: Standard error output.
 		:param sex: Exception during script execution.
+		:param retcode: The return code.
 		'''
 		if sex:
 			raise sex
-		elif serr:
-			raise Exception(serr)
+		elif retcode != 0:
+			if serr:
+				raise Exception(serr)
+			else:
+				raise Exception(_T("Error when running the command. Return code is %d") % (retcode))
+
+	@staticmethod
+	def checkRunnerExitCode(code):
+		'''
+		Helper function that generate the correct running behavior regarding the exit code of a command.
+		:param code: exit code of a command.
+		'''
+		if code != 0:
+			raise Exception(_T("Errorneous command with exit code %d") % (code))
 
 	@staticmethod
 	def runPython(script : str, interceptError : bool = False, localVariables : dict = None,  showScriptOnError : bool = True):
@@ -125,7 +138,7 @@ class Runner(object):
 			else:
 				try:
 					exec(script, None,  localVariables)
-				except SyntaxError as err:
+				except BaseException as err:
 					if showScriptOnError:
 						savedStderr.write(str(err))
 						savedStderr.write(Runner.__formatScript(script))
@@ -160,7 +173,7 @@ class Runner(object):
 		:type cmd: list
 		:return: A triplet containing the standard output, the
 				 error output, and the exception with the return code if different of 0.
-		:rtype: (str,str,exception)
+		:rtype: (str,str,exception,retcode)
 		'''
 		return Runner.runCommandTo(None,  *cmd)
 
@@ -174,7 +187,7 @@ class Runner(object):
 		:type cmd: list
 		:return: A triplet containing the standard output, the
 				 error output, and the exception with the return code if different of 0.
-		:rtype: (str,str,exception)
+		:rtype: (str,str,exception,retcode)
 		'''
 		if redirectStdoutTo is not None:
 			with open(redirectStdoutTo, "w") as stdout_file:
@@ -190,9 +203,9 @@ class Runner(object):
 		else:
 			sex = None
 		if sout is not None and isinstance(sout, bytes):
-			sout = sout.decode("ascii")
+			sout = sout.decode()
 		if serr is not None and isinstance(serr, bytes):
-			serr = serr.decode("ascii")
+			serr = serr.decode()
 		return (sout or '', serr or '', sex, retcode)
 
 	@staticmethod
@@ -206,7 +219,7 @@ class Runner(object):
 		'''
 		completed_process = subprocess.run(cmd)
 		if completed_process:
-			completed_process.returncode
+			return completed_process.returncode
 		return 255
 
 	@staticmethod
@@ -262,9 +275,9 @@ class Runner(object):
 		else:
 			sex = None
 		if sout is not None and isinstance(sout, bytes):
-			sout = sout.decode("ascii")
+			sout = sout.decode()
 		if serr is not None and isinstance(serr, bytes):
-			serr = serr.decode("ascii")
+			serr = serr.decode()
 		return (sout or '', serr or '', sex, out.returncode)
 
 

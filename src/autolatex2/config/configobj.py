@@ -45,6 +45,10 @@ class Config(object):
 	Configuration of a AutoLaTeX instance.
 	'''
 
+	DEFAULT_INFINITE_LOOP_DELAY = 2
+
+	DEFAULT_CLI_ACTION = 'all'
+
 	def __init__(self):
 		self.__pythonInterpreter = 'python3'
 		self.__osName = None
@@ -58,7 +62,8 @@ class Config(object):
 		self.__autolatexLaunchName = None
 		self.__autolatexVersion = None
 		self.__infiniteLoop = False
-		self.__infiniteLoopDelay = 2
+		self.__infiniteLoopDelay = Config.DEFAULT_INFINITE_LOOP_DELAY
+		self.__default_cli_action = Config.DEFAULT_CLI_ACTION
 
 		self.__generation = GenerationConfig()
 		self.__translation = TranslatorConfig()
@@ -560,4 +565,25 @@ class Config(object):
 		:type config: CleanConfig
 		'''
 		self.__clean = config
+
+	@property
+	def defaultCliAction(self) -> str:
+		'''
+		Replies the default command-line action.
+		:return: The name of the action.
+		:rtype: str
+		'''
+		return self.__default_cli_action
+
+	@defaultCliAction.setter
+	def defaultCliAction(self, name : str):
+		'''
+		Change the name of the default command-line action.
+		:param name: The name.
+		:type name: str
+		'''
+		if name is None or not name:
+			self.__default_cli_action = Config.DEFAULT_CLI_ACTION
+		else:
+			self.__default_cli_action = name
 

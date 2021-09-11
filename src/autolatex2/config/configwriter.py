@@ -122,16 +122,17 @@ class OldStyleConfigWriter(object):
 
 		self.set(config_out, 'viewer', 'viewer', self.to_cli(config.view.viewerCLI))
 
-		for translator,  included in config.translators.translators().items():
-			config_out.add_section('translator')
-			self.set(config_out, translator, 'include module', self.to_bool(included))
-
 		clean_files = config.clean.cleanFiles
 		cleanall_files = config.clean.cleanallFiles
 		if clean_files or cleanall_files:
 			config_out.add_section('clean')
 			self.set(config_out, 'clean', 'files to clean', self.to_paths(clean_files,  dout))
 			self.set(config_out, 'clean', 'files to desintegrate', self.to_paths(cleanall_files,  dout))
+
+		for translator,  included in config.translators.translators().items():
+			config_out.add_section(translator)
+			self.set(config_out, translator, 'include module', self.to_bool(included))
+
 
 		with open(filename, 'w') as configfile:
 			config_out.write(configfile)

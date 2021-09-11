@@ -37,6 +37,7 @@ from autolatex2.utils.extlogging import LogLevel
 from autolatex2.config.configobj import Config
 from autolatex2.config.configreader import OldStyleConfigReader
 from autolatex2.translator.translatorobj import TranslatorLevel
+import autolatex2.utils.extprint as eprintpkg
 
 import gettext
 _T = gettext.gettext
@@ -105,12 +106,7 @@ class AbstractMakerAction(ABC):
 			parser_cli = action_parser.add_parser(command.name, help = command.help,  aliases = command.aliases)
 		else:
 			parser_cli = action_parser.add_parser(command.name, help = command.help)
-		cmds = parser_cli.get_default('commands')
-		if not cmds:
-			cmds = list([self.run])
-			parser_cli.set_defaults(commands=cmds)
-		else:
-			cmds.append(self.run)
+		parser_cli.set_defaults(__command_callback_func=self.run)
 		self._add_command_cli_arguments(parser_cli,  command)
 
 	@property
@@ -207,40 +203,71 @@ class AbstractAutoLaTeXMain(ABC):
 		Create CLI arguments for the given commands.
 		:param commands: the pairs "command id"-"command instance".
 		:type commands: dict
+		:param title: The title of the command set.
+		:type title: str
+		:param help: The help description of the command set.
+		:type help: str
+		:param metavar: The name of the command set in the help. Default is: COMMAND.
+		:type metavar: str
 		'''
 		subparsers = self.cli_parser.add_subparsers(title = title,  metavar=(metavar),  help = help)
 		for id,  command in commands.items():
 			command.instance.register_command(action_parser=subparsers,  command=command,  configuration=self.configuration)
 
-	def _ensure_command_function(self,  args,  commands : dict,  default_command : str):
+	def _parse_command_with_sequence_of_commands(self):
 		'''
-		Ensure that the arguments contains a command, and if not, create the command for the provided default command.
-		:param args: Arguments on the command line.
-		:type args: argparse object
-		:param commands: Dictionnary of the defined commands.
-		:type commands: dict
-		:param default_command: Name of the default command.
-		:type default_command: str
+		Parse the command line in order to detect the optional arguments and the sequence of command arguments
+		:return: the tuple with as first element the CLI args that are not consumed by argparse library, and the second element the list of unknown arguments.
+		:rtype: tuple (args, list)
 		'''
-		if not hasattr(args, 'commands') or not args.commands or not isinstance(args.commands,  list):
-			if default_command not in self.__commands or not self.__commands[default_command]:
-				logging.error(_T('Unable to determine the command to run'))
-				sys.exit(255)
-			args.commands = list([self.__commands[default_command].instance.run])
+		cli = sys.argv[1:]
+		unknown_arguments = list()
+		commands = list()
+		self._cli_parser.exit_on_error = False
+		while cli:
+			# Create a "local" namespace to avoid implicit inheritence of optional option values between commands.
+			# This principle works because the values of the global optional arguments are not stored into the namespace but inside the AutoLaTeX configuration.
+			args = argparse.Namespace()
+			args, cli1 =  self._cli_parser.parse_known_args(cli)
+			if cli1:
+				unknown_arguments.extend(cli1)
+			if  args and hasattr(args,  '__command_callback_func'):
+				func = getattr(args,  '__command_callback_func')
+				if func:
+					tpl = (func,  args)
+					commands.append(tpl)
+			if cli1 == cli:
+				# Nothing was consumed
+				return (commands,  unknown_arguments)
+			cli = cli1
+		return (commands,  unknown_arguments)
 
-	def _execute_commands(self,  args):
+	def _execute_commands(self,  args : list,  all_commands : dict,  default_command : str = None):
 		'''
 		Execute the commands.
-		:param args: Arguments on the command line.
-		:type args: argparse object
+		:param args: List of arguments on the command line.
+		:type args: list of argparse objects
+		:param all_commands: Dict of all the available commands.
+		:type all_commands: dict
+		:param default_command: The name of the default command.
+		:type default_command: str
 		'''
-		if not hasattr(args, 'commands') or not args.commands or not isinstance(args.commands,  list):
+		# Add default command
+		if not args and default_command and all_commands and default_command in all_commands and all_commands[default_command]:
+			inst = all_commands[default_command].instance
+			if inst and inst.run:
+				tpl = (inst.run,  argparse.Namespace())
+				args.append(tpl)
+
+		# Check existing command
+		if not args:
 			logging.error(_T('Unable to determine the command to run'))
 			sys.exit(255)
-		cmds = args.commands
-		for cmd in cmds:
+
+		# Run the sequence of commands
+		for cmd, cmd_args in args:
 			try:
-				continuation = cmd(args)
+				continuation = cmd(cmd_args)
 				if not continuation:
 					sys.exit(255)
 			except:
@@ -281,19 +308,23 @@ class AbstractAutoLaTeXMain(ABC):
 				path = os.path.dirname(path)
 		return None
 
-	def _create_cli_parser(self,  name : str,  version : str,  description : str= None,  osname : str = None,  platformname : str = None,  epilog=None):
+	def _create_cli_parser(self,  name : str,  version : str,  default_arg = None,  description : str= None,  osname : str = None,  platformname : str = None,  epilog=None):
 		'''
 		Create the instance of the CLI parser.
 		:param name: The name of the program.
 		:type name: str
 		:param version: The version of the program.
 		:type version: str
+		:param default_arg: The default argument for the program.
+		:type default_arg: str
 		:param description: The description of the program.
 		:type description: str
 		:param osname: The name of the operating system.
 		:type osname: str
 		:param platformname: The name of the platform.
 		:type platformname: str
+		:param epilog: The epilog of the documentation.
+		:type epilog: str
 		:return: the created instance.
 		'''
 		if not description:
@@ -302,7 +333,7 @@ class AbstractAutoLaTeXMain(ABC):
 			osname = os.name
 		if not platformname:
 			platformname = platform.system()
-		parser = argparse.ArgumentParser(prog=name,  description=description,  epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
+		parser = argparse.ArgumentParser(prog=name,  argument_default=default_arg,  description=description,  epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
 		parser.version = _T("%s %s - %s/%s platform") % (name,  version,  osname,  platformname)
 		return parser
 
@@ -385,7 +416,7 @@ class AbstractAutoLaTeXMain(ABC):
 			def __call__(actionself, parser, namespace, value, option_string=None):
 				self.configuration.pdfMode = True
 		output_type_group.add_argument('--pdf',
-			action=PdfAction,
+			action=PdfAction, 
 			nargs=0, 
 			help=_T('Do the compilation to produce a PDF document'))
 
@@ -398,6 +429,26 @@ class AbstractAutoLaTeXMain(ABC):
 			action=DvipsAction,
 			nargs=0, 
 			help=_T('Do the compilation to produce a DVI, XDV or Postscript document'))
+
+		# --stdout
+		# --stderr
+		class StdouterrAction(argparse.Action):
+			def __call__(actionself, parser, namespace, value, option_string=None):
+				eprintpkg.is_standard_output = actionself.const
+
+		std_output_group = output_group.add_mutually_exclusive_group()
+
+		std_output_group.add_argument('--stdout',
+			action=StdouterrAction, 
+			const = True, 
+			nargs=0, 
+			help=_T('All the standard messages (no log message) are printed out on the standard output (stdout) of the process'))
+
+		std_output_group.add_argument('--stderr',
+			action=StdouterrAction, 
+			const = False, 
+			nargs=0, 
+			help=_T('All the standard messages (no log message) are printed out on the standard error output (stderr) of the process'))
 
 	def _add_standard_cli_options_tex(self):
 		'''
@@ -599,6 +650,35 @@ class AbstractAutoLaTeXMain(ABC):
 			nargs = 0, 
 			help=_T('Avoid AutoLaTeX to use MakeIndex'))
 
+	def _add_standard_cli_options_glossary(self):
+		'''
+		Add standard CLI options in the "glossary configuration" category.
+		'''
+		glossary_group = self._cli_parser.add_argument_group(_T('glossary optional arguments'))
+
+		# --glossary
+		# --noglossary
+		# --gloss
+		# --nogloss
+		class GlossaryAction(argparse.Action):
+			def __call__(actionself, parser, namespace, value, option_string=None):
+				self.configuration.generation.is_glossary_enable = actionself.const
+
+		glossary_e_group = glossary_group.add_mutually_exclusive_group()
+
+		glossary_e_group.add_argument('--glossary', '--gloss', 
+			action=GlossaryAction,
+			const = True, 
+			nargs = 0, 
+			help=_T('Enable the call to the glossary tool (makeglossaries...)'))
+
+		glossary_e_group.add_argument('--noglossary', '--nogloss', 
+			action=GlossaryAction,
+			const = False, 
+			nargs = 0, 
+			help=_T('Disable the call to the glossary tool (makeglossaries...)'))
+
+
 	def _add_standard_cli_options_warning(self):
 		'''
 		Add standard CLI options in the "warning configuration" category.
@@ -728,6 +808,7 @@ class AbstractAutoLaTeXMain(ABC):
 		self._add_standard_cli_options_translator()
 		self._add_standard_cli_options_biblio()
 		self._add_standard_cli_options_index()
+		self._add_standard_cli_options_glossary()
 		self._add_standard_cli_options_warning()
 		self._add_standard_cli_options_logging()
 
@@ -745,11 +826,11 @@ class AbstractAutoLaTeXMain(ABC):
 		'''
 		pass
 
-	def _pre_run_program(self) -> list:
+	def _pre_run_program(self) -> tuple:
 		'''
 		Run the behavior of the main program before the specific behavior.
-		:return: the CLI args that are not consumed by argparse library.
-		:rtype: list
+		:return: the tuple with as first element the CLI args that are not consumed by argparse library, and the second element the list of unknown arguments.
+		:rtype: tuple (args, list)
 		'''
 		self.add_standard_cli_options()
 		self.add_cli_options(self._cli_parser)
@@ -758,24 +839,26 @@ class AbstractAutoLaTeXMain(ABC):
 		if not self.configuration.documentDirectory:
 			self.configuration.documentDirectory = os.getcwd()
 
-		args = self._cli_parser.parse_args()
-
-		return args
+		return self._parse_command_with_sequence_of_commands()
 
 	@abstractmethod
-	def _run_program(self,  args : list):
+	def _run_program(self,  args : object,  unknown_args: list):
 		'''
 		Run the specific behavior.
 		:param args: the CLI arguments that are not consumed by the argparse library.
-		:type args: list
+		:type args: object
+		:param unknown_args: the list of the unsupported arguments.
+		:type unknown_args: list
 		'''
 		raise(Exception("You must implements the _run_program function into the subtype"))
 
-	def _post_run_program(self,  args : list):
+	def _post_run_program(self,  args : object,  unknown_args: list):
 		'''
 		Run the behavior of the main program after the specific behavior.
 		:param args: the CLI arguments that are not consumed by the argparse library.
-		:type args: list
+		:type args: object
+		:param unknown_args: the list of the unsupported arguments.
+		:type unknown_args: list
 		'''
 		sys.exit(0)
 
@@ -783,7 +866,7 @@ class AbstractAutoLaTeXMain(ABC):
 		'''
 		Run the program.
 		'''
-		args = self._pre_run_program()
-		self._run_program(args)
-		self._post_run_program(args)
+		args,  unknown_arguments = self._pre_run_program()
+		self._run_program(args,  unknown_arguments)
+		self._post_run_program(args,  unknown_arguments)
 

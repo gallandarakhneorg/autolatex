@@ -22,9 +22,14 @@
 General utilities.
 '''
 
+import logging
 import os
 import sys
 import re
+import glob
+
+import gettext
+_T = gettext
 
 if os.name == 'nt':
 	import win32api
@@ -54,6 +59,24 @@ def findFileInPath(filename : str,  useEnvironmentVariable : bool = False) -> st
 		if os.path.exists(fn):
 			return fn
 	return None
+
+def unlinkPattern(dir : str,  file_pattern : str):
+	'''
+	Unlink all the files into the given directory that has a filename matching the given shell pattern.
+	:param dir: The directory to explore.
+	:type dir: str
+	:param file_pattern: the shell pattern.
+	:type file_pattern: str
+	'''
+	if os.path.isabs(file_pattern):
+		pattern = file_pattern
+	else:
+		pattern = os.path.join(dir,  file_pattern)
+	file_list = glob.glob(pattern, recursive=False)
+	if file_list:
+		for file in file_list:
+			logging.debug(_T("Deleting %s") % (file))
+			unlink(file)
 
 def unlink(name : str):
 	'''
@@ -146,19 +169,20 @@ def getFileLastChange(filename : str) -> int:
 	except:
 		return None
 
-def parseCLI(commandLine : str, environment : dict = {}, exceptions : set = {}) -> list:
+def parseCLI(commandLine : str, environment : dict = {}, exceptions : set = {},  all_protect : bool = False) -> list:
 	'''
 	Parse the given strings as command lines and extract each component.
 	The components are separated by space characters. If you want a
 	space character inside a component, you must enclose the component
 	with quotes. To have quotes in components, you must protect them
 	with the backslash character.
-	This function expand the environment variables.</p>
-	<p><i>Note:</i> Every parameter that is an associative array is assumed to be an
+	This function expand the environment variables.
+	
+	Note: Every parameter that is an associative array is assumed to be an
 	environment of variables that should be used prior to <code>os.environ</code> to expand the
 	environment variables. The elements in the parameter are treated from the
 	first to the last. Each time an environment was found, it is replacing any
-	previous additional environment.</p>
+	previous additional environment.
 	:param exceptions: The names of the environment variables to not expand.
 	:type exceptions: set
 	:return: The CLI elements.
@@ -184,7 +208,7 @@ def parseCLI(commandLine : str, environment : dict = {}, exceptions : set = {}) 
 				elif sep.startswith('$'):
 					varname = sep[1:]
 				if varname:
-					if protect == '\'' or varname in exceptions:
+					if all_protect or protect == '\'' or varname in exceptions:
 						value += sep
 					elif environment and varname in environment:
 						value += environment[varname] or ''
@@ -207,6 +231,51 @@ def parseCLI(commandLine : str, environment : dict = {}, exceptions : set = {}) 
 			    value += commandLine
 		if value:
 			    r.append(value)
+	return r
+
+def expandenv(commandLine : list, environment : dict, exceptions : set = {}) -> list:
+	'''
+	Parse the given strings as command lines and extract each component.
+	The components are separated by space characters. If you want a
+	space character inside a component, you must enclose the component
+	with quotes. To have quotes in components, you must protect them
+	with the backslash character.
+	This function expand the environment variables.
+	
+	Note: Every parameter that is an associative array is assumed to be an
+	environment of variables that should be used prior to <code>os.environ</code> to expand the
+	environment variables. The elements in the parameter are treated from the
+	first to the last. Each time an environment was found, it is replacing any
+	previous additional environment.
+	:param exceptions: The names of the environment variables to not expand.
+	:type exceptions: set
+	:return: The CLI elements.
+	:rtype: list
+	'''
+	r = list()
+	for element in commandLine:
+		m = re.match('^(.*?)((?:\\\\.)|(?:\\$[a-zA-Z0-9_]+)|(?:\\$\\{[a-zA-Z0-9_]+\\}))(.*)$', element, re.S)
+		while m:
+			prefix = m.group(1)
+			macro = m.group(2)
+			rest = m.group(3)
+			element = prefix
+			if macro.startswith('\\'):
+				element += macro[1:]
+			else:
+				if macro.startswith('${'):
+					varname = macro[2:-1]
+				else:
+					varname = macro[1:]
+				if varname in exceptions:
+					element += macro
+				elif environment and varname in environment:
+					element += environment[varname] or ''
+				else:
+					element += os.environ.get(varname) or ''
+			element += rest
+			m = re.match('^(.*?)((?:\\$[a-zA-Z0-9_]+)|(?:\\$\\{[a-zA-Z0-9_]+\\}))(.*)$', element, re.S)
+		r.append(element)
 	return r
 
 def abspath(path : str, root : str) -> str:

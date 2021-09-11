@@ -23,6 +23,7 @@ import os
 from autolatex2.cli.main import AbstractMakerAction
 from autolatex2.translator.translatorobj import TranslatorRepository
 from autolatex2.translator.translatorobj import TranslatorRunner
+from autolatex2.utils.extprint import eprint
 
 import gettext
 _T = gettext.gettext
@@ -47,6 +48,6 @@ class MakerAction(AbstractMakerAction):
 			translator = runner.getTranslatorFor(img)
 			if translator:
 				rel_path = os.path.relpath(img,  self.configuration.documentDirectory)
-				print(_T("%s => %s") % (rel_path, translator.name))
+				eprint(_T("%s => %s") % (rel_path, translator.name))
 		return True
 	

@@ -25,6 +25,8 @@ Provides tools for debugging autolatex.
 import os
 import pprint
 
+from autolatex2.utils.extprint import eprint
+
 def dbg(*variables1 : object, **variables2 : object):
 	'''
 	Raw display the values of the given variables on the console.
@@ -56,8 +58,8 @@ def dbg_struct(var : object):
 	:param var: The variable to display.
 	:type var: object
 	'''
-	print (var.__class__)
-	print (dir(var))
+	eprint (var.__class__)
+	eprint (dir(var))
 	exit(255)
 
 def dbg_showfolder(folder : str, recursive : bool = False):
@@ -69,21 +71,21 @@ def dbg_showfolder(folder : str, recursive : bool = False):
 	:param recursive: Indicates if the subfolders are also displayed (default: False).
 	:type recursive: bool
 	'''
-	print()
+	eprint()
 	for dirname, dirnames, filenames in os.walk(folder):
-		print("%s:" % dirname)
+		eprint("%s:" % dirname)
 
 		# print path to all subdirectories first.
 		for subdirname in dirnames:
-			print("%s/" % subdirname)
+			eprint("%s/" % subdirname)
 
 		# print path to all filenames.
 		for filename in filenames:
-			print(filename)
+			eprint(filename)
 
 		if recursive:
 			for subdirname in dirnames:
 				fullPath = os.path.join(dirname, subdirname)
-				print()
+				eprint()
 				dbg_showfolder(fullPath, recursive)
 

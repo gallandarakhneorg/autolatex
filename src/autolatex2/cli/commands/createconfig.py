@@ -53,7 +53,7 @@ class MakerAction(AbstractMakerAction):
 		:return: True if the process could continue. False if an error occurred and the process should stop.
 		'''
 		dout = self.configuration.documentDirectory
-		fout = self.configuration.makeDocumentConfigFilename(dout) + '.fake'
+		fout = self.configuration.makeDocumentConfigFilename(dout)
 		if os.path.isfile(fout) and not args.force:
 			logging.error(_T("File already exists: %s") % (fout))
 			sys.exit(255)

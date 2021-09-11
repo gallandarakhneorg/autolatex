@@ -54,6 +54,7 @@ class MakerAction(AbstractMakerAction):
 		'.ind', 
 		'.lbl',
 		'.loa',
+		'.loc',
 		'.loe',
 		'.lof', 
 		'.log', 
@@ -68,6 +69,7 @@ class MakerAction(AbstractMakerAction):
 		'.out', 
 		'.run.xml', 
 		'.snm',
+		'.soc',
 		'.spl',
 		'.thlodef',
 		'.tmp', 
@@ -82,6 +84,17 @@ class MakerAction(AbstractMakerAction):
 		'\\.mtf[0-9]+',
 		'\\.mtl[0-9]+',
 	]
+
+	MORE_CLEANABLE_FILE_EXTENSIONS = [
+		'~',
+		'.back',
+		'.backup',
+		'.bak',
+	]
+
+	def __init__(self):
+		super().__init__()
+		self.__nb_deletions = 0
 
 	def _add_command_cli_arguments(self,  action_parser, command):
 		'''
@@ -101,9 +114,50 @@ class MakerAction(AbstractMakerAction):
 			action = 'store_true', 
 			help=_T('Simulate the removal of the files, i.e. the files are not removed from the disk'))
 
+		if command.name == 'clean':
+			action_parser.add_argument('--all', 
+				action = 'store_true', 
+				help=_T('If specified, the cleaning command behaves as the command \'cleanall\''))
+
+	def __callback_run_cleanall(self,  args) -> bool:
+		return False
+
 	def run(self,  args) -> bool:
 		'''
 		Callback for running the command.
+		:param args: the arguments.
+		:return: True if the process could continue. False if an error occurred and the process should stop.
+		'''
+		self.__nb_deletions = 0
+		if not self.run_clean_command(args):
+			return False
+		if (args.all):
+			if not self.run_cleanall_command(args):
+				return False
+		self._show_deletions_message(args)
+		return True
+
+	def _show_deletions_message(self,  args):
+		'''
+		Show the conclusion message.
+		:param args: The CLI arguments.
+		:type args: argparse object
+		'''
+		if self.__nb_deletions > 1:
+			if args.simulate:
+				msg = _T("%d files were selected as deletion candidates") % (self.__nb_deletions)
+			else:
+				msg = _T("%d files were deleted") % (self.__nb_deletions)
+		else:
+			if args.simulate:
+				msg = _T("%d file was selected as deletion candidate") % (self.__nb_deletions)
+			else:
+				msg = _T("%d file was deleted") % (self.__nb_deletions)
+		logging.info(msg)
+
+	def run_clean_command(self,  args) -> bool:
+		'''
+		Run the command 'clean'.
 		:param args: the arguments.
 		:return: True if the process could continue. False if an error occurred and the process should stop.
 		'''
@@ -144,10 +198,67 @@ class MakerAction(AbstractMakerAction):
 							self._delete_file(abs_filename,  args.simulate)
 		return True
 
+	def run_cleanall_command(self,  args) -> bool:
+		'''
+		Run the command 'cleanall' or '--all' optional argument.
+		:param args: the arguments.
+		:return: True if the process could continue. False if an error occurred and the process should stop.
+		'''
+		# Remove additional files
+		maker = AutoLaTeXMaker.create(self.configuration)
+		# Prepare used-defined list of deletable files
+		clean_files = self.configuration.clean.cleanallFiles
+		abs_clean_files = list()
+		bn_clean_files = list()
+		for file in clean_files:
+			if os.sep in file:
+				abs_clean_files.append(file)
+			else:
+				bn_clean_files.append(file)
+		for root_file in maker.rootFiles:
+			root_dir = os.path.dirname(root_file)
+			if args.norecursive:
+				root = os.path.dirname(root_file)
+				for filename in os.listdir(root):
+					abs_filename = os.path.join(root,  filename)
+					if self._is_deletable_more(root,  root_file, abs_filename):
+						self._delete_file(abs_filename,  args.simulate)
+					elif self._is_deletable_shell(root,  root_file, abs_filename,  filename,  abs_clean_files,  bn_clean_files):
+						self._delete_file(abs_filename,  args.simulate)
+			else:
+				for root, dirs, files in os.walk(os.path.dirname(root_file)):
+					for filename in files:
+						abs_filename = os.path.join(root,  filename)
+						if root == root_dir and self._is_deletable_more(root,  root_file, abs_filename):
+							self._delete_file(abs_filename,  args.simulate)
+						elif self._is_deletable_shell(root,  root_file, abs_filename,  filename,  abs_clean_files,  bn_clean_files):
+							self._delete_file(abs_filename,  args.simulate)
+		return True
+
+	def _is_deletable_more(self,  root_dir : str,  tex_filename : str,  filename : str) -> bool:
+		'''
+		Replies if the given filename is for a deletable file anywhere.
+		'''
+		if os.name == 'nt':
+			fnl = filename.lower()
+			for ext in MakerAction.MORE_CLEANABLE_FILE_EXTENSIONS:
+				if fnl.endswith(ext):
+					return True
+		else:
+			for ext in MakerAction.MORE_CLEANABLE_FILE_EXTENSIONS:
+				if filename.endswith(ext):
+					return True
+		return False
+
 	def _delete_file(self,  filename : str,  simulate : bool):
-		logging.fine_info(_T("Deleting: %s") % (filename))
+		if simulate:
+			msg = _T("Selecting: %s") % (filename)
+		else:
+			msg = _T("Deleting: %s") % (filename)
+		logging.info(msg)
 		if not simulate:
 			genutils.unlink(filename)
+		self.__nb_deletions = self.__nb_deletions + 1
 
 	def _is_deletable_in_root_folder_only(self,  root_dir : str,  tex_filename : str,  filename : str) -> bool:
 		'''

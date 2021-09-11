@@ -124,20 +124,24 @@ class AutoLaTeXMain(AbstractAutoLaTeXMain):
 		'''
 		self.__commands = self._build_command_dict('autolatex2.cli.commands')
 		if self.__commands:
-			self._create_cli_arguments_for_commands(commands = self.__commands,  title = _T("commands"),  help = _T('Command to be run by autolatex, by default \'all\'. Available commands are:'))
+			if self.configuration.defaultCliAction:
+				help_msg = _T('Command to be run by autolatex, by default \'%s\'. Available commands are:') % (self.configuration.defaultCliAction)
+			else:
+				help_msg = _T('Command to be run by autolatex. Available commands are:')
+			self._create_cli_arguments_for_commands(commands = self.__commands,  title = _T("commands"),  help = help_msg)
 
-	def _pre_run_program(self) -> list:
+	def _pre_run_program(self) -> tuple:
 		'''
 		Run the behavior of the main program before the specific behavior.
-		:return: the CLI args that are not consumed by argparse library.
-		:rtype: list
+		:return: the tuple with as first element the CLI args that are not consumed by argparse library, and the second element the list of unknown arguments.
+		:rtype: tuple (args, list)
 		'''
-		args = super()._pre_run_program()
+		args,  unknown_arguments = super()._pre_run_program()
 
 		if not self.configuration.documentFilename:
 			self.configuration.documentFilename = self.__detect_tex_file(self.configuration.documentDirectory)
 		
-		return args
+		return (args,  unknown_arguments)
 
 	def __detect_tex_file(self,  directory : str):
 		files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and f.endswith('.tex')]
@@ -152,18 +156,27 @@ class AutoLaTeXMain(AbstractAutoLaTeXMain):
 				logging.warning(_T("Select the TeX file: %s") % (file))
 			return file
 
-	def _run_program(self,  args : list):
+	def _run_program(self,  args : object,  unknown_args: list):
 		'''
 		Run the specific behavior.
 		:param args: the CLI arguments that are not consumed by the argparse library.
-		:type args: list
+		:type args: object
+		:param unknown_args: the list of the unsupported arguments.
+		:type unknown_args: list
 		'''
-		# If no command is given, the 'all' is assumed.
-		self._ensure_command_function(args,  self.__commands,  'all')
-		self._execute_commands(args)
+		self._execute_commands(args,  self.__commands, self.configuration.defaultCliAction)
 
+
+###############################################
+## MAIN PROGRAM
+
+def main():
+	'''
+	Run the main AutoLaTeX program.
+	'''
+	main_program = AutoLaTeXMain()
+	main_program.run()
 
 
 if __name__ == '__main__':
-	main_program = AutoLaTeXMain()
-	main_program.run()
+	main()

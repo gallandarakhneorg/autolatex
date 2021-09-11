@@ -18,6 +18,7 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+import logging
 import os
 
 from autolatex2.cli.main import AbstractMakerAction
@@ -56,5 +57,6 @@ class MakerAction(AbstractMakerAction):
 		maker = AutoLaTeXMaker.create(self.configuration)
 		for root_file in maker.rootFiles:
 			if not maker.run_makeglossaries(root_file):
+				logging.error(_T("Error when running the glossary tool"))
 				return False
 		return True

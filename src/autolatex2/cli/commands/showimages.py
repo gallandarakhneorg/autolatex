@@ -23,6 +23,7 @@ import os
 from autolatex2.cli.main import AbstractMakerAction
 from autolatex2.translator.translatorobj import TranslatorRepository
 from autolatex2.translator.translatorobj import TranslatorRunner
+from autolatex2.utils.extprint import eprint
 
 import gettext
 _T = gettext.gettext
@@ -51,10 +52,10 @@ class MakerAction(AbstractMakerAction):
 		if ddir:
 			for image in images:
 				relpath = os.path.relpath(image,  ddir)
-				print(relpath)
+				eprint(relpath)
 		else:
 			for image in images:
 				relpath = os.path.relpath(image)
-				print(relpath)
+				eprint(relpath)
 		return True
 

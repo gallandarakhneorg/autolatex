@@ -203,4 +203,3 @@ def multiline_error(message):
 				msg = re.split('[\n\r]',  message)
 			for line in msg:
 				logging.error(line)
-
