@@ -581,7 +581,7 @@ class AbstractAutoLaTeXMain(ABC):
 		# --exclude
 		class ExcludeAction(argparse.Action):
 			def __call__(actionself, parser, namespace, value, option_string=None):
-				self.configuration.translators.setIncluded(value,  TranslatorLevel.document,  False)
+				self.configuration.translators.setIncluded(value,  TranslatorLevel.DOCUMENT,  False)
 		translator_group.add_argument('-e', '--exclude',
 			action=ExcludeAction,
 			metavar = ('TRANSLATOR'), 
@@ -590,7 +590,7 @@ class AbstractAutoLaTeXMain(ABC):
 		# --include
 		class IncludeAction(argparse.Action):
 			def __call__(actionself, parser, namespace, value, option_string=None):
-				self.configuration.translators.addIncludePath(value,  TranslatorLevel.document,  True)
+				self.configuration.translators.addIncludePath(value,  TranslatorLevel.DOCUMENT,  True)
 		translator_group.add_argument('-i', '--include',
 			action=IncludeAction,
 			metavar = ('TRANSLATOR'), 

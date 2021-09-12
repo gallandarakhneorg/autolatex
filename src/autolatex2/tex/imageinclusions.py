@@ -19,14 +19,10 @@
 # Boston, MA 02111-1307, USA.
 
 '''
-Tools for creating a flattened version of a TeX document.
-A flattened document contains a single TeX file, and all the
-other related files are put inside the same directory of
-the TeX file.
+Tools for extracting the list of the included figures in a TeX document.
 '''
 
 import os
-import shutil
 import re
 import textwrap
 import logging
@@ -37,17 +33,14 @@ _T = gettext.gettext
 from autolatex2.tex import texparser
 import autolatex2.utils.utilfunctions as genutils
 
-class Flattener(texparser.Observer):
+class ImageInclusions(texparser.Observer):
 	'''
-	Observer on TeX parsing for creating a flattened version of a TeX document.
+	Observer on TeX parsing for extracting included images in a TeX document.
 	'''
 
 	__MACROS = {
 		'input'											: '!{}',
 		'include'										: '!{}',
-		'usepackage'									: '![]!{}',
-		'RequirePackage'							: '![]!{}',
-		'documentclass'							: '![]!{}',
 		'includeanimatedfigure'			: '![]!{}',
 		'includeanimatedfigurewtex'		: '![]!{}',
 		'includefigurewtex'					: '![]!{}',
@@ -61,45 +54,29 @@ class Flattener(texparser.Observer):
 		'mfiguretex'									: '![]!{}!{}!{}!{}',
 		'mfiguretex*'								: '![]!{}!{}!{}!{}',
 		'pgfdeclareimage'						: '![]!{}!{}', 
-		'addbibresource'							: '![]!{}',
-		'begin'											: '![]!{}', 
-		'end'												: '![]!{}', 
 	}
 
-	def __init__(self, filename : str, outputDirectory : str):
+	def __init__(self, filename : str):
 		'''
 		Constructor.
 		:param filename: The name of the file to parse.
 		:type filename: str
-		:param outputDirectory: The name of the directory in which the document must be generated.
-		:type outputDirectory: ste
 		'''
 		self.__filename = filename
 		self.__basename = os.path.basename(os.path.splitext(filename)[0])
 		self.__dirname = os.path.dirname(filename)
-		self.__output = outputDirectory
-		self.__useBiblio = False
 		self.__init()
-		self.__included_sty = dict()
 
 	def __init(self) :
 		# Inclusion paths for pictures.
 		self.__includePaths = []
 		if self.__dirname:
 			self.__includePaths.append(self.__dirname)
-		# Premable entries added by this tool
-		self.__dynamicPreamble = []
 		# Content of the TeX file to generate
-		self.__texFileContent = ''
+		self.__filesToCopy = set()
 		# Mapping betwwen the files of the source TeX and the target TeX.
 		self.__source2target = dict()
 		self.__target2source = dict()
-		# Files to copy
-		self.__filesToCopy = set()
-		# Embedded files
-		self.__embedded_files_added = set()
-		self.__embedded_files = dict()
-		self.__file_content_counter = 0
 
 	@property
 	def includePaths(self) -> list:
@@ -110,41 +87,12 @@ class Flattener(texparser.Observer):
 		'''
 		return self.__includePaths
 
-	@property
-	def use_biblio(self) -> bool:
+	def get_included_figures(self) -> set:
 		'''
-		Replies if the biblio database.
-		:return: True if the biblio database may be use. False for inline biliography entries.
-		:rtype: bool
+		Replies the list of included figures.
+		:rtype: list
 		'''
-		return self.__useBiblio
-
-	@use_biblio.setter
-	def use_biblio(self, b : bool):
-		'''
-		Set if the biblio database.
-		:param b: True if the biblio database may be use. False for inline biliography entries.
-		:type b: bool
-		'''
-		self.__useBiblio = b
-
-	@property
-	def output_directory(self) -> str:
-		'''
-		Replies the output directory.
-		:return: The name  of the output directory.
-		:rtype: str
-		'''
-		return self.__output
-
-	@output_directory.setter
-	def output_directory(self, n : str):
-		'''
-		Set the output directory.
-		:param d: The name of output directory.
-		:type n: str
-		'''
-		self.__output = n
+		return self.__filesToCopy
 
 	@property
 	def basename(self) -> str:
@@ -199,27 +147,6 @@ class Flattener(texparser.Observer):
 		:type n: str
 		'''
 		self.__filename = n
-
-	def findMacro(self, parser : texparser.Parser, name : str, special : bool, math : bool) -> str:
-		'''
-		Invoked each time a macro definition is not found in the parser data.
-		:param parser: reference to the parser.
-		:type parser: Parser
-		:param name: Name of the macro.
-		:type name: str
-		:param special: Indicates if the macro is a special macro or not.
-		:type special: bool
-		:param math: Indicates if the math mode is active.
-		:type math: bool
-		:return: the definition of the macro, ie. the macro prototype. See the class documentation for an explanation about the format of the macro prototype.
-		:rtype: str
-		'''
-		if not special:
-			if name.startswith('bibliographystyle'):
-				return '!{}'
-			elif name.startswith('bibliography'):
-				return '!{}'
-		return None
 
 	def openBlock(self, parser : texparser.Parser, text : str) -> str:
 		'''
@@ -281,8 +208,6 @@ class Flattener(texparser.Observer):
 		:param text: the text to filter.
 		:type text: str
 		'''
-		if text:
-			self.__texFileContent += text
 		return None
 
 	def expand(self, parser : texparser.Parser, rawtext : str, name : str, *parameter : texparser.Parameter) -> str:
@@ -299,106 +224,8 @@ class Flattener(texparser.Observer):
 		:return: the result of the expand of the macro, or None to not replace the macro by something (the macro is used as-is)
 		:rtype: str
 		'''
-		if name == "\\begin":
-			texname = parameter[1]['text']
-			if texname == 'filecontents*':
-				self.__file_content_counter = self.__file_content_counter + 1
-			ret = name
-			if parameter[0]['text']:
-				ret += "[%s]" % (parameter[0]['text'])
-			ret += "{%s}" % (texname)
-			return ret
-		elif name == "\\end":
-			texname = parameter[1]['text']
-			if texname == 'filecontents*':
-				self.__file_content_counter = self.__file_content_counter - 1
-				if self.__file_content_counter <= 0:
-					for key,  value in self.__embedded_files.items():
-						parser.putBack(value)
-					self.__embedded_files = dict()
-			ret = name
-			if parameter[0]['text']:
-				ret += "[%s]" % (parameter[0]['text'])
-			ret += "{%s}" % (texname)
-			return ret
-		elif name == "\\usepackage" or name == "\\RequirePackage":
-			texname = parameter[1]['text']
-			filename = self.__makeFilename(texname, '.sty')
-			added_file = ''
-			if texname == 'biblatex':
-				if not self.use_biblio:
-					filename = self.__makeFilename(self.basename, '.bbl', '.tex')
-					if os.path.isfile(filename) and filename not in self.__embedded_files_added:
-						logging.trace(_T('Embedding %s'), filename)
-						if not self.__embedded_files_added:
-							self.__dynamicPreamble.append("\\usepackage{filecontents}")
-						self.__embedded_files_added.add(filename)
-						with open(filename) as f:
-							content = f.read()
-						basename = os.path.basename(filename)
-						added_file = textwrap.dedent("""
-								%%=======================================================
-								%%== BEGIN FILE: %s
-								%%=======================================================
-								\\begin{filecontents*}{%s}
-								%s
-								\\end{filecontents*}
-								%%=======================================================
-								""") % (basename, basename, content)
-					else:
-						logging.error(_T('File not found: %s'), filename)
-			elif self.__isDocumentFile(filename) and filename not in self.__embedded_files_added:
-				logging.trace(_T('Embedding %s'), filename)
-				if not self.__embedded_files_added:
-					self.__dynamicPreamble.append("\\usepackage{filecontents}")
-				self.__embedded_files_added.add(filename)
-				with open(filename) as f:
-					content = f.read()
-				basename = os.path.basename(filename)
-				added_file = textwrap.dedent("""
-						%%=======================================================
-						%%== BEGIN FILE: %s
-						%%=======================================================
-						\\begin{filecontents*}{%s}
-						%s
-						\\end{filecontents*}
-						%%=======================================================
-						""") % (basename, basename, content)
-			ret = name
-			if parameter[0]['text']:
-				ret += "[%s]" % (parameter[0]['text'])
-			ret += "{%s}" % (texname)
-			if added_file:
-				if 	self.__file_content_counter <= 0:
-					parser.putBack(added_file + ret)
-					return ''
-				else:
-					self.__embedded_files[filename] = added_file
-					return ret
-			else:
-				return ret
-		if name == "\\documentclass":
-			texname = parameter[1]['text']
-			filename = self.__makeFilename(texname, '.cls')
-			if self.__isDocumentFile(filename):
-				texname = self.__createMapping(filename, '.cls')
-				self.__filesToCopy.add(filename)
-			ret = name
-			if parameter[0]['text']:
-				ret += "[%s]" % (parameter[0]['text'])
-			ret += "{%s}\n\n%%========= AUTOLATEX PREAMBLE\n\n" % (texname)
-			return ret
-		elif	name == "\\includegraphics" or \
-				name == "\\includeanimatedfigure" or \
-				name == "\\includeanimatedfigurewtex" or \
-				name == "\\includefigurewtex" or \
-				name == "\\includegraphicswtex":
-			texname, prefix = self.__findPicture(parameter[1]['text'])
-			ret = prefix + name
-			if parameter[0]['text']:
-				ret += "[%s]" % (parameter[0]['text'])
-			ret += "{%s}" % (texname)
-			return ret
+		if	name == "\\includegraphics" or name == "\\includeanimatedfigure" or name == "\\includeanimatedfigurewtex" or name == "\\includefigurewtex" or name == "\\includegraphicswtex":
+			self.__findPicture(parameter[1]['text'])
 		elif name == "\\graphicspath":
 			t = parameter[1]['text']
 			if t:
@@ -410,31 +237,12 @@ class Flattener(texparser.Observer):
 					t = r.group(3)
 					self.__includePaths.insert(0, path)
 					r = re.match('^\\s*(?:(?:\\{([^\\}]+)\\})|([^,]+))\\s*[,;]?\\s*(.*)$', t) if t else None
-			return "\\graphicspath{{./}}"
-		elif	name == "\\mfigure" or \
-				name == "\\mfigure*" or \
-				name == "\\mfiguretex" or \
-				name == "\\mfiguretex*":
-			texname, prefix = self.__findPicture(parameter[2]['text'])
-			ret = prefix + name
-			if parameter[0]['text']:
-				ret += "[%s]" % (parameter[0]['text'])
-			ret += "{%s}{%s}{%s}{%s}" % (parameter[1]['text'], texname, parameter[3]['text'], parameter[4]['text'])
-			return ret
+		elif	name == "\\mfigure" or name == "\\mfigure*" or name == "\\mfiguretex" or name == "\\mfiguretex*":
+			self.__findPicture(parameter[2]['text'])
 		elif name == "\\msubfigure" or name == "\\msubfigure*":
-			texname, prefix = self.__findPicture(parameter[2]['text'])
-			ret = prefix + name
-			if parameter[0]['text']:
-				ret += "[%s]" % (parameter[0]['text'])
-			ret += "{%s}{%s}{%s}" % (parameter[1]['text'], texname, parameter[3]['text'])
-			return ret
+			self.__findPicture(parameter[2]['text'])
 		elif name == "\\pgfdeclareimage":
-			texname, prefix = self.__findPicture(parameter[2]['text'])
-			ret = prefix + name
-			if parameter[0]['text']:
-				ret += "[%s]" % (parameter[0]['text'])
-			ret += "{%s}{%s}" % (parameter[1]['text'], texname)
-			return ret
+			self.__findPicture(parameter[2]['text'])
 		elif name == "\\include" or name == "\\input":
 			filename = self.__makeFilename(parameter[0]['text'], '.tex')
 			with open(filename) as f:
@@ -451,53 +259,6 @@ class Flattener(texparser.Observer):
 					%%== BEGIN FILE: %s
 					%%=======================================================
 					""") % (os.path.basename(filename))
-		elif name.startswith("\\bibliographystyle"):
-			if self.use_biblio:
-				texname = parameter[0]['text']
-				filename = self.__makeFilename(texname, '.bst')
-				if self.__isDocumentFile(filename):
-					texname = self.__createMapping(filename, '.bst')
-					self.__filesToCopy.add(filename)
-				return "%s{%s}" % (name, texname)
-			return None
-		elif name.startswith("\\bibliography"):
-			if self.use_biblio:
-				texname = parameter[0]['text']
-				filename = self.__makeFilename(texname, '.bib')
-				if self.__isDocumentFile(filename):
-					texname = self.__createMapping(filename, '.bib')
-					self.__filesToCopy.add(filename)
-				return "%s{%s}" % (name, texname)
-			else:
-				if len(name) > 13:
-					bibdb = name[13:]
-				else:
-					bibdb = self.basename
-				bblFile = bibdb + ".bbl"
-				if not os.path.isabs(bblFile):
-					bblFile = os.path.join(self.dirname, bblFile)
-				if os.path.isfile(bblFile):
-					with open(bblFile) as f:
-						content = f.read()
-					return textwrap.dedent("""
-							%%=======================================================
-							%%== BEGIN FILE: %s
-							%%=======================================================
-							%s
-							%%=======================================================
-							""") % (os.path.basename(bblFile), content)
-				else:
-					logging.error(_T('File not found: %s'), bblFile)
-		elif name == "\\addbibresource":
-			if self.use_biblio:
-				texname = parameter[1]['text']
-				filename = self.__makeFilename(texname, '.bib')
-				if self.__isDocumentFile(filename):
-					texname = self.__createMapping(filename, '.bib')
-					self.__filesToCopy.add(filename)
-				return "%s{%s}" % (name, texname)
-			else:
-				return None
 		# Reply the raw text back to the generated TeX document.
 		return rawtext
 
@@ -516,20 +277,6 @@ class Flattener(texparser.Observer):
 		if not os.path.isabs(name):
 			return os.path.join(self.dirname, name)
 		return name
-
-	def __isDocumentFile(self, filename : str) -> bool:
-		'''
-		Replies if the given file is a part of the document.
-		:param filename: The filename to test.
-		:type filename: str
-		:return: True if the file is a part of the document; otherwise False.
-		:rtype: bool
-		'''
-		if not os.path.isabs(filename):
-			filename = os.path.join(self.dirname, filename)
-		if os.path.isfile(filename):
-			return filename.startswith(self.dirname)
-		return False;
 
 	def __createMapping(self, filename : str, ext : str) -> str:
 		'''
@@ -615,7 +362,7 @@ class Flattener(texparser.Observer):
 						if not selectedName1:
 							selectedName1 = (texname, filename)
 					else:
-						self.__filesToCopy.add(filename)
+						self.__filesToCopy.add(os.path.normpath(filename))
 						selectedName2 = texname
 				if selectedName1:
 					texname, filename = selectedName1
@@ -642,11 +389,11 @@ class Flattener(texparser.Observer):
 		else:
 			ext = os.path.splitext(texname)[1] or ''
 			texname = self.__createMapping(filename, ext) + ext
-			self.__filesToCopy.add(filename)
+			self.__filesToCopy.add(os.path.normpath(filename))
 
 		return (texname, prefix)
 
-	def _analyze_document(self) -> str:
+	def _analyze_document(self):
 		'''
 		Analyze the tex document for extracting information.
 		:return: The content of the file.
@@ -664,56 +411,13 @@ class Flattener(texparser.Observer):
 
 		parser.parse(content)
 
-		# Replace PREAMBLE content
-		if self.__texFileContent:
-			preamble = '\n'.join(self.__dynamicPreamble)
-			if not preamble:
-				preamble = ''
-			content = self.__texFileContent.replace('%========= AUTOLATEX PREAMBLE', preamble, 1)
-
-		# Clean the content by removing empty lines
-		content = content.replace('\t', ' ').strip()
-		content = re.sub("\n+[ \t]*", "\n", content, re.S)
-
-		return content
-
-	def _generate_flat_document(self,  content : str) -> bool:
-		'''
-		Generate the flat document.
-		:param content: The content of the file.
-		:type content: str
-		:return: The success status of the generation.
-		:rtype: bool
-		'''
-		# Create the output directory
-		os.makedirs(self.output_directory)
-
-		# Create the main TeX file
-		outputFile = os.path.join(self.output_directory, self.basename) + '.tex';
-
-		logging.debug(_T('Writing %s') % (outputFile))
-		with open(outputFile, 'w') as f:
-			f.write(content)
-
-		# Copy the resources
-		for source in self.__filesToCopy:
-			target = self.__source2target[source]
-			target = os.path.join(self.output_directory, target)
-			logging.debug(_T('Copying resource %s to %s') % (source, target))
-			targetDir = os.path.dirname(target)
-			if not os.path.isdir(targetDir):
-				os.makedirs(targetDir)
-			shutil.copy(source, target)
-		return True
-
 	def run(self) -> bool:
 		'''
 		Make the input file standalone.
 		:return: True if the execution is a success, otherwise False.
 		'''
 		self.__init()
-		content = self._analyze_document()
-		logging.trace(_T("File content: %s") % (content))
-		return self._generate_flat_document(content)
+		self._analyze_document()
+		return True
 
 

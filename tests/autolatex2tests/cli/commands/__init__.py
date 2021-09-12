@@ -18,25 +18,4 @@
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-__all__ = [
-	'all', 
-	'biblio', 
-	'clean', 
-	'cleanall', 
-	'createconfig',
-	'createist',
-	'commit', 
-	'document', 
-	'glossaries', 
-	'images', 
-	'index', 
-	'init', 
-	'makeflat', 
-	'showimagemap', 
-	'showimages', 
-	'showpath', 
-	'showtranslators', 
-	'unusedimages', 
-	'update', 
-	'view', 
-]
+__all__ = [ ]
