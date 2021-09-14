@@ -3,20 +3,20 @@
 #
 # Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# This program is free library; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 3 of the
+# License, or any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; see the file COPYING.  If not,
+# write to the Free Software Foundation, Inc., 59 Temple Place - Suite
+# 330, Boston, MA 02111-1307, USA.
 
 '''
 Configuration for the generation.
@@ -45,6 +45,8 @@ class GenerationConfig(object):
 		self.__makeindexCLI = list()
 		self.__makeindexFlags = list()
 		self.__makeindexStyleFilename = None
+		self.__texindyCLI = list()
+		self.__texindyFlags = list()
 		self.__makeglossaryCLI = list()
 		self.__makeglossaryFlags = list()
 		self.__dvipsCLI = list()
@@ -52,6 +54,7 @@ class GenerationConfig(object):
 		self.__useBiber = False
 		self.__useBiblatex = False
 		self.__useMakeindex = False
+		self.__useTexindy = False
 		self.__useMultibib = False
 		self.__enableBiblio = True
 		self.__enableIndex = True
@@ -340,6 +343,22 @@ class GenerationConfig(object):
 		self.__useMakeindex = enable
 
 	@property
+	def is_xindy_index(self) -> bool:
+		'''
+		Replies if the texindy tool must be used.
+		:rtype: bool
+		'''
+		return self.__useTexindy
+
+	@is_xindy_index.setter
+	def is_xindy_index(self, enable : bool):
+		'''
+		Change the flag that indicates if the texindy tool must be used.
+		:type enable: bool
+		'''
+		self.__useTexindy = enable
+
+	@property
 	def is_multibib(self) -> bool:
 		'''
 		Replies if the multibib tool must be used.
@@ -484,6 +503,48 @@ class GenerationConfig(object):
 			self.__makeindexFlags = flags
 		else:
 			self.__makeindexFlags = genutils.parseCLI(flags)
+
+	@property
+	def texindyCLI(self) -> list:
+		'''
+		Replies the command-line for texindy.
+		:rtype: list
+		'''
+		return self.__texindyCLI
+
+	@texindyCLI.setter
+	def texindyCLI(self, cli):
+		'''
+		Set the command-line for texindy.
+		:type cli: str or list
+		'''
+		if cli is None:
+			self.__texindyCLI = list()
+		elif isinstance(cli, list):
+			self.__texindyCLI = cli
+		else:
+			self.__texindyCLI = genutils.parseCLI(cli)
+
+	@property
+	def texindyFlags(self) -> list:
+		'''
+		Replies additional flags for the texindy compiler.
+		:rtype: list
+		'''
+		return self.__texindyFlags
+
+	@texindyFlags.setter
+	def texindyFlags(self, flags):
+		'''
+		Set additional flags for the texindy compiler.
+		:type flags: str or list
+		'''
+		if flags is None:
+			self.__texindyFlags = list()
+		elif isinstance(flags, list):
+			self.__texindyFlags = flags
+		else:
+			self.__texindyFlags = genutils.parseCLI(flags)
 
 	@property
 	def makeindexStyleFilename(self) -> str:

@@ -3,20 +3,20 @@
 #
 # Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# This program is free library; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 3 of the
+# License, or any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; see the file COPYING.  If not,
+# write to the Free Software Foundation, Inc., 59 Temple Place - Suite
+# 330, Boston, MA 02111-1307, USA.
 
 '''
 AutoLaTeX Maker.
@@ -62,12 +62,13 @@ class TeXTools(IntEnum):
 	bibtex = 0
 	biber = 1
 	makeindex = 2
-	makeglossaries = 3
-	dvips = 4
-	pdflatex = 5
-	latex = 6
-	xelatex = 7
-	lualatex = 8
+	texindy = 3
+	makeglossaries = 4
+	dvips = 5
+	pdflatex = 6
+	latex = 7
+	xelatex = 8
+	lualatex = 9
 
 ######################################################################
 ##
@@ -99,6 +100,7 @@ class IndexCompiler(IntEnum):
 	Type of index compilers supported by AutoLaTeX.
 	'''
 	makeindex = TeXTools.makeindex
+	texindy = TeXTools.texindy
 
 ######################################################################
 ##
@@ -145,6 +147,7 @@ class FileDescription(object):
 		self.__dependencies = SortedSet()
 		self.__change = genutils.getFileLastChange(self.__output_filename)
 		self.__use_biber = False
+		self.__use_xindy = False
 
 	def __str__(self):
 		return self.__output_filename
@@ -216,6 +219,23 @@ class FileDescription(object):
 		:type use: bool
 		'''
 		self.__use_biber = use
+
+	@property
+	def use_xindy(self) -> bool:
+		'''
+		Replies if texindy should be used to generate this file.
+		:rtype: bool
+		'''
+		return self.__use_xindy
+
+	@use_xindy.setter
+	def use_xindy(self,  use : bool):
+		'''
+		Change the flag that indicates if texindy should be used to generate this file.
+		:param use: The flag.
+		:type use: bool
+		'''
+		self.__use_xindy = use
 
 
 ######################################################################
@@ -378,6 +398,11 @@ class AutoLaTeXMaker(Runner):
 			'cmd': 'makeindex',
 			'flags': [],
 			'index_style_flag': '-s',
+		},
+		TeXTools.texindy.value: {
+			'cmd': 'texindy',
+			'flags': [],
+			'index_style_flag': '',
 		},
 		TeXTools.makeglossaries.value: {
 			'cmd': 'makeglossaries',
@@ -549,6 +574,20 @@ class AutoLaTeXMaker(Runner):
 			if self.configuration.generation.makeindexFlags:
 				self.__makeindexCLI.extend(self.configuration.generation.makeindexFlags)
 
+			# Texindy
+			self.__texindyCLI = list()
+			if self.configuration.generation.texindyCLI:
+				self.__texindyCLI.extend(self.configuration.generation.texindyCLI)
+			else:
+				cmd = AutoLaTeXMaker.__COMMAND_DEFINITIONS[IndexCompiler.texindy.value]
+				if not cmd:
+					raise Exception(_T("No command definition for 'texindy'"))
+				self.__texindyCLI.append(cmd['cmd'])
+				self.__texindyCLI.extend(cmd['flags'])
+
+			if self.configuration.generation.texindyFlags:
+				self.__texindyCLI.extend(self.configuration.generation.texindyFlags)
+
 			# MakeGlossaries
 			self.__makeglossariesCLI = list()
 			if self.configuration.generation.makeglossaryCLI:
@@ -669,6 +708,15 @@ class AutoLaTeXMaker(Runner):
 		'''
 		self.__internal_register_commands()
 		return self.__makeindexCLI
+
+	@property
+	def texindyCLI(self) -> list:
+		'''
+		The command-line that is used for running the texindy tool.
+		:rtype: list
+		'''
+		self.__internal_register_commands()
+		return self.__texindyCLI
 
 	@property
 	def makeglossariesCLI(self) -> list:
@@ -944,14 +992,18 @@ class AutoLaTeXMaker(Runner):
 		idxFile = genutils.basename2(filename,  texutils.getIndexFileExtensions()) + idxExt
 		logging.debug(_T('MAKEINDEX: %s') % (os.path.basename(idxFile)))
 		self.__reset_warnings()
-		cmd = self.__makeindexCLI.copy()
-		istFile = self.configuration.generation.makeindexStyleFilename
-		if istFile:
-			cmd_def = AutoLaTeXMaker.__COMMAND_DEFINITIONS[IndexCompiler.makeindex.value]
-			if not cmd_def:
-				raise Exception(_T("No command definition for 'makeindex'"))
-			cmd.append(cmd_def['index_style_flag'])
-			cmd.append(os.path.relpath(istFile))
+		if False:
+			cmd = self.__makeindexCLI.copy()
+		else:
+			cmd = self.__texindyCLI.copy()
+		if 'index_style_flag' in cmd_def and cmd_def['index_style_flag']:
+			istFile = self.configuration.generation.makeindexStyleFilename
+			if istFile:
+				cmd_def = AutoLaTeXMaker.__COMMAND_DEFINITIONS[IndexCompiler.makeindex.value]
+				if not cmd_def:
+					raise Exception(_T("No command definition for 'makeindex'"))
+					cmd.append(cmd_def['index_style_flag'])
+					cmd.append(os.path.relpath(istFile))
 		cmd.append(os.path.relpath(idxFile))
 		cmd = Runner.normalizeCommand(cmd)
 		(sout, serr, sex, exitcode) = Runner.runCommand(*cmd)
@@ -1045,6 +1097,7 @@ class AutoLaTeXMaker(Runner):
 								self.__files[bblfile].dependencies.add(bibfile)
 								changed = True
 								self.__files[bblfile].use_biber = analyzer.is_biber
+								self.__files[bblfile].use_xindy = analyzer.is_xindy_index
 								bblfiles.add(bblfile)
 						for bibext in ['bst', 'bbc',  'cbx']:
 							if bibext in bibdt and bibdt[bibext]:
@@ -1168,7 +1221,6 @@ class AutoLaTeXMaker(Runner):
 						self.__stamps['bib'][bcfFile] = currentMd5
 						return True
 				else:
-					pass
 					# Parse the AUX file to detect the citations
 					auxFile = genutils.basename2(filename, '.bbl') + '.aux'
 					auxAnalyzer = AuxiliaryCitationAnalyzer(auxFile)
@@ -1178,7 +1230,7 @@ class AutoLaTeXMaker(Runner):
 						self.__stamps['bib'][auxFile] = currentMd5
 						return True
 				return False
-			elif  ext  == '.ind':
+			elif  ext  == '.ind' or (ext == '.idx' and description.use_xindy):
 				# Parse the IDX file to detect the index definitions
 				idxFile = genutils.basename2(filename, '.ind') + '.idx'
 				idxAnalyzer = IndexAnalyzer(idxFile)
@@ -1205,7 +1257,7 @@ class AutoLaTeXMaker(Runner):
 		'''
 		return '_' + self.__class__.__name__ + '__build_callback_' + str(fileType).lower()
 
-	def build_internal_execution_list(self,  rootFile : str,  root_pdf_file : str,  dependencies : dict,  forceChanges : bool = False):
+	def build_internal_execution_list(self,  rootFile : str,  root_pdf_file : str,  dependencies : dict,  forceChanges : bool = False) -> list:
 		'''
 		Build the list of files that needs to be generated in the best order. For each file, a building function named "_build_<ext>" is defined and must be invoked.
 		:param rootFile: The LaTeX file to compile.
@@ -1223,28 +1275,31 @@ class AutoLaTeXMaker(Runner):
 		# Go through the dependency tree with en iterative algorithm
 		rootchange = self.__files[root_pdf_file].change
 		element = DependencyEntry(self.__files[root_pdf_file], None) 
+		done = set()
 		iterator = [ element ]
 		while iterator:
 			element = iterator.pop()
-			current_filename = element.file.output_filename
-			current_description = self.__files[current_filename]
-			deps = current_description.dependencies
-			if element.go_up or not deps:
-				if forceChanges or element.rebuild or self.__need_rebuild(rootchange, current_filename, element.parent, current_description):
-					if element.parent:
-						element.parent.rebuild = True
-					method_name = self.__internal_build_callback_funcname(current_description.fileType)
-					if method_name in self.__internal_register_callbacks():
-						builds.append(element.file)
-			else:
-				iterator.append(element)
-				element.go_up = True
-				for dep in deps:
-					if dep in self.__files:
-						dep_obj = self.__files[dep]
-						if dep_obj:
-							child = DependencyEntry(dep_obj, element)
-							iterator.append(child)
+			if str(element) not in done:
+				done.add(str(element))
+				current_filename = element.file.output_filename
+				current_description = self.__files[current_filename]
+				deps = current_description.dependencies
+				if element.go_up or not deps:
+					if forceChanges or element.rebuild or self.__need_rebuild(rootchange, current_filename, element.parent, current_description):
+						if element.parent:
+							element.parent.rebuild = True
+						method_name = self.__internal_build_callback_funcname(current_description.fileType)
+						if method_name in self.__internal_register_callbacks():
+							builds.append(element.file)
+				else:
+					iterator.append(element)
+					element.go_up = True
+					for dep in deps:
+						if dep in self.__files:
+							dep_obj = self.__files[dep]
+							if dep_obj:
+								child = DependencyEntry(dep_obj, element)
+								iterator.append(child)
 		return builds
 
 	def run_translators(self,  forceGeneration : bool = False):
@@ -1395,24 +1450,29 @@ class AutoLaTeXMaker(Runner):
 		'''
 		js = dict()
 		js['file'] = root_file
+		done = set()
 		if root_file in dependencies and dependencies[root_file]:
-			js['dependencies'] = list()
-			self.__to_json_dependencies(dependencies,  dependencies[root_file].dependencies,  js['dependencies'])
+			if root_file not in done:
+				done.add(root_file)
+				js['dependencies'] = list()
+				self.__to_json_dependencies(dependencies,  dependencies[root_file].dependencies,  js['dependencies'],  done)
 		return json.dumps(js, indent=4)
 
-	def __to_json_dependencies(self,  dependencies : dict,  direct_deps,  dep_list : dict):
+	def __to_json_dependencies(self,  dependencies : dict,  direct_deps,  dep_list : dict,  done : set):
 		is_complex = False
 		complex_list = list()
 		simple_list = list()
 		for dep in direct_deps:
-			dep_desc = dict()
-			dep_desc['file'] = dep
-			complex_list.append(dep_desc)
-			if dep in dependencies and dependencies[dep].dependencies:
-				dep_desc['dependencies'] = list()
-				is_complex = True
-				self.__to_json_dependencies(dependencies,  dependencies[dep].dependencies, dep_desc['dependencies'])
-			simple_list.append(dep)
+			if dep not in done:
+				done.add(dep)
+				dep_desc = dict()
+				dep_desc['file'] = dep
+				complex_list.append(dep_desc)
+				if dep in dependencies and dependencies[dep].dependencies:
+					dep_desc['dependencies'] = list()
+					is_complex = True
+					self.__to_json_dependencies(dependencies,  dependencies[dep].dependencies, dep_desc['dependencies'],  done)
+				simple_list.append(dep)
 		if is_complex:
 			dep_list.extend(complex_list)
 		else:
@@ -1435,7 +1495,8 @@ class AutoLaTeXMaker(Runner):
 
 			# Compute the dependencies of the file
 			root_dep_file,  dependencies = self.compute_dependencies(rootFile)
-			extlogging.multiline_debug(_T("Dependency Tree = %s") % (self.to_json_dependencies(root_dep_file,  dependencies)))
+			json_deps = self.to_json_dependencies(root_dep_file,  dependencies)
+			extlogging.multiline_debug(_T("Dependency Tree = %s") % (json_deps))
 
 			# Construct the build list and launch the required builds
 			builds = self.build_internal_execution_list(rootFile,  root_dep_file,  dependencies)

@@ -3,20 +3,20 @@
 #
 # Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# This program is free library; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 3 of the
+# License, or any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; see the file COPYING.  If not,
+# write to the Free Software Foundation, Inc., 59 Temple Place - Suite
+# 330, Boston, MA 02111-1307, USA.
 
 '''
 Tools that is extracting the dependencies of the TeX file.
@@ -59,6 +59,7 @@ class DependencyAnalyzer(texparser.Observer):
 		self.__isBibLaTeX = False
 		self.__isBiber = False
 		self.__isIndex = False
+		self.__isXindy = False
 		self.__isGlossary = False
 		self.__dependencies = {}
 		self.__filename = filename
@@ -190,6 +191,26 @@ class DependencyAnalyzer(texparser.Observer):
 		:type enable: bool
 		'''
 		self.__isIndex = enable
+
+	@property
+	def is_xindy_index(self) -> bool:
+		'''
+		Replies if the support for xindy support is enable.
+		This flag is considered only if is_makeindex is enable.
+		:return: True if the xindy support is enabled.
+		:rtype: bool
+		'''
+		return self.__isXindy
+
+	@is_xindy_index.setter
+	def is_xindy_index(self, enable : bool) -> bool:
+		'''
+		Set if the support for xindy support is enable.
+		This flag is considered only if is_makeindex is enable.
+		:param enable: True if the xindy support is enabled.
+		:type enable: bool
+		'''
+		self.__isXindy = enable
 
 	@property
 	def is_glossary(self) -> bool:
@@ -415,6 +436,9 @@ class DependencyAnalyzer(texparser.Observer):
 								cbxFile = os.path.join(self.root_directory, cbxFile)
 							if os.path.isfile(cbxFile):
 								self.__addBibDependency('cbx', cbxFile)
+			elif styFile == 'indextools.sty':
+				if parameter[0] and parameter[0]['text'] and 'xindy' in parameter[0]['text']:
+					self.is_xindy_index = True
 			elif styFile == 'glossaries.sty':
 				self.is_glossary = True
 			else:
