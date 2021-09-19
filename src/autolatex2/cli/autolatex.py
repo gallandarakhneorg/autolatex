@@ -169,7 +169,7 @@ class AutoLaTeXMain(AbstractAutoLaTeXMain):
 		:param unknown_args: the list of the unsupported arguments.
 		:type unknown_args: list
 		'''
-		self._execute_commands(args,  self.__commands, self.configuration.defaultCliAction)
+		self._execute_commands(args,  self.__commands)
 
 
 ###############################################

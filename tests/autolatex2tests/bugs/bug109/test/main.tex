@@ -1,0 +1,13 @@
+\documentclass{article}
+
+\usepackage[backend=biber, indexing=cite]{biblatex}
+\addbibresource{biblio.bib}
+
+\usepackage[xindy]{indextools}
+\makeindex
+
+\begin{document}
+  \cite{Gromov_HolCurves}.
+  \printindex
+  \printbibliography
+\end{document}

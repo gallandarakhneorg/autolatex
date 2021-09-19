@@ -42,11 +42,15 @@ import autolatex2.utils.extprint as eprintpkg
 import gettext
 _T = gettext.gettext
 
+SUPPRESS = '==SUPPRESS=='
+
 class AutoLaTeXExiter(object):
 	'''
 	Callback that is invoked when AutoLaTeX should be terminated. This callback call the system exit instructions.
 	'''
 	def exitOnFailure(self):
+		sys.exit(255)
+	def exitOnException(self,  exception):
 		sys.exit(255)
 	def exitOnSuccess(self):
 		sys.exit(0)
@@ -57,6 +61,8 @@ class AutoLaTeXExceptionExiter(object):
 	'''
 	def exitOnFailure(self):
 		raise Exception()
+	def exitOnException(self,  exception):
+		raise exception
 	def exitOnSuccess(self):
 		pass
 
@@ -242,23 +248,13 @@ class AbstractAutoLaTeXMain(ABC):
 		for id,  command in commands.items():
 			command.instance.register_command(action_parser=subparsers,  command=command,  configuration=self.configuration)
 
-	def _parse_command_with_sequence_of_commands(self):
-		'''
-		Parse the command line in order to detect the optional arguments and the sequence of command arguments
-		:return: the tuple with as first element the CLI args that are not consumed by argparse library, and the second element the list of unknown arguments.
-		:rtype: tuple (args, list)
-		'''
-		if self.__initial_argv is None or not isinstance(self.__initial_argv, list):
-			cli = sys.argv[1:]
-		else:
-			cli = list(self.__initial_argv)
+	def __parse_command_with_sequence_of_commands_single(self,  cli : str) -> tuple:
 		unknown_arguments = list()
 		commands = list()
 		self._cli_parser.exit_on_error = False
 		while cli:
 			# Create a "local" namespace to avoid implicit inheritence of optional option values between commands.
 			# This principle works because the values of the global optional arguments are not stored into the namespace but inside the AutoLaTeX configuration.
-			args = argparse.Namespace()
 			args, cli1 =  self._cli_parser.parse_known_args(cli)
 			if cli1:
 				unknown_arguments.extend(cli1)
@@ -273,23 +269,50 @@ class AbstractAutoLaTeXMain(ABC):
 			cli = cli1
 		return (commands,  unknown_arguments)
 
-	def _execute_commands(self,  args : list,  all_commands : dict,  default_command : str = None):
+	def _parse_command_with_sequence_of_commands(self) -> str:
+		'''
+		Parse the command line in order to detect the optional arguments and the sequence of command arguments
+		:return: the tuple with as first element the CLI args that are not consumed by argparse library, and the second element the list of unknown arguments.
+		:rtype: tuple (args, list)
+		'''
+		if self.__initial_argv is None or not isinstance(self.__initial_argv, list):
+			cli = sys.argv[1:]
+		else:
+			cli = list(self.__initial_argv)
+		(commands,  unknown_arguments) = self.__parse_command_with_sequence_of_commands_single(cli)
+		# Check if a command is provided; and add the default command.
+		if not commands:
+			default_action = self.configuration.defaultCliAction
+			if default_action:
+				cli.insert(0,  default_action)
+				(commands,  unknown_arguments) = self.__parse_command_with_sequence_of_commands_single(cli)
+		return (commands,  unknown_arguments)
+
+	def _create_default_command_arg_namespace(self) -> argparse.Namespace:
+		'''
+		Create the namespace that corresponds to a default command.
+		:return: the namespace
+		:rtype: Namespace
+		'''
+		namespace = argparse.Namespace()
+		# add any action defaults that aren't present
+		for action in self._cli_parser._actions:
+			if action.dest is not SUPPRESS and not hasattr(namespace, action.dest) and action.default is not SUPPRESS:
+				setattr(namespace, action.dest, action.default)
+		# add any parser defaults that aren't present
+		for dest in self._cli_parser._defaults:
+			if not hasattr(namespace, dest):
+				setattr(namespace, dest, self._defaults[dest])
+		return namespace
+
+	def _execute_commands(self,  args : list,  all_commands : dict):
 		'''
 		Execute the commands.
 		:param args: List of arguments on the command line.
 		:type args: list of argparse objects
 		:param all_commands: Dict of all the available commands.
 		:type all_commands: dict
-		:param default_command: The name of the default command.
-		:type default_command: str
 		'''
-		# Add default command
-		if not args and default_command and all_commands and default_command in all_commands and all_commands[default_command]:
-			inst = all_commands[default_command].instance
-			if inst and inst.run:
-				tpl = (inst.run,  argparse.Namespace())
-				args.append(tpl)
-
 		# Check existing command
 		if not args:
 			logging.error(_T('Unable to determine the command to run'))
@@ -305,7 +328,7 @@ class AbstractAutoLaTeXMain(ABC):
 					return
 			except BaseException as excp:
 				logging.error(_T('Error when running the command: %s') % (str(excp)))
-				self.__exiter.exitOnFailure()
+				self.__exiter.exitOnException(excp)
 				return
 
 
