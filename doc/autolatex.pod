@@ -99,6 +99,14 @@ Indeed, these publisher's systems does not allow to upload the content of subfol
 This command provides the CLI option F<--externalbiblio> to determine if the bibliography must be put in a BibTeX file or inline inside the TeX file
 (default is inline).
 
+=item B<showconfig>
+
+Display the configuration definition that is read from the different configuration files.
+
+=item B<showconfigfiles>
+
+Display the list of the configuration filenames that will be read by autolatex.
+
 =item B<showimagemap>
 
 Display the filenames of the figures, and for each of them, the selected translator.
@@ -107,13 +115,17 @@ Display the filenames of the figures, and for each of them, the selected transla
 
 Display the filenames of the figures that should be treated by a translator.
 
+=item B<showinstalledtranslators>
+
+Show the list of the installed translators. This command has the alias B<installedtranslators>.
+
+=item B<showloadededtranslators>
+
+Show the list of the loaded translators. This command has the alias B<translators>.
+
 =item B<showpath>
 
 Show the value of the environment variable PATH.
-
-=item B<showtranslators>
-
-Show the list of the installed and enabled translators. This command has the alias B<translators>.
 
 =item B<unusedimages>
 
@@ -481,6 +493,30 @@ Force the use of an external BibTeX file (i.e. \'.bib\' file) instead of inlinin
 =item B<--out F<directory>>
 
 Specify the output directory in which the flat version is created. By default, the name of the directory is F<flat_version>.
+
+=back
+
+=item I<showinstalledtranslators>
+
+=over 12
+
+=item B<--level>
+
+=item B<--nolevel>
+
+Show or hide the installation levels for each translator.
+
+=back
+
+=item I<showloadedtranslators>
+
+=over 12
+
+=item B<--level>
+
+=item B<--nolevel>
+
+Show or hide the activation levels for each translator.
 
 =back
 

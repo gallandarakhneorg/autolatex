@@ -28,11 +28,31 @@ _T = gettext.gettext
 
 class MakerAction(AbstractMakerAction):
 
-	id = 'showtranslators'
+	id = 'showinstalledtranslators'
 
-	alias = 'translators'
+	alias = 'installedtranslators'
 
-	help = _T('Display the list of the installed translators and their individual loading flags')
+	help = _T('Display the list of the installed translators and their highest loading levels')
+
+	def _add_command_cli_arguments(self,  action_parser, command):
+		'''
+		Callback for creating the CLI arguments (positional and optional).
+		:param action_parser: The argparse object
+		:param command: The description of the command.
+		'''
+		level_group = action_parser.add_mutually_exclusive_group()
+
+		level_group.add_argument('--level',
+			action='store_true',
+			default=True, 
+			dest='showinstalledtranslatorlevel', 
+			help=_T('Show the installation level for each translator'))
+
+		level_group.add_argument('--nolevel',
+			action='store_false',
+			dest='showinstalledtranslatorlevel', 
+			help=_T('Hide the installation level for each translator'))
+
 
 	def run(self,  args) -> bool:
 		'''
@@ -43,7 +63,7 @@ class MakerAction(AbstractMakerAction):
 		# Create the translator repository
 		repository = TranslatorRepository(self.configuration)
 		# Detect the translators
-		repository.sync()
+		repository.sync(False)
 		# Get translator status
 		installed_translators = repository.installedTranslators
 		inclusions = repository.getIncludedTranslatorsWithLevels()
@@ -52,15 +72,25 @@ class MakerAction(AbstractMakerAction):
 		self._add_implicit_inclusions(all_inclusions,  installed_translators,  TranslatorLevel.SYSTEM)
 		self._add_implicit_inclusions(all_inclusions,  installed_translators,  TranslatorLevel.USER)
 		self._add_implicit_inclusions(all_inclusions,  installed_translators,  TranslatorLevel.DOCUMENT)
-		# Show the status
-		self._show_inclusions(all_inclusions)
+		if args.showinstalledtranslatorlevel:
+			# Show the level
+			self._show_inclusions(all_inclusions)
+		else:
+			# Hide the level
+			self._show_inclusion_names_only(all_inclusions)
 		return True
 
 	def _show_inclusions(self,  all_inclusions : dict):
-		for translator_name,  level in all_inclusions.items():
+		sorted_dict = {k: all_inclusions[k] for k in sorted(all_inclusions)}
+		for translator_name,  level in sorted_dict.items():
 			eprint(_T("%s = %s") % (translator_name,  str(level)))
 
-	def _add_implicit_inclusions(self,  all_inclusions : dict,  installed_translators : dict,  level : TranslatorLevel,  default_inclusion_level : TranslatorLevel = TranslatorLevel.SYSTEM):
+	def _show_inclusion_names_only(self,  all_inclusions : dict):
+		sorted_dict = {k: all_inclusions[k] for k in sorted(all_inclusions)}
+		for translator_name,  level in sorted_dict.items():
+			eprint(translator_name)
+
+	def _add_implicit_inclusions(self,  all_inclusions : dict,  installed_translators : dict,  level : TranslatorLevel,  default_inclusion_level : TranslatorLevel=TranslatorLevel.SYSTEM):
 		if level >=0 and level < len(installed_translators):
 			decls = installed_translators[level]
 			if decls and isinstance(decls,  dict):

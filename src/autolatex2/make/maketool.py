@@ -1090,7 +1090,7 @@ class AutoLaTeXMaker(Runner):
 						self.__files[pdf_filename].dependencies.add(dep)
 						changed = True
 						if type == 'tex':
-							files.append(dep)
+							tex_files.append(dep)
 				# Treat the bibliography files that  are referred from the TeX code
 				biblio_deps = analyzer.getDependencies('biblio')
 				if biblio_deps:
@@ -1499,7 +1499,7 @@ class AutoLaTeXMaker(Runner):
 			# Output the warnings from the last TeX builds
 			if self.extendedWarnings:
 				for w in self.extendedWarnings:
-					logging.warning(w)
+					logging.warning(_T("%s:%d: %s") % (w['filename'],  w['lineno'],  w['message']))
 				self.__reset_warnings()
 
 			# Write building stamps

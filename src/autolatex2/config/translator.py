@@ -243,7 +243,7 @@ class TranslatorConfig(object):
 			if translator in self.__inclusions[level.value]:
 				del self.__inclusions[level.value][translator]
 		else:
-			self.__inclusions[level][translator] = included
+			self.__inclusions[level.value][translator] = included
 
 	def included(self, translator : str, level : TranslatorLevel, inherit : bool = True) -> bool:
 		'''
@@ -258,16 +258,18 @@ class TranslatorConfig(object):
 		:rtype: bool
 		:
 		'''
-		if level is None or level == TranslatorLevel.NEVER:
-			level = TranslatorLevel.SYSTEM
+		if level is None or level == TranslatorLevel.NEVER or not translator:
+			return None
 		if inherit:
-			max_level = int(level) + 2
+			# +1 because of the NEVER element at index 0
+			# +1 because of the use of the range operator: [start_index:end_index+1]
+			max_level = int(level.value) + 2
 			lvls = list(TranslatorLevel)[1:max_level]
 			for level in reversed(lvls):
-				if translator in self.__inclusions[level] and self.__inclusions[level][translator] is not None:
-					return self.__inclusions[level][translator]
-		elif translator in self.__inclusions[level]:
-			return self.__inclusions[level][translator]
+				if translator in self.__inclusions[level.value] and self.__inclusions[level.value][translator] is not None:
+					return self.__inclusions[level.value][translator]
+		elif translator in self.__inclusions[level.value]:
+			return self.__inclusions[level.value][translator]
 		return None
 
 	def inclusionLevel(self, translator : str) -> TranslatorLevel:
@@ -281,8 +283,8 @@ class TranslatorConfig(object):
 		'''
 		lvls = list(TranslatorLevel)[1:]
 		for level in reversed(lvls):
-			if translator in self.__inclusions[level] and self.__inclusions[level][translator] is not None:
-				if self.__inclusions[level][translator]:
+			if translator in self.__inclusions[level.value] and self.__inclusions[level.value][translator] is not None:
+				if self.__inclusions[level.value][translator]:
 					return level
 				else:
 					return TranslatorLevel.NEVER

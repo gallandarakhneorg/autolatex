@@ -244,19 +244,19 @@ class TranslatorRepository(object):
 			v1 = self._readDirectory(directory=dirname, recursive=True, warn=True)
 			self._installedTranslators[TranslatorLevel.USER].update(v1)
 
-		# Load user modules non-recursively the paths specified inside the configurations
-		for path in self.configuration.translators.includePaths:
-			logging.debug(_T("Get loadable translators from %s") % (path))
-			v2 = self._readDirectory(directory=path, recursive=True, warn=True)
-			self._installedTranslators[TranslatorLevel.DOCUMENT].update(v2)
-
 		# Load document modules
 		directory = self.configuration.documentDirectory
 		if not self.configuration.translators.ignoreDocumentTranslators:
 			if directory is not None:
 				logging.debug(_T("Get loadable translators from %s") % (directory))
-				v3 = self._readDirectory(directory=directory, recursive=False, warn=True)
-				self._installedTranslators[TranslatorLevel.DOCUMENT].update(v3)
+				v2 = self._readDirectory(directory=directory, recursive=False, warn=True)
+				self._installedTranslators[TranslatorLevel.DOCUMENT].update(v2)
+
+		# Load user modules non-recursively the paths specified inside the configurations
+		for path in self.configuration.translators.includePaths:
+			logging.debug(_T("Get loadable translators from %s") % (path))
+			v3 = self._readDirectory(directory=path, recursive=True, warn=True)
+			self._installedTranslators[TranslatorLevel.DOCUMENT].update(v3)
 
 		# Finalize initialization of the loadable translators.
 		for translator in self._installedTranslators[TranslatorLevel.SYSTEM].values():

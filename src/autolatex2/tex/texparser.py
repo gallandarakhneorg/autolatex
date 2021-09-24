@@ -1224,13 +1224,13 @@ class TeXParser(Parser):
 		if found_math or found_text:
 			if self.math_mode is not None:
 				if not found_math:
-					self.warning(_T("the command %s%s was not defined for math-mode, assumes to use the text-mode version instead (lineno: %d)"),
+					logging.warning(_T("the command %s%s was not defined for math-mode, assumes to use the text-mode version instead (lineno: %d)"),
 							( '' if (special) else '\\' ), name, lineno)
 					return text
 				else:
 					return math
 			elif not found_text:
-				self.warning(_T("the command %s%s was not defined for text-mode, assumes to use the math-mode version instead (lineno: %d)"),
+				logging.warning(_T("the command %s%s was not defined for text-mode, assumes to use the math-mode version instead (lineno: %d)"),
 						( '' if (special) else '\\' ), name, lineno)
 				return math
 			else:

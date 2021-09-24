@@ -27,7 +27,6 @@ import argparse
 import sys
 import os
 import platform
-import pprint
 import textwrap
 from abc import ABC,  abstractmethod
 
@@ -305,6 +304,26 @@ class AbstractAutoLaTeXMain(ABC):
 				setattr(namespace, dest, self._defaults[dest])
 		return namespace
 
+	def _exitOnFailure(self):
+		'''
+		Exit the main program on failure.
+		'''
+		self.__exiter.exitOnFailure()
+
+	def _exitOnSuccess(self):
+		'''
+		Exit the main program on success.
+		'''
+		self.__exiter.exitOnSuccess()
+
+	def _exitOnException(self,  exception):
+		'''
+		Exit the main program on exception.
+		:param exception: The exception.
+		:type exception: exception
+		'''
+		self.__exiter.exitOException(exception)
+
 	def _execute_commands(self,  args : list,  all_commands : dict):
 		'''
 		Execute the commands.
@@ -316,7 +335,7 @@ class AbstractAutoLaTeXMain(ABC):
 		# Check existing command
 		if not args:
 			logging.error(_T('Unable to determine the command to run'))
-			self.__exiter.exitOnFailure()
+			self.exitOnFailure()
 			return
 
 		# Run the sequence of commands
@@ -324,7 +343,7 @@ class AbstractAutoLaTeXMain(ABC):
 			try:
 				continuation = cmd(cmd_args)
 				if not continuation:
-					self.__exiter.exitOnSuccess()
+					self._exitOnSuccess()
 					return
 			except BaseException as excp:
 				logging.error(_T('Error when running the command: %s') % (str(excp)))
@@ -856,8 +875,7 @@ class AbstractAutoLaTeXMain(ABC):
 		'''
 		Show up the configuration of AutoLaTeX.
 		'''
-		pp = pprint.PrettyPrinter(indent=2)
-		pp.pprint(self.configuration)
+		eprintpkg.epprint(self.configuration)
 
 	def add_standard_cli_options(self):
 		'''

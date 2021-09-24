@@ -210,9 +210,27 @@ class OldStyleConfigReader(object):
 		:param config: the configuration object to fill up.
 		:type config: Config
 		'''
-		config.translators.setIncluded(translator_name,  translator_level,  OldStyleConfigReader.to_bool(self._ensureAscendentCompatibility(content.get('include module')),  config.translators.included(translator_name,  translator_level)))
-		for p in OldStyleConfigReader.to_path_list(self._ensureAscendentCompatibility(content.get('files to convert'))):
-			config.translators.addImageToConvert(self.to_path(p))
+		raw_value = self._ensureAscendentCompatibility(content.get('include module'))
+		default_value = config.translators.included(translator_name,  translator_level)
+		new_value = OldStyleConfigReader.to_bool(raw_value,  default_value)
+		config.translators.setIncluded(translator_name,  translator_level,  new_value)
+		raw_files = self._ensureAscendentCompatibility(content.get('files to convert'))
+		path_list = OldStyleConfigReader.to_path_list(raw_files)
+		for path_element in path_list:
+			formatted_path = self.to_path(path_element)
+			config.translators.addImageToConvert(formatted_path)
+
+	def _is_translator_section(self,  section_name : str) -> bool:
+		'''
+		Replies if the given section name is for a translator or not.
+		:param section_name: Name of the section to test.
+		:type section_name: str
+		:return: True if the given section name is for a translator.
+		:rtype: bool
+		'''
+		if re.match('^[a-zA-Z+-]+2[a-zA-Z0-9+-]+(?:_[a-zA-Z0-9_+-]+)?$',  section_name,  re.S):
+			return True
+		return False
 
 	def read(self, filename : str,  translator_level : TranslatorLevel,  config : Config = None) -> Config:
 		'''
@@ -253,8 +271,10 @@ class OldStyleConfigReader(object):
 					self._read_clean(content,  config)
 				elif nsection == 'scm':
 					self._read_scm(content,  config)
-				else:
+				elif self._is_translator_section(nsection):
 					self._read_translator(section,  translator_level,  content,  config)
+				else:
+					logging.debug(_T("Ignore section '%s' in the configuration file: %s") % (section,  filename))
 		finally:
 			self._base_dir = os.getcwd()
 		return config

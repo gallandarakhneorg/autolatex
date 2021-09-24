@@ -70,7 +70,7 @@ class LogLevel(IntEnum):
 		elif (level > LogLevel.TRACE):
 			return LogLevel.TRACE
 		else:
-			return logging.NOT_SET
+			return logging.NOTSET
 
 
 def addLoggingLevel(level_name : str, level_num : int, method_name : str = None):

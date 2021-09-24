@@ -18,29 +18,30 @@
 # write to the Free Software Foundation, Inc., 59 Temple Place - Suite
 # 330, Boston, MA 02111-1307, USA.
 
-'''
-Extension of the printing API.
-'''
+from autolatex2.cli.main import AbstractMakerAction
+from autolatex2.utils.extprint import epprint
 
-import sys
-import pprint
+import gettext
+_T = gettext.gettext
 
-is_standard_output = True
+class MakerAction(AbstractMakerAction):
 
-def eprint(*args, **kwargs):
-	'''
-	Print the arguments on the selected output (standard output, standard error output).
-	'''
-	global is_standard_output
-	if is_standard_output:
-		print(*args,  file=sys.stdout, **kwargs)
-	else:
-		print(*args,  file=sys.stderr, **kwargs)
+	id = 'showconfig'
 
-def epprint(value):
-	'''
-	Pretty print the arguments on the selected output (standard output, standard error output).
-	'''
-	pp = pprint.PrettyPrinter(indent=2)
-	fmt = pp.pformat(value)
-	eprint(fmt)
+	help = _T('Display the configuration definition that is read from the configuration files')
+
+	def run(self,  args) -> bool:
+		'''
+		Callback for running the command.
+		:param args: the arguments.
+		:return: True to continue process. False to stop the process.
+		'''
+		MakerAction.show_configuration(self.configuration)
+		return True
+
+	@staticmethod
+	def show_configuration(configuration):
+		'''
+		Show the configuration given as argument.
+		'''
+		epprint(configuration)
