@@ -31,7 +31,6 @@ import json
 import inspect
 
 from enum import IntEnum, unique
-from dataclasses import dataclass
 from sortedcontainers import SortedSet
 
 from autolatex2.config.configobj import Config
@@ -40,6 +39,7 @@ from autolatex2.translator.translatorrunner import TranslatorRunner
 import autolatex2.utils.utilfunctions as genutils
 import autolatex2.tex.utils as texutils
 import autolatex2.utils.extlogging as extlogging
+import autolatex2.utils.extprint as extprint
 from autolatex2.utils.runner import *
 from autolatex2.tex.bibtex import BibTeXErrorParser
 from autolatex2.tex.biber import BiberErrorParser
@@ -789,60 +789,24 @@ class AutoLaTeXMaker(Runner):
 		:type loop: bool
 		:rtype: bool
 		'''
-		warning = False
-		currentLogBlock = ''
+		logging.debug(_T("Reading log file: %s") % (os.path.basename(logFile)))
 		if os.path.exists(logFile):
 			with open(logFile, 'r') as f:
-				lastline = ''
-				line = f.readline()
-				while line:
-					lastline += line
-					# Detect standatd TeX warnings
-					if re.search('\\.\\s*$', lastline):
-						if texutils.extractTeXWarningFromLine(lastline, self.__standardsWarnings):
-							if loop:
-								return True
-					# Parse and output the detailled warning messages
-					if self.__isExtendedWarningEnable:
-						if warning:
-							if line.startswith('!!!![EndWarning]'):
-								m = re.search('^(.*?):([^:]*):([0-9]+):\\s*(.*?)\\s*$', currentLogBlock)
-								if m:
-									wdetails = dict()
-									wdetails['filename'] = m.group(1)
-									wdetails['extension'] = m.group(2)
-									wdetails['lineno'] = int(m.group(3))
-									wdetails['message'] = m.group(4)
-									self.__detailledWarnings.append(wdetails)
-								warning = False
-								currentLogBlock = ''
-							else:
-								l = line
-								if not re.search('\\.\n+$', l):
-									l = re.sub('\\s+$', '',  l)
-								currentLogBlock += l
-						else:
-							m = re.search('^'+re.escape('!!!![BeginWarning]')+'(.*)$', line)
-							if m:
-								l = m.group(1)
-								if not re.search('\\.\n+$', l):
-									l = re.sub('\\s+$', '',  l)
-								currentLogBlock += l
-								warning = True
-					line = f.readline()
-				if re.search('\\.\\s*$', lastline) and texutils.extractTeXWarningFromLine(lastline, self.__standardsWarnings):
-					if loop:
-						return True
-		# Output the detailled wanring message that was not already output
-		if warning and currentLogBlock:
-			m = re.search('^(.*?):([^:]*):([0-9]+):\\s*(.*?)\\s*$', currentLogBlock)
-			if m:
-				wdetails = dict()
-				wdetails['filename'] = m.group(1)
-				wdetails['extension'] = m.group(2)
-				wdetails['lineno'] = int(m.group(3))
-				wdetails['message'] = m.group(4)
-				self.__detailledWarnings.append(wdetails)
+				content = f.read()
+			if texutils.extractTeXWarningFromLine(content, self.__standardsWarnings):
+				if loop:
+					return True
+			if self.__isExtendedWarningEnable:
+				warns = re.findall(re.escape('!!!![BeginWarning]')+'(.*?)'+ re.escape('!!!![EndWarning]'), content,  re.S)
+				for warn in warns:
+					m = re.search('^(.*?):([^:]*):([0-9]+):\\s*(.*?)\\s*$', warn,  re.S)
+					if m is not None:
+						wdetails = dict()
+						wdetails['filename'] = m.group(1)
+						wdetails['extension'] = m.group(2)
+						wdetails['lineno'] = int(m.group(3))
+						wdetails['message'] = m.group(4)
+						self.__detailledWarnings.append(wdetails)
 		return False
 
 	def run_latex(self, filename : str, loop : bool = False) -> int:
@@ -893,7 +857,9 @@ class AutoLaTeXMaker(Runner):
 					cmd.append(autofile)
 					cmd = Runner.normalizeCommand(cmd)
 					nbRuns += 1
-					(sout, serr, sex, exitcode) = Runner.runCommand(*cmd)
+					logging.debug(_T('Running: %s') % (repr(cmd)))
+					(sout, serr, sex, exitcode) = self.__run_cmd(*cmd)
+					logging.debug(_T('Run finished'))
 				finally:
 					genutils.unlink(autofile)
 			else:
@@ -901,7 +867,9 @@ class AutoLaTeXMaker(Runner):
 				cmd.append(os.path.relpath(filename))
 				cmd = Runner.normalizeCommand(cmd)
 				nbRuns += 1
-				(sout, serr, sex, exitcode) = Runner.runCommand(*cmd)
+				logging.debug(_T('Running: %s') % (repr(cmd)))
+				(sout, serr, sex, exitcode) = self.__run_cmd(*cmd)
+				logging.debug(_T('Run finished'))
 
 			if exitcode != 0:
 				logging.debug(_T("LATEX: Error when processing %s") % (os.path.basename(filename)))
@@ -930,8 +898,29 @@ class AutoLaTeXMaker(Runner):
 
 			else:
 				continueToCompile = self.__extract_info_from_tex_log_file(logFile, loop)
+				logging.debug(_T('Detection of rebuild: %s') % (str(continueToCompile)))
 
 		return nbRuns
+
+	def __run_cmd(self,  *cmd):
+		'''
+		Run the given command and show up the standard output if it is in debug mode.
+		:param cmd: The command to run.
+		:type cmd: str array
+		:return: The output of the command, composed by: standard output, standard error output, python exception, exit code
+		:rtype: tuple
+		'''
+		if logging.getLogger().isEnabledFor(logging.DEBUG):
+			sex = None
+			sout = ''
+			serr = ''
+			try:
+				exitcode = Runner.runCommandWithoutRedirect(*cmd)
+			except ex:
+				sex = ex
+		else:
+			(sout, serr, sex, exitcode) = Runner.runCommand(*cmd)
+		return (sout, serr, sex, exitcode)
 
 	def run_bibtex(self, filename : str) -> dict:
 		'''
@@ -1233,10 +1222,10 @@ class AutoLaTeXMaker(Runner):
 		'''
 		builds = list()
 		root_change = self.__files[root_pdf_file].change
-		self.__build_internal_execution_list(builds=builds,  root_change_date=root_change,  filename=root_pdf_file,  forceChanges=forceChanges)
+		self.__build_internal_execution_list(builds=builds,  root_change_date=root_change,  filename=root_pdf_file,  forceChanges=forceChanges,  main_tex_filename=rootFile)
 		return builds
 
-	def __build_internal_execution_list(self,  builds : list,  root_change_date : int,  filename : str, forceChanges : bool) -> bool:
+	def __build_internal_execution_list(self,  builds : list,  root_change_date : int,  filename : str, forceChanges : bool,  main_tex_filename : str) -> bool:
 		'''
 		Build the list of files that needs to be generated in the best order. For each file, a building function named "_build_<ext>" is defined and must be invoked.
 		:param builds: List of builds to fill up.
@@ -1247,6 +1236,8 @@ class AutoLaTeXMaker(Runner):
 		:type filename: str
 		:param forceChanges: Indicates all the files should be considered as changed. Default value is: False.
 		:type forceChange: bool
+		:param main_tex_filename: Name of the main tex file.
+		:type main_tex_filename: str
 		:return: True if the given filename has been added to the build.
 		:rtype: bool
 		'''
@@ -1258,17 +1249,17 @@ class AutoLaTeXMaker(Runner):
 				dependencies = description.dependencies
 				if dependencies:
 					for dependency in dependencies:
-						change = self.__build_internal_execution_list(builds=builds,  root_change_date=root_change_date,  filename=dependency,  forceChanges=forceChanges)
+						change = self.__build_internal_execution_list(builds=builds,  root_change_date=root_change_date,  filename=dependency,  forceChanges=forceChanges,  main_tex_filename=main_tex_filename)
 						if change:
 							child_changed = True
-				if child_changed or forceChanges or self.__need_rebuild(root_change_date, filename, description):
+				if child_changed or forceChanges or self.__need_rebuild(root_change_date, filename, description, main_tex_filename):
 					added = True
 					method_name = self.__internal_build_callback_funcname(description.fileType)
 					if method_name in self.__internal_register_callbacks():
 						builds.append(description)
 		return added
 
-	def __need_rebuild(self,  root_change_date : int,  filename : str,  description : FileDescription) -> bool:
+	def __need_rebuild(self,  root_change_date : int,  filename : str,  description : FileDescription,  main_tex_filename : str) -> bool:
 		'''
 		Test if a rebuild is needed for the given files.
 		:param root_change_date: Time stamp of the root file.
@@ -1277,6 +1268,9 @@ class AutoLaTeXMaker(Runner):
 		:type filename: str
 		:param description: Description of the file to test.
 		:type description: FileDescription
+		:param main_tex_filename: Name of the main tex file.
+		:type main_tex_filename: str
+		:return: True if the file needs to be rebuilt
 		:rtype: bool
 		'''
 		if description.change is None or not os.path.isfile(filename):
@@ -1319,6 +1313,12 @@ class AutoLaTeXMaker(Runner):
 					self.__stamps['idx'][idx_file] = current_md5
 					return True
 				return False
+			elif ext == '.pdf':
+				log_file = genutils.basename2(main_tex_filename, texutils.getTeXFileExtensions()) + '.log'
+				if log_file is not None and os.path.isfile(log_file):
+					need_rebuild = self.__extract_info_from_tex_log_file(log_file, True)
+					if need_rebuild:
+						return True
 		return description.change is None or description.change > root_change_date
 
 	def run_translators(self,  forceGeneration : bool = False):
@@ -1528,22 +1528,19 @@ class AutoLaTeXMaker(Runner):
 			if logging.getLogger().isEnabledFor(logging.WARNING):
 				if TeXWarnings.multiple_definition in self.standardWarnings:
 					s = _T("LaTeX Warning: There were multiply-defined labels.")
+					logging.warning(s)
 					if self.extendedWarningsEnabled:
-						sys.stderr.write("!!" + logFile + ":W1: " + s + "\n")
-					else:
-						logging.warning(s)
+						extprint.eprint("!!" + logFile + ":W1: " + s + "\n")
 				if TeXWarnings.undefined_reference in self.standardWarnings:
 					s = _T("LaTeX Warning: There were undefined references.")
+					logging.warning(s)
 					if self.extendedWarningsEnabled:
-						sys.stderr.write("!!" + logFile + ":W2: " + s + "\n")
-					else:
-						logging.warning(s)
+						extprint.eprint("!!" + logFile + ":W2: " + s + "\n")
 				if TeXWarnings.undefined_citation in self.standardWarnings:
 					s = _T("LaTeX Warning: There were undefined citations.")
+					logging.warning(s)
 					if self.extendedWarningsEnabled:
-						sys.stderr.write("!!" + logFile + ":W3: " + s + "\n")
-					else:
-						logging.warning(s)
+						extprint.eprint("!!" + logFile + ":W3: " + s + "\n")
 				if TeXWarnings.other_warning in self.standardWarnings:
 					logging.warning((_T("LaTeX Warning: Please look inside %s for the other the warning messages.") % (basename(logFile))) + "\n")
 			return True

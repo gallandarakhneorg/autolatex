@@ -109,7 +109,7 @@ def extractTeXWarningFromLine(line : str, warnings : set) -> bool:
 	:rtype: bool
 	'''
 	line = re.sub('[^a-zA-Z:\\-]+', '', line)
-	if re.search('Warning.*re\\-?run', line, re.I):
+	if re.search('Warning.*Reruntogetcross\\-?referencesright', line, re.I):
 		return True
 	elif re.search('Warning:Therewereundefinedreferences', line, re.I):
 		warnings.add(TeXWarnings.undefined_reference)
