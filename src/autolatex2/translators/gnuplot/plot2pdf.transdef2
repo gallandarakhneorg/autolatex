@@ -1,0 +1,57 @@
+# autolatex - plot2pdf.transdef2
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
+#
+# This program is free library; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 3 of the
+# License, or any later version.
+#
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; see the file COPYING.  If not,
+# write to the Free Software Foundation, Inc., 59 Temple Place - Suite
+# 330, Boston, MA 02111-1307, USA.
+
+#--------------------------------------------
+# See template2.txt for details on the fields
+#--------------------------------------------
+
+---
+input_extensions:
+    - .plot
+    - .gnu
+output_extensions for pdf:
+    - .pdf
+output_extensions for eps:
+    - .eps
+translator_python_dependencies:
+    - os
+    - autolatex2.utils.utilfunctions as genutils
+translator_function: |
+    curdir = os.getcwd()
+    workingDir = os.path.dirname(_in)
+    extPlotFile = os.path.join(workingDir, genutils.basename2(_in, _inexts) + '_tmp_autolatex.plot')
+    try:
+    	genutils.unlink(extPlotFile)
+    	with open(extPlotFile, 'wt') as out_file:
+    		with open(_in, 'rt') as in_file:
+    			if _global_configuration.generation.pdfMode:
+    				out_file.write("set terminal pdfcairo;\n")
+    			else:
+    				out_file.write("set terminal postscript eps color;\n")
+    			out_file.write(in_file.read())
+    	# Change directory in case the plot file contains relative references to data files
+    	os.chdir(workingDir)
+    	(sout, serr, sex, retcode) = Runner.runCommandTo(_out, 'gnuplot', extPlotFile)
+    	Runner.checkRunnerStatus(serr, sex, retcode)
+    finally:
+    	os.chdir(curdir)
+    	genutils.unlink(extPlotFile)
+...
+

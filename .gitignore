@@ -2,6 +2,13 @@
 .svn/
 .cvs/
 .git/
+**/__pycache__/**
+build/
+dist/
+**/*.egg-info/**
+
+**/*.e4p
+**/.eric6project/**
 
 # Temp files
 *.bak

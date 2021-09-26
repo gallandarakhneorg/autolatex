@@ -1,0 +1,22 @@
+size 7.5 3.35
+
+include "tree.gle"
+
+set_ellipse_c 0.5
+set_leaf_ellipse_size_str "Yes"
+
+set fill wheat
+
+def_leaf_ellipse "Yes"  "ly"
+def_leaf_ellipse "No"   "ln"
+
+set fill powderblue
+
+def_binary_node "Humidity" "High"   "Normal" "ln" "ly" "n1"
+def_binary_node "Wind"     "Strong" "Weak"   "ln" "ly" "n2"
+
+def_tertiary_node "Outlook" "Sunny" "Overcast" "Rain" "n1" "ly" "n2" "root"
+
+amove pagewidth()/2 pageheight()-0.1
+draw "root.tc"
+

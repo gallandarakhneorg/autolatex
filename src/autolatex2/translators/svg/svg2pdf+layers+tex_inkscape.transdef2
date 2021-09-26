@@ -1,0 +1,114 @@
+# autolatex - svg2pdf+layers+tex_inkscape.transdef2
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
+#
+# This program is free library; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 3 of the
+# License, or any later version.
+#
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; see the file COPYING.  If not,
+# write to the Free Software Foundation, Inc., 59 Temple Place - Suite
+# 330, Boston, MA 02111-1307, USA.
+
+#--------------------------------------------
+# See template2.txt for details on the fields
+#--------------------------------------------
+
+---
+input_extensions:
+    - '.svglt'
+    - '.svg_lt'
+    - '.svglayerstex'
+    - '.svgtexlayers'
+    - '.svg+layers+tex'
+    - '.svg+tex+layers'
+    - '.layers.tex.svg'
+    - '.tex.layers.svg'
+    - '+layers+tex.svg'
+    - '+tex+layers.svg'
+    - '.svgzlt'
+    - '.svgz_lt'
+    - '.svgzlayerstex'
+    - '.svgztexlayers'
+    - '.svgz+layers+tex'
+    - '.svgz+tex+layers'
+    - '.layers.tex.svgz'
+    - '.tex.layers.svgz'
+    - '+layers+tex.svgz'
+    - '+tex+layers.svgz'
+output_extensions for pdf:
+    - .pdftex_t
+output_extensions for eps:
+    - .pstex_t
+all_output_files:
+    - ${outwoext}.pdftex_t
+    - ${outwoext}.pstex_t
+    - ${outwoext}_*${outext}
+    - ${outwoext}_*.pdf_tex
+    - ${outwoext}_*.ps_tex
+translator_python_dependencies:
+    - os
+    - re
+    - import xml.etree.ElementTree as xmlparser
+    - import autolatex2.utils.utilfunctions as genutils
+translator_function: |
+    if _global_configuration.generation.pdfMode:
+    	ext1 = '.pdftex_t'
+    	ext2 = '.pdf'
+    	ext3 = '.pdf_tex'
+    	opt = '--export-pdf'
+    else:
+    	ext1 = '.pstex_t'
+    	ext2 = '.eps'
+    	ext2 = '.ps_tex'
+    	opt = '--export-eps'
+    
+    xmltree = xmlparser.parse(_in)
+    xmlroot = xmltree.getroot()
+    
+    imageinclusions = list()
+    
+    if re.match('^(?:\\{.*?\\})?svg$', xmlroot.tag,  re.S):
+    	layerIndex = 1
+    
+    	for element in xmlroot:
+    		if re.match('^(?:\\{.*?\\})?g$', element.tag,  re.S) and '{http://www.inkscape.org/namespaces/inkscape}groupmode' in element.attrib and element.attrib['{http://www.inkscape.org/namespaces/inkscape}groupmode'] == 'layer' and ('style' not in element.attrib or element.attrib['style'] != 'display:none'):
+    			if '{http://www.inkscape.org/namespaces/inkscape}label' not in element.attrib or not element.attrib['{http://www.inkscape.org/namespaces/inkscape}label']:
+    				label = ''
+    			else:
+    				label = element.attrib['{http://www.inkscape.org/namespaces/inkscape}label'].strip()
+    			if 'id' not in element.attrib or not element.attrib['id']:
+    				id = ''
+    			else:
+    				id = element.attrib['id'].strip()
+    			overlay_spec = '<' + str(layerIndex) + '>'
+    			if label:
+    				overlay_spec = label
+    			outputbasename = genutils.basename(_out, _outexts) + "_" + id
+    			figureFile = os.path.join(_outdir, outputbasename + ext2)
+    			(sout, serr, sex, retcode) = Runner.runCommand('inkscape', '--without-gui', '--export-id', id, '--export-id-only', '--export-area-page', opt, figureFile, '--export-latex', "--file=" + _in)
+    			Runner.checkRunnerStatus(serr, sex, retcode)
+    			texFile = os.path.join(_outdir, outputbasename + ext3)
+    			imageinclusions.append("\\node<" + str(overlay_spec) + "> (X) {\\input{" + str(texFile) + "}};%")
+    			layerIndex = layerIndex + 1
+    if not imageinclusions:
+    	raise Exception(("No layer in the SVG file: %s") % (_in))
+    with open(genutils.basename2(_out,  _outexts) + ext1,  'wt') as out_file:
+    	out_file.write("\%Overlays\n")
+    	out_file.write("\\bgroup%\n")
+    	out_file.write("\\begin{tikzpicture}%\n")
+    	for inclusion in imageinclusions:
+    		out_file.write(inclusion)
+    		out_file.write("\n")
+    	out_file.write("\\end{tikzpicture}%\n")
+    	out_file.write("\\egroup%\n")
+...
+

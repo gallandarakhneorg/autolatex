@@ -1,0 +1,172 @@
+# autolatex - astah2pdf.transdef2
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
+#
+# This program is free library; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 3 of the
+# License, or any later version.
+#
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; see the file COPYING.  If not,
+# write to the Free Software Foundation, Inc., 59 Temple Place - Suite
+# 330, Boston, MA 02111-1307, USA.
+
+#--------------------------------------------
+# See template2.txt for details on the fields
+#--------------------------------------------
+
+---
+input_extensions:
+    - .asta
+    - .jude
+    - .juth
+output_extensions for pdf:
+    - .pdf
+output_extensions for eps:
+    - .eps
+all_output_files:
+    - ${outwoext}_*.${outext}
+    - $out
+translator_function: |
+    import os
+    import shutil
+    import re
+    import xml.etree.ElementTree as xmlparser
+    from pathlib import Path
+    import autolatex2.utils.utilfunctions as genutils
+    INITIAL_HEAP_SIZE = "64m"
+    MAXIMUM_HEAP_SIZE = "1024m"
+    JAVA_OPTS = ["-Xms" + INITIAL_HEAP_SIZE, "-Xmx" + MAXIMUM_HEAP_SIZE]
+    LIBRARIES = ['astah-pro.jar', 'astah-professional.jar', 'astah-uml.jar']
+    BINARY_NAMES = ['astah-pro','astah-uml','astah-com']
+    LIBRARY_LOCATIONS = ['/usr/lib/astah_pro', '/usr/lib/astah_professional', '/usr/lib/astah_uml', '/usr/lib/astah_com', '/usr/lib/astah_community']
+    SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+    def __checklibrary(directory):
+    	global LIBRARIES
+    	i = 0
+    	import os
+    	while i < len(LIBRARIES):
+    		library = LIBRARIES[i]
+    		filename = os.path.join(directory,  library)
+    		if os.path.isfile(filename):
+    			return filename
+    		i = i + 1
+    	return None
+    def __findbinary():
+    	global BINARY_NAMES
+    	global __checklibrary
+    	i = 0
+    	import shutil
+    	import os
+    	while i < len(BINARY_NAMES):
+    		binary= shutil.which(BINARY_NAMES[i])
+    		if binary and os. access(binary, os. X_OK):
+    			binary = os.path.realpath(binary)
+    			directory = os.path.dirname(binary)
+    			library = __checklibrary(directory)
+    			if library:
+    				return library
+    		i = i + 1
+    	return None
+    def __findunixbinary():
+    	global LIBRARY_LOCATIONS
+    	global __checklibrary
+    	i = 0
+    	import os
+    	while i < len(LIBRARY_LOCATIONS):
+    		directory = LIBRARY_LOCATIONS[i]
+    		if os.path.isdir(directory):
+    			library = __checklibrary(directory)
+    			if library:
+    				return library
+    		i = i + 1
+    	return None
+    def __xpathtag(name):
+    	global SVG_NAMESPACE
+    	return '{' + SVG_NAMESPACE + '}' + name
+    # Detect the Astah installation
+    if 'ASTAH_HOME' not in os.environ or not os.environ['ASTAH_HOME']:
+    	library = __findbinary()
+    	if not library:
+    		library = __findunixbinary()
+    else:
+    	env_value = os.environ['ASTAH_HOME']
+    	library = __checklibrary(env_value)
+    if not library:
+    	raise Exception("Unable to find the java library of Astah. Please define the ASTAH_HOME environment variable")
+    # Detect the Java installation
+    if 'JAVA_HOME' in os.environ and os.environ['JAVA_HOME']:
+    	javabin = os.path.join(os.environ['JAVA_HOME'],  'bin',  'java')
+    else:
+    	javabin = None
+    if not javabin or not os.path.isfile(javabin) or not os. access(javabin, os. X_OK):
+    	javabin = shutil.which('java')
+    if not javabin:
+    	raise Exception("Unable to find the java binary. Please install Java execution environment on your system")
+    # Prepare the generation from Astah
+    outputDir = os.path.relpath(os.path.dirname(_in))
+    shortBasename = genutils.basename(_in, _inexts)
+    astahOutputDir = os.path.join(outputDir, shortBasename)
+    if os.path.isdir(astahOutputDir):
+    	shutil.rmtree(astahOutputDir)
+    try:
+    	# Generation of the SVG from Astah
+    	cmd = list()
+    	cmd.append(javabin)
+    	cmd.extend(JAVA_OPTS)
+    	cmd.extend(['-cp',  library, 'com.change_vision.jude.cmdline.JudeCommandRunner', '-image', 'all', '-f',  _in,  '-t', 'svg', '-o',  outputDir])
+    	(sout, serr, sex, retcode) = Runner.runCommand(*cmd)
+    	Runner.checkRunnerStatus(serr, sex, retcode)
+    	# Generation of the PDF/PS from the SVG
+    	generated_files = list()
+    	for file in os.listdir(astahOutputDir):
+    		if file != '.' and file != '..' and re.search("\\.svg$",  file,  re.I | re.S):
+    			svg_file = os.path.join(astahOutputDir, file)
+    			generated_files.append(svg_file)
+    			# Remove the background rectangle
+    			xmltree = xmlparser.parse(svg_file)
+    		xmlroot = xmltree.getroot()
+    		if re.match('^(?:\\{.*?\\})?svg$', xmlroot.tag,  re.S):
+    			if 'width' in xmlroot.attrib and 'height' in xmlroot.attrib:
+    				width = xmlroot.attrib['width']
+    				height = xmlroot.attrib['height']
+    			candidates = xmlroot.findall('.//' + __xpathtag('g') + '[' + __xpathtag('rect') + ']')
+    			background_node = None
+    			for candidate in candidates:
+    					if 'style' in candidate.attrib and 'fill:white;' in candidate.attrib['style']:
+    						children = candidate.findall("./" + __xpathtag('rect') + "[@x='0'][@y='0'][@width='" + width + "'][@height='" + height + "']")
+    						if len(children) == 1:
+    							background_node = candidate
+    							break
+    			if background_node is not None:
+    				parent_candidates = xmlroot.findall('.//' + __xpathtag('g') + '[' + __xpathtag('rect') + ']/..')
+    				for parent_candidate in parent_candidates:
+    					if background_node in parent_candidate:
+    						parent_candidate.remove(background_node)
+    						xmltree.write(svg_file)
+    						break
+    	# Move the generated files
+    	if len(generated_files) > 1:
+    		template = genutils.basename2(_out,  _outexts) + '_'
+    		for generated_file in generated_files:
+    			bn = genutils.basename(generated_file,['.svg'])
+    			bn = re.sub('\\s+',  '_',  bn,  re.S)
+    			bn = template + bn + _outext
+    			_runner.generateImage(infile = generated_file, outfile = bn, onlymorerecent = False,  ignoreDebugFeature = True)
+    		Path(_out).touch()
+    	elif len(generated_files) > 0:
+    		_runner.generateImage(infile = generated_files[0], outfile = _out, onlymorerecent = False,  ignoreDebugFeature = True)
+    	else:
+    		raise Exception('No generated file')
+    finally:
+    	if os.path.isdir(astahOutputDir):
+    		shutil.rmtree(astahOutputDir)
+...
+

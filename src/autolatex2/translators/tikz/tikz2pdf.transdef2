@@ -1,0 +1,67 @@
+# autolatex - tikz2pdf.transdef2
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 1998-2021 Stephane Galland <galland@arakhne.org>
+#
+# This program is free library; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 3 of the
+# License, or any later version.
+#
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; see the file COPYING.  If not,
+# write to the Free Software Foundation, Inc., 59 Temple Place - Suite
+# 330, Boston, MA 02111-1307, USA.
+
+#--------------------------------------------
+# See template2.txt for details on the fields
+#--------------------------------------------
+
+---
+input_extensions:
+    - .tikz
+output_extensions for pdf:
+    - .pdf
+output_extensions for eps:
+    - .eps
+translator_python_dependencies:
+    - os
+    - re
+    - textwrap
+    - autolatex2.utils.utilfunctions as genutils
+    - autolatex2.tex.utils as texutils
+translator_function: |
+    os.chdir(_outdir)
+    basename = genutils.basename(_in, _inexts)
+    text = textwrap.dedent('''\
+    	\\documentclass{standalone}
+    	\\usepackage{pgfplots}
+    	\\usepackage{amsmath}
+    	\\usepackage{tikz}
+    	\\newlength\\figurewidth
+    	\\newlength\\figureheight
+    	\\setlength\\figurewidth{50em}
+    	\\setlength\\figureheight{50em}
+    	\\begin{document}
+    	\\input{%s}
+    	\\end{document}
+    ''') % (_in)
+    text = re.sub('[\n\r\t]', ' ', text).strip()
+    try:
+    	if _global_configuration.generation.pdfMode:
+    		(sout, serr, sex, retcode) = Runner.runCommand('pdflatex', '-shell-escape', '-halt-on-error',
+    			'-interaction', 'batchmode', '-jobname', basename, text)
+    	else:
+    		(sout, serr, sex, retcode) = Runner.runCommand('latex', '-shell-escape', '-halt-on-error',
+    			'-interaction', 'batchmode', '-jobname', basename, text)
+    	Runner.checkRunnerStatus(serr, sex, retcode)
+    finally:
+    	genutils.unlink(genutils.basename2(_in, _inexts) + '.aux')
+    	genutils.unlink(genutils.basename2(_in, _inexts) + '.log')
+...
+

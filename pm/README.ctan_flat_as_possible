@@ -1,5 +1,0 @@
-CTAN is concerned about an "as flat as possible" directory structure of the "unpacked" archive, to ease browsing of the directory tree.
-
-As a general rule, when a directory contains nothing but another directory, one of the two is clearly superfluous.
-
-Unfortunately, the current directory cannot be flatten because the "AutoLaTeX" directory is a part (the root) of the namespace in the Perl source code. It is mandatory to enable the Perl interpreter to find the modules of AutoLaTeX (the pm files).
