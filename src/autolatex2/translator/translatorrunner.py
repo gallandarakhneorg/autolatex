@@ -289,8 +289,8 @@ class TranslatorRunner(object):
 
 	def getTargetFiles(self,  *, infile : str, translatorName : str = None, outfile : str = None, failOnError : bool = True) -> list:
 		'''
-		Replies the list of the generated files that are by the translator.
-		:param infile: The name of the source file.
+		Replies the list of the generated files that are by the translator. The replied files exist in the file system.
+		:param infile: The name of the source file. Preferably, it should be absolute filename.
 		:type infile: str
 		:param translatorName: Name of the translator to run. Default value: None.
 		:type translatorName: str

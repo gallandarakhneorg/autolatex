@@ -107,13 +107,10 @@ Display the configuration definition that is read from the different configurati
 
 Display the list of the configuration filenames that will be read by autolatex.
 
-=item B<showimagemap>
-
-Display the filenames of the figures, and for each of them, the selected translator.
-
 =item B<showimages>
 
 Display the filenames of the figures that should be treated by a translator.
+This action provides specific options for controlling the type of information that is output.
 
 =item B<showinstalledtranslators>
 
@@ -493,6 +490,24 @@ Force the use of an external BibTeX file (i.e. \'.bib\' file) instead of inlinin
 =item B<--out F<directory>>
 
 Specify the output directory in which the flat version is created. By default, the name of the directory is F<flat_version>.
+
+=back
+
+=item I<showimages>
+
+=over 12
+
+=item B<--changed>
+
+Show only the images that are not associated to up-to-date generated files, i.e. a translator must be run on the displayed images because the output images are older than the source images.
+
+=item B<--translators>
+
+Show all the images and the names of the associated translators.
+
+=item B<--valid>
+
+Show only the images that are associated to up-to-date generated files, i.e. no translator needs to be run on the displayed images because the output images are more recent than the source images.
 
 =back
 

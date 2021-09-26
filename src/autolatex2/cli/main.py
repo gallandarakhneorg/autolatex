@@ -164,6 +164,7 @@ class AbstractAutoLaTeXMain(ABC):
 		:type exister: AutoLaTeXExiter
 		'''
 		self.__initial_argv = args
+		self.__read_document_configuration = True
 		if exiter:
 			self.__exiter = exiter
 		else:
@@ -271,8 +272,8 @@ class AbstractAutoLaTeXMain(ABC):
 	def _parse_command_with_sequence_of_commands(self) -> str:
 		'''
 		Parse the command line in order to detect the optional arguments and the sequence of command arguments
-		:return: the tuple with as first element the CLI args that are not consumed by argparse library, and the second element the list of unknown arguments.
-		:rtype: tuple (args, list)
+		:return: the tuple with as first element the CLI commands, and the second element the list of unknown arguments.
+		:rtype: tuple (commands, list)
 		'''
 		if self.__initial_argv is None or not isinstance(self.__initial_argv, list):
 			cli = sys.argv[1:]
@@ -478,6 +479,7 @@ class AbstractAutoLaTeXMain(ABC):
 				if config_file:
 					config_reader = OldStyleConfigReader()
 					config_reader.readDocumentConfigSafely(config_file,  self.configuration)
+					self.__read_document_configuration = False
 		path_group.add_argument('--search-project-from',
 			action=SearchProjectFromAction, 
 			metavar=('FILE'), 
@@ -909,7 +911,7 @@ class AbstractAutoLaTeXMain(ABC):
 	def _pre_run_program(self) -> tuple:
 		'''
 		Run the behavior of the main program before the specific behavior.
-		:return: the tuple with as first element the CLI args that are not consumed by argparse library, and the second element the list of unknown arguments.
+		:return: the tuple with as first element the CLI actions, and the second element the list of unknown arguments.
 		:rtype: tuple (args, list)
 		'''
 		self.add_standard_cli_options()
@@ -919,7 +921,15 @@ class AbstractAutoLaTeXMain(ABC):
 		if not self.configuration.documentDirectory:
 			self.configuration.documentDirectory = os.getcwd()
 
-		return self._parse_command_with_sequence_of_commands()
+		(cmds,  unknown_args) = self._parse_command_with_sequence_of_commands()
+		
+		if self.__read_document_configuration:
+			config_file = self._detect_autolatex_configuration_file(self.configuration.documentDirectory)
+			if config_file:
+				config_reader = OldStyleConfigReader()
+				config_reader.readDocumentConfigSafely(config_file,  self.configuration)
+
+		return (cmds,  unknown_args)
 
 	@abstractmethod
 	def _run_program(self,  args : object,  unknown_args: list):
