@@ -41,4 +41,3 @@ translator_function: |
     finally:
     	genutils.unlink(epsFile)
 ...
-

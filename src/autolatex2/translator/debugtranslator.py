@@ -64,60 +64,14 @@ def python_translator_debugger_code(runner : object,  environment : dict):
 	###############################################################
 	###############################################################
 
-	umbrello_cmd = shutil.which('umbrello')
-	if not umbrello_cmd:
-		umbrello_cmd = shutil.which('umbrello5')
-	if not umbrello_cmd:
-		umbrello_cmd = shutil.which('umbrello6')
-	if not umbrello_cmd:
-		raise Exception('Cannot find the umbrello binary file')
-	outdir = genutils.basename2(_out,  _outexts)
-	if os.path.isdir(outdir):
-		shutil.rmtree(outdir)
-	os.makedirs(outdir,  exist_ok=True)
+	epsFile = genutils.basename2(_in,  _inexts) + '.eps'
 	try:
-		(sout, serr, sex, retcode) = Runner.runCommand(umbrello_cmd, '--export', 'eps', '--directory', outdir, _in)
+		(sout, serr, sex, retcode) = Runner.runCommand( 'asy', '-o', epsFile, _in)
 		Runner.checkRunnerStatus(serr, sex, retcode)
-		generatedFiles = list()
-		with os.scandir(outdir) as fdir:
-			for fn in fdir:
-				if fn.is_file():
-					nm = fn.name
-					if nm != '..' and nm != '.' and nm.lower().endswith('.eps'):
-						ffn = os.path.join(outdir, nm)
-						if os.path.isfile(ffn):
-							generatedFiles.append(ffn)
 		if _global_configuration.generation.pdfMode:
-			if len(generatedFiles) > 1:
-				template = genutils.basename2(_out,  _outexts) + '_'
-				for file in generatedFiles:
-					bn = genutils.basename(file, ['.eps'])
-					bn = re.sub('\\s+',  '_',  bn)
-					outfile = template + bn + '.pdf'
-					_runner.generateImage(infile = file, outfile = outfile, onlymorerecent = False,  ignoreDebugFeature = True)
-				Path(_out).touch()
-			elif len(generatedFiles) > 0:
-				file = generatedFiles[0]
-				_runner.generateImage(infile = file, outfile = _out, onlymorerecent = False,  ignoreDebugFeature = True)
-			else:
-				raise Exception("No file generated")
-		else:
-			if len(generatedFiles) > 1:
-				template = genutils.basename2(_out,  _outexts) + '_'
-				for file in generatedFiles:
-					bn = os.path.basename(file)
-					bn = re.sub('\\s+',  '_',  bn)
-					outfile = template + bn
-					shutil.move(file,  outfile)
-				Path(_out).touch()
-			elif len(generatedFiles) > 0:
-				file = generatedFiles[0]
-				shutil.move(file,  _out)
-			else:
-				raise Exception("No file generated")
+			_runner.generateImage(infile = epsFile, outfile = _out, onlymorerecent = False,  ignoreDebugFeature = True)
 	finally:
-		if os.path.isdir(outdir):
-			shutil.rmtree(outdir)
+		genutils.unlink(epsFile)
 
 	###############################################################
 	###############################################################

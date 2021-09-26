@@ -71,13 +71,13 @@ setup(
 	author_email="galland@arakhne.org",
 	description="AutoLaTeX is a tool for managing LaTeX documents",
 	url="https://github.com/gallandarakhneorg/autolatex",
-	license='GPL',
+	license='LGPL',
 	project_urls={
 		"Bug Tracker": "https://github.com/gallandarakhneorg/autolatex/issues",
 	},
 	classifiers=[
 		"Programming Language :: Python :: 3",
-		"License :: OSI Approved :: GPL License",
+		"License :: OSI Approved :: LGPL License",
 		"Operating System :: OS Independent",
 	],
 	python_requires=">=3.7",

@@ -20,7 +20,7 @@
 
 from autolatex2tests.translators.abstracttesttype import AbstractTranslatorTest
 
-class TestTranslator_xcf2pdf(AbstractTranslatorTest):
+class TestTranslator_asy2pdf(AbstractTranslatorTest):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
