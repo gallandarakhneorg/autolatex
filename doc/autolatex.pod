@@ -1543,6 +1543,8 @@ Permission is granted to copy, distribute and/or modify this document under the 
 
 =head1 SEE ALSO
 
-L<pdflatex>, L<latex>, L<bibtex>, L<biber>, L<epstopdf>,
-L<fig2dev>, L<gnuplot>, L<inkscape>, L<umbrello>, L<zcat>, L<texify>
+L<The Perl Home Page|http://www.perl.org/>
+
+L<pdflatex|https://ctan.org/pkg/pdftex>, L<latex|https://ctan.org/pkg/latex>, L<bibtex|https://ctan.org/pkg/bibtex>, L<biber|https://ctan.org/pkg/biber>, L<epstopdf|https://ctan.org/pkg/epstopdf>,
+L<fig2dev|https://sourceforge.net/p/mcj/fig2dev/ci/master/tree/>, L<gnuplot|http://www.gnuplot.info/>, L<inkscape|https://inkscape.org/>, L<umbrello|https://umbrello.kde.org/>, L<zcat>, L<texify>
 
