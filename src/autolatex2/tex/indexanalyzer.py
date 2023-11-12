@@ -24,7 +24,7 @@ Tools for that is extracting the definitions of indexes from an IDX file.
 
 import os
 import base64
-from Crypto.Hash import MD5
+from hashlib import md5
 
 from autolatex2.tex import texparser
 
@@ -103,8 +103,7 @@ class IndexAnalyzer(texparser.Observer):
 		if self.__md5 is None:
 			if self.__indexes is None:
 				self.run()
-			h = MD5.new()
-			h.update(bytes('\\'.join(self.indexes), 'UTF-8'))
+			h = md5(bytes('\\'.join(self.indexes), 'UTF-8'))
 			value = h.digest()
 			cd = base64.encodebytes(value).decode('UTF-8').strip()
 			self.__md5 = cd
