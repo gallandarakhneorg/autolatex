@@ -543,7 +543,7 @@ class AbstractAutoLaTeXMain(ABC):
 		# --pdflatex
 		class PdflatexCmdAction(argparse.Action):
 			def __call__(actionself, parser, namespace, value, option_string=None):
-				self.configuration.latexCompiler = 'pdflatex'
+				self.configuration.generation.latexCompiler = 'pdflatex'
 		tex_tool_group.add_argument('--pdflatex',
 			action=PdflatexCmdAction,
 			nargs=0, 
@@ -552,7 +552,7 @@ class AbstractAutoLaTeXMain(ABC):
 		# --latex
 		class LatexCmdAction(argparse.Action):
 			def __call__(actionself, parser, namespace, value, option_string=None):
-				self.configuration.latexCompiler = 'latex'
+				self.configuration.generation.latexCompiler = 'latex'
 		tex_tool_group.add_argument('--latex',
 			action=LatexCmdAction,
 			nargs=0, 
@@ -561,7 +561,7 @@ class AbstractAutoLaTeXMain(ABC):
 		# --lualatex
 		class LualatexCmdAction(argparse.Action):
 			def __call__(actionself, parser, namespace, value, option_string=None):
-				self.configuration.latexCompiler = 'lualatex'
+				self.configuration.generation.latexCompiler = 'lualatex'
 		tex_tool_group.add_argument('--lualatex',
 			action=LualatexCmdAction,
 			nargs=0, 
@@ -570,7 +570,7 @@ class AbstractAutoLaTeXMain(ABC):
 		# --xelatex
 		class XelatexCmdAction(argparse.Action):
 			def __call__(actionself, parser, namespace, value, option_string=None):
-				self.configuration.latexCompiler = 'xelatex'
+				self.configuration.generation.latexCompiler = 'xelatex'
 		tex_tool_group.add_argument('--xelatex',
 			action=XelatexCmdAction,
 			nargs=0, 
