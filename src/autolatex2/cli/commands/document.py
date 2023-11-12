@@ -32,7 +32,10 @@ class MakerAction(extended_maker_action):
 
 	id = 'document'
 
-	alias = 'gen_doc'
+	# When set, this alias is causing the following error
+	# > argparse.ArgumentError: argument COMMAND: conflicting subparser alias: gen_doc
+	# It appears to conflict with the `view` command
+	#alias = 'gen_doc'
 
 	help = _T('Performs all processing actions that are required to produce the PDF, DVI or Postscript. The actions set includes LaTeX, BibTeX, Makeindex, Dvips, etc.')
 
