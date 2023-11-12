@@ -791,7 +791,7 @@ class AutoLaTeXMaker(Runner):
 		'''
 		logging.debug(_T("Reading log file: %s") % (os.path.basename(logFile)))
 		if os.path.exists(logFile):
-			with open(logFile, 'r') as f:
+			with open(logFile, 'r', errors='ignore') as f:
 				content = f.read()
 			if texutils.extractTeXWarningFromLine(content, self.__standardsWarnings):
 				if loop:
