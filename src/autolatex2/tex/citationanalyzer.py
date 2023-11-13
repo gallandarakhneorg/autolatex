@@ -25,7 +25,7 @@ Tools for extracting the bibliography citations from a AUX file or a BSF file.
 import os
 import re
 import base64
-from Crypto.Hash import MD5
+from hashlib import md5
 
 from autolatex2.tex import texparser
 
@@ -128,8 +128,8 @@ class AuxiliaryCitationAnalyzer(texparser.Observer):
 		if self.__md5 is None:
 			if self.__citations is None:
 				self.run()
-			h = MD5.new()
-			h.update(bytes('\\'.join(self.citations), 'UTF-8'))
+
+			h = md5(bytes('\\'.join(self.citations), 'UTF-8'))
 			value = h.digest()
 			self.__md5 = base64.encodebytes(value).decode('UTF-8').strip()
 		return self.__md5
@@ -261,8 +261,7 @@ class BiblatexCitationAnalyzer(texparser.Observer):
 		if self.__md5 is None:
 			if self.__citations is None:
 				self.run()
-			h = MD5.new()
-			h.update(bytes('\\'.join(self.citations), 'UTF-8'))
+			h = md5(bytes('\\'.join(self.citations), 'UTF-8'))
 			value = h.digest()
 			self.__md5 = base64.encodebytes(value).decode('UTF-8').strip()
 		return self.__md5

@@ -508,7 +508,7 @@ class AutoLaTeXMaker(Runner):
 						self.__latexCLI.append(self.__instance_compiler_definition['synctex'])
 
 				target = self.__instance_compiler_definition['to_%s' % (outtype)]
-				if target:
+				if target is not None:
 					if isinstance(target, list):
 						self.__latexCLI.extend(target)
 					else:
@@ -791,7 +791,7 @@ class AutoLaTeXMaker(Runner):
 		'''
 		logging.debug(_T("Reading log file: %s") % (os.path.basename(logFile)))
 		if os.path.exists(logFile):
-			with open(logFile, 'r') as f:
+			with open(logFile, 'r', errors='ignore') as f:
 				content = f.read()
 			if texutils.extractTeXWarningFromLine(content, self.__standardsWarnings):
 				if loop:
