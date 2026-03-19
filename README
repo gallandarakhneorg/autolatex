@@ -1,3 +1,12 @@
+*****************************************************************
+** CAUTION:                                                    **
+** The Perl implementation of AutoLaTeX is no more maintained. **
+** A Python implementation is available and active. See        **
+** https://github.com/gallandarakhneorg/autolatex2             **
+*****************************************************************
+
+
+
 NAME
     autolatex - compile TeX documents
 
